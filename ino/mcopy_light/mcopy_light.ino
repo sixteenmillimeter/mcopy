@@ -62,7 +62,7 @@ void colorString () {
 
   strR = color.substring(0, commaR);
   strG = color.substring(commaR + 1, commaG);
-  strB = color.substring(commaG + 1, commaB);
+  strB = color.substring(commaG + 1);
 
   r = strR.toInt();
   g = strG.toInt();

@@ -19,17 +19,14 @@ String color = "000,000,000,000";
 
 volatile int commaR = 0;
 volatile int commaG = 0;
-volatile int commaB = 0;
 
 String strR = "000";
 String strG = "000";
 String strB = "000";
-String strA = "000"; // To the end of the string
 
 volatile int r = 0;
 volatile int g = 0;
 volatile int b = 0;
-volatile int a = 0;
 
 volatile char cmd_char = 'z';
 
@@ -75,7 +72,7 @@ void colorString () {
 
 	strR = color.substring(0, commaR);
 	strG = color.substring(commaR + 1, commaG);
-	strB = color.substring(commaG + 1, commaB);
+	strB = color.substring(commaG + 1);
 
 	r = strR.toInt();
 	g = strG.toInt();
