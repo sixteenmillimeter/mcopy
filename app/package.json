@@ -1,0 +1,25 @@
+{
+  "name": "mcopy",
+  "version": "2.0.0",
+  "description": "16mm optical printer",
+  "main": "main.js",
+  "scripts": {
+    "start" : "electron main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sixteenmillimeter/mcopy.git"
+  },
+  "keywords": [
+    "16mm",
+    "optical",
+    "printer",
+    "gui"
+  ],
+  "author": "mmcwilliams",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sixteenmillimeter/mcopy/issues"
+  },
+  "homepage": "https://github.com/sixteenmillimeter/mcopy#readme"
+}
