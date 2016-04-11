@@ -7,21 +7,18 @@
 SoftwareSerial pixieSerial(-1, PIXIEPIN);
 Adafruit_Pixie light = Adafruit_Pixie(NUMPIXELS, &pixieSerial);
 
-String color = "000,000,000,000";
+String color = "000,000,000";
 
 volatile int commaR = 0;
 volatile int commaG = 0;
-volatile int commaB = 0;
 
 String strR = "000";
 String strG = "000";
 String strB = "000";
-String strA = "000"; // To the end of the string
 
 volatile int r = 0;
 volatile int g = 0;
 volatile int b = 0;
-volatile int a = 0;
 
 volatile char cmd_char = 'z';
 
@@ -54,25 +51,22 @@ void cmd (char val) {
 }
 
 void colorString () {
-	while (Serial.available() == 0) {             
-		//Wait for color string
-	}
-	color = Serial.readString();
+  while (Serial.available() == 0) {             
+    //Wait for color string
+  }
+  color = Serial.readString();
   //Serial.println(color);
 
-	commaR = color.indexOf(','); //comma trailing R
-	commaG = color.indexOf(',', commaR + 1);
-	commaB = color.indexOf(',', commaG + 1);
+  commaR = color.indexOf(','); //comma trailing R
+  commaG = color.indexOf(',', commaR + 1);
 
-	strR = color.substring(0, commaR);
-	strG = color.substring(commaR + 1, commaG);
-	strB = color.substring(commaG + 1, commaB);
-	strA = color.substring(commaB + 1); // To the end of the string
+  strR = color.substring(0, commaR);
+  strG = color.substring(commaR + 1, commaG);
+  strB = color.substring(commaG + 1, commaB);
 
-	r = strR.toInt();
-	g = strG.toInt();
-	b = strB.toInt();
-	a = strA.toInt();
+  r = strR.toInt();
+  g = strG.toInt();
+  b = strB.toInt();
 
-	light.setPixelColor(r, g, b, a);
+  light.setPixelColor(0, r, g, b);
 }
