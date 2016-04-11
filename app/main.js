@@ -4,6 +4,7 @@ const electron = require('electron'),
 	Menu = require('menu'),
 	ipcMain = require('electron').ipcMain,
 	app = electron.app,
+	exec = require('child_process').exec,
 	BrowserWindow = electron.BrowserWindow,
 	uuid = require('node-uuid'),
 	serialport = require('serialport'),
@@ -15,6 +16,11 @@ let mainWindow;
 var init = function () {
 	mcopy.cfg = JSON.parse(fs.readFileSync('./cfg.json', 'utf8'));
 	createWindow();
+	mcopy.arduino.init(function (success) {
+		mcopy.arduino.connect(function () {
+
+		});
+	});
 };
 
 var createMenu = function () {
@@ -69,7 +75,7 @@ mcopy.arduino = {
 	lock : false
 };
 mcopy.arduino.init = function (callback) {
-	mcopy.log('Searching for devices...');
+	console.log('Searching for devices...');
 	var cmd = 'ls /dev/tty.*';
 	exec(cmd, function (e, std) {
 		var devices = std.split('\n'),
@@ -82,12 +88,10 @@ mcopy.arduino.init = function (callback) {
 			}
 		}
 		if (matches.length === 0) {
-			mcopy.log('No devices found.');
-			mcopy.gui.spinner(false);
-			mcopy.gui.overlay(true);
+			console.log('No devices found.');
 			if (callback) { callback(false); }
 		} else if (matches.length > 0) {
-			mcopy.log('Found ' + matches[0]);
+			console.log('Found ' + matches[0]);
 			mcopy.arduino.path = matches[0];
 			//once connected to the arduino
 			//start user interface
@@ -102,12 +106,19 @@ mcopy.arduino.send = function (cmd, res) {
 		mcopy.arduino.queue[cmd] = res;
 		setTimeout(function () {
 			mcopy.arduino.serial.write(cmd, function (err, results) {
-				if (err) { mcopy.log(err, 0); }
+				if (err) { console.log(err); }
 				mcopy.arduino.lock = false;
 				mcopy.arduino.timer = new Date().getTime();
 			});
 		}, mcopy.cfg.arduino.serialDelay);
 	}
+};
+//send strings, after char triggers firmware to accept
+mcopy.arduino.string = function (str) {
+	mcopy.arduino.serial.write(str, function (err, results) {
+		if (err) { console.log(err); }
+		console.log('sent: ' + str);
+	});
 };
 //with same over serial when done
 mcopy.arduino.end = function (data) {
@@ -115,35 +126,33 @@ mcopy.arduino.end = function (data) {
 		ms = end - mcopy.arduino.timer;
 	if (mcopy.arduino.queue[data] !== undefined) {
 		mcopy.arduino.lock = false;
-		mcopy.log('Command ' + data + ' took ' + ms + 'ms');
+		console.log('Command ' + data + ' took ' + ms + 'ms');
 		mcopy.arduino.queue[data](ms);
-
 		mcopy.arduino.queue = {};
 	} else {
 		//console.log('Received stray "' + data + '" from ' + mcopy.arduino.path); //silent to user
 	}
 };
 mcopy.arduino.connect = function (callback) {
-	mcopy.log('Connecting to ' + mcopy.arduino.path + '...');
-	mcopy.state.arduino = mcopy.arduino.path;
+	console.log('Connecting to ' + mcopy.arduino.path + '...');
 	mcopy.arduino.serial = new SerialPort(mcopy.arduino.path, {
 	  baudrate: mcopy.cfg.arduino.baud,
-	  parser: sp.parsers.readline("\n")
-	});
+	  parser: serialport.parsers.readline("\n")
+	}, false);
 	mcopy.arduino.serial.open(function (error) {
 		if ( error ) {
-			return mcopy.log('failed to open: '+ error, 0);
+			return console.log('failed to open: '+ error, 0);
 		} else {
-			mcopy.log('Opened connection with ' + mcopy.arduino.path);
+			console.log('Opened connection with ' + mcopy.arduino.path);
 			mcopy.arduino.serial.on('data', function (data) {
 				data = data.replace('\r', '');
 				mcopy.arduino.end(data);
 			});
 			setTimeout(function () {
-				mcopy.log('Verifying firmware...');
+				console.log('Verifying firmware...');
 				mcopy.arduino.send(mcopy.cfg.arduino.cmd.connect, function () {
-					mcopy.log('Firmware verified');
-					mcopy.log('Optical printer ready!');
+					console.log('Firmware verified');
+					console.log('Optical printer ready!');
 					if (callback) { callback(); }
 				});
 			}, 2000);

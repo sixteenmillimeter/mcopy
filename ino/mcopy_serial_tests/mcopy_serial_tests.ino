@@ -17,7 +17,7 @@ void loop() {
 }
 
 void cmd (char val) {
-  if (val == 'a') {
-    Serial.println("a");//End of action
+  if (val == 'i') {
+    Serial.println("i");//End of action
   }
 }
