@@ -18,7 +18,7 @@ var init = function () {
 	createWindow();
 	mcopy.arduino.init(function (success) {
 		mcopy.arduino.connect(function () {
-
+			mcopy.arduino.colorTest();
 		});
 	});
 };
@@ -115,10 +115,12 @@ mcopy.arduino.send = function (cmd, res) {
 };
 //send strings, after char triggers firmware to accept
 mcopy.arduino.string = function (str) {
-	mcopy.arduino.serial.write(str, function (err, results) {
-		if (err) { console.log(err); }
-		console.log('sent: ' + str);
-	});
+	setTimeout(function () {
+		mcopy.arduino.serial.write(str, function (err, results) {
+			if (err) { console.log(err); }
+			//console.log('sent: ' + str);
+		});
+	}, mcopy.cfg.arduino.serialDelay);
 };
 //with same over serial when done
 mcopy.arduino.end = function (data) {
@@ -128,9 +130,9 @@ mcopy.arduino.end = function (data) {
 		mcopy.arduino.lock = false;
 		console.log('Command ' + data + ' took ' + ms + 'ms');
 		mcopy.arduino.queue[data](ms);
-		mcopy.arduino.queue = {};
+		delete mcopy.arduino.queue[data]; //add timestamp?
 	} else {
-		//console.log('Received stray "' + data + '" from ' + mcopy.arduino.path); //silent to user
+		console.log('Received stray "' + data + '" from ' + mcopy.arduino.path); //silent to user
 	}
 };
 mcopy.arduino.connect = function (callback) {
@@ -140,8 +142,8 @@ mcopy.arduino.connect = function (callback) {
 	  parser: serialport.parsers.readline("\n")
 	}, false);
 	mcopy.arduino.serial.open(function (error) {
-		if ( error ) {
-			return console.log('failed to open: '+ error, 0);
+		if (error) {
+			return console.log('failed to open: '+ error);
 		} else {
 			console.log('Opened connection with ' + mcopy.arduino.path);
 			mcopy.arduino.serial.on('data', function (data) {
@@ -158,4 +160,15 @@ mcopy.arduino.connect = function (callback) {
 			}, 2000);
 		}
 	});
+};
+
+mcopy.arduino.colorTest = function () {
+	var color = '255,255,255';
+	mcopy.arduino.send(mcopy.cfg.arduino.cmd.light, function () {
+		console.log('color set to ' + color);
+	});
+	//setTimeout(function () {
+		mcopy.arduino.string(color);
+	//}, mcopy.cfg.arduino.serialDelay);
+	
 };

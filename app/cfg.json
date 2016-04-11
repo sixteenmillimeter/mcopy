@@ -23,6 +23,7 @@
 		"cmd" : {
 			"debug" : "d",
 			"connect":  "i",
+			"light" : "l",
 			"camera" : "c",
 			"projector" : "p",
 			"black" : "b",
