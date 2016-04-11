@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "node-notifier": "^4.5.0",
-    "node-uuid": "^1.4.7"
+    "node-uuid": "^1.4.7",
+    "serialport": "^2.1.0"
   }
 }
