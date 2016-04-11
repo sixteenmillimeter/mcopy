@@ -29,7 +29,7 @@ void setup () {
 	Serial.begin(57600);
 	Serial.flush();
 	pixieSerial.begin(115200); // Pixie REQUIRES this baud rate
-	black();
+	light.setPixelColor(0, 0, 0, 0);
 }
 
 void loop () {
@@ -44,19 +44,13 @@ void loop () {
 }
 
 //
-//b - off
 //c - color - followed by String
 //
 void cmd (char val) {
-	if (val == 'b') {
-		black();
-	} else if (val == 'c') {
+	if (val == 'c') {
 		colorString();
+    Serial.println("c");//End of action
 	}
-}
-
-void black () {
-	light.setPixelColor(0, 0, 0, 0);
 }
 
 void colorString () {
@@ -64,6 +58,7 @@ void colorString () {
 		//Wait for color string
 	}
 	color = Serial.readString();
+  //Serial.println(color);
 
 	commaR = color.indexOf(','); //comma trailing R
 	commaG = color.indexOf(',', commaR + 1);
