@@ -58,6 +58,9 @@ mscript.state_clear = function state_clear () {
 };
 mscript.interpret = function interpret (text, callback) {
 	mscript.state_clear();
+	if (typeof text === 'undefined') {
+		mscript.fail('No input');
+	}
 	var lines = text.split('\n'),
 		two = '',
 		arr = [],
@@ -358,15 +361,18 @@ mscript.tests = function tests () {
 	console.timeEnd('Tests took');
 };
 
-if (typeof module !== 'undefined') {
-	fs = require('fs');
-	module.exports = mscript;
-} else {
+if (!module.parent) {
 	if (typeof process !== 'undefined') {
 		fs = require('fs');
 		input = process.argv[2];
 		mscript.init();
+	} else {
+		//web
 	}
+} else {
+	console.log('module here');
+	fs = require('fs');
+	module.exports = mscript;
 }
 
 /*
