@@ -15,7 +15,7 @@
 
 Adafruit_NeoPixel light = Adafruit_NeoPixel(1, PIXELPIN, NEO_GRB + NEO_KHZ800);
 
-String color = "000,000,000,000";
+String color = "000,000,000";
 
 volatile int commaR = 0;
 volatile int commaG = 0;
@@ -53,7 +53,7 @@ void loop () {
 }
 
 //
-//c - color - followed by String
+//l - light - followed by String
 //
 void cmd (char val) {
   if (val == 'i') {
@@ -72,8 +72,6 @@ void cmd (char val) {
 //100 - WORKS
 //25? - WORKS
 //5   - WORKS - STAY HERE FOR NOW
-//got down to ~10ms, will take hours off 4000 frame roll
-//timing may also change when switching to pixie
 void colorString () {
 	while (Serial.available() == 0) {             
 		//Wait for color string

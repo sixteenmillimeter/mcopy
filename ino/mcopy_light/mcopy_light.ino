@@ -43,12 +43,14 @@ void loop () {
 }
 
 //
-//c - color - followed by String
+//l - light - followed by String
 //
 void cmd (char val) {
-	if (val == 'c') {
+	if (val == 'i') {
+    Serial.println("i");//confirm connection
+  } else if (val == 'l') {
 		colorString();
-    Serial.println("c");//End of action
+    Serial.println("l");//End of action
 	}
 }
 
