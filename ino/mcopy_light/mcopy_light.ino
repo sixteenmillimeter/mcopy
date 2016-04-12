@@ -21,10 +21,12 @@ volatile int g = 0;
 volatile int b = 0;
 
 volatile char cmd_char = 'z';
+const int serialDelay = 5;
 
 void setup () {
 	Serial.begin(57600);
 	Serial.flush();
+	Serial.setTimeout(serialDelay);
 	pixieSerial.begin(115200); // Pixie REQUIRES this baud rate
 	light.setPixelColor(0, 0, 0, 0);
 }

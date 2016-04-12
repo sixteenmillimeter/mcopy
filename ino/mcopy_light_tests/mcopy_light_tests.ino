@@ -29,13 +29,15 @@ volatile int g = 0;
 volatile int b = 0;
 
 volatile char cmd_char = 'z';
+const int serialDelay = 5;
 
 void setup () {
 	Serial.begin(57600);
 	Serial.flush();
+  Serial.setTimeout(serialDelay);
 	//pixieSerial.begin(115200); // Pixie REQUIRES this baud rate
   light.begin();
-	light.setPixelColor(0, 0, 0, 0);
+  light.setPixelColor(0, 0, 0, 0);
   light.show();
 }
 
@@ -62,6 +64,16 @@ void cmd (char val) {
 	}
 }
 
+//takes 1004ms w/ string method
+//takes 2ms(!!!!!) w/o readString() ugh
+//WAIT!! Serial.setTimeout(1000) by default!
+//500 - WORKS
+//250 - WORKS
+//100 - WORKS
+//25? - WORKS
+//5   - WORKS - STAY HERE FOR NOW
+//got down to ~10ms, will take hours off 4000 frame roll
+//timing may also change when switching to pixie
 void colorString () {
 	while (Serial.available() == 0) {             
 		//Wait for color string
@@ -81,5 +93,5 @@ void colorString () {
 	b = strB.toInt();
 
 	light.setPixelColor(0, r, g, b);
-  light.show();
+    light.show();
 }
