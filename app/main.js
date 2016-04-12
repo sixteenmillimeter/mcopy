@@ -15,9 +15,11 @@ var mainWindow;
 var init = function () {
 	createWindow();
 	mcopy.arduino.init(function (success) {
-		mcopy.arduino.connect(function () {
-			//
-		});
+		if (success) {
+			mcopy.arduino.connect(function () {
+				//
+			});
+		}
 	});
 };
 
@@ -28,7 +30,7 @@ var createMenu = function () {
 var createWindow = function () {
 	mainWindow = new BrowserWindow({width: 800, height: 600});
 	mainWindow.loadURL('file://' + __dirname + '/index.html');
-	mainWindow.webContents.openDevTools();
+	//mainWindow.webContents.openDevTools();
 	mainWindow.on('closed', function() {
 		mainWindow = null;
 	});
