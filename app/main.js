@@ -163,12 +163,9 @@ mcopy.arduino.connect = function (callback) {
 };
 
 mcopy.arduino.colorTest = function () {
-	var color = '255,255,255';
+	var color = '255,140,70';
 	mcopy.arduino.send(mcopy.cfg.arduino.cmd.light, function () {
-		console.log('color set to ' + color);
+		console.log('Light set to ' + color);
 	});
-	//setTimeout(function () {
-		mcopy.arduino.string(color);
-	//}, mcopy.cfg.arduino.serialDelay);
-	
+	mcopy.arduino.string(color);
 };
