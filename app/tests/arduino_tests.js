@@ -14,6 +14,7 @@ mcopy.arduino.colorTest = function (color, cb) {
 
 mcopy.arduino.init(function (success) {
 	mcopy.arduino.connect(function () {
+		/*
 		mcopy.arduino.colorTest('255,140,70', function () {
 		mcopy.arduino.colorTest('5,0,0', function () {
 		mcopy.arduino.colorTest('255,255,255', function () {
@@ -25,5 +26,6 @@ mcopy.arduino.init(function (success) {
 		});//3	
 		});//2
 		});//1
+		*/
 	});
 });
