@@ -56,6 +56,22 @@ void connect () {
 }
 
 void projector () {
+  /*Time_start();
+  cam_dir = dir;
+  if (cam_dir) {
+    analogWrite(PIN_MOTOR_FORWARD, fwd_speed);
+    analogWrite(PIN_MOTOR_BACKWARD, 0);
+  } else {
+    analogWrite(PIN_MOTOR_BACKWARD, bwd_speed);
+    analogWrite(PIN_MOTOR_FORWARD, 0);
+  }
+  running = true;
+  if (fwd_speed == 255) {
+      delay(300);
+  } else {
+      delay(600);
+  }
+  micro_primed = false;*/
   log("projector()");
 }
 
