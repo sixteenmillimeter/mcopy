@@ -115,7 +115,7 @@ mcopy.arduino.connect = function (callback) {
 	});
 };
 
-if (typeof module !== 'undefined') {
+if (typeof module !== 'undefined' && module.parent) {
 	module.exports = function (cfg) {
 		mcopy.cfg = cfg;
 		return mcopy.arduino;
