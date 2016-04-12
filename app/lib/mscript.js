@@ -361,19 +361,19 @@ mscript.tests = function tests () {
 	console.timeEnd('Tests took');
 };
 
-if (!module.parent) {
-	if (typeof process !== 'undefined') {
-		fs = require('fs');
-		input = process.argv[2];
-		mscript.init();
-	} else {
-		//web
-	}
-} else {
-	console.log('module here');
+if (typeof module !== 'undefined' && !module.parent) {
+	//node script
+	fs = require('fs');
+	input = process.argv[2];
+	mscript.init();
+} else if (typeof module !== 'undefined' && module.parent) {
+	//module
 	fs = require('fs');
 	module.exports = mscript;
+} else {
+	//web
 }
+
 
 /*
 
