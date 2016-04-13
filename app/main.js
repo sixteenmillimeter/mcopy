@@ -14,6 +14,7 @@ var mainWindow;
 
 var init = function () {
 	createWindow();
+	log.init();
 	mcopy.arduino.init(function (success) {
 		if (success) {
 			mcopy.arduino.connect(function () {
@@ -54,3 +55,21 @@ ipcMain.on('light', function(event, arg) {
 	//
 	event.returnValue = true;
 });
+
+var log = {};
+log.init = function () {
+	'use strict';
+	log.listen();
+};
+log.display = function () {
+	'use strict';
+	ipcMain.sendSync({});
+};
+
+log.listen = function () {
+	'use strict';
+	ipcMain.on('log', function (event, arg) {
+		console.log(arg);
+		event.returnValue = true;
+	});
+};

@@ -1,8 +1,63 @@
 var ipcRenderer = require('electron').ipcRenderer,
-	light = {};
+	light = {},
+	log = {};
 //console.log(ipcRenderer.sendSync('light', { 'fuck' : true }) );
 
+log.time = 'MM/DD/YY-HH:mm:ss';
+log.count = 0;
+log.init = function () {
+	'use strict';
+	$('#log').w2grid({ 
+	    name   : 'log', 
+	    columns: [                
+	        { field: 'time', caption: 'Time', size: '22%' },
+	        { field: 'action', caption: 'Action', size: '58%' },
+	        { field: 'service', caption: 'Service', size: '20%' },
+	        { field: 'status', caption: 'Status', size: '10%' },
+	    ],
+	    records: []
+	});
+	//{ recid: 1, time: moment().format(log.time), action: 'Started app', service: 'MAIN', status: true }
+	log.info('Started app', 'MAIN', true);
+};
 
+log.listen = function () {
+	ipcRender.on('log', function (event, arg) {
+		console.log(arg);
+		return event.returnValue = true;
+	});
+};
+
+log.display = function (action, service, status, time) {
+	'use strict';
+	var obj = {
+		recid : log.count++,
+		time : time,
+		action : action,
+		service : service,
+		status : status
+	}
+	if (typeof time === 'undefined') {
+		obj.time = moment().format(log.time);
+	}
+	w2ui['log'].add(obj);
+	$('#log').animate({ scrollTop: $('#log').prop('scrollHeight')}, 100);
+	return obj;
+};
+
+log.report = function (obj) {
+	'use strict';
+	ipcRenderer.sendSync('log', obj);
+};
+
+log.info = function (action, service, status, time) {
+	'use strict';
+	var obj = log.display(action, service, status, time);
+	log.report(obj);
+	console.log(obj);
+};
+
+//color = [0,0,0]
 light.set = function (color) {
 	'use strict';
 	console.log('color: ' + color.join(','));
@@ -23,24 +78,5 @@ var init = function () {
 			{ type: 'button',  id: 'item5',  group: '1', caption: 'Settings', icon: 'fa-home' }
 		]
 	});
-	$('#log').w2grid({ 
-	    name   : 'myGrid', 
-	    columns: [                
-	        { field: 'fname', caption: 'First Name', size: '30%' },
-	        { field: 'lname', caption: 'Last Name', size: '30%' },
-	        { field: 'email', caption: 'Email', size: '40%' },
-	        { field: 'sdate', caption: 'Start Date', size: '120px' },
-	    ],
-	    records: [
-	        { recid: 1, fname: 'John', lname: 'Doe', email: 'jdoe@gmail.com', sdate: '4/3/2012' },
-	        { recid: 2, fname: 'Stuart', lname: 'Motzart', email: 'jdoe@gmail.com', sdate: '4/3/2012' },
-	        { recid: 3, fname: 'Jin', lname: 'Franson', email: 'jdoe@gmail.com', sdate: '4/3/2012' },
-	        { recid: 4, fname: 'Susan', lname: 'Ottie', email: 'jdoe@gmail.com', sdate: '4/3/2012' },
-	        { recid: 5, fname: 'Kelly', lname: 'Silver', email: 'jdoe@gmail.com', sdate: '4/3/2012' },
-	        { recid: 6, fname: 'Francis', lname: 'Gatos', email: 'jdoe@gmail.com', sdate: '4/3/2012' },
-	        { recid: 7, fname: 'Mark', lname: 'Welldo', email: 'jdoe@gmail.com', sdate: '4/3/2012' },
-	        { recid: 8, fname: 'Thomas', lname: 'Bahh', email: 'jdoe@gmail.com', sdate: '4/3/2012' },
-	        { recid: 9, fname: 'Sergei', lname: 'Rachmaninov', email: 'jdoe@gmail.com', sdate: '4/3/2012' }
-	    ]
-	});
+	log.init();
 };

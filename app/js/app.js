@@ -65,31 +65,61 @@ var ipcRenderer = require('electron').ipcRenderer,
 	log = {};
 //console.log(ipcRenderer.sendSync('light', { 'fuck' : true }) );
 
+log.time = 'MM/DD/YY-HH:mm:ss';
+log.count = 0;
 log.init = function () {
 	'use strict';
 	$('#log').w2grid({ 
 	    name   : 'log', 
 	    columns: [                
-	        { field: 'time', caption: 'Time', size: '20%' },
-	        { field: 'action', caption: 'Action', size: '60%' },
+	        { field: 'time', caption: 'Time', size: '22%' },
+	        { field: 'action', caption: 'Action', size: '58%' },
 	        { field: 'service', caption: 'Service', size: '20%' },
 	        { field: 'status', caption: 'Status', size: '10%' },
 	    ],
-	    records: [
-	        { recid: 1, time: '4/11/2016', action: 'Started app', service: 'MAIN', status: true }
-	    ]
+	    records: []
+	});
+	//{ recid: 1, time: moment().format(log.time), action: 'Started app', service: 'MAIN', status: true }
+	log.info('Started app', 'MAIN', true);
+};
+
+log.listen = function () {
+	ipcRender.on('log', function (event, arg) {
+		console.log(arg);
+		return event.returnValue = true;
 	});
 };
 
-log.display = function () {
+log.display = function (action, service, status, time) {
 	'use strict';
+	var obj = {
+		recid : log.count++,
+		time : time,
+		action : action,
+		service : service,
+		status : status
+	}
+	if (typeof time === 'undefined') {
+		obj.time = moment().format(log.time);
+	}
+	w2ui['log'].add(obj);
+	$('#log').animate({ scrollTop: $('#log').prop('scrollHeight')}, 100);
+	return obj;
 };
 
-log.report = function () {
+log.report = function (obj) {
 	'use strict';
+	ipcRenderer.sendSync('log', obj);
 };
 
+log.info = function (action, service, status, time) {
+	'use strict';
+	var obj = log.display(action, service, status, time);
+	log.report(obj);
+	console.log(obj);
+};
 
+//color = [0,0,0]
 light.set = function (color) {
 	'use strict';
 	console.log('color: ' + color.join(','));
