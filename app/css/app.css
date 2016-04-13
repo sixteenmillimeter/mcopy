@@ -1,4 +1,4 @@
-#footer {
+footer {
   position: fixed;
   bottom: 0;
   width: 100%;
@@ -13,22 +13,51 @@
   display: none;
 }
 #colors-tabs {
-  width: 400px;
+  width: 411px;
 }
 #colors-content {
-  width: 400px;
+  width: 411px;
+  float: left;
+}
+.mcopy-light {
+  background: #000;
+  width: 15px;
+  height: 15px;
 }
 #light-status {
-  width: 400px;
+  width: 388px;
   float: right;
+}
+#light-status > div {
+  position: relative;
+  clear: both;
+}
+#light-status > div:after {
+  content: "";
+  display: block;
 }
 #light-status form {
   float: left;
   line-height: 30px;
+  width: 40%;
 }
 #light-status form span {
   width: 20px;
+  margin-left: 40px;
   display: inline-block;
+}
+#light-status form input[type=text] {
+  width: 40px;
+}
+#preview {
+  margin-top: 40px;
+}
+#rgb {
+  border: 0;
+  border-radius: 0;
+  width: 411px;
+  font-size: 12px;
+  text-align: center;
 }
 #color {
   width: 100px;
@@ -36,4 +65,12 @@
   margin: 0 50px;
   background-color: #000;
   float: right;
+}
+.cp-app {
+  position: relative !important;
+  border-radius: 0px !important;
+  top: 0px !important;
+}
+.cp-app .cp-memo {
+  bottom: 2px !important;
 }

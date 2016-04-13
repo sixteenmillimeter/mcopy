@@ -13,19 +13,26 @@
     <nav id="toolbar"></nav>
     <div id="screens">
       <div id="controls" class="screen">
+        <footer>
+          <div id="log"></div>
+        </footer>
       </div>
-      <div id="light">
+      <div id="light" class="screen">
         <div id="colors-tabs"></div>
         <div id="colors-content">
-          <div id="rgb"></div>
+          <div id="rgb-page" class="colors-page">
+            <input id="rgb" value="rgb(0, 0, 0)" />
+          </div>
         </div>
         <div id="light-status">
-          <form>
-            <span>R</span><input type="text" value="0"/><br />
-            <span>G</span><input type="text" value="0"/><br />
-            <span>B</span><input type="text" value="0"/>
-          </form>
-          <div id="color"></div>
+          <div>
+            <form>
+              <span>R</span><input type="text" value="0"/><br />
+              <span>G</span><input type="text" value="0"/><br />
+              <span>B</span><input type="text" value="0"/>
+            </form>
+            <div id="color"></div>
+          </div>
           Preview
           <input type="checkbox" name="preview" id="preview" class="effeckt-ckbox-ios7" />
         </div>

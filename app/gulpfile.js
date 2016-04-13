@@ -8,7 +8,9 @@ var scripts = [
 	'./src/w2ui-1.4.3.min.js',
 	'./src/moment.min.js',
 	'./src/colors.js',
+	'./src/colorPicker.data.js',
 	'./src/colorPicker.js',
+	'./src/jsColor.js',
 	'./src/chroma.min.js',
 	'./src/index.js'
 ];
