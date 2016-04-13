@@ -48,8 +48,8 @@ log.display = function (action, service, status, time) {
 	setTimeout(function () {
 		$('#grid_log_table').animate({ 
 			scrollTop: $('#grid_log_table').prop('scrollHeight')
-		}, 0);
-	}, 1);
+		}, 100);
+	}, 100);
 	return obj;
 };
 
@@ -69,7 +69,14 @@ log.info = function (action, service, status, time) {
 light.preview = false;
 light.color = [0, 0, 0]; //preview status
 light.current = [0, 0, 0]; //last sent
+light.icon = {};
 light.init = function () {
+	'use strict';
+
+	light.icon = document.createElement('style');
+	light.icon.innerHTML = 'span.mcopy-light{background-color: #000;}';
+	document.body.appendChild(light.icon);
+
 	$('#colors-tabs').w2tabs({
 		name: 'colors',
 		active: 'rgb',
@@ -120,25 +127,26 @@ light.init = function () {
 	    }, // see Colors...
 	});*/
 	var colors = jsColorPicker('#rgb', {
-			customBG: '#222',
-			readOnly: true,
-			size: 3,
-			// patch: false,
-			init: function(elm, colors) { // colors is a different instance (not connected to colorPicker)
-				elm.style.backgroundColor = elm.value;
-				elm.style.color = colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd';
-			},
-			convertCallback: function(colors, type){
-		    	var a = colors.RND.rgb,
-		    		rgb = [a.r, a.g, a.b];
-		    	light.color = rgb;
-		    	if (light.preview) {
-		    		light.display(rgb);
-					light.set(rgb);
-				}
+		customBG: '#222',
+		readOnly: true,
+		size: 3,
+		appendTo : document.getElementById('rgb-page'),
+		// patch: false,
+		init: function(elm, colors) { // colors is a different instance (not connected to colorPicker)
+			elm.style.backgroundColor = elm.value;
+			elm.style.color = colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd';
+		},
+		convertCallback: function(colors, type){
+	    	var a = colors.RND.rgb,
+	    		rgb = [a.r, a.g, a.b];
+	    	light.color = rgb;
+	    	if (light.preview) {
+	    		light.display(rgb);
+				light.set(rgb);
+			}
 
-		    }
-		});
+	    }
+	});
 	light.display([0, 0, 0]);
 	$('#preview').on('change', function () {
 		light.preview = $(this).prop('checked');
@@ -168,15 +176,15 @@ light.display = function (rgb) {
 	}
 	str = 'rgb(' + rgb.join(',') + ')';
 	$('#color').css('background-color', str);
-	$('.mcopy-light').css('background-color', str);
+	light.icon = document.styleSheets[document.styleSheets.length - 1];
+	light.icon.deleteRule(0);
+	light.icon.insertRule('span.mcopy-light{background-color: ' + str + ';}', 0)
 };
 light.color_on = false;
 light.color_init = function () {
 	'use strict';
 	if (!light.color_on) {
 		$('#rgb').focus();
-		$('.cp-app').appendTo('#rgb-page');
-		light.color_on = true;
 	}
 };
 
@@ -204,6 +212,8 @@ nav.change = function (id) {
 	$('#' + id).show();
 	if (id === 'light') {
 		light.color_init();
+	} else if (id === 'controls') {
+		w2ui['log'].resize();
 	}
 };
 
