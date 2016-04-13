@@ -33,6 +33,7 @@
   "dependencies": {
     "node-notifier": "^4.5.0",
     "node-uuid": "^1.4.7",
-    "serialport": "^2.1.0"
+    "serialport": "^2.1.0",
+    "winston": "^2.2.0"
   }
 }

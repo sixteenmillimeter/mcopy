@@ -57,6 +57,14 @@ ipcMain.on('light', function(event, arg) {
 });
 
 var log = {};
+
+var logger = new (winston.Logger)({
+	transports: [
+		new (winston.transports.Console)(),
+		new (winston.transports.File)({ filename: './logs/mcopy.log' })
+	]
+});
+
 log.init = function () {
 	'use strict';
 	log.listen();

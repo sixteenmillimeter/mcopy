@@ -24,6 +24,7 @@ log.init = function () {
 log.listen = function () {
 	ipcRender.on('log', function (event, arg) {
 		console.log(arg);
+		//log.display(arg.action, arg.service, arg.status, arg.time);
 		return event.returnValue = true;
 	});
 };
