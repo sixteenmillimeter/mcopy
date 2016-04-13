@@ -5,6 +5,8 @@ var electron = require('electron'),
 	app = electron.app,
 	BrowserWindow = electron.BrowserWindow,
 	uuid = require('node-uuid'),
+	winston = require('winston'),
+	moment = require('moment'),
 	mcopy = {};
 
 mcopy.cfg = JSON.parse(fs.readFileSync('./cfg.json', 'utf8'));
@@ -15,12 +17,15 @@ var mainWindow;
 var init = function () {
 	createWindow();
 	log.init();
-	mcopy.arduino.init(function (success) {
-		if (success) {
+	mcopy.arduino.init(function (err, success) {
+		/*if (success) {
+			log.info('Found devices', 'SERIAL', true);
 			mcopy.arduino.connect(function () {
 				//
 			});
-		}
+		} else {
+			log.info('Connected', 'SERIAL', true);
+		}*/
 	});
 };
 
@@ -57,27 +62,38 @@ ipcMain.on('light', function(event, arg) {
 });
 
 var log = {};
-
-var logger = new (winston.Logger)({
+log.time = 'MM/DD/YY-HH:mm:ss';
+log.transport = new (winston.Logger)({
 	transports: [
 		new (winston.transports.Console)(),
 		new (winston.transports.File)({ filename: './logs/mcopy.log' })
 	]
 });
-
 log.init = function () {
 	'use strict';
 	log.listen();
 };
-log.display = function () {
+log.display = function (obj) {
 	'use strict';
-	ipcMain.sendSync({});
+	ipcMain.sendSync('log', obj);
 };
-
 log.listen = function () {
 	'use strict';
 	ipcMain.on('log', function (event, arg) {
-		console.log(arg);
+		log.transport.info('renderer', arg);
 		event.returnValue = true;
 	});
+};
+log.info = function (action, service, status, display) {
+	'use strict';
+	var obj = {
+		time : moment().format(log.time),
+		action : action,
+		service : service,
+		status : status
+	};
+	log.transport.info('main', obj);
+	if (display) {
+		log.display(obj);
+	}
 };
