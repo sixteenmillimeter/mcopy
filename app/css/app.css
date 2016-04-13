@@ -12,3 +12,28 @@
 .screen {
   display: none;
 }
+#colors-tabs {
+  width: 400px;
+}
+#colors-content {
+  width: 400px;
+}
+#light-status {
+  width: 400px;
+  float: right;
+}
+#light-status form {
+  float: left;
+  line-height: 30px;
+}
+#light-status form span {
+  width: 20px;
+  display: inline-block;
+}
+#color {
+  width: 100px;
+  height: 100px;
+  margin: 0 50px;
+  background-color: #000;
+  float: right;
+}

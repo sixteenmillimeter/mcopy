@@ -64,8 +64,12 @@ log.info = function (action, service, status, time) {
 	console.log(obj);
 };
 
+//LIGHT
+light.preview = false;
+light.color = [0, 0, 0]; //preview status
+light.current = [0, 0, 0]; //last sent
 light.init = function () {
-	$('#colors').w2tabs({
+	$('#colors-tabs').w2tabs({
 		name: 'colors',
 		active: 'rgb',
 		tabs: [
@@ -77,15 +81,30 @@ light.init = function () {
 			$('#colors-content').html('Tab: ' + event.target);
 		}
 	});
+	$('#preview').on('change', function () {
+		light.preview = $(this).prop('checked');
+	});
 };
-
 //color = [0,0,0]
-light.set = function (color) {
+light.set = function (rgb) {
 	'use strict';
-	console.log('color: ' + color.join(','));
-	ipcRenderer.sendSync('light', color);
+	light.current = rgb;
+	console.log('color: ' + rgb.join(','));
+	ipcRenderer.sendSync('light', rgb);
 };
 
+light.display = function (rgb) {
+	'use strict';
+	for (var i = 0; i < 3; i++) {
+		rgb[i] = Math.floor(rgb[i]);
+		$('#light-status form input').eq(i).val(rgb[i]);
+	}
+	light.color = rgb;
+	$('#color').css('background-color', 'rgb(' + rgb.join(',') + ')');
+	if (light.preview) {
+		light.set(rgb);
+	}
+};
 
 var init = function () {
 	'use strict';
@@ -100,7 +119,7 @@ var init = function () {
 			{ type: 'button',  id: 'item5',  group: '1', caption: 'Settings', icon: 'fa-home' }
 		],
 		onClick : function (event) {
-			
+
 		}
 	});
 	log.init();
