@@ -1,4 +1,5 @@
 var gulp = require('gulp'),
+	less = require('gulp-less'),
 	concat = require('gulp-concat');
 
 var scripts = [
@@ -16,4 +17,10 @@ gulp.task('js', function () {
     	.pipe(gulp.dest('./js/'));
 });
 
-gulp.task('default', ['js']);
+gulp.task('less', function () {
+	return gulp.src('./css/*.less')
+		.pipe(less())
+		.pipe(gulp.dest('./css'));
+});
+
+gulp.task('default', ['js', 'less']);
