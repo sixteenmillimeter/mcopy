@@ -1,4 +1,5 @@
-var ipcRenderer = require('electron').ipcRenderer,
+var remote = require('remote'),
+	ipcRenderer = require('electron').ipcRenderer,
 	light = {},
 	log = {};
 //console.log(ipcRenderer.sendSync('light', { 'fuck' : true }) );
@@ -19,12 +20,13 @@ log.init = function () {
 	});
 	//{ recid: 1, time: moment().format(log.time), action: 'Started app', service: 'MAIN', status: true }
 	log.info('Started app', 'MAIN', true);
+	log.listen();
 };
 
 log.listen = function () {
-	ipcRender.on('log', function (event, arg) {
-		console.log(arg);
-		//log.display(arg.action, arg.service, arg.status, arg.time);
+	'use strict';
+	ipcRenderer.on('log', function (event, arg) {
+		log.display(arg.action, arg.service, arg.status, arg.time);
 		return event.returnValue = true;
 	});
 };
@@ -42,7 +44,11 @@ log.display = function (action, service, status, time) {
 		obj.time = moment().format(log.time);
 	}
 	w2ui['log'].add(obj);
-	$('#log').animate({ scrollTop: $('#log').prop('scrollHeight')}, 100);
+	setTimeout(function () {
+		$('#grid_log_table').animate({ 
+			scrollTop: $('#grid_log_table').prop('scrollHeight')
+		}, 0);
+	}, 1);
 	return obj;
 };
 
@@ -56,6 +62,21 @@ log.info = function (action, service, status, time) {
 	var obj = log.display(action, service, status, time);
 	log.report(obj);
 	console.log(obj);
+};
+
+light.init = function () {
+	$('#colors').w2tabs({
+		name: 'colors',
+		active: 'rgb',
+		tabs: [
+			{ id: 'rgb', caption: 'RGB' },
+			{ id: 'cmy', caption: 'CMY'},
+			{ id: 'kelvin', caption: 'Kelvin'}
+		],
+		onClick: function (event) {
+			$('#colors-content').html('Tab: ' + event.target);
+		}
+	});
 };
 
 //color = [0,0,0]
@@ -77,7 +98,11 @@ var init = function () {
 			{ type: 'radio',  id: 'item4',  group: '1', caption: 'Light', icon: 'fa-star-empty' },
 			{ type: 'spacer' },
 			{ type: 'button',  id: 'item5',  group: '1', caption: 'Settings', icon: 'fa-home' }
-		]
+		],
+		onClick : function (event) {
+			
+		}
 	});
 	log.init();
+	light.init();
 };

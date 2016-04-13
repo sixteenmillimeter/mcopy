@@ -18,16 +18,18 @@ var init = function () {
 	'use strict';
 	createWindow();
 	log.init();
-	mcopy.arduino.init(function (err, device) {
-		if (err) {
-			log.info(err, 'SERIAL', false, true);
-		} else {
-			log.info('Found device ' + device, 'SERIAL', true, true);
-			mcopy.arduino.connect(function () {
-				log.info('Connected to device ' + device, 'SERIAL', true, true);
-			});
-		}
-	});
+	setTimeout(function () {
+		mcopy.arduino.init(function (err, device) {
+			if (err) {
+				log.info(err, 'SERIAL', false, true);
+			} else {
+				log.info('Found device ' + device, 'SERIAL', true, true);
+				mcopy.arduino.connect(function () {
+					log.info('Connected to device ' + device, 'SERIAL', true, true);
+				});
+			}
+		});
+	}, 1000);
 };
 
 var createMenu = function () {
@@ -59,9 +61,19 @@ app.on('activate', function () {
 });
 
 ipcMain.on('light', function(event, arg) {
-	//
+	light.set(arg);
 	event.returnValue = true;
 });
+
+var light = {};
+light.set = function (color) {
+	'use strict';
+	var str = color.join(',');
+	mcopy.arduino.send(mcopy.cfg.arduino.cmd.light, function () {
+		log.info('Light set to ' + str, 'LIGHT', true, true);
+	});
+	mcopy.arduino.string(str);
+};
 
 var log = {};
 log.time = 'MM/DD/YY-HH:mm:ss';
@@ -77,7 +89,7 @@ log.init = function () {
 };
 log.display = function (obj) {
 	'use strict';
-	ipcMain.sendSync('log', obj);
+	mainWindow.webContents.send('log', obj);
 };
 log.listen = function () {
 	'use strict';
