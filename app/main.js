@@ -67,9 +67,9 @@ ipcMain.on('light', function(event, arg) {
 
 var light = {};
 
-light.set = function (rgb) {
+light.set = function (obj) {
 	'use strict';
-	var str = rgb.join(',');
+	var str = obj.rgb.join(',');
 	mcopy.arduino.send(mcopy.cfg.arduino.cmd.light, function () {
 		log.info('Light set to ' + str, 'LIGHT', true, true);
 	});

@@ -1,4 +1,5 @@
 var remote = require('remote'),
+	uuid = require('node-uuid'),
 	ipcRenderer = require('electron').ipcRenderer,
 	light = {},
 	nav = {},
@@ -137,6 +138,7 @@ light.init = function () {
 			elm.style.color = colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd';
 		},
 		convertCallback: function(colors, type){
+			//console.dir(type);
 	    	var a = colors.RND.rgb,
 	    		rgb = [a.r, a.g, a.b];
 	    	light.color = rgb;
@@ -159,10 +161,17 @@ light.init = function () {
 		}
 	});
 };
-//color = [0,0,0]
+light.lock = false;
+light.waiting = {};
+//rgb = [0,0,0]
 light.set = function (rgb) {
 	'use strict';
+	var cmd = {
+		id : uuid.v4(),
+		rgb : rgb
+	}
 	light.current = rgb;
+	console.dir(rgb);
 	ipcRenderer.sendSync('light', rgb);
 };
 
@@ -193,12 +202,12 @@ nav.init = function () {
 	$('#toolbar').w2toolbar({
 		name: 'toolbar',
 		items: [
-			{ type: 'radio',  id: 'sequence',  group: '1', caption: 'Sequence', icon: 'fa-star', checked: true },
-			{ type: 'radio',  id: 'script',  group: '1', caption: 'Script', icon: 'fa-star-empty' },
-			{ type: 'radio',  id: 'controls',  group: '1', caption: 'Controls', icon: 'fa-star-empty' },
+			{ type: 'radio',  id: 'sequence',  group: '1', caption: 'Sequence', icon: 'fa fa-th', checked: true },
+			{ type: 'radio',  id: 'script',  group: '1', caption: 'Script', icon: 'fa fa-code' },
+			{ type: 'radio',  id: 'controls',  group: '1', caption: 'Controls', icon: 'fa fa-tasks' },
 			{ type: 'radio',  id: 'light',  group: '1', caption: 'Light', icon: 'mcopy-light' },
 			{ type: 'spacer' },
-			{ type: 'button',  id: 'settings',  group: '1', caption: 'Settings', icon: 'fa-home' }
+			{ type: 'button',  id: 'settings',  group: '1', caption: 'Settings', icon: 'fa fa-cogs' }
 		],
 		onClick : function (event) {
 			nav.change(event.target);
