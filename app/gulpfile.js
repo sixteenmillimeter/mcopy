@@ -6,6 +6,7 @@ var scripts = [
 	'./src/jquery-1.11.3.min.js',
 	'./src/jquery-electron-fix.js',
 	'./src/w2ui-1.4.3.min.js',
+	'./src/moment.min.js',
 	'./src/chroma.min.js',
 	'./src/index.js'
 ];
