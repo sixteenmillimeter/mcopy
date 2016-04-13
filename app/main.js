@@ -15,17 +15,18 @@ mcopy.arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg);
 var mainWindow;
 
 var init = function () {
+	'use strict';
 	createWindow();
 	log.init();
-	mcopy.arduino.init(function (err, success) {
-		/*if (success) {
-			log.info('Found devices', 'SERIAL', true);
-			mcopy.arduino.connect(function () {
-				//
-			});
+	mcopy.arduino.init(function (err, device) {
+		if (err) {
+			log.info(err, 'SERIAL', false, true);
 		} else {
-			log.info('Connected', 'SERIAL', true);
-		}*/
+			log.info('Found device ' + device, 'SERIAL', true, true);
+			mcopy.arduino.connect(function () {
+				log.info('Connected to device ' + device, 'SERIAL', true, true);
+			});
+		}
 	});
 };
 
@@ -34,6 +35,7 @@ var createMenu = function () {
 };
 
 var createWindow = function () {
+	'use strict';
 	mainWindow = new BrowserWindow({width: 800, height: 600});
 	mainWindow.loadURL('file://' + __dirname + '/index.html');
 	//mainWindow.webContents.openDevTools();

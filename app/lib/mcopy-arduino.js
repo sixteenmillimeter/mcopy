@@ -37,14 +37,14 @@ mcopy.arduino.init = function (callback) {
 			}
 		}
 		if (matches.length === 0) {
-			console.log('No devices found.');
-			if (callback) { callback(false); }
+			//console.log('No USB devices found.');
+			if (callback) { callback('No USB devices found'); }
 		} else if (matches.length > 0) {
-			console.log('Found ' + matches[0]);
+			//console.log('Found ' + matches[0]);
 			mcopy.arduino.path = matches[0];
 			//once connected to the arduino
 			//start user interface
-			if (callback) { callback(true); }
+			if (callback) { callback(null, mcopy.arduino.path); }
 		}
 	});
 };
