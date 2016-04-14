@@ -7,6 +7,7 @@ var electron = require('electron'),
 	uuid = require('node-uuid'),
 	winston = require('winston'),
 	moment = require('moment'),
+	Q = require('q'),
 	mcopy = {};
 
 mcopy.cfg = JSON.parse(fs.readFileSync('./cfg.json', 'utf8'));
@@ -22,6 +23,9 @@ var init = function () {
 		mcopy.arduino.init(function (err, device) {
 			if (err) {
 				log.info(err, 'SERIAL', false, true);
+				mcopy.arduino.fakeConnect(function () {
+					log.info('Connected to fake USB device', 'SERIAL', true, true);
+				});
 			} else {
 				log.info('Found device ' + device, 'SERIAL', true, true);
 				mcopy.arduino.connect(function () {
@@ -67,13 +71,16 @@ ipcMain.on('light', function(event, arg) {
 
 var light = {};
 
-light.set = function (obj) {
+light.set = function (rgb) {
 	'use strict';
-	var str = obj.rgb.join(',');
+	var str = rgb.join(','),
+		deferred = Q.defer();
 	mcopy.arduino.send(mcopy.cfg.arduino.cmd.light, function () {
 		log.info('Light set to ' + str, 'LIGHT', true, true);
+		return deferred.resolve(mcopy.cfg.arduino.cmd.light);
 	});
 	mcopy.arduino.string(str);
+	return deferred.promise;
 };
 
 var log = {};

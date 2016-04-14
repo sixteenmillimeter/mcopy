@@ -1,10 +1,49 @@
 var remote = require('remote'),
+	fs = require('fs'),
 	uuid = require('node-uuid'),
 	ipcRenderer = require('electron').ipcRenderer,
+	mcopy = {},
 	light = {},
 	nav = {},
+	gui = {},
 	log = {};
 //console.log(ipcRenderer.sendSync('light', { 'fuck' : true }) );
+
+mcopy.cfg = JSON.parse(fs.readFileSync('./cfg.json'), 'utf8');
+
+/******
+	State shared by ALL interfaces
+*******/
+mcopy.state = {
+	version : 'alpha', //use for file compatibility check
+	camera : {
+		pos : 0,
+		direction: true
+	}, 
+	projector : {
+		pos : 0,
+		direction: true
+	},
+	sequence : {
+		size : 24,
+		arr : ['CF', 'PF'],
+		cmd : {
+			camera: mcopy.cfg.arduino.cmd.camera,
+			projector: mcopy.cfg.arduino.cmd.projector,
+			cam_direction: mcopy.cfg.arduino.cmd.cam_direction,
+			cam_direction: mcopy.cfg.arduino.cmd.proj_direction
+		},
+		pads: {
+			cam_forward: 'CF',
+			proj_forward : 'PF',
+			black_forward : 'BF',
+
+			cam_backward: 'CB',
+			proj_backward : 'PB',
+			black_backward : 'BB'
+		}
+	}
+};
 
 log.time = 'MM/DD/YY-HH:mm:ss';
 log.count = 0;
@@ -24,7 +63,6 @@ log.init = function () {
 	log.info('Started app', 'MAIN', true);
 	log.listen();
 };
-
 log.listen = function () {
 	'use strict';
 	ipcRenderer.on('log', function (event, arg) {
@@ -32,7 +70,6 @@ log.listen = function () {
 		return event.returnValue = true;
 	});
 };
-
 log.display = function (action, service, status, time) {
 	'use strict';
 	var obj = {
@@ -53,17 +90,95 @@ log.display = function (action, service, status, time) {
 	}, 100);
 	return obj;
 };
-
 log.report = function (obj) {
 	'use strict';
 	ipcRenderer.sendSync('log', obj);
 };
-
 log.info = function (action, service, status, time) {
 	'use strict';
 	var obj = log.display(action, service, status, time);
 	log.report(obj);
 	console.log(obj);
+};
+
+
+/******
+	Sequencer grid
+*******/
+gui.grid = {};
+gui.grid.layout = function () {
+	'use strict';
+	gui.grid.refresh();
+	mcopy.seq.stats();
+};
+gui.grid.state = function (i) {
+	'use strict';
+	if (mcopy.state.sequence.arr[i] !== undefined) {
+		$('input[x=' + i + ']').prop('checked', false);
+		$('.' + mcopy.state.sequence.arr[i] + '[x=' + i + ']').prop('checked', true);
+	}
+};
+gui.grid.refresh = function () {
+	'use strict';
+	var cmds = ['cam_forward', 'proj_forward', 'black_forward', 'cam_backward', 'proj_backward', 'black_backward'],
+		check = '',
+		width = 970 + ((940 / 24) * Math.abs(24 - mcopy.state.sequence.size));
+	$('#sequence').width(width + 'px');
+	for (var i = 0; i < cmds.length; i++) {
+		$('#' + cmds[i]).empty();
+		for (var x = 0; x < mcopy.state.sequence.size; x++) {
+			check = '<input type="checkbox" x="xxxx" />'.replace('xxxx', x);
+			
+			if (i === cmds.length - 1) {
+				$('#' + cmds[i]).append($('<div>').append($(check).addClass(mcopy.state.sequence.pads[cmds[i]])).append($('<div>').text(x)));
+			} else {
+				$('#' + cmds[i]).append($(check).addClass(mcopy.state.sequence.pads[cmds[i]]));
+			}
+			gui.grid.state(x);
+		}
+	}
+};
+gui.grid.click = function (t) {
+	'use strict';
+	var i = parseInt($(t).attr('x'));
+	if ($(t).prop('checked')) {
+		mcopy.log( $(t).attr('class').replace('.', ''));
+		mcopy.state.sequence.arr[i] = $(t).attr('class').replace('.', '');
+		gui.grid.state(i);
+	} else {
+		mcopy.state.sequence.arr[i] = undefined;
+		delete mcopy.state.sequence.arr[i];
+	}
+	mcopy.seq.stats();
+};
+gui.grid.clear = function () {
+	'use strict';
+	var doit = confirm('Are you sure you want to clear this sequence?');
+	if (doit) {
+		mcopy.seq.clear();
+		gui.grid.refresh();
+		mcopy.seq.stats();
+		mcopy.log('Sequencer cleared');
+	}
+};
+gui.grid.loopChange = function (t) {
+	'use strict';
+	count = parseInt(t.value);
+	mcopy.loop = count;
+	mcopy.log('Loop count set to ' + mcopy.loop);
+	mcopy.seq.stats();
+};
+gui.grid.plus_24 = function () {
+	'use strict';
+	mcopy.state.sequence.size += 24;
+	gui.grid.refresh();
+	mcopy.log('Sequencer expanded to ' + mcopy.state.sequence.size + ' steps');
+};
+gui.grid.events = function () {
+	'use strict';
+	$(document.body).on('click', 'input[type=checkbox]', function () {
+		gui.grid.click(this);
+	});
 };
 
 //LIGHT
@@ -161,20 +276,12 @@ light.init = function () {
 		}
 	});
 };
-light.lock = false;
-light.waiting = {};
 //rgb = [0,0,0]
 light.set = function (rgb) {
 	'use strict';
-	var cmd = {
-		id : uuid.v4(),
-		rgb : rgb
-	}
 	light.current = rgb;
-	console.dir(rgb);
-	ipcRenderer.sendSync('light', rgb);
+	return ipcRenderer.sendSync('light', rgb);
 };
-
 light.display = function (rgb) {
 	'use strict';
 	var str,
@@ -194,6 +301,7 @@ light.color_init = function () {
 	'use strict';
 	if (!light.color_on) {
 		$('#rgb').focus();
+		light.color_on = true;
 	}
 };
 
@@ -214,7 +322,6 @@ nav.init = function () {
 		}
 	});
 };
-
 nav.change = function (id) {
 	'use strict';
 	$('.screen').hide();
@@ -229,6 +336,7 @@ nav.change = function (id) {
 var init = function () {
 	'use strict';
 	nav.init();
+	gui.grid.layout();
 	log.init();
 	light.init();
 };

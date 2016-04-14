@@ -1,3 +1,8 @@
+html,
+body {
+  -webkit-overflow-scrolling: auto;
+  overflow-x: hidden;
+}
 input:focus {
   outline: none !important;
 }
@@ -11,6 +16,9 @@ footer {
   position: fixed;
   width: 100%;
   height: 150px;
+}
+#screens {
+  overflow-x: hidden;
 }
 .screen {
   display: none;
@@ -69,6 +77,187 @@ footer {
   margin: 0 50px;
   background-color: #000;
   float: right;
+}
+#counters .cam,
+#counters .proj {
+  width: 50%;
+  padding-bottom: 25px;
+}
+#counters .cam label,
+#counters .proj label {
+  text-align: center;
+  font-size: 24px;
+  display: block;
+}
+#counters .cam input,
+#counters .proj input {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  padding: 6px 12px;
+  font-size: 21px;
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+  font-family: monospace;
+}
+#counters .cam input.changed,
+#counters .proj input.changed {
+  color: #DAE035;
+}
+#counters .cam {
+  float: left;
+}
+#counters .proj {
+  float: right;
+}
+#seq_scroll {
+  width: 100%;
+  overflow-x: scroll;
+}
+#seq_scroll > div > div > div {
+  float: left;
+}
+#seq_scroll > div > div > div input {
+  float: none;
+}
+#seq_scroll > div > div > div > div {
+  font-size: 8px;
+  text-align: center;
+  color: #dcdcdc;
+}
+#actions {
+  padding: 20px;
+}
+#seq_stats {
+  width: 40%;
+  float: right;
+  padding: 20px;
+  margin-top: 57px;
+}
+#seq_stats span {
+  font-weight: 600;
+  float: right;
+}
+#seq_loop {
+  padding: 0 28px;
+}
+#seq_loop input {
+  font-family: monospace;
+  font-size: 23px;
+  width: 121px;
+  padding: 12px;
+}
+button {
+  display: block;
+  border-radius: 5px;
+  border: 2px solid #fff;
+  text-align: center;
+  background: transparent;
+  color: #fff;
+  padding: 8px 0;
+  font-size: 12px;
+  font-weight: 400;
+  display: inline-block;
+  padding: 4px 16px;
+  font-size: 14px;
+}
+button span {
+  display: block;
+  font-size: 16px;
+  font-weight: 200;
+}
+button:active,
+button .active {
+  background: #fff;
+  color: #322b2f;
+  outline: none;
+}
+button:focus {
+  outline: none;
+}
+#sequence {
+  width: 970px;
+  padding-bottom: 25px;
+  padding-left: 70px;
+  height: 230px;
+}
+#sequence #cam_forward,
+#sequence #proj_forward,
+#sequence #black_forward {
+  clear: both;
+}
+#sequence #cam_forward input[type=checkbox],
+#sequence #proj_forward input[type=checkbox],
+#sequence #black_forward input[type=checkbox] {
+  border: 1px solid #00C4A0;
+  margin-right: 3px;
+}
+#sequence #cam_forward input[type=checkbox]:checked,
+#sequence #proj_forward input[type=checkbox]:checked,
+#sequence #black_forward input[type=checkbox]:checked {
+  background: #00C4A0;
+}
+#sequence #cam_forward > div,
+#sequence #proj_forward > div,
+#sequence #black_forward > div {
+  color: #00C4A0;
+}
+#sequence #cam_backward,
+#sequence #proj_backward,
+#sequence #black_backward {
+  clear: both;
+}
+#sequence #cam_backward input[type=checkbox],
+#sequence #proj_backward input[type=checkbox],
+#sequence #black_backward input[type=checkbox] {
+  border: 1px solid #AB1A25;
+  margin-right: 3px;
+}
+#sequence #cam_backward input[type=checkbox]:checked,
+#sequence #proj_backward input[type=checkbox]:checked,
+#sequence #black_backward input[type=checkbox]:checked {
+  background: #AB1A25;
+}
+#sequence #cam_backward > div,
+#sequence #proj_backward > div,
+#sequence #black_backward > div {
+  color: #AB1A25;
+}
+#sequence #cam_backward {
+  margin-top: 15px;
+}
+#sequence input[type=checkbox] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  outline: none;
+  display: block;
+  width: 35px;
+  height: 35px;
+  border-radius: 5px;
+  margin: 0;
+  margin-bottom: 3px;
+  float: left;
+  box-sizing: border-box;
+}
+#sequence input.h {
+  border-color: #DAE035 !important;
+}
+#sequence input.h:checked {
+  background: #DAE035 !important;
+}
+#sequence #numbers {
+  clear: both;
+}
+#sequence #numbers > div {
+  width: 35px;
+  color: #fff;
+  font-family: monospace;
+  float: left;
+  margin: 3px;
+  text-align: center;
+  opacity: 0.5;
 }
 .cp-app {
   position: relative !important;

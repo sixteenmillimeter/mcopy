@@ -115,6 +115,30 @@ mcopy.arduino.connect = function (callback) {
 	});
 };
 
+mcopy.arduino.fakeConnect = function (callback) {
+	console.log('Connecting to fake arduino...');
+	mcopy.arduino.serial = {
+		write : function (cmd, res) {
+			var t = {
+				c : mcopy.cfg.arduino.cam.time + mcopy.cfg.arduino.cam.delay,
+				p : mcopy.cfg.arduino.proj.time + mcopy.cfg.arduino.proj.delay
+			},
+			timeout = t[cmd];
+			if (typeof timeout === 'undefined') timeout = 500;
+			mcopy.arduino.timer = +new Date();
+			setTimeout(function () {
+				mcopy.arduino.end(cmd);
+			}, timeout);
+		}, 
+		string : function (str) {
+			//do nothing
+			return true;
+		}
+	};
+	console.log('Connected to fake arduino! Not real! Doesn\'t exist!');
+	if (callback) callback();
+};
+
 if (typeof module !== 'undefined' && module.parent) {
 	module.exports = function (cfg) {
 		mcopy.cfg = cfg;
