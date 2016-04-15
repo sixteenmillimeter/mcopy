@@ -35,15 +35,15 @@ var init = function () {
 	log.init();
 	arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg);
 	setTimeout(function () {
-		mcopy.arduino.init(function (err, device) {
+		arduino.init(function (err, device) {
 			if (err) {
 				log.info(err, 'SERIAL', false, true);
-				mcopy.arduino.fakeConnect(function () {
+				arduino.fakeConnect(function () {
 					log.info('Connected to fake USB device', 'SERIAL', true, true);
 				});
 			} else {
 				log.info('Found device ' + device, 'SERIAL', true, true);
-				mcopy.arduino.connect(function () {
+				arduino.connect(function () {
 					log.info('Connected to device ' + device, 'SERIAL', true, true);
 				});
 			}
