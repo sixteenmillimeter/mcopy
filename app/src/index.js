@@ -9,7 +9,7 @@ var remote = require('remote'),
 	log = {};
 //console.log(ipcRenderer.sendSync('light', { 'fuck' : true }) );
 
-mcopy.cfg = JSON.parse(fs.readFileSync('./cfg.json'), 'utf8');
+mcopy.cfg = JSON.parse(fs.readFileSync('./data/cfg.json'), 'utf8');
 
 /******
 	State shared by ALL interfaces
@@ -109,7 +109,7 @@ gui.grid = {};
 gui.grid.layout = function () {
 	'use strict';
 	gui.grid.refresh();
-	mcopy.seq.stats();
+	//mcopy.seq.stats();
 };
 gui.grid.state = function (i) {
 	'use strict';
@@ -310,7 +310,7 @@ nav.init = function () {
 	$('#toolbar').w2toolbar({
 		name: 'toolbar',
 		items: [
-			{ type: 'radio',  id: 'sequence',  group: '1', caption: 'Sequence', icon: 'fa fa-th', checked: true },
+			{ type: 'radio',  id: 'sequencer',  group: '1', caption: 'Sequencer', icon: 'fa fa-th', checked: true },
 			{ type: 'radio',  id: 'script',  group: '1', caption: 'Script', icon: 'fa fa-code' },
 			{ type: 'radio',  id: 'controls',  group: '1', caption: 'Controls', icon: 'fa fa-tasks' },
 			{ type: 'radio',  id: 'light',  group: '1', caption: 'Light', icon: 'mcopy-light' },

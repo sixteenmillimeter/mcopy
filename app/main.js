@@ -10,15 +10,30 @@ var electron = require('electron'),
 	Q = require('q'),
 	mcopy = {};
 
-mcopy.cfg = JSON.parse(fs.readFileSync('./cfg.json', 'utf8'));
-mcopy.arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg);
+mcopy.cfg = {};
+mcopy.cfgFile = './data/cfg.json';
+mcopy.cfgInit = function () {
+	if (!fs.existsSync(mcopy.cfgFile)) {
+		console.log('Using default configuration...');
+		fs.writeFileSync(mcopy.cfgFile, fs.readFileSync('./data/cfg.json.default'));
+	}
+	mcopy.cfg = JSON.parse(fs.readFileSync(mcopy.cfgFile, 'utf8'));
+};
+mcopy.cfgStore = function () {
+	var data = JSON.stringify(mcopy.cfg);
+	fs.writeFileSync(mcopy.cfgFile, data, 'utf8');
+};
+
+var arduino;
 
 var mainWindow;
 
 var init = function () {
 	'use strict';
+	mcopy.cfgInit();
 	createWindow();
 	log.init();
+	arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg);
 	setTimeout(function () {
 		mcopy.arduino.init(function (err, device) {
 			if (err) {
@@ -75,11 +90,11 @@ light.set = function (rgb) {
 	'use strict';
 	var str = rgb.join(','),
 		deferred = Q.defer();
-	mcopy.arduino.send(mcopy.cfg.arduino.cmd.light, function () {
+	arduino.send(mcopy.cfg.arduino.cmd.light, function () {
 		log.info('Light set to ' + str, 'LIGHT', true, true);
 		return deferred.resolve(mcopy.cfg.arduino.cmd.light);
 	});
-	mcopy.arduino.string(str);
+	arduino.string(str);
 	return deferred.promise;
 };
 
