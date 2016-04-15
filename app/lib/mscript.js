@@ -26,7 +26,8 @@ mscript.cmd = [
 	'BF',
 	'CB',
 	'PB',
-	'BB'
+	'BB',
+	'L'
 ];
 mscript.alts = {
 	'CF' : ['CAMERA FORWARD', 'CAM FORWARD'],
@@ -34,7 +35,8 @@ mscript.alts = {
 	'BF': ['BLACK FORWARD'],
 	'CB' : ['CAMERA BACKWARD', 'CAM BACKWARD', 'CAMERA BACK', 'CAM BACK'],
 	'PB' : ['PROJECTOR FORWARD', 'PROJ FORWARD', 'PROJECTOR BACK', 'PROJ BACK'],
-	'BB' : ['BLACK BACKWARD', 'BLACK BACK']
+	'BB' : ['BLACK BACKWARD', 'BLACK BACK'],
+	'L ' : ['LIGHT', 'COLOR', 'LAMP']
 };
 mscript.alts_unique = function alts_unique () {
 	var ids = Object.keys(mscript.alts),
@@ -70,10 +72,14 @@ mscript.interpret = function interpret (text, callback) {
 	for (var i = 0; i < lines.length; i++) {
 		lines[i] = lines[i].replace(/\t+/g, ""); //strip tabs
 		lines[i] = lines[i].trim(); //remove excess whitespace before and after command
-		two = lines[i].substring(0,2);
+		two = lines[i].substring(0, 2);
 		if (mscript.cmd.indexOf(two) !== -1) {
 			if (mscript.state.loops.length > 0) {
-				mscript.state.loops[mscript.state.rec].arr.push.apply(mscript.state.loops[mscript.state.rec].arr, mscript.str_to_arr(lines[i], two));
+				//hold generated arr in state loop array
+				mscript.state.loops[mscript.state.rec].arr
+					.push.apply(mscript.state.loops[mscript.state.rec].arr, 
+								mscript.str_to_arr(lines[i], 
+								two));
 			} else {
 				arr.push.apply(arr, mscript.str_to_arr(lines[i], two));
 			}
@@ -90,7 +96,9 @@ mscript.interpret = function interpret (text, callback) {
 				if (mscript.state.rec === 0) {
 					arr.push.apply(arr, mscript.state.loops[mscript.state.rec].arr);
 				} else if (mscript.state.rec >= 1) {
-					mscript.state.loops[mscript.state.rec - 1].arr.push.apply(mscript.state.loops[mscript.state.rec - 1].arr, mscript.state.loops[mscript.state.rec].arr);
+					mscript.state.loops[mscript.state.rec - 1].arr
+						.push.apply(mscript.state.loops[mscript.state.rec - 1].arr, 
+									mscript.state.loops[mscript.state.rec].arr);
 				}
 			}
 			mscript.state_update('END', mscript.loop_count(mscript.state.loops[mscript.state.rec].cmd));
@@ -232,7 +240,7 @@ mscript.loop_count = function loop_count (str) {
 };
 mscript.fail = function fail (reason) {
 	console.error(JSON.stringify({success: false, error: true, msg : reason}));
-	process.exit();
+	if (process) process.exit();
 };
 mscript.output = function output (data) {
 	var json = true; //default
