@@ -16,22 +16,39 @@
         <div id="counters">
           <div class="cam">
             <label>CAMERA</label>
-            <input type="number" id="seq_cam_count" class="count" value="00000" onchange="mcopy.gui.trad.counterFormat(this, mcopy.state.camera.pos);" onblur="mcopy.gui.trad.updateCam(this);" />
+            <input type="number" id="seq_cam_count" class="count" value="00000" onchange="gui.counterFormat(this, mcopy.state.camera.pos);" onblur="gui.updateCam(this);" />
           </div>
           <div class="proj">
             <label>PROJECTOR</label>
-            <input type="number" id="seq_proj_count" class="count" value="00000" onchange="mcopy.gui.trad.counterFormat(this, mcopy.state.projector.pos);" onblur="mcopy.gui.trad.updateProj(this);" />
+            <input type="number" id="seq_proj_count" class="count" value="00000" onchange="gui.counterFormat(this, mcopy.state.projector.pos);" onblur="gui.updateProj(this);" />
           </div>
         </div>
         <div id="seq_scroll">
           <div id="sequence">
             <div id="cam_forward" class="row" y="0"></div>
             <div id="proj_forward" class="row" y="1"></div>
-            <div id="black_forward" class="row" y="2"></div>
-            <div id="cam_backward" class="row" y="0"></div>
+            <div id="cam_backward" class="row spacer" y="0"></div>
             <div id="proj_backward" class="row" y="1"></div>
-            <div id="black_backward" class="row" y="2"></div>
+            <div id="light_set" class="row spacer"></div>
+            <div id="numbers" class="row"></div>
           </div>
+          <div id="seq_labels">
+            <div><span>CAM </span><i class="fa fa-plus"></i></div>
+            <div><span>PRO </span><i class="fa fa-plus"></i></div>
+
+            <div class="spacer"><span>CAM </span><i class="fa fa-minus"></i></div>
+            <div><span>PRO </span><i class="fa fa-minus"></i></div>
+
+            <div class="spacer"><span>LIGHT</span></div>
+          </div>
+        </div>
+        <div id="actions">
+          <button id="seq_run" onclick="seq.init();">RUN</button>
+          <button id="seq_stop" onclick="seq.stop(true);">STOP</button>
+          <button id="seq_clear" onclick="gui.grid.clear();">CLEAR</button>
+          <button id="seq_plus24" onclick="gui.grid.plus_24();">+ 24</button>
+          <button id="seq_mscript" onclick="gui.mscript.generate(mcopy.state.sequence.arr);">TO SCRIPT</button>
+          <input id="seq_scroll_state" type="number" min="0" value="00000" />
         </div>
         <div id="seq_stats">
           <h3>STATS</h3>
@@ -40,16 +57,9 @@
           <div class="cam_end">Camera end position: <span>00000</span></div>
           <div class="proj_end">Projector end position: <span>00000</span></div>
         </div>
-        <div id="actions">
-          <button id="seq_run" onclick="mcopy.seq.init();">RUN</button>
-          <button id="seq_stop" onclick="mcopy.seq.stop(true);">STOP</button>
-          <button id="seq_clear" onclick="mcopy.gui.grid.clear();">CLEAR</button>
-          <button id="seq_plus24" onclick="mcopy.gui.grid.plus_24();">+ 24</button>
-          <button id="seq_mscript" onclick="mcopy.gui.mscript.generate(mcopy.state.sequence.arr);">TO SCRIPT</button>
-        </div>
         <div id="seq_loop">
           <h3>LOOPS</h3>
-          <input type="number" min="1" id="seq_loop" value="00001" onchange="this.value = mcopy.fmtZero(this.value, 6); mcopy.gui.grid.loopChange(this);"/>
+          <input type="number" min="1" id="seq_loop" value="00001" onchange="this.value = gui.fmtZero(this.value, 6); gui.grid.loopChange(this);"/>
         </div>
       </div>
       <div id="script" class="screen"></div>
@@ -66,17 +76,25 @@
           </div>
         </div>
         <div id="light-status">
+          <h3>LIGHT STATUS</h3>
           <div>
             <form>
-              <span>R</span><input type="text" value="0"/><br />
-              <span>G</span><input type="text" value="0"/><br />
-              <span>B</span><input type="text" value="0"/>
+              <span>R</span><input type="text" value="0" readonly /><br />
+              <span>G</span><input type="text" value="0" readonly /><br />
+              <span>B</span><input type="text" value="0" readonly />
             </form>
             <div id="color"></div>
           </div>
-          Preview
-          <input type="checkbox" name="preview" id="preview" class="effeckt-ckbox-ios7" />
+          <div id="preview-wrap">
+            <h4><span>PREVIEW</span></h4>
+            <input type="checkbox" name="preview" id="preview" class="effeckt-ckbox-ios7" />
+          </div>
         </div>
+        <footer id="light-swatches">
+          <div id="new-swatch">
+            <i class="fa fa-plus"></i>
+          </div>
+        </footer>
       </div>
     </div>
     <script src="./js/app.js"></script>

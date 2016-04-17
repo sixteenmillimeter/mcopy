@@ -4,7 +4,7 @@
   "description": "16mm optical printer",
   "main": "main.js",
   "scripts": {
-    "start": "electron main.js"
+    "start": "gulp && electron main.js"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,7 @@
     "gulp-less": "^3.0.5"
   },
   "dependencies": {
+    "humanize-duration": "^3.7.0",
     "moment": "^2.12.0",
     "node-notifier": "^4.5.0",
     "node-uuid": "^1.4.7",

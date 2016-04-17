@@ -1,6 +1,8 @@
 var electron = require('electron'),
 	fs = require('fs'),
 	Menu = require('menu'),
+	MenuItem = require('menu-item'),
+	notifier = require('node-notifier'),
 	ipcMain = require('electron').ipcMain,
 	app = electron.app,
 	BrowserWindow = electron.BrowserWindow,
@@ -32,7 +34,9 @@ var init = function () {
 	'use strict';
 	mcopy.cfgInit();
 	createWindow();
+	//createMenu();
 	log.init();
+	light.init();
 	arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg);
 	setTimeout(function () {
 		arduino.init(function (err, device) {
@@ -52,14 +56,144 @@ var init = function () {
 };
 
 var createMenu = function () {
+	var template = [
+	  {
+	    label: 'mcopy',
+	    submenu: [
+	      {
+	        label: 'About mcopy',
+	        selector: 'orderFrontStandardAboutPanel:'
+	      },
+	      {
+	        type: 'separator'
+	      },
+	      {
+	        label: 'Services',
+	        submenu: []
+	      },
+	      {
+	        type: 'separator'
+	      },
+	      {
+	        label: 'Hide mcopy',
+	        accelerator: 'Command+H',
+	        selector: 'hide:'
+	      },
+	      {
+	        label: 'Hide Others',
+	        accelerator: 'Command+Shift+H',
+	        selector: 'hideOtherApplications:'
+	      },
+	      {
+	        label: 'Show All',
+	        selector: 'unhideAllApplications:'
+	      },
+	      {
+	        type: 'separator'
+	      },
+	      {
+	        label: 'Quit',
+	        accelerator: 'Command+Q',
+	        selector: 'terminate:'
+	      },
+	    ]
+	  },
+	  {
+	    label: 'Edit',
+	    submenu: [
+	      {
+	        label: 'Undo',
+	        accelerator: 'Command+Z',
+	        selector: 'undo:'
+	      },
+	      {
+	        label: 'Redo',
+	        accelerator: 'Shift+Command+Z',
+	        selector: 'redo:'
+	      },
+	      {
+	        type: 'separator'
+	      },
+	      {
+	        label: 'Cut',
+	        accelerator: 'Command+X',
+	        selector: 'cut:'
+	      },
+	      {
+	        label: 'Copy',
+	        accelerator: 'Command+C',
+	        selector: 'copy:'
+	      },
+	      {
+	        label: 'Paste',
+	        accelerator: 'Command+V',
+	        selector: 'paste:'
+	      },
+	      {
+	        label: 'Select All',
+	        accelerator: 'Command+A',
+	        selector: 'selectAll:'
+	      }
+	    ]
+	  },
+	  {
+	    label: 'View',
+	    submenu: [
+	      {
+	        label: 'Reload',
+	        accelerator: 'Command+R',
+	        click: function() { getCurrentWindow().reload(); }
+	      },
+	      {
+	        label: 'Toggle DevTools',
+	        accelerator: 'Alt+Command+I',
+	        click: function() { getCurrentWindow().toggleDevTools(); }
+	      },
+	    ]
+	  },
+	  {
+	    label: 'Window',
+	    submenu: [
+	      {
+	        label: 'Minimize',
+	        accelerator: 'Command+M',
+	        selector: 'performMiniaturize:'
+	      },
+	      {
+	        label: 'Close',
+	        accelerator: 'Command+W',
+	        selector: 'performClose:'
+	      },
+	      {
+	        type: 'separator'
+	      },
+	      {
+	        label: 'Bring All to Front',
+	        selector: 'arrangeInFront:'
+	      }
+	    ]
+	  },
+	  {
+	    label: 'Help',
+	    submenu: []
+	  }
+	];
 
+	menu = Menu.buildFromTemplate(template);
+
+	Menu.setApplicationMenu(menu);
 };
 
 var createWindow = function () {
 	'use strict';
-	mainWindow = new BrowserWindow({width: 800, height: 600});
+	mainWindow = new BrowserWindow({
+		width: 800, 
+		height: 600,
+		minWidth : 800,
+		minHeight : 600
+	});
 	mainWindow.loadURL('file://' + __dirname + '/index.html');
-	//mainWindow.webContents.openDevTools();
+	mainWindow.webContents.openDevTools();
 	mainWindow.on('closed', function() {
 		mainWindow = null;
 	});
@@ -68,9 +202,9 @@ var createWindow = function () {
 app.on('ready', init);
 
 app.on('window-all-closed', function () {
-	if (process.platform !== 'darwin') {
+	//if (process.platform !== 'darwin') {
 		app.quit();
-	}
+	//}
 });
 
 app.on('activate', function () {
@@ -79,23 +213,30 @@ app.on('activate', function () {
 	}
 });
 
-ipcMain.on('light', function(event, arg) {
-	light.set(arg);
-	event.returnValue = true;
-});
-
 var light = {};
-
-light.set = function (rgb) {
+light.init = function () {
 	'use strict';
-	var str = rgb.join(','),
-		deferred = Q.defer();
+	light.listen();
+};
+light.listen = function () {
+	'use strict';
+	ipcMain.on('light', function(event, arg) {
+		light.set(arg.rgb, arg.id);
+		event.returnValue = true;
+	});
+};
+light.set = function (rgb, id) {
+	'use strict';
+	var str = rgb.join(',');
 	arduino.send(mcopy.cfg.arduino.cmd.light, function () {
-		log.info('Light set to ' + str, 'LIGHT', true, true);
-		return deferred.resolve(mcopy.cfg.arduino.cmd.light);
+		light.end(rgb, id);
 	});
 	arduino.string(str);
-	return deferred.promise;
+};
+light.end = function (rgb, id) {
+	'use strict';
+	log.info('Light set to ' + rgb.join(','), 'LIGHT', true, true);
+	mainWindow.webContents.send('light', {rgb: rgb, id : id});
 };
 
 var log = {};

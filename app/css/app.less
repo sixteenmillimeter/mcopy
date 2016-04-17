@@ -8,6 +8,8 @@
 @SEQ: #3C3636;
 @SCRIPT: rgb(39, 40, 34);
 
+@INPUT_BG : rgba(255, 255, 255, 0.05);
+
 .monospace () {
 	font-family: monospace;
 }
@@ -85,6 +87,11 @@ footer{
 #light-status{
 	width: 388px;
 	float: right;
+	margin-top: -25px;
+	h3{
+		font-size: 20px;
+		text-align: center;
+	}
 	>div{
 		position: relative;
     	clear: both;
@@ -104,11 +111,91 @@ footer{
 		}
 		input[type=text]{
 			width: 40px;
+			background: @INPUT_BG;
+			color: @COMMON;
+			border: 1px solid @COMMON;
+		}
+	}
+}
+#light-swatches{
+	width: 100%;
+	.swatch{
+		cursor: pointer;
+		width: 50px;
+		height: 50px;
+		display: inline-block;
+		margin: 3px;
+		box-sizing: border-box;
+		border: 1px solid #fff;
+		&.default{
+			border-color: #9ecaed;
+    		box-shadow: 0 0 10px #9ecaed;
+		}
+	}
+	#new-swatch{
+		cursor: pointer;
+		display: inline-block;
+	    border: 1px solid rgb(255, 255, 255);
+	    width: 50px;
+	    height: 50px;
+	    margin: 3px;
+	    box-sizing: border-box;
+	    line-height: 88px;
+	    text-align: center;
+	    font-size: 22px;
+	    position: relative;
+	    opacity: 0.25;
+	    &:hover{
+	    	opacity: 0.5;
+	    }
+	    &:active{
+	    	opacity: 1;
+	    }
+	    i{
+	    	display: block; 
+	    	position: absolute;
+    		top: 14px;
+    		left: 16px;
+    		color: #fff;
+	    }
+	}
+}
+#w2ui-popup{
+	.swatch{
+		cursor: pointer;
+		width: 50px;
+		height: 50px;
+		display: inline-block;
+		margin: 3px;
+		box-sizing: border-box;
+		border: 1px solid #fff;
+		&.default{
+			border-color: #9ecaed;
+    		box-shadow: 0 0 10px #9ecaed;
+		}
+	}
+	#new-swatch{
+		display: none;
+	}
+}
+#preview-wrap{
+	margin-top: 140px;
+	h4{
+		display: inline-block;
+		margin: 0;
+		margin-left: 123px;
+		margin-right: 10px;
+		width: 81px;
+		height: 30px;
+		span{
+			display: block;
+			margin-top: 6px;
+			position: absolute;
 		}
 	}
 }
 #preview{
-	margin-top: 40px;
+	//margin-top: 40px;
 }
 #rgb{
 	border: 0;
@@ -135,7 +222,7 @@ footer{
 			display: block;
 		}
 		input{
-			background: rgba(255, 255, 255, 0.05);
+			background: @INPUT_BG;
 			color: @COMMON;
 			padding: 6px 12px;
 			font-size: 21px;
@@ -163,22 +250,36 @@ footer{
 		input{
 			float: none;
 		}
-		>div{
-			font-size: 8px;
-			text-align: center;
-			
-			color: rgb(220, 220, 220);
-		}
+	}
+}
+#numbers{
+	div{
+		font-size: 10px;
+		text-align: center;
+		color: rgb(220, 220, 220);
 	}
 }
 #actions{
-	padding: 20px 0 0 55px;
+	padding: 8px 0 0 55px;
+	input[type=number] {
+		background: @INPUT_BG;
+	    border: 2px solid @COMMON;
+	    color: @COMMON;
+	    padding: 6px;
+	    border-radius: 5px;
+	    float: right;
+	    width: 90px;
+	    margin-right: 60px;
+	}
 }
 #seq_stats{
-	width: 40%;
+	width: 50%;
 	float: right;
-	padding: 20px;
-	margin-top: 57px;
+	padding: 0 20px;
+	h3{
+		font-size: 20px;
+		margin: 12px 0 3px;
+	}
 	span{
 		font-weight: 600;
 		float: right;
@@ -187,12 +288,20 @@ footer{
 	}
 }
 #seq_loop{
+	width: 40%;
+	float: left;
 	padding: 0 28px;
+	h3{
+		font-size: 20px;
+		margin: 12px 0 3px;
+	}
 	input{
 		.monospace();
-		font-size: 23px;
+		background: @INPUT_BG;
+    	color: @COMMON;
+    	font-size: 21px;
 		width: 121px;
-		padding: 12px;
+		padding: 6px 12px;
 	}
 }
 button{
@@ -207,16 +316,14 @@ button{
 }
 #sequence{
 	width: 970px;
-	padding-bottom: 25px;
+	padding-bottom: 21px;
 	padding-left: 70px;
-	height: 230px;
 	#cam_forward,
 	#proj_forward,
 	#black_forward{
 		clear: both;
 		input[type=checkbox]{
 			border: 1px solid @FORWARD;
-			margin-right: 3px;
 			&:checked{
 				background: @FORWARD;
 				//background: radial-gradient(circle at 25px 25px, #00C4A0, #343434);
@@ -232,7 +339,6 @@ button{
 		clear: both;
 		input[type=checkbox]{
 			border: 1px solid @BACKWARD;
-			margin-right: 3px;
 			&:checked{
 				background: @BACKWARD;
 				//background: radial-gradient(circle at 25px 25px, #AB1A25, #343434);
@@ -242,23 +348,36 @@ button{
 			color: @BACKWARD;
 		}
 	}
-	#cam_backward{
-		margin-top: 15px;
-	}
 	input[type=checkbox]{
 		-webkit-appearance: none;
 		-moz-appearance: none;
 		appearance: none;
 		background: transparent;
 		outline: none;
-		display: block;
 		width: 35px;
 		height: 35px;
 		border-radius: 5px;
 		margin: 0;
 		margin-bottom: 3px;
-		float: left;
+		margin-right: 3px;
+    	display: inline-block;
 		box-sizing: border-box;
+		cursor: pointer;
+	}
+	.L{
+		display: inline-block;
+		width: 35px;
+		height: 35px;
+		border-radius: 35px;
+		margin: 0;
+		margin-bottom: 3px;
+		margin-right: 3px;
+		border: 1px solid @COMMON;
+		opacity: 0.5;
+		cursor: pointer;
+		&.a{
+			opacity: 1;
+		}
 	}
 	input.h{
 		//background: @SELECTED !important;
@@ -274,11 +393,36 @@ button{
 			color: @COMMON;
 			font-family: monospace;
 			float: left;
-			margin: 3px;
+			margin-right: 3px;
 			text-align: center;
 			opacity: 0.5;
+			&.h{
+				color: @SELECTED;
+				opacity: 1;
+			}
 		}
 	}
+}
+#seq_labels{
+	.monospace();
+	background-color: #272b30;
+	position: absolute;
+	top: 128px;
+	padding-top: 2px;
+	padding-bottom: 15px;
+	width: 54px;
+	div{
+		height: 43px;
+		line-height: 35px;
+	}
+	span{
+		text-indent: 7px;
+    	display: inline-block;
+    	margin-right: 5px;
+	}
+}
+.spacer{
+	margin-top: 15px;
 }
 
 .cp-app{

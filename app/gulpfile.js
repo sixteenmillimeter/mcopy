@@ -5,6 +5,7 @@ var gulp = require('gulp'),
 var scripts = [
 	'./src/jquery-1.11.3.min.js',
 	'./src/jquery-electron-fix.js',
+	'./src/jquery.contextMenu.min.js',
 	'./src/w2ui-1.4.3.min.js',
 	'./src/moment.min.js',
 	'./src/colors.js',
