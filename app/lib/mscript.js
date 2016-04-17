@@ -4,6 +4,7 @@ var fs,
 var mscript = {};
 
 mscript.arg = function arg (shrt, lng) {
+	'use strict';
 	if (process.argv.indexOf(shrt) !== -1 ||
 		process.argv.indexOf(lng) !== -1) {
 		return true;
@@ -12,6 +13,7 @@ mscript.arg = function arg (shrt, lng) {
 };
 
 mscript.arg_pos = function arg_pos (shrt, lng) {
+	'use strict';
 	var pos = -1;
 	pos = process.argv.indexOf(shrt);
 	if (pos === -1) {
@@ -39,6 +41,7 @@ mscript.alts = {
 	'L ' : ['LIGHT', 'COLOR', 'LAMP']
 };
 mscript.alts_unique = function alts_unique () {
+	'use strict';
 	var ids = Object.keys(mscript.alts),
 		all = [];
 	for (var i = 0; i < ids.length; i++) {
@@ -51,6 +54,7 @@ mscript.alts_unique = function alts_unique () {
 };
 mscript.state = {};
 mscript.state_clear = function state_clear () {
+	'use strict';
 	mscript.state = {
 		cam : 0,
 		proj : 0,
@@ -59,6 +63,7 @@ mscript.state_clear = function state_clear () {
 	};
 };
 mscript.interpret = function interpret (text, callback) {
+	'use strict';
 	mscript.state_clear();
 	if (typeof text === 'undefined') {
 		mscript.fail('No input');
@@ -163,14 +168,15 @@ mscript.interpret = function interpret (text, callback) {
 	}
 };
 mscript.last_loop = function last_loop () {
-
+	'use strict';
 	return mscript.state.loops[mscript.state.loops.length - 1];
 };
 mscript.parent_loop = function parent_loop () {
-
+	'use script';
 	return mscript.state.loops[mscript.state.loops.length - 2];
 };
 mscript.state_update = function state_update (cmd, val) {
+	'use strict';
 	if (cmd === 'END') {
 		for (var i = 0; i < val; i++) {
 			if (mscript.state.rec === 0) {
@@ -220,6 +226,7 @@ mscript.state_update = function state_update (cmd, val) {
 	}
 };
 mscript.str_to_arr = function str_to_arr (str, cmd) {
+	'use strict';
 	var cnt = str.split(cmd),
 		c = parseInt(cnt[1]),
 		arr = [];
@@ -235,14 +242,16 @@ mscript.str_to_arr = function str_to_arr (str, cmd) {
 	return arr;
 };
 mscript.loop_count = function loop_count (str) {
-
+	'use strict';
 	return parseInt(str.split('LOOP ')[1]);
 };
 mscript.fail = function fail (reason) {
+	'use strict';
 	console.error(JSON.stringify({success: false, error: true, msg : reason}));
 	if (process) process.exit();
 };
 mscript.output = function output (data) {
+	'use strict';
 	var json = true; //default
 	if (mscript.arg('-j', '--json')) {
 		json = true;
@@ -262,6 +271,7 @@ mscript.output = function output (data) {
 	}
 };
 mscript.init = function init () {
+	'use strict';
 	if (mscript.arg('-t', '--tests')) {
 		return mscript.tests();
 	}
@@ -291,6 +301,7 @@ mscript.init = function init () {
 };
 
 mscript.tests = function tests () {
+	'use strict';
 	console.log('Running mscript tests');
 	console.time('Tests took');
 
@@ -364,6 +375,8 @@ mscript.tests = function tests () {
 			fail(script, obj);
 		}
 	});
+
+	//Lighting tests
 
 	console.log('All tests completed');
 	console.timeEnd('Tests took');
