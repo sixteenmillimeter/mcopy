@@ -363,8 +363,8 @@ gui.info = function (title, message) {
 	var config = {
 		type : 'info',
 		buttons : ['Ok'],
-		title: 'Sometitle',
-		message : 'some message'
+		title: title,
+		message : message
 	};
 	dialog.showMessageBox(config);
 	/*
@@ -380,6 +380,16 @@ gui.info = function (title, message) {
 	*/
 };
 gui.confirm = function () {};
+gui.warn = function (title, message) {
+	'use strict';
+	var config = {
+		type : 'warning',
+		buttons : ['Ok'],
+		title: title,
+		message : message
+	};
+	dialog.showMessageBox(config);
+};
 gui.error = function () {};
 
 /******
@@ -503,10 +513,9 @@ gui.grid.blackout = function (t) {
 		gui.grid.setLight(i, [0, 0, 0]);
 	}	
 };
-gui.grid.changeAll = function () {
+gui.grid.changeAll = function (rgb) {
 	'use strict';
-	var rgb = $('.w2ui-msg-body .default').attr('color').split(','),
-		i;
+	var i;
 	for (i = 0; i < mcopy.state.sequence.arr.length; i++) {
 		if (mcopy.state.sequence.arr[i] === 'CF'
 			|| mcopy.state.sequence.arr[i] === 'CB') {
@@ -522,8 +531,6 @@ gui.grid.swatches = function (x) {
 		body    : $('#light-swatches').html(),
 		buttons : '<button id="sequencer-ok" class="btn btn-default">Ok</button> <button id="sequencer-changeall" class="btn btn-warning">Change All</button> <button id="sequencer-cancel" class="btn btn-default">Cancel</button>',
 		onClose : function () {
-			
-			//
 		}
 	});
 	$('.w2ui-msg-body .swatch').removeClass('default set');
@@ -533,17 +540,28 @@ gui.grid.swatches = function (x) {
 		gui.grid.swatchesElem.close();
 	});
 	$('#sequencer-changeall').on('click', function () {
-		var doit = confirm('You sure you want to change all light settings?');
-		if (doit) {
-			gui.grid.changeAll();
+		var doit = confirm('You sure you want to change all light settings?'),
+			elem = $('.w2ui-msg-body .default'),
+			rgb;
+		if (doit && elem.length > 0) {
+			rgb = elem.attr('color').split(',');
+			gui.grid.changeAll(rgb);
 			gui.grid.swatchesElem.close();
+		} else if (doit && elem.length === 0) {
+			gui.warn('Select Color', 'Please select a color to proceed.');
 		}
 	});
 	$('#sequencer-ok').on('click', function () {
-		var rgb = $('.w2ui-msg-body .default').attr('color').split(',');
-		gui.grid.setLight(x, rgb);
-		light.color = rgb;
-		gui.grid.swatchesElem.close();
+		var elem =  $('.w2ui-msg-body .default'),
+			rgb;
+		if (elem.length > 0) {
+			rgb = elem.attr('color').split(',');
+			gui.grid.setLight(x, rgb);
+			light.color = rgb;
+			gui.grid.swatchesElem.close();
+		} else {
+			gui.warn('Select Color', 'Please select a color to proceed.');
+		}
 	});
 };
 gui.grid.scrollTo = function (i) {
