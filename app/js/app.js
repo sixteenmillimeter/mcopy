@@ -2464,8 +2464,10 @@ var remote = require('remote'),
 	mcopy = {},
 	light = {},
 	proj = {},
+	cam = {},
 	nav = {},
 	seq = {},
+	cmd = {},
 	gui = {},
 	log = {};
 //console.log(ipcRenderer.sendSync('light', { 'fuck' : true }) );
@@ -2547,11 +2549,12 @@ log.display = function (action, service, status, time) {
 		obj.time = moment().format(log.time);
 	}
 	w2ui['log'].add(obj);
-	setTimeout(function () {
-		$('#grid_log_table').animate({ 
-			scrollTop: $('#grid_log_table').prop('scrollHeight')
-		}, 100);
-	}, 100);
+	if (nav.active === 'controls') {
+		w2ui['log'].scrollIntoView(log.count - 1);
+		w2ui['log'].selectNone();
+		w2ui['log'].select(log.count - 1);
+	}
+	
 	return obj;
 };
 log.report = function (obj) {
@@ -2720,9 +2723,28 @@ seq.clear = function () {
 	mcopy.state.sequence.arr = [];
 };
 
+
+//mcopy.gui.updateState();
+
+cmd.proj_forward = function (callback) {
+	var res = function (ms) {
+		//mcopy.gui.updateState();
+		if (callback) { callback(); }
+	};
+	if (!mcopy.state.projector.direction) {
+		proj.set(true, function (ms) {
+			setTimeout(function () {
+				proj.move(res);
+			}, mcopy.cfg.arduino.serialDelay);
+		});
+	} else {
+		setTimeout(function () {
+			proj.move(res);
+		}, mcopy.cfg.arduino.serialDelay);
+	}
+};
 /*
-mcopy.cmd = {};
-mcopy.cmd.cam_forward = function (callback) {
+cmd.cam_forward = function (callback) {
 	var res = function (ms) {
 		mcopy.state.camera.pos++;
 		//gui action
@@ -2745,7 +2767,7 @@ mcopy.cmd.cam_forward = function (callback) {
 		}, mcopy.cfg.arduino.serialDelay);
 	}
 };
-mcopy.cmd.cam_backward = function (callback) {
+cmd.cam_backward = function (callback) {
 	var res = function (ms) {
 		mcopy.state.camera.pos--;
 		//gui action
@@ -2766,30 +2788,8 @@ mcopy.cmd.cam_backward = function (callback) {
 		mcopy.arduino.send(mcopy.cfg.arduino.cmd.camera, res);
 	}
 };
-mcopy.cmd.proj_forward = function (callback) {
-	var res = function (ms) {
-		mcopy.state.projector.pos++;
-		mcopy.gui.updateState();
-		mcopy.log('Projector moved +1 frame to ' + mcopy.state.projector.pos);
-		//gui action
-		if (callback) { callback(); }
-	};
-	if (!mcopy.state.projector.direction) {
-		mcopy.log('Advancing projector...');
-		mcopy.arduino.send(mcopy.cfg.arduino.cmd.proj_forward, function (ms) {
-			mcopy.state.projector.direction = true;
-			mcopy.gui.trad.updateDir({value:'proj_forward'});
-			setTimeout(function () {
-				mcopy.arduino.send(mcopy.cfg.arduino.cmd.projector, res);
-			}, mcopy.cfg.arduino.serialDelay);
-		});
-	} else {
-		setTimeout(function () {
-			mcopy.arduino.send(mcopy.cfg.arduino.cmd.projector, res);
-		}, mcopy.cfg.arduino.serialDelay);
-	}
-};
-mcopy.cmd.proj_backward = function (callback) {
+
+cmd.proj_backward = function (callback) {
 	var res = function (ms) {
 		mcopy.state.projector.pos--;
 		mcopy.gui.updateState();
@@ -2811,52 +2811,7 @@ mcopy.cmd.proj_backward = function (callback) {
 		}, mcopy.cfg.arduino.serialDelay);
 	}
 };
-mcopy.cmd.black_forward = function (callback) {
-	var res = function (ms) {
-		mcopy.state.camera.pos++;
-		mcopy.gui.updateState();
-		//gui action
-		mcopy.log('Camera moved +1 BLACK frame to ' + mcopy.state.camera.pos);
-		if (callback) { callback(); }
-	};
-	if (!mcopy.state.camera.direction) {
-		mcopy.log('Advancing camera...');
-		mcopy.arduino.send(mcopy.cfg.arduino.cmd.cam_forward, function (ms) {
-			mcopy.state.camera.direction = true;
-			setTimeout(function () {
-				//black
-				mcopy.arduino.send(mcopy.cfg.arduino.cmd.black, res);
-			}, mcopy.cfg.arduino.serialDelay);
-		});
-	} else {
-		setTimeout(function () {
-			//black
-			mcopy.arduino.send(mcopy.cfg.arduino.cmd.black, res);
-		}, mcopy.cfg.arduino.serialDelay);
-	}
-};
-mcopy.cmd.black_backward = function (callback) {
-	var res = function (ms) {
-		mcopy.state.camera.pos--;
-		mcopy.gui.updateState();
-		//gui action
-		mcopy.log('Camera moved -1 BLACK frame to ' + mcopy.state.camera.pos);
-		if (callback) { callback(); }
-	};
-	if (mcopy.state.camera.direction) {
-		mcopy.log('Rewinding camera...');
-		mcopy.arduino.send(mcopy.cfg.arduino.cmd.cam_backward, function (ms) {
-			mcopy.state.camera.direction = false;
-			setTimeout(function () {
-				//black
-				mcopy.arduino.send(mcopy.cfg.arduino.cmd.black, res);
-			}, mcopy.cfg.arduino.serialDelay);
-		});
-	} else {
-		//black
-		mcopy.arduino.send(mcopy.cfg.arduino.cmd.black, res);
-	}
-};*/
+*/
 
 proj.queue = {};
 proj.lock = false;
@@ -2925,6 +2880,77 @@ proj.listen = function () {
 	'use strict';
 	ipcRenderer.on('proj', function (event, arg) {
 		proj.end(arg.cmd, arg.id);		
+		return event.returnValue = true;
+	});
+};
+
+cam.queue = {};
+cam.lock = false;
+cam.init = function () {
+	'use strict';
+	cam.listen();
+};
+cam.set = function (dir, callback) {
+	'use strict';
+	var obj;
+	if (cam.lock) {
+		return false;
+	}
+	obj = {
+		dir : dir,
+		id : uuid.v4()
+	};
+	ipcRenderer.sendSync('cam', obj);
+
+	if (typeof callback !== 'undefined') {
+		obj.callback = callback;
+	}
+	cam.queue[obj.id] = obj;
+	cam.lock = true;
+};
+cam.move = function (callback) {
+	'use strict';
+	var obj;
+	if (cam.lock) {
+		return false;
+	}
+	obj = {
+		frame : true,
+		id : uuid.v4()
+	};
+	ipcRenderer.sendSync('cam', obj);
+
+	if (typeof callback !== 'undefined') {
+		obj.callback = callback;
+	}
+	cam.queue[obj.id] = obj;
+	cam.lock = true;
+};
+cam.end = function (cmd, id) {
+	'use strict';
+	if (cmd === mcopy.cfg.arduino.cmd.cam_forward) {
+		mcopy.state.camera.direction = true;
+	} else if (cmd === mcopy.cfg.arduino.cmd.cam_backward) {
+		mcopy.state.camera.direction = false;
+	} else if (cmd === mcopy.cfg.arduino.cmd.camera) {
+		if (mcopy.state.camera.direction) {
+			mcopy.state.camera.pos += 1;
+		} else {
+			mcopy.state.camera.pos -= 1;
+		}
+	}
+	if (typeof cam.queue[id] !== 'undefined') {
+		if (typeof cam.queue[id].callback !== 'undefined') {
+			cam.queue[id].callback();
+		}
+		delete cam.queue[id];
+		cam.lock = false;
+	}
+};
+cam.listen = function () {
+	'use strict';
+	ipcRenderer.on('cam', function (event, arg) {
+		cam.end(arg.cmd, arg.id);		
 		return event.returnValue = true;
 	});
 };
@@ -3628,6 +3654,7 @@ gui.grid.events = function () {
 };
 
 //NAV GUI
+nav.active = 'sequencer';
 nav.init = function () {
 	'use strict';
 	$('#toolbar').w2toolbar({
@@ -3647,10 +3674,14 @@ nav.init = function () {
 };
 nav.change = function (id) {
 	'use strict';
+	nav.active = id;
 	$('.screen').hide();
 	$('#' + id).show();
 	if (id === 'controls') {
 		w2ui['log'].resize();
+		w2ui['log'].scrollIntoView(log.count - 1);
+		w2ui['log'].selectNone();
+		w2ui['log'].select(log.count - 1);
 	} else if (id === 'light') {
 		if (w2ui['colors'].active === 'rgb') {
 			light.rgb.set(light.color);
@@ -3665,4 +3696,5 @@ var init = function () {
 	log.init();	
 	light.init();
 	proj.init();
+	cam.init();
 };

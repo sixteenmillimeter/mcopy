@@ -10,7 +10,8 @@ var electron = require('electron'),
 	winston = require('winston'),
 	moment = require('moment'),
 	Q = require('q'),
-	mcopy = {};
+	mcopy = {},
+	arduino;
 
 mcopy.cfg = {};
 mcopy.cfgFile = './data/cfg.json';
@@ -26,8 +27,6 @@ mcopy.cfgStore = function () {
 	fs.writeFileSync(mcopy.cfgFile, data, 'utf8');
 };
 
-var arduino;
-
 var mainWindow;
 
 var init = function () {
@@ -38,6 +37,7 @@ var init = function () {
 	log.init();
 	light.init();
 	proj.init();
+	cam.init();
 
 	arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg);
 	setTimeout(function () {
@@ -258,14 +258,14 @@ proj.set = function (dir, id) {
 		cmd = mcopy.cfg.arduino.cmd.proj_backward;
 	}
 	proj.state.dir = dir;
-	arduino.send(cmd, function () {
-		proj.end(cmd, id);
+	arduino.send(cmd, function (ms) {
+		proj.end(cmd, id, ms);
 	});
 };
 proj.move = function (frame, id) {
 	'use strict';
-	arduino.send(mcopy.cfg.arduino.cmd.projector, function () {
-		proj.end(mcopy.cfg.arduino.cmd.projector, id);
+	arduino.send(mcopy.cfg.arduino.cmd.projector, function (ms) {
+		proj.end(mcopy.cfg.arduino.cmd.projector, id, ms);
 	});
 };
 proj.listen = function () {
@@ -279,7 +279,8 @@ proj.listen = function () {
 		event.returnValue = true;
 	});
 };
-proj.end = function (cmd, id) {
+proj.end = function (cmd, id, ms) {
+	'use strict';
 	var message = '';
 	if (cmd === mcopy.cfg.arduino.cmd.proj_forward) {
 		message = 'Projector set to FORWARD';
@@ -295,7 +296,65 @@ proj.end = function (cmd, id) {
 		message += ' 1 frame';
 	}
 	log.info(message, 'PROJ', true, true);
-	mainWindow.webContents.send('proj', {cmd: cmd, id : id});
+	mainWindow.webContents.send('proj', {cmd: cmd, id : id, ms: ms});
+};
+
+var cam = {};
+cam.state = {
+	dir : true //default dir
+};
+cam.init = function () {
+	'use strict';
+	cam.listen();
+};
+cam.set = function (dir, id) {
+	'use strict';
+	var cmd;
+	if (dir) {
+		cmd = mcopy.cfg.arduino.cmd.cam_forward;
+	} else {
+		cmd = mcopy.cfg.arduino.cmd.cam_backward;
+	}
+	cam.state.dir = dir;
+	arduino.send(cmd, function (ms) {
+		cam.end(cmd, id, ms);
+	});
+};
+cam.move = function (frame, id) {
+	'use strict';
+	arduino.send(mcopy.cfg.arduino.cmd.camera, function (ms) {
+		cam.end(mcopy.cfg.arduino.cmd.camera, id, ms);
+	});
+};
+cam.listen = function () {
+	'use strict';
+	ipcMain.on('cam', function (event, arg) {
+		if (typeof arg.dir !== 'undefined') {
+			cam.set(arg.dir, arg.id);
+		} else if (typeof arg.frame !== 'undefined') {
+			cam.move(arg.frame, arg.id);
+		}
+		event.returnValue = true;
+	});
+};
+cam.end = function (cmd, id, ms) {
+	'use strict';
+	var message = '';
+	if (cmd === mcopy.cfg.arduino.cmd.cam_forward) {
+		message = 'Camera set to FORWARD';
+	} else if (cmd === mcopy.cfg.arduino.cmd.cam_backward) {
+		message = 'Camera set to BACKWARD';
+	} else if (cmd === mcopy.cfg.arduino.cmd.camera) {
+		message = 'Camera ';
+		if (cam.state.dir) {
+			message += 'ADVANCED';
+		} else {
+			message += 'REWOUND'
+		}
+		message += ' 1 frame';
+	}
+	log.info(message, 'CAM', true, true);
+	mainWindow.webContents.send('cam', {cmd: cmd, id : id, ms: ms});
 };
 
 var log = {};
