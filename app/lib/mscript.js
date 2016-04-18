@@ -28,8 +28,7 @@ mscript.cmd = [
 	'BF',
 	'CB',
 	'PB',
-	'BB',
-	'L'
+	'BB'
 ];
 mscript.alts = {
 	'CF' : ['CAMERA FORWARD', 'CAM FORWARD'],
@@ -58,6 +57,7 @@ mscript.state_clear = function state_clear () {
 	mscript.state = {
 		cam : 0,
 		proj : 0,
+		color : '',
 		loops : [],
 		rec : -1
 	};
@@ -86,25 +86,37 @@ mscript.interpret = function interpret (text, callback) {
 					.push.apply(mscript.state.loops[mscript.state.rec].arr, 
 								mscript.str_to_arr(lines[i], 
 								two));
+				mscript.state.loops[mscript.state.rec].light
+					.push.apply(mscript.state.loops[mscript.state.rec].light, 
+								mscript.light_to_arr(lines[i], 
+								two));
 			} else {
 				arr.push.apply(arr, mscript.str_to_arr(lines[i], two));
+				light.push.apply(light, mscript.light_to_arr(lines[i], two))
 			}
 		} else if (lines[i].substring(0, 4) === 'LOOP') {
 			mscript.state.rec++;
 			mscript.state.loops[mscript.state.rec] = {
 				arr : [],
+				light : [],
 				cam : 0,
 				proj : 0,
 				cmd : lines[i] + ''
 			};
+		} else if (lines[i].substring(0, 2) === 'L ') {
+			mscript.light_state(lines[i]);
 		} else if (lines[i].substring(0, 3) === 'END') {
 			for (var x = 0; x < mscript.loop_count(mscript.state.loops[mscript.state.rec].cmd); x++) {
 				if (mscript.state.rec === 0) {
 					arr.push.apply(arr, mscript.state.loops[mscript.state.rec].arr);
+					light.push.apply(light, mscript.state.loops[mscript.state.rec].light);
 				} else if (mscript.state.rec >= 1) {
 					mscript.state.loops[mscript.state.rec - 1].arr
 						.push.apply(mscript.state.loops[mscript.state.rec - 1].arr, 
 									mscript.state.loops[mscript.state.rec].arr);
+					mscript.state.loops[mscript.state.rec - 1].light
+						.push.apply(mscript.state.loops[mscript.state.rec - 1].light, 
+									mscript.state.loops[mscript.state.rec].light);
 				}
 			}
 			mscript.state_update('END', mscript.loop_count(mscript.state.loops[mscript.state.rec].cmd));
@@ -119,12 +131,14 @@ mscript.interpret = function interpret (text, callback) {
 				dist = target - mscript.state.cam;
 				for (var x = 0; x < dist; x++) {
 					arr.push('BF');
+					light.push('0,0,0');
 					mscript.state_update('BF');
 				} 
 			} else {
 				dist = mscript.state.cam - target;
 				for (var x = 0; x < dist; x++) {
 					arr.push('BB');
+					light.push('0,0,0');
 					mscript.state_update('BB');
 				}
 			}
@@ -137,12 +151,14 @@ mscript.interpret = function interpret (text, callback) {
 				dist = target - mscript.state.proj;
 				for (var x = 0; x < dist; x++) {
 					arr.push('PF');
+					light.push('');
 					mscript.state_update('PF');
 				} 
 			} else {
 				dist = mscript.state.proj - target;
 				for (var x = 0; x < dist; x++) {
 					arr.push('PB');
+					light.push('');
 					mscript.state_update('PB');
 				} 
 			}
@@ -225,6 +241,8 @@ mscript.state_update = function state_update (cmd, val) {
 		} else {
 			mscript.state.loops[mscript.state.rec].cam++;
 		}		
+	} else if (cmd === 'L ') {
+
 	}
 };
 mscript.str_to_arr = function str_to_arr (str, cmd) {
@@ -240,6 +258,33 @@ mscript.str_to_arr = function str_to_arr (str, cmd) {
 	for (var i = 0; i < c; i++) {
 		arr.push(cmd);
 		mscript.state_update(cmd);
+	}
+	return arr;
+};
+mscript.light_state = function light_state (str) {
+	'use strict';
+	//add parsers for other color spaces
+	var color = str.replace('L ', '').trim();
+	mscript.state.color = color;
+};
+mscript.light_to_arr = function light_to_arr (str, cmd) {
+	var cnt = str.split(cmd),
+		c = parseInt(cnt[1]),
+		arr = [];
+	if (cnt[1] === '') {
+		c = 1;
+	} else {
+		c = parseInt(cnt[1]);
+	}
+	for (var i = 0; i < c; i++) {
+		if (cmd === 'CF'
+		|| cmd === 'CB'
+		|| cmd === 'BF'
+		|| cmd === 'BB') {
+			arr.push(mscript.state.color);
+		} else {
+			arr.push('');
+		}
 	}
 	return arr;
 };
@@ -379,6 +424,21 @@ mscript.tests = function tests () {
 	});
 
 	//Lighting tests
+	script = 'L 255,255,255\nCF\nPF';
+	console.log('Basic light test...');
+	mscript.interpret(script, function (obj) {
+		if (obj.success === true 
+			&& obj.cam === 1
+			&& obj.proj === 1
+			&& obj.arr.length === 2
+			&& obj.light.length === 2
+			&& obj.light[0] === '255,255,255'
+			&& obj.light[1] === '') {
+			console.log('...Passed!');
+		} else {
+			fail(script, obj);
+		}
+	});
 
 	console.log('All tests completed');
 	console.timeEnd('Tests took');
