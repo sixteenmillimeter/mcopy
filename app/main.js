@@ -11,11 +11,14 @@ var electron = require('electron'),
 	moment = require('moment'),
 	Q = require('q'),
 	mcopy = {},
+	mainWindow,
+	mscript,
 	arduino;
 
 mcopy.cfg = {};
 mcopy.cfgFile = './data/cfg.json';
 mcopy.cfgInit = function () {
+	'use strict';
 	if (!fs.existsSync(mcopy.cfgFile)) {
 		console.log('Using default configuration...');
 		fs.writeFileSync(mcopy.cfgFile, fs.readFileSync('./data/cfg.json.default'));
@@ -23,11 +26,10 @@ mcopy.cfgInit = function () {
 	mcopy.cfg = JSON.parse(fs.readFileSync(mcopy.cfgFile, 'utf8'));
 };
 mcopy.cfgStore = function () {
+	'use strict';
 	var data = JSON.stringify(mcopy.cfg);
 	fs.writeFileSync(mcopy.cfgFile, data, 'utf8');
 };
-
-var mainWindow;
 
 var init = function () {
 	'use strict';
@@ -40,6 +42,7 @@ var init = function () {
 	cam.init();
 
 	arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg);
+	mscript = require('./lib/mscript.js');
 	setTimeout(function () {
 		arduino.init(function (err, device) {
 			if (err) {
@@ -230,15 +233,15 @@ light.listen = function () {
 light.set = function (rgb, id) {
 	'use strict';
 	var str = rgb.join(',');
-	arduino.send(mcopy.cfg.arduino.cmd.light, function () {
-		light.end(rgb, id);
+	arduino.send(mcopy.cfg.arduino.cmd.light, function (ms) {
+		light.end(rgb, id, ms);
 	});
 	arduino.string(str);
 };
-light.end = function (rgb, id) {
+light.end = function (rgb, id, ms) {
 	'use strict';
 	log.info('Light set to ' + rgb.join(','), 'LIGHT', true, true);
-	mainWindow.webContents.send('light', {rgb: rgb, id : id});
+	mainWindow.webContents.send('light', {rgb: rgb, id : id, ms: ms});
 };
 
 var proj = {};
@@ -295,7 +298,7 @@ proj.end = function (cmd, id, ms) {
 		}
 		message += ' 1 frame';
 	}
-	log.info(message, 'PROJ', true, true);
+	log.info(message, 'PROJECTOR', true, true);
 	mainWindow.webContents.send('proj', {cmd: cmd, id : id, ms: ms});
 };
 
@@ -353,7 +356,7 @@ cam.end = function (cmd, id, ms) {
 		}
 		message += ' 1 frame';
 	}
-	log.info(message, 'CAM', true, true);
+	log.info(message, 'CAMERA', true, true);
 	mainWindow.webContents.send('cam', {cmd: cmd, id : id, ms: ms});
 };
 
