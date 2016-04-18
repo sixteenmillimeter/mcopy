@@ -6,12 +6,12 @@ boolean debug_state = false;
 
 boolean proj_dir = true; 
 
-const char cmd_debug = 'd';
-const char cmd_connect = 'i';
 const char cmd_projector = 'p';
 const char cmd_proj_forward = 'g';
 const char cmd_proj_backward = 'h';
 
+const char cmd_debug = 'd';
+const char cmd_connect = 'i';
 volatile char cmd_char = 'z';
 const int serialDelay = 5;
 
@@ -48,15 +48,19 @@ void cmd (char val) {
 
 void debug () {
   debug_state = true;
+  Serial.println(cmd_debug);
   log("debugging enabled");
 }
 
 void connect () {
+  Serial.println(cmd_connect);
   log("connect()");
 }
 
 void projector () {
-  /*Time_start();
+  /* FROM INTVAL
+   * WILL USE OPTICAL ENDSTOP
+   * Time_start();
   cam_dir = dir;
   if (cam_dir) {
     analogWrite(PIN_MOTOR_FORWARD, fwd_speed);
@@ -72,12 +76,20 @@ void projector () {
       delay(600);
   }
   micro_primed = false;*/
+  delay(1300); //TEMPORARY DELAY FOR TESTING TIMING
+  Serial.println(cmd_projector);
   log("projector()");
 }
 
 void proj_direction (boolean state) {
   proj_dir = state;
-  log("proj_direction -> " + state);
+  if (state) {
+    Serial.println(cmd_proj_forward);
+    log("proj_direction -> true");
+  } else {
+    Serial.println(cmd_proj_backward);
+    log("proj_direction -> false");
+  }
 }
 
 void log (String msg) {
