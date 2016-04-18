@@ -635,6 +635,10 @@ light.swatches = [
 		name : '5600 kelvin'
 	},
 	{
+		rgb : chroma.kelvin(6500).rgb(),
+		name : '6500 kelvin'
+	},
+	{
 		rgb : light.color,
 		set : true,
 		default : true
@@ -645,8 +649,6 @@ light.lock = false;
 light.init = function () {
 	'use strict';
 
-	light.listen();
-
 	//create dynamic style for displaying light across screens
 	light.icon = document.createElement('style');
 	light.icon.innerHTML = 'span.mcopy-light{background-color: #000;}';
@@ -654,6 +656,7 @@ light.init = function () {
 
 	light.colorPickers();
 	light.swatch.init();
+	light.listen();
 
 	light.display(light.current);
 
@@ -682,7 +685,7 @@ light.colorPickers = function () {
 			$('.colors-page').hide();
 			$('#' + event.target + '-page').show();
 			if (event.target === 'rgb') {
-				light.rgb.unlock();
+				light.rgb.page();
 			}
 		}
 	});
@@ -728,15 +731,18 @@ light.listen = function () {
 		return event.returnValue = true;
 	});
 };
-light.preview = function (rgb) { 
+light.preview = function (rgb, name) { 
 	'use strict';
 	var rgbStr;
 	rgb = light.rgb.floor(rgb);
 	rgbStr = 'rgb(' + rgb.join(',') + ')';
 	light.color = rgb;
+	if (typeof name === 'undefined') {
+		name = rgbStr;
+	}
 	$('#light-swatches .swatch.set').css('background', rgbStr)
 		.attr('color', rgb.join(','))
-		.prop('title', rgbStr);
+		.prop('title', name);
 
 	if (light.preview_state) {
 		light.display(rgb);
@@ -757,6 +763,8 @@ light.display = function (rgb) { //display light active state
 	light.icon.deleteRule(0);
 	light.icon.insertRule('span.mcopy-light{background-color: ' + str + ';}', 0)
 };
+
+//KELVIN GUI
 light.kelvin = {};
 light.kelvin.steps = 348;
 light.kelvin.min = light.kelvin.steps * 4;
@@ -791,7 +799,7 @@ light.kelvin.change = function () {
 	var val = $('#kelvin').val(),
 		rgb = chroma.kelvin(val).rgb();
 	light.kelvin.pos(val);
-	light.preview(rgb);
+	light.preview(rgb, val + ' kelvin');
 };
 light.kelvin.scale = function () {
 	'use strict';
@@ -840,16 +848,21 @@ light.kelvin.click = function (t, e) {
    	light.kelvin.set(kelvin);
 
 };
+
+//CMY GUI
 light.cmy = {};
 light.cmy.init = function () {
 	'use strict';
 
 };
+
+//RGB GUI
 light.rgb = {};
+light.rgb.elem;
 light.rgb.lock = true;
 light.rgb.init = function () {
 	'use strict';
-	var colors = jsColorPicker('#rgb', {
+	light.rgb.elem = jsColorPicker('#rgb', {
 		customBG: '#222',
 		readOnly: true,
 		size: 3,
@@ -862,12 +875,13 @@ light.rgb.init = function () {
 		convertCallback: light.rgb.change
 	});
 };
-light.rgb.unlock = function () {
+light.rgb.page = function () {
 	'use strict';
 	if (light.rgb.lock) {
 		$('#rgb').focus();
 		light.rgb.lock = false;
 	}
+	light.rgb.set(light.color);
 };
 light.rgb.change = function (colors, type) {
 	'use strict';
@@ -884,6 +898,13 @@ light.rgb.floor = function (rgb) {
 		Math.floor(rgb[1]),
 		Math.floor(rgb[2])
 	];
+};
+light.rgb.set = function (rgb) {
+	'use strict';
+	var hex = chroma.rgb(rgb).hex();
+	light.rgb.elem.current.startRender();
+	light.rgb.elem.current.setColor(hex);
+	light.rgb.elem.current.stopRender();
 };
 light.swatch = {};
 light.swatch.init = function () {
@@ -920,6 +941,9 @@ light.swatch.init = function () {
 			rgb = rgb.split(',');
 			$('#light-swatches .swatch').removeClass('default set');
 			$(this).addClass('default set');
+			if (w2ui['colors'].active === 'rgb') {
+				light.rgb.set(light.color);
+			}
 			light.preview(rgb);
 		}
 	});
@@ -958,6 +982,10 @@ nav.change = function (id) {
 	$('#' + id).show();
 	if (id === 'controls') {
 		w2ui['log'].resize();
+	} else if (id === 'light') {
+		if (w2ui['colors'].active === 'rgb') {
+			light.rgb.set(light.color);
+		}
 	}
 };
 
