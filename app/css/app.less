@@ -45,6 +45,9 @@ html, body{
 }
 
 input {
+	background: @INPUT_BG;
+	color: @COMMON;
+	border-color: @COMMON;
 	&:focus{
 		outline: none !important;
 	}
@@ -77,6 +80,58 @@ footer{
 #colors-content{
 	width: 411px;
     float: left;
+    .colors-page{
+    	display: none;
+    }
+}
+#kelvin-page{
+	h3{
+		text-align: center;
+	}
+}
+#kelvin{
+	background: @INPUT_BG;
+	color: @COMMON;
+	border: 1px solid @COMMON;
+	width: 140px;
+    font-size: 20px;
+    margin: 20px auto;
+    display: block;
+    text-align: center;
+}
+#kelvin-slider{
+	position: relative;
+	width: 352px;
+	margin: 40px auto 0;
+	padding-bottom: 2px;
+	cursor: pointer;
+}
+#kelvin-scale{
+	width: 350px;
+    height: 60px;
+	border: 1px solid @COMMON;
+    span{
+    	display: inline-block;
+    	height: 58px;
+    	width: 1px;
+    }
+}
+#kelvin-pos{
+    height: 64px;
+    border: 2px solid #000;
+    width: 5px;
+    position: absolute;
+    left: -1px;
+    top: -2px;
+    &:before{
+    	font-family:'FontAwesome';
+    	content: '\f107';
+    	position: absolute;
+    	color: #000;
+    	top: -24px;
+    	left: -8px;
+    	font-size: 27px;
+    }
 }
 .mcopy-light{
 	background: #000;

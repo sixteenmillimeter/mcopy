@@ -3072,7 +3072,6 @@ gui.grid.events = function () {
 light.preview_state = false; //light is on/off for preview viewing
 light.color = [255, 255, 255]; //default color
 light.current = [0, 0, 0]; //last sent
-light.rgb_on = false;
 light.icon = {};
 light.swatches = [
 	{
@@ -3129,70 +3128,22 @@ light.colorPickers = function () {
 	'use strict';
 	$('#colors-tabs').w2tabs({
 		name: 'colors',
-		active: 'rgb',
+		active: 'kelvin',
 		tabs: [
 			{ id: 'kelvin', caption: 'Kelvin'},
 			{ id: 'cmy', caption: 'CMY'},
 			{ id: 'rgb', caption: 'RGB' }
 		],
 		onClick: function (event) {
-			//$('#colors-content').html('Tab: ' + event.target);
+			$('.colors-page').hide();
+			$('#' + event.target + '-page').show();
+			if (event.target === 'rgb') {
+				light.rgb.unlock();
+			}
 		}
 	});
-	/*var myColorPicker = new ColorPicker({
-	    color: '', // see Colors...
-	    mode: 'rgb-b', // initial mode the color picker is starting with
-	    fps: 60, // the framerate colorPicker refreshes the display if no 'requestAnimationFrame'
-	    delayOffset: 8, // pixels offset when shifting mouse up/down inside input fields before it starts acting as slider
-	    CSSPrefix: 'cp-', // the standard prefix for (almost) all class declarations (HTML, CSS)
-	    size: 0, // one of the 4 sizes: 0 = L (large), 1 = S, 2 = XS, 3 = XXS; resize to see what happens...
-	    allMixDetails: true, // see Colors...
-	    alphaBG: 'w', // initial 3rd layer bgColor (w = white, c = custom (customBG), b = black);
-	    customBG: '#808080', // see Colors...
-	    noAlpha: true, // disable alpha input (all sliders are gone and current alpha therefore locked)
-	    cmyOnly: false, // display CMY instead of CMYK
-	    memoryColors: [], // array of colors in memory section
-	    opacityPositionRelative: undefined, // render opacity slider arrows in px or %
-	    customCSS: undefined, // if external stylesheet, internal will be ignored...
-	    appendTo: document.body, // the HTMLElement the colorPicker will be appended to on initialization
-	    noRangeBackground: false, // performance option: doesn't render backgrounds in input fields if set to false
-	    textRight: false, // not supported yet. Make numbers appear aligned right
-	    noHexButton: false, // button next to HEX input could be used for some trigger...
-	    noResize: false, // enable / disable resizing of colorPicker
-	    noRGBr: false, // active / passive button right to RGB-R display. Disables rendering of 'real' color possibilities...
-	    noRGBg: false, // same as above
-	    noRGBb: false, // same as above
-	    CSSStrength: 'div.', // not in use
-	    devPicker: false, // uses existing HTML instead of internal template for developing
-	    renderCallback: function(colors, mode){
-
-	    }, // callback on after rendering (for further rendering outside colorPicker)
-	    actionCallback: function(e, action){
-
-	    }, // callback on any action within colorPicker (buttons, sliders, ...)
-	    convertCallback: function(colors, type){
-	    	var a = colors.RND.rgb;
-	    	light.display([a.r, a.g, a.b]);
-
-	    }, // see Colors...
-	});*/
-	var colors = jsColorPicker('#rgb', {
-		customBG: '#222',
-		readOnly: true,
-		size: 3,
-		appendTo : document.getElementById('rgb-page'),
-		// patch: false,
-		init: function(elm, colors) { // colors is a different instance (not connected to colorPicker)
-			elm.style.backgroundColor = elm.value;
-			elm.style.color = colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd';
-		},
-		convertCallback: function(colors, type){
-			//console.dir(type);
-	    	var a = colors.RND.rgb,
-	    		rgb = [a.r, a.g, a.b];
-	    	light.preview(rgb);
-	    }
-	});
+	light.rgb.init();
+	light.kelvin.init();
 };
 light.set = function (rgb, callback) { //rgb = [0,0,0]
 	'use strict';
@@ -3235,7 +3186,9 @@ light.listen = function () {
 };
 light.preview = function (rgb) { 
 	'use strict';
-	var rgbStr = 'rgb(' + rgb.join(',') + ')';
+	var rgbStr;
+	rgb = light.rgb.floor(rgb);
+	rgbStr = 'rgb(' + rgb.join(',') + ')';
 	light.color = rgb;
 	$('#light-swatches .swatch.set').css('background', rgbStr)
 		.attr('color', rgb.join(','))
@@ -3250,8 +3203,8 @@ light.display = function (rgb) { //display light active state
 	'use strict';
 	var str,
 		i;
+	rgb = light.rgb.floor(rgb);
 	for (i = 0; i < 3; i++) {
-		rgb[i] = Math.floor(rgb[i]);
 		$('#light-status form input').eq(i).val(rgb[i]);
 	}
 	str = 'rgb(' + rgb.join(',') + ')';
@@ -3260,12 +3213,133 @@ light.display = function (rgb) { //display light active state
 	light.icon.deleteRule(0);
 	light.icon.insertRule('span.mcopy-light{background-color: ' + str + ';}', 0)
 };
-light.color_init = function () {
+light.kelvin = {};
+light.kelvin.steps = 348;
+light.kelvin.min = light.kelvin.steps * 4;
+light.kelvin.max = 20000;
+light.kelvin.moving = false;
+light.kelvin.init = function () {
 	'use strict';
-	if (!light.rgb_on) {
-		$('#rgb').focus();
-		light.rgb_on = true;
+	$('#kelvin').on('change', light.kelvin.change);
+	$('#kelvin').on('keypup', function (e) {
+		var code = e.keyCode || e.which;
+		if (code === 13) {
+			light.kelvin.change();
+		}
+	});
+	$('#kelvin-slider').on('mousemove', function (event) {
+		if (light.kelvin.moving) {
+			light.kelvin.click(this, event);
+		}
+	});
+	$('#kelvin-slider').on('mousedown', function (event) {
+		light.kelvin.moving = true;
+		light.kelvin.click(this, event);
+	});
+	$(document).on('mouseup', function () {
+		light.kelvin.moving = false;
+	});
+	light.kelvin.scale();
+	light.kelvin.set(5600); //default value
+};
+light.kelvin.change = function () {
+	'use strict';
+	var val = $('#kelvin').val(),
+		rgb = chroma.kelvin(val).rgb();
+	light.kelvin.pos(val);
+	light.preview(rgb);
+};
+light.kelvin.scale = function () {
+	'use strict';
+	var i,
+		min = light.kelvin.min,
+		max = light.kelvin.max,
+		steps = light.kelvin.steps,
+		rgb,
+		elem,
+		elemStr = '<span style="background: rgb(XXXX);"></span>'
+	for (i = 0; i < steps; i++) {
+		rgb = chroma.kelvin((i * ((max - min) / steps)) + min).rgb();
+		rgb = light.rgb.floor(rgb).join(',');
+		elem = $(elemStr.replace('XXXX', rgb));
+		$('#kelvin-scale').append(elem);
 	}
+};
+light.kelvin.pos = function (kelvin) {
+	'use strict';
+	var min = light.kelvin.min,
+		max = light.kelvin.max,
+		steps = light.kelvin.steps,
+		start = -1,
+		pos = Math.round((kelvin - min) / ( (max - min) / steps)) + start;
+	if (pos < start) {
+		pos = start;
+	}
+	if (pos > steps) {
+		pos = steps;
+	}
+	$('#kelvin-pos').css('left', pos + 'px');
+};
+light.kelvin.set = function (kelvin) {
+	'use strict';
+	$('#kelvin').val(kelvin);
+	light.kelvin.change();
+};
+light.kelvin.click = function (t, e) {
+	'use strict';
+	var parentOffset = $(t).parent().offset(),
+   		relX = e.pageX - parentOffset.left - 31, //?
+   		min = light.kelvin.min,
+   		max = light.kelvin.max,
+   		steps = light.kelvin.steps,
+   		kelvin = Math.round((relX * ((max - min) / steps)) + min);
+   	light.kelvin.set(kelvin);
+
+};
+light.cmy = {};
+light.cmy.init = function () {
+	'use strict';
+
+};
+light.rgb = {};
+light.rgb.lock = true;
+light.rgb.init = function () {
+	'use strict';
+	var colors = jsColorPicker('#rgb', {
+		customBG: '#222',
+		readOnly: true,
+		size: 3,
+		appendTo : document.getElementById('rgb-page'),
+		// patch: false,
+		init: function(elm, colors) { // colors is a different instance (not connected to colorPicker)
+			elm.style.backgroundColor = elm.value;
+			elm.style.color = colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd';
+		},
+		convertCallback: light.rgb.change
+	});
+};
+light.rgb.unlock = function () {
+	'use strict';
+	if (light.rgb.lock) {
+		$('#rgb').focus();
+		light.rgb.lock = false;
+	}
+};
+light.rgb.change = function (colors, type) {
+	'use strict';
+	var a = colors.RND.rgb,
+		rgb = [a.r, a.g, a.b];
+	if (!light.rgb.lock) {
+		light.preview(rgb);
+	}
+};
+light.rgb.floor = function (rgb) {
+	'use strict';
+	return [
+		Math.floor(rgb[0]),
+		Math.floor(rgb[1]),
+		Math.floor(rgb[2])
+	];
 };
 light.swatch = {};
 light.swatch.init = function () {
@@ -3277,9 +3351,7 @@ light.swatch.init = function () {
 		i,
 		x;
 	for (i = 0; i < light.swatches.length; i++) {
-		for (x = 0; x < 3; x++) {
-			light.swatches[i].rgb[x] = Math.floor(light.swatches[i].rgb[x]);
-		}
+		light.swatches[i].rgb = light.rgb.floor(light.swatches[i].rgb);
 		rgb = 'rgb(' + light.swatches[i].rgb.join(',') + ')';
 		elem = $('<div class="swatch"></div>');
 		elem.css('background', rgb);
@@ -3319,7 +3391,6 @@ light.swatch.add = function () {
 	light.preview(light.color);
 };
 
-
 nav.init = function () {
 	'use strict';
 	$('#toolbar').w2toolbar({
@@ -3341,9 +3412,7 @@ nav.change = function (id) {
 	'use strict';
 	$('.screen').hide();
 	$('#' + id).show();
-	if (id === 'light') {
-		light.color_init();
-	} else if (id === 'controls') {
+	if (id === 'controls') {
 		w2ui['log'].resize();
 	}
 };
