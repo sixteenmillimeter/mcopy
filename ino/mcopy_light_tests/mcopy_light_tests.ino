@@ -28,11 +28,10 @@ volatile int r = 0;
 volatile int g = 0;
 volatile int b = 0;
 
-const char cmd_debug = 'd';
-const char cmd_connect = 'i';
-
 const char cmd_light = 'l';
 
+const char cmd_debug = 'd';
+const char cmd_connect = 'i';
 volatile char cmd_char = 'z';
 const int serialDelay = 5;
 
