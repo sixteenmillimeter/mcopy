@@ -382,7 +382,9 @@ mscript.tests = function tests () {
 	console.timeEnd('Tests took');
 };
 
-if (typeof module !== 'undefined' && !module.parent) {
+if (typeof document === 'undefined'
+	&& typeof module !== 'undefined' 
+	&& !module.parent) {
 	//node script
 	fs = require('fs');
 	input = process.argv[2];
