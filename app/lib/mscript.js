@@ -21,7 +21,7 @@ mscript.arg_pos = function arg_pos (shrt, lng) {
 	}
 	return pos;
 };
-
+mscript.black = '0,0,0';
 mscript.cmd = [
 	'CF',
 	'PF',
@@ -39,6 +39,17 @@ mscript.alts = {
 	'BB' : ['BLACK BACKWARD', 'BLACK BACK'],
 	'L ' : ['LIGHT', 'COLOR', 'LAMP']
 };
+mscript.state = {};
+mscript.state_clear = function state_clear () {
+	'use strict';
+	mscript.state = {
+		cam : 0,
+		proj : 0,
+		color : '',
+		loops : [],
+		rec : -1
+	};
+};
 mscript.alts_unique = function alts_unique () {
 	'use strict';
 	var ids = Object.keys(mscript.alts),
@@ -50,17 +61,6 @@ mscript.alts_unique = function alts_unique () {
 			mscript.fail("Can't compile");
 		}
 	}
-};
-mscript.state = {};
-mscript.state_clear = function state_clear () {
-	'use strict';
-	mscript.state = {
-		cam : 0,
-		proj : 0,
-		color : '',
-		loops : [],
-		rec : -1
-	};
 };
 mscript.interpret = function interpret (text, callback) {
 	'use strict';
@@ -80,6 +80,7 @@ mscript.interpret = function interpret (text, callback) {
 		lines[i] = lines[i].trim(); //remove excess whitespace before and after command
 		two = lines[i].substring(0, 2);
 		if (mscript.cmd.indexOf(two) !== -1) {
+
 			if (mscript.state.loops.length > 0) {
 				//hold generated arr in state loop array
 				mscript.state.loops[mscript.state.rec].arr
@@ -94,6 +95,7 @@ mscript.interpret = function interpret (text, callback) {
 				arr.push.apply(arr, mscript.str_to_arr(lines[i], two));
 				light.push.apply(light, mscript.light_to_arr(lines[i], two))
 			}
+
 		} else if (lines[i].substring(0, 4) === 'LOOP') {
 			mscript.state.rec++;
 			mscript.state.loops[mscript.state.rec] = {
@@ -123,44 +125,74 @@ mscript.interpret = function interpret (text, callback) {
 			delete mscript.state.loops[mscript.state.rec];
 			mscript.state.rec--;
 		} else if (lines[i].substring(0, 3) === 'CAM') { //directly go to that frame (black?)
-			if (mscript.state.loops.length > 0) { 
-				mscript.fail('Cannot go to absolute camera frame within a loop... yet.'); 
-			}
 			target = parseInt(lines[i].split('CAM ')[1]);
-			if (target > mscript.state.cam) {
-				dist = target - mscript.state.cam;
-				for (var x = 0; x < dist; x++) {
-					arr.push('BF');
-					light.push('0,0,0');
-					mscript.state_update('BF');
-				} 
+			if (mscript.state.loops.length > 0) {
+				if (target > mscript.state.cam) {
+					dist = target - mscript.state.cam;
+					for (var x = 0; x < dist; x++) {
+						mscript.state.loops[mscript.state.rec].arr.push('BF');
+						mscript.state.loops[mscript.state.rec].light.push(mscript.black);
+						mscript.state_update('BF');
+					} 
+				} else {
+					dist = mscript.state.cam - target;
+					for (var x = 0; x < dist; x++) {
+						mscript.state.loops[mscript.state.rec].arr.push('BB');
+						mscript.state.loops[mscript.state.rec].light.push(mscript.black);
+						mscript.state_update('BB');
+					}
+				}
 			} else {
-				dist = mscript.state.cam - target;
-				for (var x = 0; x < dist; x++) {
-					arr.push('BB');
-					light.push('0,0,0');
-					mscript.state_update('BB');
+				if (target > mscript.state.cam) {
+					dist = target - mscript.state.cam;
+					for (var x = 0; x < dist; x++) {
+						arr.push('BF');
+						light.push(mscript.black);
+						mscript.state_update('BF');
+					} 
+				} else {
+					dist = mscript.state.cam - target;
+					for (var x = 0; x < dist; x++) {
+						arr.push('BB');
+						light.push(mscript.black);
+						mscript.state_update('BB');
+					}
 				}
 			}
 		} else if (lines[i].substring(0, 4) === 'PROJ') { //directly go to that frame
-			if (mscript.state.loops.length > 0) { 
-				mscript.fail('Cannot go to absolute projector frame within a loop... yet.'); 
-			}
 			target = parseInt(lines[i].split('PROJ ')[1]);
-			if (target > mscript.state.proj) {
-				dist = target - mscript.state.proj;
-				for (var x = 0; x < dist; x++) {
-					arr.push('PF');
-					light.push('');
-					mscript.state_update('PF');
-				} 
+			if (mscript.state.loops.length > 0) {
+				if (target > mscript.state.proj) {
+					dist = target - mscript.state.proj;
+					for (var x = 0; x < dist; x++) {
+						mscript.state.loops[mscript.state.rec].arr.push('PF');
+						mscript.state.loops[mscript.state.rec].light.push('');
+						mscript.state_update('PF');
+					} 
+				} else {
+					dist = mscript.state.proj - target;
+					for (var x = 0; x < dist; x++) {
+						mscript.state.loops[mscript.state.rec].arr.push('PB');
+						mscript.state.loops[mscript.state.rec].light.push('');
+						mscript.state_update('PB');
+					} 
+				}
 			} else {
-				dist = mscript.state.proj - target;
-				for (var x = 0; x < dist; x++) {
-					arr.push('PB');
-					light.push('');
-					mscript.state_update('PB');
-				} 
+				if (target > mscript.state.proj) {
+					dist = target - mscript.state.proj;
+					for (var x = 0; x < dist; x++) {
+						arr.push('PF');
+						light.push('');
+						mscript.state_update('PF');
+					} 
+				} else {
+					dist = mscript.state.proj - target;
+					for (var x = 0; x < dist; x++) {
+						arr.push('PB');
+						light.push('');
+						mscript.state_update('PB');
+					} 
+				}
 			}
 		} else if (lines[i].substring(0, 3) === 'SET') { //set that state
 			if (lines[i].substring(0, 7) === 'SET CAM') {
@@ -278,10 +310,11 @@ mscript.light_to_arr = function light_to_arr (str, cmd) {
 	}
 	for (var i = 0; i < c; i++) {
 		if (cmd === 'CF'
-		|| cmd === 'CB'
-		|| cmd === 'BF'
-		|| cmd === 'BB') {
+		 || cmd === 'CB') {
 			arr.push(mscript.state.color);
+		} else if (cmd === 'BF'
+				|| cmd === 'BB') {
+			arr.push(mscript.black);
 		} else {
 			arr.push('');
 		}
@@ -439,6 +472,53 @@ mscript.tests = function tests () {
 			fail(script, obj);
 		}
 	});
+	script = 'L 255,255,255\nCF\nPF\nBF';
+	console.log('Basic black test...');
+	mscript.interpret(script, function (obj) {
+		if (obj.success === true 
+			&& obj.cam === 2
+			&& obj.proj === 1
+			&& obj.arr.length === 3
+			&& obj.light.length === 3
+			&& obj.light[0] === '255,255,255'
+			&& obj.light[1] === ''
+			&& obj.light[2] === mscript.black) {
+			console.log('...Passed!');
+		} else {
+			fail(script, obj);
+		}
+	});
+	script = 'LOOP 2\nL 1,1,1\nCF\nL 2,2,2\nCF\nEND';
+	console.log('Basic light loop test...');
+	mscript.interpret(script, function (obj) {
+		if (obj.success === true 
+			&& obj.cam === 4
+			&& obj.proj === 0
+			&& obj.arr.length === 4
+			&& obj.light.length === 4
+			&& obj.light[0] === '1,1,1'
+			&& obj.light[3] === '2,2,2') {
+			console.log('...Passed!');
+		} else {
+			fail(script, obj);
+		}
+	});
+
+	//LOOP W/ CAM and PROJ
+	script = 'LOOP 2\nCAM 4\nPROJ 4\nEND';
+	console.log('Basic cam/proj loop test...');
+	mscript.interpret(script, function (obj) {
+		if (obj.success === true 
+			&& obj.cam === 8
+			&& obj.proj === 8
+			&& obj.arr.length === 16
+			&& obj.light.length === 16
+			&& obj.light[0] === mscript.black) {
+			console.log('...Passed!');
+		} else {
+			fail(script, obj);
+		}
+	});
 
 	console.log('All tests completed');
 	console.timeEnd('Tests took');
@@ -470,6 +550,10 @@ SET PROJ # - sets projector count to #
 
 LOOP # - begin loop, can nest recursively, # times
 END LOOP - (or END) closes loop
+
+L #RGB - sets light to rgb value
+
+FADE
 
 CF - Camera forwards
 PF - Projector forwards
