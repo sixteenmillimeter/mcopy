@@ -37,6 +37,8 @@ var init = function () {
 	//createMenu();
 	log.init();
 	light.init();
+	proj.init();
+
 	arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg);
 	setTimeout(function () {
 		arduino.init(function (err, device) {
@@ -237,6 +239,63 @@ light.end = function (rgb, id) {
 	'use strict';
 	log.info('Light set to ' + rgb.join(','), 'LIGHT', true, true);
 	mainWindow.webContents.send('light', {rgb: rgb, id : id});
+};
+
+var proj = {};
+proj.state = {
+	dir : true //default dir
+};
+proj.init = function () {
+	'use strict';
+	proj.listen();
+};
+proj.set = function (dir, id) {
+	'use strict';
+	var cmd;
+	if (dir) {
+		cmd = mcopy.cfg.arduino.cmd.proj_forward;
+	} else {
+		cmd = mcopy.cfg.arduino.cmd.proj_backward;
+	}
+	proj.state.dir = dir;
+	arduino.send(cmd, function () {
+		proj.end(cmd, id);
+	});
+};
+proj.move = function (frame, id) {
+	'use strict';
+	arduino.send(mcopy.cfg.arduino.cmd.projector, function () {
+		proj.end(mcopy.cfg.arduino.cmd.projector, id);
+	});
+};
+proj.listen = function () {
+	'use strict';
+	ipcMain.on('proj', function (event, arg) {
+		if (typeof arg.dir !== 'undefined') {
+			proj.set(arg.dir, arg.id);
+		} else if (typeof arg.frame !== 'undefined') {
+			proj.move(arg.frame, arg.id);
+		}
+		event.returnValue = true;
+	});
+};
+proj.end = function (cmd, id) {
+	var message = '';
+	if (cmd === mcopy.cfg.arduino.cmd.proj_forward) {
+		message = 'Projector set to FORWARD';
+	} else if (cmd === mcopy.cfg.arduino.cmd.proj_backward) {
+		message = 'Projector set to BACKWARD';
+	} else if (cmd === mcopy.cfg.arduino.cmd.projector) {
+		message = 'Projector ';
+		if (proj.state.dir) {
+			message += 'ADVANCED';
+		} else {
+			message += 'REWOUND'
+		}
+		message += ' 1 frame';
+	}
+	log.info(message, 'PROJ', true, true);
+	mainWindow.webContents.send('proj', {cmd: cmd, id : id});
 };
 
 var log = {};

@@ -124,7 +124,7 @@ mcopy.arduino.fakeConnect = function (callback) {
 				p : mcopy.cfg.arduino.proj.time + mcopy.cfg.arduino.proj.delay
 			},
 			timeout = t[cmd];
-			if (typeof timeout === 'undefined') timeout = 500;
+			if (typeof timeout === 'undefined') timeout = 10;
 			mcopy.arduino.timer = +new Date();
 			setTimeout(function () {
 				mcopy.arduino.end(cmd);
