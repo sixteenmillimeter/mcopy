@@ -71,6 +71,7 @@ mscript.interpret = function interpret (text, callback) {
 	var lines = text.split('\n'),
 		two = '',
 		arr = [],
+		light = [],
 		target = 0,
 		dist = 0, //?
 		output = {};
@@ -158,6 +159,7 @@ mscript.interpret = function interpret (text, callback) {
 	}
 	output.success = true;
 	output.arr = arr;
+	output.light = light;
 	output.cam = mscript.state.cam;
 	output.proj = mscript.state.proj;
 	if (typeof callback !== 'undefined') {
