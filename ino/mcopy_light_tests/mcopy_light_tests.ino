@@ -28,6 +28,11 @@ volatile int r = 0;
 volatile int g = 0;
 volatile int b = 0;
 
+const char cmd_debug = 'd';
+const char cmd_connect = 'i';
+
+const char cmd_light = 'l';
+
 volatile char cmd_char = 'z';
 const int serialDelay = 5;
 
@@ -56,11 +61,11 @@ void loop () {
 //l - light - followed by String
 //
 void cmd (char val) {
-  if (val == 'i') {
-    Serial.println("i");//confirm connection
-  } else if (val == 'l') {
+  if (val == cmd_connect) {
+    Serial.println(cmd_connect);//confirm connection
+  } else if (val == cmd_light) {
 		colorString();
-    Serial.println("l");//confirm light change
+    Serial.println(cmd_light);//confirm light change
 	}
 }
 
