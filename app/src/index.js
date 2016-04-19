@@ -959,7 +959,47 @@ gui.updateState = function () {
 
 	$('#seq_cam_count').val(cpos).change();
 	$('#seq_proj_count').val(ppos).change();
+
+	$('#seq_cam_count_2').val(cpos).change();
+	$('#seq_proj_count_2').val(ppos).change();
 };
+gui.spinner = function (state) {
+	var cfg = {
+		lines: 11, // The number of lines to draw
+		length: 15, // The length of each line
+		width: 7, // The line thickness
+		radius: 20, // The radius of the inner circle
+		corners: 1, // Corner roundness (0..1)
+		rotate: 0, // The rotation offset
+		direction: 1, // 1: clockwise, -1: counterclockwise
+		color: '#F2F2F1', // #rgb or #rrggbb or array of colors
+		speed: 1, // Rounds per second
+		trail: 60, // Afterglow percentage
+		shadow: true, // Whether to render a shadow
+		hwaccel: true, // Whether to use hardware acceleration
+		className: 'spinner', // The CSS class to assign to the spinner
+		zIndex: 2e9, // The z-index (defaults to 2000000000)
+		top: '50%', // Top position relative to parent
+		left: '50%' // Left position relative to parent
+	},
+	target,
+	spinner;
+	if (state) {
+		target = document.getElementById('spinner');
+		spinner = new Spinner(cfg).spin(target);
+	} else {
+		$('#spinner').hide();
+		$('#psinner').empty();
+	}
+};
+gui.overlay = function (state) {
+	if (state) {
+		$('#overlay').show();
+	} else {
+		$('#overlay').hide();
+	}
+};
+
 gui.info = function (title, message) {
 	'use strict';
 	var config = {
@@ -1249,11 +1289,34 @@ nav.change = function (id) {
 	}
 };
 
+var devices = {};
+devices.init = function () {
+	'use strict';
+	devices.listen();
+	gui.overlay(true);
+	gui.spinner(true);
+};
+devices.listen = function () {
+	'use strict';
+	ipcRenderer.on('ready', function (event, arg) {
+		//console.log(arg.camera);
+		//console.log(arg.projector);
+		devices.ready();
+		return event.returnValue = true;
+	});
+};
+devices.ready = function () {
+	'use strict';
+	gui.spinner(false);
+	gui.overlay(false);
+};
+
 var init = function () {
 	'use strict';
 	nav.init();
 	gui.grid.init();
 	log.init();	
+	devices.init();
 	light.init();
 	proj.init();
 	cam.init();

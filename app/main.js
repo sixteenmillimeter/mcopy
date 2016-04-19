@@ -61,6 +61,7 @@ var enumerateDevices = function (err, devices) {
 		arduino.fakeConnect('camera', function () {
 			log.info('Connected to fake CAMERA device', 'SERIAL', true, true);
 		});
+		devicesReady('fake', 'fake');
 	} else {
 		log.info('Found ' + devices.length + ' USB devices', 'SERIAL', true, true);
 		distinguishDevices(devices);
@@ -106,6 +107,7 @@ var distinguishDevices = function (devices) {
 				if (devices.length === 1) {
 					arduino.fakeConnect('camera', function () {
 						log.info('Connected to fake CAMERA device', 'SERIAL', true, true);
+						devicesReady(devices[0], 'fake');
 					});
 				}
 			} else if (type === 'camera') {
@@ -115,6 +117,7 @@ var distinguishDevices = function (devices) {
 				if (devices.length === 1) {
 					arduino.fakeConnect('projector', function () {
 						log.info('Connected to fake PROJECTOR device', 'SERIAL', true, true);
+						devicesReady('fake', devices[0]);
 					});
 				}
 			}
@@ -128,15 +131,22 @@ var distinguishDevices = function (devices) {
 			if (type === 'projector') {
 				arduino.connect('projector', devices[1], false, function () {
 					log.info('Connected to ' + devices[1] + ' as PROJECTOR', 'SERIAL', true, true);
+					devicesReady(devices[1], devices[0]);
 				});
 			} else if (type === 'camera') {
 				arduino.connect('camera', devices[1], false, function () {
 					log.info('Connected to ' + devices[1] + ' as CAMERA', 'SERIAL', true, true);
+					devicesReady(devices[0], devices[1]);
 				});
 			}
 		});
 	};
 	distinguishDevice(devices[0], distinguishOne);
+};
+
+var devicesReady = function (camera, projector) {
+	'use strict';
+	mainWindow.webContents.send('ready', {camera: camera, projector: projector });
 };
 
 var createMenu = function () {
@@ -277,7 +287,7 @@ var createWindow = function () {
 		minHeight : 600
 	});
 	mainWindow.loadURL('file://' + __dirname + '/index.html');
-	mainWindow.webContents.openDevTools();
+	//mainWindow.webContents.openDevTools();
 	mainWindow.on('closed', function() {
 		mainWindow = null;
 	});
