@@ -7,7 +7,7 @@ var serialport = require('serialport'),
 	Arduino handlers
 *******/
 mcopy.arduino = {
-	path : '',
+	path : {},
 	known: [
 		'/dev/tty.usbmodem1a161', 
 		'/dev/tty.usbserial-A800f8dk', 
@@ -16,19 +16,24 @@ mcopy.arduino = {
 		'/dev/tty.usbserial-a900f6de',
 		'/dev/tty.usbmodem1a141'
 	],
-	serial : {},
+	serial : {
+		connect : {},
+		projector : {},
+		camera : {}
+	},
 	baud : 57600,
 	queue : {},
 	timer : 0,
 	lock : false
 };
-mcopy.arduino.init = function (callback) {
+mcopy.arduino.enumerate = function (callback) {
 	'use strict';
 	console.log('Searching for devices...');
 	var cmd = 'ls /dev/tty.*';
 	exec(cmd, function (e, std) {
 		var devices = std.split('\n'),
 			matches = [];
+		if (e) { return callback(e); }
 		devices.pop();
 		for (var i = 0; i < devices.length; i++) {
 			if (devices[i].indexOf('usbserial') !== -1
@@ -37,25 +42,20 @@ mcopy.arduino.init = function (callback) {
 			}
 		}
 		if (matches.length === 0) {
-			//console.log('No USB devices found.');
 			if (callback) { callback('No USB devices found'); }
 		} else if (matches.length > 0) {
-			//console.log('Found ' + matches[0]);
-			mcopy.arduino.path = matches[0];
-			//once connected to the arduino
-			//start user interface
-			if (callback) { callback(null, mcopy.arduino.path); }
+			if (callback) { callback(null, matches); }
 		}
 	});
 };
 //commands which respond to a sent char
-mcopy.arduino.send = function (cmd, res) {
+mcopy.arduino.send = function (serial, cmd, res) {
 	'use strict';
 	if (!mcopy.arduino.lock) {
 		mcopy.arduino.lock = true;
 		mcopy.arduino.queue[cmd] = res;
 		setTimeout(function () {
-			mcopy.arduino.serial.write(cmd, function (err, results) {
+			mcopy.arduino.serial[serial].write(cmd, function (err, results) {
 				if (err) { console.log(err); }
 				mcopy.arduino.lock = false;
 				mcopy.arduino.timer = new Date().getTime();
@@ -64,16 +64,21 @@ mcopy.arduino.send = function (cmd, res) {
 	}
 };
 //send strings, after char triggers firmware to accept
-mcopy.arduino.string = function (str) {
+mcopy.arduino.string = function (serial, str) {
 	'use strict';
 	setTimeout(function () {
-		mcopy.arduino.serial.write(str, function (err, results) {
-			if (err) { console.log(err); }
-			//console.log('sent: ' + str);
-		});
+		if (typeof mcopy.arduino.serial[serial].fake !== 'undefined'
+			&& mcopy.arduino.serial[serial].fake) {
+			mcopy.arduino.serial[serial].string(str);
+		} else {
+			mcopy.arduino.serial[serial].write(str, function (err, results) {
+				if (err) { console.log(err); }
+				//console.log('sent: ' + str);
+			});
+		}
 	}, mcopy.cfg.arduino.serialDelay);
 };
-//with same over serial when done
+//respond with same char over serial when done
 mcopy.arduino.end = function (data) {
 	'use strict';
 	var end = new Date().getTime(),
@@ -81,59 +86,115 @@ mcopy.arduino.end = function (data) {
 	if (mcopy.arduino.queue[data] !== undefined) {
 		mcopy.arduino.lock = false;
 		console.log('Command ' + data + ' took ' + ms + 'ms');
-		mcopy.arduino.queue[data](ms);
-		delete mcopy.arduino.queue[data]; //add timestamp?
+		mcopy.arduino.queue[data](ms); //execute callback
+		delete mcopy.arduino.queue[data];
 	} else {
-		console.log('Received stray "' + data + '" from ' + mcopy.arduino.path); //silent to user
+		console.log('Received stray "' + data + '"'); //silent to user
 	}
 };
-mcopy.arduino.connect = function (callback) {
+mcopy.arduino.connect = function (serial, device, confirm, callback) {
 	'use strict';
-	console.log('Connecting to ' + mcopy.arduino.path + '...');
-	mcopy.arduino.serial = new SerialPort(mcopy.arduino.path, {
-	  baudrate: mcopy.cfg.arduino.baud,
-	  parser: serialport.parsers.readline("\n")
+	mcopy.arduino.path[serial] = device;
+	mcopy.arduino.serial[serial] = new SerialPort(mcopy.arduino.path[serial], {
+		baudrate: mcopy.cfg.arduino.baud,
+		parser: serialport.parsers.readline("\n")
 	}, false);
-	mcopy.arduino.serial.open(function (error) {
+	mcopy.arduino.serial[serial].open(function (error) {
 		if (error) {
+			if (callback) { callback(error); }
 			return console.log('failed to open: '+ error);
 		} else {
-			console.log('Opened connection with ' + mcopy.arduino.path);
-			mcopy.arduino.serial.on('data', function (data) {
-				data = data.replace('\r', '');
-				mcopy.arduino.end(data);
-			});
-			setTimeout(function () {
-				console.log('Verifying firmware...');
-				mcopy.arduino.send(mcopy.cfg.arduino.cmd.connect, function () {
-					console.log('Firmware verified');
-					console.log('Optical printer ready!');
-					if (callback) { callback(); }
+			console.log('Opened connection with ' + mcopy.arduino.path[serial]);
+			if (!confirm) {
+				mcopy.arduino.serial[serial].on('data', function (data) {
+					data = data.replace('\r', '');
+					mcopy.arduino.end(data);
 				});
-			}, 2000);
+			} else {
+				mcopy.arduino.serial[serial].on('data', function (data) {
+					data = data.replace('\r', '');
+					mcopy.arduino.confirmEnd(data);
+				});
+			}
+			if (callback) { 
+				callback(null, mcopy.arduino.path[serial]); 
+			}
 		}
 	});
 };
 
-mcopy.arduino.fakeConnect = function (callback) {
+mcopy.arduino.confirmExec = {};
+mcopy.arduino.confirmEnd = function (data) {
+	'use strict';
+	if (data === mcopy.cfg.arduino.cmd.connect
+		|| data === mcopy.cfg.arduino.cmd.proj_identifier
+		|| data === mcopy.cfg.arduino.cmd.cam_identifier) {
+		mcopy.arduino.confirmExec(null, data);
+		mcopy.arduino.confirmExec = {};
+	}
+};
+mcopy.arduino.verify = function (callback) {
+	'use strict';
+	mcopy.arduino.confirmExec = function (err, data) {
+		if (data === mcopy.cfg.arduino.cmd.connect) {
+			callback(null, true);
+		}
+	};
+	setTimeout(function () {
+		mcopy.arduino.serial['connect'].write(mcopy.cfg.arduino.cmd.connect, function (err, results) {
+			if (err) { 
+				return console.log(err); 
+			}
+		});
+	}, mcopy.cfg.arduino.serialDelay);
+};
+mcopy.arduino.distinguish = function (callback) {
+	'use strict';
+	mcopy.arduino.confirmExec = function (err, data) {
+		if (data === mcopy.cfg.arduino.cmd.proj_identifier) {
+			callback(null, 'projector');
+		} else if (data === mcopy.cfg.arduino.cmd.cam_identifier) {
+			callback(null, 'camera');
+		}
+	};
+	setTimeout(function () {
+		mcopy.arduino.serial['connect'].write(mcopy.cfg.arduino.cmd.mcopy_identifier, function (err, results) {
+			if (err) { 
+				return console.log(err); 
+			}
+		});
+	}, mcopy.cfg.arduino.serialDelay);
+};
+
+mcopy.arduino.close = function (callback) {
+	'use strict';
+	mcopy.arduino.serial['connect'].close(function (err) {
+		if (callback) {
+			callback(err);
+		}
+	});
+};
+
+mcopy.arduino.fakeConnect = function (serial, callback) {
 	console.log('Connecting to fake arduino...');
-	mcopy.arduino.serial = {
+	mcopy.arduino.serial[serial] = {
 		write : function (cmd, res) {
 			var t = {
-				c : mcopy.cfg.arduino.cam.time + mcopy.cfg.arduino.cam.delay,
-				p : mcopy.cfg.arduino.proj.time + mcopy.cfg.arduino.proj.delay
-			},
-			timeout = t[cmd];
-			if (typeof timeout === 'undefined') timeout = 10;
-			mcopy.arduino.timer = +new Date();
-			setTimeout(function () {
-				mcopy.arduino.end(cmd);
-			}, timeout);
+					c : mcopy.cfg.arduino.cam.time + mcopy.cfg.arduino.cam.delay,
+					p : mcopy.cfg.arduino.proj.time + mcopy.cfg.arduino.proj.delay
+				},
+				timeout = t[cmd];
+				if (typeof timeout === 'undefined') timeout = 10;
+				mcopy.arduino.timer = +new Date();
+				setTimeout(function () {
+					mcopy.arduino.end(cmd);
+				}, timeout);
 		}, 
 		string : function (str) {
 			//do nothing
 			return true;
-		}
+		},
+		fake : true
 	};
 	console.log('Connected to fake arduino! Not real! Doesn\'t exist!');
 	if (callback) callback();

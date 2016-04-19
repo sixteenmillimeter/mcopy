@@ -13,7 +13,9 @@ var electron = require('electron'),
 	mcopy = {},
 	mainWindow,
 	mscript,
-	arduino;
+	arduino,
+	projector,
+	camera;
 
 mcopy.cfg = {};
 mcopy.cfgFile = './data/cfg.json';
@@ -43,21 +45,85 @@ var init = function () {
 
 	arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg);
 	mscript = require('./lib/mscript.js');
+
 	setTimeout(function () {
-		arduino.init(function (err, device) {
-			if (err) {
-				log.info(err, 'SERIAL', false, true);
-				arduino.fakeConnect(function () {
-					log.info('Connected to fake USB device', 'SERIAL', true, true);
+		arduino.enumerate(enumerateDevices);
+	}, 1000);
+};
+
+var enumerateDevices = function (err, devices) {
+	'use strict';
+	if (err) {
+		log.info(err, 'SERIAL', false, true);
+		arduino.fakeConnect('projector', function () {
+			log.info('Connected to fake PROJECTOR device', 'SERIAL', true, true);
+		});
+		arduino.fakeConnect('camera', function () {
+			log.info('Connected to fake CAMERA device', 'SERIAL', true, true);
+		});
+	} else {
+		log.info('Found ' + devices.length + ' USB devices', 'SERIAL', true, true);
+		distinguishDevices(devices);
+	}
+};
+
+var distinguishDevice = function (device, callback) {
+	'use strict';
+	var connectCb = function (err, device) {
+		if (err) {
+			return console.error(err);
+		}
+		setTimeout(function () {
+			arduino.verify(verifyCb);
+		}, 2000);
+	},
+	verifyCb = function (err, success) {
+		if (err) {
+			return console.error(err);
+		}
+		setTimeout(function () {
+			arduino.distinguish(distinguishCb);
+		}, 1000);
+	},
+	distinguishCb = function (err, type) {
+		if (err) {
+			return console.error(err);
+		}
+		if (callback) { callback(err, type); }
+	}
+	arduino.connect('connect', device, true, connectCb);
+};
+
+//Cases for 1 or 2 arduinos connected
+var distinguishDevices = function (devices) {
+	'use strict';
+	var distinguishOne = function (err, type) {
+		arduino.close(function () {
+			if (type === 'projector') {
+				arduino.connect('projector', devices[0], false, function () {
+					log.info('Connected to ' + devices[0] + ' as PROJECTOR', 'SERIAL', true, true);
 				});
-			} else {
-				log.info('Found device ' + device, 'SERIAL', true, true);
-				arduino.connect(function () {
-					log.info('Connected to device ' + device, 'SERIAL', true, true);
+				if (devices.length === 1) {
+					arduino.fakeConnect('camera', function () {
+						log.info('Connected to fake CAMERA device', 'SERIAL', true, true);
+					});
+				}
+			} else if (type === 'camera') {
+				arduino.connect('camera', devices[0], false, function () {
+					log.info('Connected to ' + devices[0] + ' as CAMERA', 'SERIAL', true, true);
 				});
+				if (devices.length === 1) {
+					arduino.fakeConnect('projector', function () {
+						log.info('Connected to fake PROJECTOR device', 'SERIAL', true, true);
+					});
+				}
 			}
 		});
-	}, 1000);
+	},
+	distinguishTwo = function (err, type) {
+
+	};
+	distinguishDevice(devices[0], distinguishOne);
 };
 
 var createMenu = function () {
@@ -233,10 +299,10 @@ light.listen = function () {
 light.set = function (rgb, id) {
 	'use strict';
 	var str = rgb.join(',');
-	arduino.send(mcopy.cfg.arduino.cmd.light, function (ms) {
+	arduino.send('projector', mcopy.cfg.arduino.cmd.light, function (ms) {
 		light.end(rgb, id, ms);
 	});
-	arduino.string(str);
+	arduino.string('projector', str);
 };
 light.end = function (rgb, id, ms) {
 	'use strict';
@@ -261,13 +327,13 @@ proj.set = function (dir, id) {
 		cmd = mcopy.cfg.arduino.cmd.proj_backward;
 	}
 	proj.state.dir = dir;
-	arduino.send(cmd, function (ms) {
+	arduino.send('projector', cmd, function (ms) {
 		proj.end(cmd, id, ms);
 	});
 };
 proj.move = function (frame, id) {
 	'use strict';
-	arduino.send(mcopy.cfg.arduino.cmd.projector, function (ms) {
+	arduino.send('projector', mcopy.cfg.arduino.cmd.projector, function (ms) {
 		proj.end(mcopy.cfg.arduino.cmd.projector, id, ms);
 	});
 };
@@ -319,13 +385,13 @@ cam.set = function (dir, id) {
 		cmd = mcopy.cfg.arduino.cmd.cam_backward;
 	}
 	cam.state.dir = dir;
-	arduino.send(cmd, function (ms) {
+	arduino.send('camera', cmd, function (ms) {
 		cam.end(cmd, id, ms);
 	});
 };
 cam.move = function (frame, id) {
 	'use strict';
-	arduino.send(mcopy.cfg.arduino.cmd.camera, function (ms) {
+	arduino.send('camera', mcopy.cfg.arduino.cmd.camera, function (ms) {
 		cam.end(mcopy.cfg.arduino.cmd.camera, id, ms);
 	});
 };
