@@ -315,6 +315,7 @@ cmd.cam_forward = function (rgb, callback) {
 	var res = function (ms) {
 		gui.updateState();
 		setTimeout(function () {
+			light.display([0,0,0]);
 			light.set([0, 0, 0], function () {
 				if (callback) { callback(ms); }
 			});
@@ -323,6 +324,7 @@ cmd.cam_forward = function (rgb, callback) {
 	if (!mcopy.state.camera.direction) {
 		cam.set(true, function () {
 			setTimeout( function () {
+				light.display(rgb);
 				light.set(rgb, function () {
 					setTimeout( function () {
 						cam.move(res);
@@ -331,6 +333,7 @@ cmd.cam_forward = function (rgb, callback) {
 			}, mcopy.cfg.arduino.serialDelay);
 		});
 	} else {
+		light.display(rgb);
 		light.set(rgb, function () {
 			setTimeout(function () {
 				cam.move(res);
@@ -347,6 +350,7 @@ cmd.cam_backward = function (rgb, callback) {
 	'use strict';
 	var res = function (ms) {
 		gui.updateState();
+		light.display([0,0,0]);
 		light.set([0, 0, 0], function () {
 			if (callback) { callback(ms); }
 		});	
@@ -354,6 +358,7 @@ cmd.cam_backward = function (rgb, callback) {
 	if (mcopy.state.camera.direction) {
 		cam.set(false, function () {
 			setTimeout(function () {
+				light.display(rgb);
 				light.set(rgb, function () {
 					cam.move(res);
 				});
@@ -361,6 +366,7 @@ cmd.cam_backward = function (rgb, callback) {
 		});
 	} else {
 		setTimeout(function () {
+			light.display(rgb);
 			light.set(rgb, function () {
 				cam.move(res);
 			});

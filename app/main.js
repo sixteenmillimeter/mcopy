@@ -118,10 +118,23 @@ var distinguishDevices = function (devices) {
 					});
 				}
 			}
+			if (devices.length > 1) {
+				distinguishDevice(devices[1], distinguishTwo);
+			}
 		});
 	},
 	distinguishTwo = function (err, type) {
-
+		arduino.close(function () {
+			if (type === 'projector') {
+				arduino.connect('projector', devices[1], false, function () {
+					log.info('Connected to ' + devices[1] + ' as PROJECTOR', 'SERIAL', true, true);
+				});
+			} else if (type === 'camera') {
+				arduino.connect('camera', devices[1], false, function () {
+					log.info('Connected to ' + devices[1] + ' as CAMERA', 'SERIAL', true, true);
+				});
+			}
+		});
 	};
 	distinguishDevice(devices[0], distinguishOne);
 };

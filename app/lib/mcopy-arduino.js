@@ -28,7 +28,7 @@ mcopy.arduino = {
 };
 mcopy.arduino.enumerate = function (callback) {
 	'use strict';
-	console.log('Searching for devices...');
+	//console.log('Searching for devices...');
 	var cmd = 'ls /dev/tty.*';
 	exec(cmd, function (e, std) {
 		var devices = std.split('\n'),
@@ -85,7 +85,7 @@ mcopy.arduino.end = function (data) {
 		ms = end - mcopy.arduino.timer;
 	if (mcopy.arduino.queue[data] !== undefined) {
 		mcopy.arduino.lock = false;
-		console.log('Command ' + data + ' took ' + ms + 'ms');
+		//console.log('Command ' + data + ' took ' + ms + 'ms');
 		mcopy.arduino.queue[data](ms); //execute callback
 		delete mcopy.arduino.queue[data];
 	} else {
@@ -104,7 +104,7 @@ mcopy.arduino.connect = function (serial, device, confirm, callback) {
 			if (callback) { callback(error); }
 			return console.log('failed to open: '+ error);
 		} else {
-			console.log('Opened connection with ' + mcopy.arduino.path[serial]);
+			//console.log('Opened connection with ' + mcopy.arduino.path[serial]);
 			if (!confirm) {
 				mcopy.arduino.serial[serial].on('data', function (data) {
 					data = data.replace('\r', '');
@@ -176,7 +176,7 @@ mcopy.arduino.close = function (callback) {
 };
 
 mcopy.arduino.fakeConnect = function (serial, callback) {
-	console.log('Connecting to fake arduino...');
+	//console.log('Connecting to fake arduino...');
 	mcopy.arduino.serial[serial] = {
 		write : function (cmd, res) {
 			var t = {
@@ -196,7 +196,7 @@ mcopy.arduino.fakeConnect = function (serial, callback) {
 		},
 		fake : true
 	};
-	console.log('Connected to fake arduino! Not real! Doesn\'t exist!');
+	//console.log('Connected to fake arduino! Not real! Doesn\'t exist!');
 	if (callback) callback();
 };
 
