@@ -39,6 +39,12 @@
 	}
 }
 
+*{
+	cursor: default;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+}
+
 html, body{
 	-webkit-overflow-scrolling: auto;
 	overflow-x: hidden;
@@ -275,7 +281,7 @@ footer{
 	float: right;
 }
 
-#counters{
+#counters, #counters_2{
 	.cam,.proj{
 		width: 50%;
 		padding-bottom: 25px;
@@ -483,6 +489,19 @@ button{
     	display: inline-block;
     	margin-right: 5px;
 	}
+}
+
+#overlay{
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.4);
+	display: none;
+	//z-index: 1200;
 }
 .spacer{
 	margin-top: 15px;

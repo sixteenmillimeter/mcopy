@@ -1,3 +1,8 @@
+* {
+  cursor: default;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+}
 html,
 body {
   -webkit-overflow-scrolling: auto;
@@ -221,18 +226,24 @@ footer {
   float: right;
 }
 #counters .cam,
-#counters .proj {
+#counters_2 .cam,
+#counters .proj,
+#counters_2 .proj {
   width: 50%;
   padding-bottom: 25px;
 }
 #counters .cam label,
-#counters .proj label {
+#counters_2 .cam label,
+#counters .proj label,
+#counters_2 .proj label {
   text-align: center;
   font-size: 24px;
   display: block;
 }
 #counters .cam input,
-#counters .proj input {
+#counters_2 .cam input,
+#counters .proj input,
+#counters_2 .proj input {
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
   padding: 6px 12px;
@@ -243,13 +254,17 @@ footer {
   font-family: monospace;
 }
 #counters .cam input.changed,
-#counters .proj input.changed {
+#counters_2 .cam input.changed,
+#counters .proj input.changed,
+#counters_2 .proj input.changed {
   color: #DAE035;
 }
-#counters .cam {
+#counters .cam,
+#counters_2 .cam {
   float: left;
 }
-#counters .proj {
+#counters .proj,
+#counters_2 .proj {
   float: right;
 }
 #seq_scroll {
@@ -453,6 +468,17 @@ button:focus {
   text-indent: 7px;
   display: inline-block;
   margin-right: 5px;
+}
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: none;
 }
 .spacer {
   margin-top: 15px;
