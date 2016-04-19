@@ -7,12 +7,15 @@ var scripts = [
 	'./src/jquery-electron-fix.js',
 	'./src/jquery.contextMenu.min.js',
 	'./src/w2ui-1.4.3.min.js',
+	'./src/codemirror-compressed.js', //codemirror
 	'./src/moment.min.js',
 	'./src/colors.js',
 	'./src/colorPicker.data.js',
 	'./src/colorPicker.js',
 	'./src/jsColor.js',
 	'./src/chroma.min.js',
+	'./src/spin.js',
+	'./lib/mscript.js', //rather than script tag
 	'./src/index.js'
 ];
 
