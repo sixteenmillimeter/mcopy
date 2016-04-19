@@ -12,6 +12,8 @@ boolean cam_dir = true; //camera defaults to forward
 const char cmd_camera = 'c';
 const char cmd_cam_forward = 'e';
 const char cmd_cam_backward = 'f';
+const char cmd_mcopy_identifier = 'm';
+const char cmd_cam_identifier = 'k';
 
 const char cmd_debug = 'd';
 const char cmd_connect = 'i';
@@ -40,6 +42,8 @@ void cmd (char val) {
     debug();
   } else if (val == cmd_connect) {
     connect();
+  } else if (val == cmd_mcopy_identifier) {
+    identify();
   } else if (val == cmd_camera) {
     camera();
   } else if (val == cmd_cam_forward) {
@@ -58,6 +62,11 @@ void debug () {
 void connect () {
   Serial.println(cmd_connect);
   log("connect()");
+}
+
+void identify () {
+  Serial.println(cmd_cam_identifier);
+  log("identify()");  
 }
 
 void camera () {
