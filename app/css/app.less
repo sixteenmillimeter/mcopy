@@ -1,4 +1,5 @@
-@BG: rgb(50, 43, 47);
+//@BG: rgb(50, 43, 47);
+@BG : #272b30;
 @COMMON: #fff;
 
 @FORWARD: #00C4A0;
@@ -10,8 +11,10 @@
 
 @INPUT_BG : rgba(255, 255, 255, 0.05);
 
+@FOOTER_H : 150px;
+
 .monospace () {
-	font-family: monospace;
+	font-family: 'Menlo', monospace;
 }
 
 .button (@color: @COMMON) {
@@ -63,13 +66,13 @@ footer{
 	position: fixed;
     bottom: 0;
     width: 100%;
-    height: 150px;
+    height: @FOOTER_H;
 }
 
 #log{
 	position: fixed;
 	width: 100%;
-	height: 150px;
+	height: @FOOTER_H;
 }
 
 #screens{
@@ -342,12 +345,12 @@ footer{
 	}
 }
 #seq_stats{
-	width: 50%;
+	width: 40%;
 	float: right;
-	padding: 0 20px;
+	padding: 20px 61px 0 0;
 	h3{
 		font-size: 20px;
-		margin: 12px 0 3px;
+		margin: 16px 0 3px;
 	}
 	span{
 		font-weight: 600;
@@ -359,7 +362,7 @@ footer{
 #seq_loop{
 	width: 40%;
 	float: left;
-	padding: 0 28px;
+	padding: 0 0 0 56px;
 	h3{
 		font-size: 20px;
 		margin: 12px 0 3px;
@@ -370,6 +373,7 @@ footer{
     	color: @COMMON;
     	font-size: 21px;
 		width: 121px;
+		margin-top: 10px;
 		padding: 6px 12px;
 	}
 }
@@ -491,6 +495,26 @@ button{
 	}
 }
 
+#console{
+	background: #000;
+	border-top: 2px solid rgba(255, 255, 255, 0.3);
+	textarea{
+		.monospace();
+		font-size: 12px;
+		line-height: 17px;
+		outline: none !important;
+		border: none;
+		box-sizing: border-box;
+		margin: 0;
+		padding: 20px;
+		width: 100%;
+		height: @FOOTER_H;
+		display: block;
+		background: black;
+		color: @COMMON;
+	}
+}
+
 #overlay{
 	position: fixed;
 	top: 0;
@@ -514,4 +538,11 @@ button{
 	.cp-memo{
 		bottom: 2px !important;
 	}
+}
+
+.cm-s-monokai.CodeMirror{
+	background: @BG !important;
+}
+.cm-s-monokai .CodeMirror-gutters {
+	background: @BG + rgb(15, 15, 15) !important;
 }

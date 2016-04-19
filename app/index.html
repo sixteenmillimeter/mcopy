@@ -8,6 +8,7 @@
     <link href="./css/w2ui-1.4.3.min.css" rel="stylesheet">
     <link href="./css/effeckt.css" rel="stylesheet">
     <link href="./css/codemirror.min.css" rel="stylesheet">
+    <link href="./css/monokai.css" rel="stylesheet">
     <link href="./css/app.css" rel="stylesheet">
   </head>
   <body onload="init();">
@@ -52,18 +53,22 @@
           <input id="seq_scroll_state" type="number" min="0" value="00000" />
         </div>
         <div id="seq_stats">
-          <h3>STATS</h3>
-          <div class="seq_count">Number of instructions: <span>0</span></div>
-          <div class="timing">Time to complete: <span>0 ms</span></div>
-          <div class="cam_end">Camera end position: <span>00000</span></div>
-          <div class="proj_end">Projector end position: <span>00000</span></div>
+          <div class="seq_count"># of steps: <span>0</span></div>
+          <div class="timing">To complete: <span>0 ms</span></div>
+          <div class="cam_end">Camera end: <span>00000</span></div>
+          <div class="proj_end">Projector end: <span>00000</span></div>
         </div>
         <div id="seq_loop">
           <h3>LOOPS</h3>
           <input type="number" min="1" id="seq_loop" value="00001" onchange="this.value = gui.fmtZero(this.value, 6); gui.grid.loopChange(this);"/>
         </div>
       </div>
-      <div id="script" class="screen"></div>
+      <div id="script" class="screen">
+        <textarea id="editor"></textarea>
+        <footer id="console">
+          <textarea>> </textarea>
+        </footer>
+      </div>
       <div id="controls" class="screen">
         <div id="counters_2">
           <div class="cam">

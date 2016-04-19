@@ -7,7 +7,7 @@ var scripts = [
 	'./src/jquery-electron-fix.js',
 	'./src/jquery.contextMenu.min.js',
 	'./src/w2ui-1.4.3.min.js',
-	'./src/codemirror-compressed.js', //codemirror
+	'./src/codemirror-compressed.js', //codemirror, python mode
 	'./src/moment.min.js',
 	'./src/colors.js',
 	'./src/colorPicker.data.js',

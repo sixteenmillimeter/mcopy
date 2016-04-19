@@ -251,7 +251,7 @@ footer {
   display: block;
   margin: 0 auto;
   text-align: center;
-  font-family: monospace;
+  font-family: 'Menlo', monospace;
 }
 #counters .cam input.changed,
 #counters_2 .cam input.changed,
@@ -296,13 +296,13 @@ footer {
   margin-right: 60px;
 }
 #seq_stats {
-  width: 50%;
+  width: 40%;
   float: right;
-  padding: 0 20px;
+  padding: 20px 61px 0 0;
 }
 #seq_stats h3 {
   font-size: 20px;
-  margin: 12px 0 3px;
+  margin: 16px 0 3px;
 }
 #seq_stats span {
   font-weight: 600;
@@ -311,18 +311,19 @@ footer {
 #seq_loop {
   width: 40%;
   float: left;
-  padding: 0 28px;
+  padding: 0 0 0 56px;
 }
 #seq_loop h3 {
   font-size: 20px;
   margin: 12px 0 3px;
 }
 #seq_loop input {
-  font-family: monospace;
+  font-family: 'Menlo', monospace;
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
   font-size: 21px;
   width: 121px;
+  margin-top: 10px;
   padding: 6px 12px;
 }
 button {
@@ -347,7 +348,7 @@ button span {
 button:active,
 button .active {
   background: #fff;
-  color: #322b2f;
+  color: #272b30;
   outline: none;
 }
 button:focus {
@@ -452,7 +453,7 @@ button:focus {
   opacity: 1;
 }
 #seq_labels {
-  font-family: monospace;
+  font-family: 'Menlo', monospace;
   background-color: #272b30;
   position: absolute;
   top: 128px;
@@ -468,6 +469,23 @@ button:focus {
   text-indent: 7px;
   display: inline-block;
   margin-right: 5px;
+}
+#console {
+  background: #000;
+  border-top: 2px solid rgba(255, 255, 255, 0.3);
+}
+#console textarea {
+  font-family: 'Menlo', monospace;
+  outline: none !important;
+  border: none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 20px;
+  width: 100%;
+  height: 150px;
+  display: block;
+  background: black;
+  color: #fff;
 }
 #overlay {
   position: fixed;
@@ -490,4 +508,10 @@ button:focus {
 }
 .cp-app .cp-memo {
   bottom: 2px !important;
+}
+.cm-s-monokai.CodeMirror {
+  background: #272b30 !important;
+}
+.cm-s-monokai .CodeMirror-gutters {
+  background: #363a3f !important;
 }

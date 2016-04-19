@@ -1035,6 +1035,76 @@ gui.warn = function (title, message) {
 gui.error = function () {};
 
 /******
+	Mscript GUI
+*******/
+gui.mscript = {};
+gui.mscript.editor = {};
+gui.mscript.data = {};
+gui.mscript.raw = '';
+gui.mscript.init = function () {
+	'use strict';
+	$('#editor').val('CF 1\nPF 1');
+	gui.mscript.editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+		lineNumbers: true,
+		mode: 'python',
+		matchBrackets: true,
+		theme: 'monokai'
+	});
+	gui.mscript.editor.setSize(null, $(window).height() - $('footer').eq(0).height() - 30);
+	gui.mscript.editor.on('change', function (e) {
+		var data = gui.mscript.editor.getValue(),
+			output = gui.mscript.parse(data);
+	});
+	$(document).on('resize', function () {
+		gui.mscript.editor.setSize(null, $(window).height() - $('footer').eq(0).height() - 30);
+	});
+};
+gui.mscript.open = function () {
+	'use strict';
+	gui.mscript.editor.setSize(null, $(window).height() - $('footer').eq(0).height() - 30);
+	gui.mscript.editor.refresh();
+};
+gui.mscript.update = function () {
+	//ehhhhh
+	$('#mscript textarea').val(mcopy.state.sequence.arr.join('\n'));
+};
+gui.mscript.parse = function (str) {
+	/*var cmd = 'node mscript.js "' + str + '\n"';
+	gui.mscript.raw = str;
+	mcopy.exec(cmd, function (data) {
+		gui.mscript.data = JSON.parse(data);
+	});*/
+};
+
+/*******
+ *   gui console
+ *******/
+gui.console = {};
+gui.console.elem = {};
+gui.console.init = function () {
+	'use script';
+	gui.console.elem = $('#console textarea');
+	gui.console.elem.on('keyup', function (e) {
+		var code = e.keyCode || e.which;
+		if (code === 13) {
+			gui.console.exec();
+			e.preventDefault();
+			return false;
+		}
+	});
+};
+gui.console.exec = function () {
+	'use strict';
+	gui.console.newLine();
+};
+gui.console.newLine = function () {
+	'use strict';
+	var current = gui.console.elem.val();
+	current += '> ';
+	gui.console.elem.val(current);
+};
+
+/******
 	Sequencer grid
 *******/
 gui.grid = {};
@@ -1286,6 +1356,8 @@ nav.change = function (id) {
 		if (w2ui['colors'].active === 'rgb') {
 			light.rgb.set(light.color);
 		}
+	} else if (id === 'script') {
+		gui.mscript.open();
 	}
 };
 
@@ -1315,6 +1387,8 @@ var init = function () {
 	'use strict';
 	nav.init();
 	gui.grid.init();
+	gui.mscript.init();
+	gui.console.init();
 	log.init();	
 	devices.init();
 	light.init();
