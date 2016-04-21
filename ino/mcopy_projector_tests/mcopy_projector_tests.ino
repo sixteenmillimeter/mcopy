@@ -1,4 +1,5 @@
 //Test lighting with NeoPixels instead of Pixies to prevent eye damage.
+
 //LIGHT HEADERS
 //#include "SoftwareSerial.h"
 //#include "Adafruit_Pixie.h"
@@ -12,6 +13,9 @@ Adafruit_NeoPixel light = Adafruit_NeoPixel(1, PIXELPIN, NEO_GRB + NEO_KHZ800);
 
 //PROJECTOR HEADERS
 
+boolean debug_state = false;
+
+//LIGHT VARIABLES
 String color = "000,000,000";
 
 volatile int commaR = 0;
@@ -25,15 +29,12 @@ volatile int r = 0;
 volatile int g = 0;
 volatile int b = 0;
 
-boolean debug_state = false;
-
+//PROJECTOR VARIABLES
 //const int proj_pin = 5; //relay 4
 //const int proj_time = {{proj.time}};
 //const int proj_delay = {{proj.delay}};
+const int proj_endstop_pin = 4;
 
-//LIGHT VARIABLES
-
-//PROJECTOR VARIABLES
 boolean proj_dir = true; 
 
 const char cmd_light = 'l';
@@ -56,6 +57,8 @@ void setup() {
   light.begin();
   light.setPixelColor(0, 0, 0, 0);
   light.show();
+
+  pinMode(proj_endstop_pin, INPUT);
 }
 
 void loop() {
@@ -67,6 +70,12 @@ void loop() {
     cmd(cmd_char);
     cmd_char = 'z';
   }
+  if (digitalRead(proj_endstop_pin)) {
+       Serial.println("blocked.");
+  } else {
+       Serial.println("open.");
+  }
+  delay(500);
 }
 
 void cmd (char val) {

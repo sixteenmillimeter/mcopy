@@ -95,5 +95,5 @@ void colorString () {
 	b = strB.toInt();
 
 	light.setPixelColor(0, r, g, b);
-    light.show();
+  light.show();
 }
