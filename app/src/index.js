@@ -1,5 +1,6 @@
 var remote = require('remote'),
 	dialog = require('electron').remote.dialog,
+	notifier = require('node-notifier'),
 	fs = require('fs'),
 	uuid = require('node-uuid'),
 	moment = require('moment'),
@@ -175,6 +176,7 @@ seq.run = function () {
 			} else {
 				log.info('Sequence completed in ' + humanizeDuration(timeEnd), 'SEQUENCE', true);
 			}
+			gui.notify('Sequence done!', (mcopy.state.sequence.arr.length * mcopy.loop) + ' actions completed in ' + humanizeDuration(timeEnd));
 			//clear gui
 			$('.row input').removeClass('h');
 			$('#numbers div').removeClass('h');
@@ -899,6 +901,18 @@ gui.counterFormat = function (t, normal, prevent) {
 	if (!prevent) {
 		gui.shootGoto(t);
 	}
+};
+gui.notify = function (title, message) {
+	'use strict';
+	notifier.notify({
+		title: title,
+		message: message,
+		//icon: path.join(__dirname, 'coulson.jpg'), // Absolute path (doesn't work on balloons) 
+		sound: true, // Only Notification Center or Windows Toasters 
+		wait: true // Wait with callback, until user action is taken against notification 
+		}, function (err, response) {
+		// Response is response from notification 
+	});
 };
 gui.shootGoto = function (t) {
 	var elem = $(t),
