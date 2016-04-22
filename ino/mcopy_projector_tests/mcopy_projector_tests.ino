@@ -39,6 +39,7 @@ const int proj_fwd_pin = 5;
 const int proj_bwd_pin = 6;
 volatile boolean proj_running = false;
 const int proj_endstop_pin = 4;
+volatile int proj_endstop_raw;
 boolean proj_dir = true; 
 
 //APP
@@ -82,10 +83,9 @@ void loop() {
   }
   now = millis();
   if (proj_running) {
-    if (proj_reading) {
-      proj_stop();
-    }
+    proj_reading();
   }
+   delay(100);
   //send light signal to pixie every second
   if (now - light_time >= 1000) {
       light.setPixelColor(0, r, g, b);
@@ -167,18 +167,21 @@ void proj_start () {
   //delay(1300); //TEMPORARY DELAY FOR TESTING TIMING
 }
 
-boolean proj_reading () {
-    if (digitalRead(proj_endstop_pin)) {
-        return false;
-    } else {
-        return true;
+void proj_reading () {
+   proj_endstop_raw = digitalRead(proj_endstop_pin);
+    if (proj_endstop_raw == 0) {
+        //do nothing
+    } else if (proj_endstop_raw == 1) {
+        proj_stop();
     }
     //delay(1); //needed?
 }
 
 void proj_stop () {
   digitalWrite(proj_bwd_pin, LOW); 
-  digitalWrite(proj_fwd_pin, LOW); 
+  digitalWrite(proj_fwd_pin, LOW);
+  
+  proj_running = false;
   
   Serial.println(cmd_projector);
   log("projector()");
