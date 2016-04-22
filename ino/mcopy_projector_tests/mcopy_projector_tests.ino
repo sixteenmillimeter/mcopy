@@ -29,13 +29,20 @@ volatile int r = 0;
 volatile int g = 0;
 volatile int b = 0;
 
+unsigned long light_time;
+
 //PROJECTOR VARIABLES
-//const int proj_pin = 5; //relay 4
 //const int proj_time = {{proj.time}};
 //const int proj_delay = {{proj.delay}};
-const int proj_endstop_pin = 4;
 
+const int proj_fwd_pin = 5;
+const int proj_bwd_pin = 6;
+volatile boolean proj_running = false;
+const int proj_endstop_pin = 4;
 boolean proj_dir = true; 
+
+//APP
+unsigned long now; //to be compared to stored values every loop
 
 const char cmd_light = 'l';
 const char cmd_projector = 'p';
@@ -53,12 +60,15 @@ void setup() {
   Serial.begin(57600);
   Serial.flush();
   Serial.setTimeout(serialDelay);
+  
   //pixieSerial.begin(115200); // Pixie REQUIRES this baud rate
   light.begin();
   light.setPixelColor(0, 0, 0, 0);
   light.show();
 
   pinMode(proj_endstop_pin, INPUT);
+  pinMode(proj_fwd_pin, OUTPUT);
+  pinMode(proj_bwd_pin, OUTPUT);
 }
 
 void loop() {
@@ -70,12 +80,18 @@ void loop() {
     cmd(cmd_char);
     cmd_char = 'z';
   }
-  if (digitalRead(proj_endstop_pin)) {
-       Serial.println("blocked.");
-  } else {
-       Serial.println("open.");
+  now = millis();
+  if (proj_running) {
+    if (proj_reading) {
+      proj_stop();
+    }
   }
-  delay(500);
+  //send light signal to pixie every second
+  if (now - light_time >= 1000) {
+      light.setPixelColor(0, r, g, b);
+      light.show();
+      light_time = now;
+  }
 }
 
 void cmd (char val) {
@@ -86,14 +102,13 @@ void cmd (char val) {
   } else if (val == cmd_mcopy_identifier) {
     identify();
   } else if (val == cmd_projector) {
-    projector();
+    proj_start();
   } else if (val == cmd_proj_forward) {
     proj_direction(true);
   } else if (val == cmd_proj_backward) {
     proj_direction(false);
   } else if (val == cmd_light) {
-    colorString();
-    Serial.println(cmd_light);//confirm light change
+    light_set();
   }
 }
 
@@ -113,7 +128,7 @@ void identify () {
   log("identify()");  
 }
 
-void colorString () {
+void light_set () {
   while (Serial.available() == 0) {             
     //Wait for color string
   }
@@ -133,28 +148,38 @@ void colorString () {
 
   light.setPixelColor(0, r, g, b);
   light.show();
+  
+  Serial.println(cmd_light);//confirm light change
+  log(color);
 }
 
-void projector () {
-  /* FROM INTVAL
-   * WILL USE OPTICAL ENDSTOP
-   * Time_start();
-  cam_dir = dir;
-  if (cam_dir) {
-    analogWrite(PIN_MOTOR_FORWARD, fwd_speed);
-    analogWrite(PIN_MOTOR_BACKWARD, 0);
+void proj_start () {
+  if (proj_dir) {
+    digitalWrite(proj_fwd_pin, HIGH);
+    digitalWrite(proj_bwd_pin, LOW); 
   } else {
-    analogWrite(PIN_MOTOR_BACKWARD, bwd_speed);
-    analogWrite(PIN_MOTOR_FORWARD, 0);
+    digitalWrite(proj_bwd_pin, HIGH); 
+    digitalWrite(proj_fwd_pin, LOW); 
   }
-  running = true;
-  if (fwd_speed == 255) {
-      delay(300);
-  } else {
-      delay(600);
-  }
-  micro_primed = false;*/
-  delay(1300); //TEMPORARY DELAY FOR TESTING TIMING
+  proj_running = true;
+  delay(200); // Let flag pass out of endstop
+
+  //delay(1300); //TEMPORARY DELAY FOR TESTING TIMING
+}
+
+boolean proj_reading () {
+    if (digitalRead(proj_endstop_pin)) {
+        return false;
+    } else {
+        return true;
+    }
+    //delay(1); //needed?
+}
+
+void proj_stop () {
+  digitalWrite(proj_bwd_pin, LOW); 
+  digitalWrite(proj_fwd_pin, LOW); 
+  
   Serial.println(cmd_projector);
   log("projector()");
 }
@@ -168,6 +193,7 @@ void proj_direction (boolean state) {
     Serial.println(cmd_proj_backward);
     log("proj_direction -> false");
   }
+  //delay(50); //delay after direction change to account for slippage of the belt
 }
 
 void log (String msg) {
