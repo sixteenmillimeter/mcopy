@@ -30,7 +30,10 @@
 			"cam_forward" : "e",
 			"cam_backward" : "f",
 			"proj_forward" : "g",
-			"proj_backward" : "h"
+			"proj_backward" : "h",
+			"proj_identifier" : "j",
+			"cam_identifier" : "k",
+			"mcopy_identifier" : "m"
 		}
 	}
 }
