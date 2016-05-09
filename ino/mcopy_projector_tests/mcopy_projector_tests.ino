@@ -11,6 +11,13 @@
 //Adafruit_Pixie light = Adafruit_Pixie(NUMPIXELS, &pixieSerial);
 Adafruit_NeoPixel light = Adafruit_NeoPixel(1, PIXELPIN, NEO_GRB + NEO_KHZ800);
 
+/*
+----------------------------------------------------
+Microswitch (use INPUT_PULLUP!!)
+GND-----\ | \-----PIN
+----------------------------------------------------
+*/
+
 //PROJECTOR HEADERS
 
 boolean debug_state = false;
@@ -38,8 +45,8 @@ unsigned long light_time;
 const int proj_fwd_pin = 5;
 const int proj_bwd_pin = 6;
 volatile boolean proj_running = false;
-const int proj_endstop_pin = 4;
-volatile int proj_endstop_raw;
+const int proj_micro_pin = 4;
+volatile int proj_micro_raw;
 boolean proj_dir = true; 
 
 //APP
@@ -67,7 +74,7 @@ void setup() {
   light.setPixelColor(0, 0, 0, 0);
   light.show();
 
-  pinMode(proj_endstop_pin, INPUT);
+  pinMode(proj_micro_pin, INPUT_PULLUP);
   pinMode(proj_fwd_pin, OUTPUT);
   pinMode(proj_bwd_pin, OUTPUT);
 }
@@ -162,16 +169,16 @@ void proj_start () {
     digitalWrite(proj_fwd_pin, LOW); 
   }
   proj_running = true;
-  delay(200); // Let flag pass out of endstop
+  delay(500); // Let bump pass out of microswitch
 
   //delay(1300); //TEMPORARY DELAY FOR TESTING TIMING
 }
 
 void proj_reading () {
-   proj_endstop_raw = digitalRead(proj_endstop_pin);
-    if (proj_endstop_raw == 0) {
+   proj_micro_raw = digitalRead(proj_micro_pin);
+    if (proj_micro_raw == 1) {
         //do nothing
-    } else if (proj_endstop_raw == 1) {
+    } else if (proj_micro_raw == 0) {
         proj_stop();
     }
     //delay(1); //needed?
