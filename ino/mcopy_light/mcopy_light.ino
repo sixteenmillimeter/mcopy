@@ -20,6 +20,9 @@ volatile int r = 0;
 volatile int g = 0;
 volatile int b = 0;
 
+unsigned long now; //to be compared to stored values every loop
+unsigned long light_time;
+
 const char cmd_light = 'l';
 
 const char cmd_debug = 'd';
@@ -44,6 +47,13 @@ void loop () {
 		cmd(cmd_char);
 		cmd_char = 'z';
 	}
+   now = millis();
+  //send light signal to pixie every second
+  if (now - light_time >= 1000) {
+      light.setPixelColor(0, r, g, b);
+      light.show();
+      light_time = now;
+  }
 }
 
 //
