@@ -767,6 +767,12 @@ light.cmy.init = function () {
 
 };
 
+light.cmy.setDial = function (dial, val) {
+	'use strict';
+	var elem = $('#dial-' + dial);
+	
+};
+
 //RGB GUI
 light.rgb = {};
 light.rgb.elem;

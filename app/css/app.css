@@ -97,6 +97,124 @@ footer {
   left: -8px;
   font-size: 27px;
 }
+#dial-c {
+  margin-top: 85px;
+  margin-left: 15px;
+}
+#dial-c .dial-wedge,
+#dial-c .dial-marker {
+  background: #00FFFF;
+}
+#dial-c input {
+  color: #00FFFF;
+  border-color: #00FFFF;
+}
+#dial-m {
+  margin-top: 85px;
+  margin-left: 105px;
+}
+#dial-m .dial-wedge,
+#dial-m .dial-marker {
+  background: #FF00FF;
+}
+#dial-m input {
+  color: #FF00FF;
+  border-color: #FF00FF;
+}
+#dial-y {
+  margin-top: 85px;
+  margin-left: 195px;
+}
+#dial-y .dial-wedge,
+#dial-y .dial-marker {
+  background: #FFFF00;
+}
+#dial-y input {
+  color: #FFFF00;
+  border-color: #FFFF00;
+}
+.dial-wrapper {
+  position: absolute;
+  width: 5.5em;
+  height: 5.5em;
+}
+.dial-wrapper:after {
+  content: "";
+  background: #272b30;
+  border-radius: 50%;
+  width: 5em;
+  height: 5em;
+  position: absolute;
+  top: 0.25em;
+  left: 0.25em;
+}
+.dial-wrapper input {
+  margin-top: 6em;
+  width: 4.5em;
+  margin-left: 1em;
+  background: #272b30;
+  border: 1px solid;
+  text-align: center;
+}
+.dial-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+  width: 2.75em;
+}
+.dial-container.dial-container1 {
+  left: 2.75em;
+}
+.dial-container.dial-container1 .dial-wedge {
+  transform: rotateZ(360deg);
+  border-radius: 0 5.5em 5.5em 0;
+  left: 0;
+  transform-origin: 0 50%;
+}
+.dial-container.dial-container2 {
+  left: 0;
+}
+.dial-container.dial-container2 .dial-wedge {
+  transform: rotateZ(0);
+  border-radius: 5.5em 0 0 5.5em;
+  transform-origin: 5.5em 5.5em;
+}
+.dial-wedge {
+  height: 5.5em;
+  width: 2.75em;
+}
+.dial-marker {
+  border-radius: 50%;
+  height: 0.25em;
+  width: 0.25em;
+  position: absolute;
+  top: 0;
+  left: calc(49%);
+}
+.dial-end {
+  transform: rotateZ(360deg);
+  transform-origin: 50% 2.75em;
+}
+/*@keyframes rotate-bg-1 {
+  50%, 100% {
+    transform: rotateZ(180deg);
+  }
+}
+@keyframes rotate-bg-2 {
+  0%, 50% {
+    transform: rotateZ(0);
+  }
+  100% {
+    transform: rotateZ(180deg);
+  }
+}
+@keyframes rotate-marker {
+  100% {
+    transform: rotateZ(360deg);
+  }
+}
+*/
 .mcopy-light {
   background: #000;
   width: 15px;
