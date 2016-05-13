@@ -41,6 +41,9 @@ const char cmd_cam_backward = 'f';
 const char cmd_debug = 'd';
 const char cmd_connect = 'i';
 volatile char cmd_char = 'z';
+const char cmd_mcopy_identifier = 'm';
+const char cmd_cam_identifier = 'k';
+
 const int serialDelay = 5;
 
 void setup() {
@@ -72,6 +75,8 @@ void cmd (char val) {
     debug();
   } else if (val == cmd_connect) {
     connect();
+  } else if (val == cmd_mcopy_identifier) {
+    identify();
   } else if (val == cmd_camera) {
     Frame();
   } else if (val == cmd_cam_forward) {
@@ -90,6 +95,11 @@ void debug () {
 void connect () {
   Serial.println(cmd_connect);
   log("connect()");
+}
+
+void identify () {
+  Serial.println(cmd_cam_identifier);
+  log("identify()");  
 }
 
 void Pins_init () {
