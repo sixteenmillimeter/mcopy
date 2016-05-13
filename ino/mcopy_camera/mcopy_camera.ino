@@ -1,13 +1,38 @@
 boolean debug_state = false;
 
-/*const int cam_pin = 4; //relay 8
-const int cam_time = {{cam.time}};
-const int cam_delay = {{cam.delay}};
-const int cam_momentary = {{cam.momentary}};
+/*
+----------------------------------------------------
+Microswitch (use INPUT_PULLUP!!)
+GND-----\ | \-----PIN
+----------------------------------------------------
+*/
 
-const int cam_dir_1 = 6; //relay 7*/
+const int FAST_PWM = 255;
+const int SLOW_PWM = 127;
 
-boolean cam_dir = true; //camera defaults to forward
+/* ------------------------------------------------
+ *  pins
+ * ------------------------------------------------*/
+//Adafruit Metro Mini
+const int PIN_INDICATOR = 13;
+const int PIN_MOTOR_FORWARD = 9;
+const int PIN_MOTOR_BACKWARD = 10;
+const int PIN_MICRO = 19; //laser cut version
+
+volatile boolean running = false;
+volatile boolean cam_dir = true;
+
+volatile int micro_position = 0;
+volatile boolean micro_primed = false;
+
+unsigned long timer = 0;
+unsigned long frame_start = 0;
+unsigned long delay_start = 0;
+
+volatile int fwd_speed = FAST_PWM;
+volatile int bwd_speed = FAST_PWM;
+
+volatile long seq_delay = 42;
 
 const char cmd_camera = 'c';
 const char cmd_cam_forward = 'e';
@@ -22,6 +47,8 @@ void setup() {
   Serial.begin(57600);
   Serial.flush();
   Serial.setTimeout(serialDelay);
+
+  Pins_init();
 }
 
 void loop() {
@@ -33,6 +60,11 @@ void loop() {
     cmd(cmd_char);
     cmd_char = 'z';
   }
+  timer = millis();
+
+  if (running) {
+    Read_micro();
+  }
 }
 
 void cmd (char val) {
@@ -41,7 +73,7 @@ void cmd (char val) {
   } else if (val == cmd_connect) {
     connect();
   } else if (val == cmd_camera) {
-    camera();
+    Frame();
   } else if (val == cmd_cam_forward) {
     cam_direction(true); //explicit
   } else if (val == cmd_cam_backward) {
@@ -60,11 +92,15 @@ void connect () {
   log("connect()");
 }
 
-void camera () {
-  /* FROM INTVAL
-   * WILL USE OPTICAL ENDSTOP
-   * Time_start();
-  cam_dir = dir;
+void Pins_init () {
+  pinMode(PIN_MOTOR_FORWARD, OUTPUT);
+  pinMode(PIN_MOTOR_BACKWARD, OUTPUT);
+  pinMode(PIN_MICRO, INPUT_PULLUP);
+  pinMode(PIN_INDICATOR, OUTPUT);
+}
+
+void Frame () {
+  frame_start = millis();
   if (cam_dir) {
     analogWrite(PIN_MOTOR_FORWARD, fwd_speed);
     analogWrite(PIN_MOTOR_BACKWARD, 0);
@@ -73,15 +109,46 @@ void camera () {
     analogWrite(PIN_MOTOR_FORWARD, 0);
   }
   running = true;
-  if (fwd_speed == 255) {
-      delay(300);
+  micro_primed = false;
+}
+
+boolean Read_delay () {
+  if (fwd_speed == FAST_PWM) {
+      if (timer - frame_start >= 300) {
+        return true;
+      }
   } else {
-      delay(600);
+      if (timer - frame_start >= 600) {
+        return true;
+      }
   }
-  micro_primed = false;*/
-  delay(750); //TEMPORARY DELAY FOR TESTING TIMING
-  Serial.println(cmd_camera);
-  log("camera()");
+  return false;
+}
+
+void Read_micro () {
+  if (Read_delay()) {
+    micro_position = digitalRead(PIN_MICRO);
+    if (micro_position == LOW 
+        && micro_primed == false) {
+      micro_primed = true;
+    } else if (micro_position == HIGH 
+              && micro_primed == true) {
+      Stop();
+    }
+    delay(2);//smooths out signal
+  }
+}
+
+void Stop () {
+  delay(10);
+  analogWrite(PIN_MOTOR_FORWARD, 0);
+  analogWrite(PIN_MOTOR_BACKWARD, 0);
+  
+  running = false;
+  micro_primed = false;
+
+  Serial.println(cmd_cam_backward);
+  log("Frame completed");
 }
 
 void cam_direction (boolean state) {
