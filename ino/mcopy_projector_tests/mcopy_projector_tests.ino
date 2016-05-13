@@ -92,7 +92,6 @@ void loop() {
   if (proj_running) {
     proj_reading();
   }
-   delay(100);
   //send light signal to pixie every second
   if (now - light_time >= 1000) {
       light.setPixelColor(0, r, g, b);
