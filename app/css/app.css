@@ -97,9 +97,20 @@ footer {
   left: -8px;
   font-size: 27px;
 }
+#kelvin-preview {
+  margin-top: 25px;
+  width: 350px;
+  height: 60px;
+  border: 1px solid #fff;
+  text-align: center;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  line-height: 60px;
+  color: #272b30;
+}
 #dial-c {
-  margin-top: 85px;
   margin-left: 15px;
+  margin-top: 85px;
 }
 #dial-c .dial-wedge,
 #dial-c .dial-marker {
@@ -110,8 +121,8 @@ footer {
   border-color: #00FFFF;
 }
 #dial-m {
-  margin-top: 85px;
   margin-left: 105px;
+  margin-top: 85px;
 }
 #dial-m .dial-wedge,
 #dial-m .dial-marker {
@@ -122,8 +133,8 @@ footer {
   border-color: #FF00FF;
 }
 #dial-y {
-  margin-top: 85px;
   margin-left: 195px;
+  margin-top: 85px;
 }
 #dial-y .dial-wedge,
 #dial-y .dial-marker {
@@ -132,6 +143,22 @@ footer {
 #dial-y input {
   color: #FFFF00;
   border-color: #FFFF00;
+}
+#dial-k {
+  margin-left: 285px;
+  margin-top: 85px;
+}
+#dial-k .dial-wedge,
+#dial-k .dial-marker {
+  background: #000;
+}
+#dial-k input {
+  color: #000;
+  border-color: #000;
+}
+#dial-k input {
+  color: #fff;
+  border-color: #fff;
 }
 .dial-wrapper {
   position: absolute;
@@ -151,7 +178,7 @@ footer {
 .dial-wrapper input {
   margin-top: 6em;
   width: 4.5em;
-  margin-left: 1em;
+  margin-left: 0.5em;
   background: #272b30;
   border: 1px solid;
   text-align: center;
@@ -196,25 +223,19 @@ footer {
   transform: rotateZ(360deg);
   transform-origin: 50% 2.75em;
 }
-/*@keyframes rotate-bg-1 {
-  50%, 100% {
-    transform: rotateZ(180deg);
-  }
+#cmy-preview {
+  position: absolute;
+  margin-top: 220px;
+  margin-left: 15px;
+  width: 350px;
+  height: 60px;
+  border: 1px solid #fff;
+  text-align: center;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  line-height: 60px;
+  color: #272b30;
 }
-@keyframes rotate-bg-2 {
-  0%, 50% {
-    transform: rotateZ(0);
-  }
-  100% {
-    transform: rotateZ(180deg);
-  }
-}
-@keyframes rotate-marker {
-  100% {
-    transform: rotateZ(360deg);
-  }
-}
-*/
 .mcopy-light {
   background: #000;
   width: 15px;

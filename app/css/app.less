@@ -151,48 +151,55 @@ footer{
     }
 }
 
+#kelvin-preview {
+	margin-top: 25px;
+	width: 350px;
+    height: 60px;
+	border: 1px solid @COMMON;
+	text-align: center;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	line-height: 60px;
+	color: @BG;
+}
+
 @dial_size : 5.5em;
 @dial_thickness : 0.5em;
 @dial_cyan : #00FFFF;
 @dial_magenta : #FF00FF;
 @dial_yellow : #FFFF00;
+@dial_black : #000;
 @dial_left : 15px;
 @dial_spacing : 90px;
 
-#dial-c {
+.dial-class (@color, @i) {
+	margin-left: @dial_left + (@dial_spacing * @i);
 	margin-top: 85px;
-	margin-left: @dial_left;
 	.dial-wedge,
 	.dial-marker{
-		background: @dial_cyan;
+		background: @color;
 	}
 	input{
-		color: @dial_cyan;
-		border-color: @dial_cyan;
+		color: @color;
+		border-color: @color;
 	}
+}
+
+#dial-c {
+	.dial-class(@dial_cyan, 0);
+
 }
 #dial-m {
-	margin-top: 85px;
-	margin-left: @dial_left + @dial_spacing;
-	.dial-wedge, 
-	.dial-marker{
-		background: @dial_magenta;
-	}
-	input{
-		color: @dial_magenta;
-		border-color: @dial_magenta;
-	}
+	.dial-class(@dial_magenta, 1);
 }
 #dial-y {
-	margin-top: 85px;
-	margin-left: @dial_left + (@dial_spacing * 2);
-	.dial-wedge, 
-	.dial-marker{
-		background: @dial_yellow;
-	}
+	.dial-class(@dial_yellow, 2);
+}
+#dial-k {
+	.dial-class(@dial_black, 3);
 	input{
-		color: @dial_yellow;
-		border-color: @dial_yellow;
+		color: #fff;
+		border-color: #fff;
 	}
 }
 
@@ -213,7 +220,7 @@ footer{
 	input{
 		margin-top: @dial_size + 0.5em;
 	    width: @dial_size - 1em;
-		margin-left: 1em;
+		margin-left: 0.5em;
 		background: @BG;
 		border: 1px solid;
 		text-align: center;
@@ -259,25 +266,19 @@ footer{
   transform: rotateZ(360deg);
   transform-origin: 50% @dial_size / 2;
 }
-/*@keyframes rotate-bg-1 {
-  50%, 100% {
-    transform: rotateZ(180deg);
-  }
+#cmy-preview {
+	position: absolute;
+    margin-top: 220px;
+    margin-left: 15px;
+	width: 350px;
+    height: 60px;
+	border: 1px solid @COMMON;
+	text-align: center;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	line-height: 60px;
+	color: @BG;
 }
-@keyframes rotate-bg-2 {
-  0%, 50% {
-    transform: rotateZ(0);
-  }
-  100% {
-    transform: rotateZ(180deg);
-  }
-}
-@keyframes rotate-marker {
-  100% {
-    transform: rotateZ(360deg);
-  }
-}
-*/
 
 .mcopy-light{
 	background: #000;
