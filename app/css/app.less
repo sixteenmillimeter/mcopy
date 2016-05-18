@@ -163,8 +163,11 @@ footer{
 	color: @BG;
 }
 
-@dial_size : 5.5em;
-@dial_thickness : 0.5em;
+//@dial_size : 5.5em;
+//@dial_thickness : 0.5em;
+@dial_size : 80px;
+@dial_thickness : 14px;
+
 @dial_cyan : #00FFFF;
 @dial_magenta : #FF00FF;
 @dial_yellow : #FFFF00;
@@ -187,7 +190,6 @@ footer{
 
 #dial-c {
 	.dial-class(@dial_cyan, 0);
-
 }
 #dial-m {
 	.dial-class(@dial_magenta, 1);
@@ -218,9 +220,9 @@ footer{
 		left: @dial_thickness / 2;
 	}
 	input{
-		margin-top: @dial_size + 0.5em;
-	    width: @dial_size - 1em;
-		margin-left: 0.5em;
+		margin-top: @dial_size + @dial_thickness;
+	    width: @dial_size - (@dial_thickness * 2);
+		margin-left: @dial_thickness;
 		background: @BG;
 		border: 1px solid;
 		text-align: center;
@@ -235,7 +237,7 @@ footer{
 	&.dial-container1 {
 		left: @dial_size / 2;
 		.dial-wedge {
-			transform: rotateZ(360deg);
+			transform: rotateZ(0deg);
 			border-radius: 0 @dial_size @dial_size 0;
 			left: 0;
 			transform-origin: 0 50%;
@@ -244,9 +246,9 @@ footer{
 	&.dial-container2 {
 	  	left: 0;
 		.dial-wedge {
-			transform: rotateZ(0);
+			transform: rotateZ(0deg);
 			border-radius: @dial_size 0 0 @dial_size;
-			transform-origin: @dial_size @dial_size;
+			transform-origin: @dial_size/2 @dial_size/2;
 		}
 	}
 }
@@ -263,9 +265,10 @@ footer{
 	left: calc(50% - (@dial_thickness * 2));
 }
 .dial-end {
-  transform: rotateZ(360deg);
-  transform-origin: 50% @dial_size / 2;
+  transform: rotateZ(0deg);
+  transform-origin: 50% (@dial_size/2);
 }
+
 #cmy-preview {
 	position: absolute;
     margin-top: 220px;

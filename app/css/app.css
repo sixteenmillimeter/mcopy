@@ -162,23 +162,23 @@ footer {
 }
 .dial-wrapper {
   position: absolute;
-  width: 5.5em;
-  height: 5.5em;
+  width: 80px;
+  height: 80px;
 }
 .dial-wrapper:after {
   content: "";
   background: #272b30;
   border-radius: 50%;
-  width: 5em;
-  height: 5em;
+  width: 66px;
+  height: 66px;
   position: absolute;
-  top: 0.25em;
-  left: 0.25em;
+  top: 7px;
+  left: 7px;
 }
 .dial-wrapper input {
-  margin-top: 6em;
-  width: 4.5em;
-  margin-left: 0.5em;
+  margin-top: 94px;
+  width: 52px;
+  margin-left: 14px;
   background: #272b30;
   border: 1px solid;
   text-align: center;
@@ -188,14 +188,14 @@ footer {
   top: 0;
   bottom: 0;
   overflow: hidden;
-  width: 2.75em;
+  width: 40px;
 }
 .dial-container.dial-container1 {
-  left: 2.75em;
+  left: 40px;
 }
 .dial-container.dial-container1 .dial-wedge {
-  transform: rotateZ(360deg);
-  border-radius: 0 5.5em 5.5em 0;
+  transform: rotateZ(0deg);
+  border-radius: 0 80px 80px 0;
   left: 0;
   transform-origin: 0 50%;
 }
@@ -203,25 +203,25 @@ footer {
   left: 0;
 }
 .dial-container.dial-container2 .dial-wedge {
-  transform: rotateZ(0);
-  border-radius: 5.5em 0 0 5.5em;
-  transform-origin: 5.5em 5.5em;
+  transform: rotateZ(0deg);
+  border-radius: 80px 0 0 80px;
+  transform-origin: 40px 40px;
 }
 .dial-wedge {
-  height: 5.5em;
-  width: 2.75em;
+  height: 80px;
+  width: 40px;
 }
 .dial-marker {
   border-radius: 50%;
-  height: 0.25em;
-  width: 0.25em;
+  height: 7px;
+  width: 7px;
   position: absolute;
   top: 0;
-  left: calc(49%);
+  left: calc(22%);
 }
 .dial-end {
-  transform: rotateZ(360deg);
-  transform-origin: 50% 2.75em;
+  transform: rotateZ(0deg);
+  transform-origin: 50% 40px;
 }
 #cmy-preview {
   position: absolute;

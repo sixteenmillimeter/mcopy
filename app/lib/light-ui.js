@@ -74,11 +74,14 @@ light.colorPickers = function () {
 			$('#' + event.target + '-page').show();
 			if (event.target === 'rgb') {
 				light.rgb.page();
+			} else if (event.target) {
+				light.cmy.page();
 			}
 		}
 	});
 	light.rgb.init();
 	light.kelvin.init();
+	light.cmy.init();
 };
 light.set = function (rgb, callback) { //rgb = [0,0,0]
 	'use strict';
@@ -249,25 +252,87 @@ light.kelvin.click = function (t, e) {
 light.cmy = {};
 light.cmy.init = function () {
 	'use strict';
-
+	$('.dial-wrapper input').on('input', function () {
+		light.cmy.change(this);
+	});
+	$('.dial-wrapper input').on('change',  function () {
+		light.cmy.change(this);
+	});
 };
 
-light.cmy.set = function (rgb) {
+light.cmy.page = function () {
+	'use strict';
+	light.cmy.fromRgb(light.color);
+};
 
+light.cmy.change = function (t) {
+	'use strict';
+	var id = $(t).parent().attr('id').split('-')[1],
+		val = $(t).val(),
+		cmy = [];
+
+	cmy[0] = $('#dial-c input').val();
+	cmy[1] = $('#dial-m input').val();
+	cmy[2] = $('#dial-y input').val();
+	cmy[3] = $('#dial-k input').val();
+
+	light.cmy.setDial(id, val);
+	light.cmy.preview(cmy);
+};
+
+light.cmy.fromRgb = function (rgb) {
+	'use strict';
+	var cmy = chroma.rgb(rgb).cmyk();
+	light.cmy.set(cmy);
+};
+
+light.cmy.set = function (cmy) {
+	'use strict';
+	light.cmy.setDial('c', cmy[0]);
+	light.cmy.setDial('m', cmy[1]);
+	light.cmy.setDial('y', cmy[2]);
+	light.cmy.setDial('k', cmy[3]);
+
+	light.cmy.preview(cmy);
 };
 
 light.cmy.setDial = function (dial, val) {
 	'use strict';
 	var elem = $('#dial-' + dial),
-		angle = Math.floor(360 * val);
-	elem.find('.dial-container1 .dial-wedge').css('transform', 'rotateZ(' + angle + 'deg)');
-	elem.find('.dial-end').css('transform', 'rotateZ(' + angle + 'deg)');
+		angle = Math.floor(360 * val),
+		container1 = 0,
+		container2 = 0;
+		elem.find('.dial-end').hide();
+	if (angle === 0) {
+		container1 = 180;
+		container2 = 180;
+	} else if (angle < 180) {
+		container1 = 180;
+		container2 = 180 - angle;
+	} else if (angle === 180) {
+		container1 = 180;
+		container2 = 0;
+	} else if (angle > 180 && angle < 360) {
+		container1 = 180 - (angle - 180);
+		container2 = 0;
+	} else if (angle === 360) {
+		//
+	}
+
+	if (angle !== 0) {
+		elem.find('.dial-end').show();
+	}
+
+	elem.find('.dial-container1 .dial-wedge').css('transform', 'rotateZ(' + container1 + 'deg)');
+	elem.find('.dial-container2 .dial-wedge').css('transform', 'rotateZ(' + container2 + 'deg)');
+	elem.find('.dial-end').css('transform', 'rotateZ(' + (360 - angle) + 'deg)');
+	elem.find('input').val(val);
 };
 
-light.cmy.preview = function (rgb_float) {
+light.cmy.preview = function (cmy) {
 	'use strict';
 	var elem = $('#cmy-preview'),
-		rgb = light.rgb.floor(rgb_float),
+		rgb = light.rgb.floor(chroma.cmyk(cmy).rgb()),
 		rgb_str = 'rgb(' + rgb.join(', ') + ')';
 	elem.css('background', rgb_str);
 	elem.text(rgb_str);
@@ -362,6 +427,8 @@ light.swatch.init = function () {
 			$(this).addClass('default set');
 			if (w2ui['colors'].active === 'rgb') {
 				light.rgb.set(light.color);
+			} else if (w2ui['colors'].active === 'cmy') {
+				light.cmy.fromRgb(light.color);
 			}
 			light.preview(rgb);
 		}
