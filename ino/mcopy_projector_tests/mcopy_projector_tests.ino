@@ -1,15 +1,15 @@
 //Test lighting with NeoPixels instead of Pixies to prevent eye damage.
 
 //LIGHT HEADERS
-//#include "SoftwareSerial.h"
-//#include "Adafruit_Pixie.h"
-#include <Adafruit_NeoPixel.h>
+#include "SoftwareSerial.h"
+#include "Adafruit_Pixie.h"
+//#include <Adafruit_NeoPixel.h>
 #define NUMPIXELS 1 // Number of Pixies in the strip
-//#define PIXIEPIN  6 // Pin number for SoftwareSerial output
-#define PIXELPIN  3 // Pin number for SoftwareSerial output
-//SoftwareSerial pixieSerial(-1, PIXIEPIN);
-//Adafruit_Pixie light = Adafruit_Pixie(NUMPIXELS, &pixieSerial);
-Adafruit_NeoPixel light = Adafruit_NeoPixel(1, PIXELPIN, NEO_GRB + NEO_KHZ800);
+#define PIXIEPIN  6 // Pin number for SoftwareSerial output
+//#define PIXELPIN  3 // Pin number for SoftwareSerial output
+SoftwareSerial pixieSerial(-1, PIXIEPIN);
+Adafruit_Pixie light = Adafruit_Pixie(NUMPIXELS, &pixieSerial);
+//Adafruit_NeoPixel light = Adafruit_NeoPixel(1, PIXELPIN, NEO_GRB + NEO_KHZ800);
 
 /*
 ----------------------------------------------------
@@ -42,8 +42,8 @@ unsigned long light_time;
 //const int proj_time = {{proj.time}};
 //const int proj_delay = {{proj.delay}};
 
-const int proj_fwd_pin = 5;
-const int proj_bwd_pin = 6;
+const int proj_fwd_pin = 8;
+const int proj_bwd_pin = 9;
 volatile boolean proj_running = false;
 const int proj_micro_pin = 4;
 volatile int proj_micro_raw;
@@ -69,8 +69,8 @@ void setup() {
   Serial.flush();
   Serial.setTimeout(serialDelay);
   
-  //pixieSerial.begin(115200); // Pixie REQUIRES this baud rate
-  light.begin();
+  pixieSerial.begin(115200); // Pixie REQUIRES this baud rate
+  //light.begin(); //neopixel only
   light.setPixelColor(0, 0, 0, 0);
   light.show();
 
