@@ -10,6 +10,8 @@ GND-----\ | \-----PIN
 ----------------------------------------------------
 */
 
+const int MOTOR_RPM = 120;
+const int BOLEX_C = round((133 / (1.66 * 360)) * 1000); //bolex exposure constant
 const int FAST_PWM = 255;
 const int SLOW_PWM = 127;
 
@@ -162,7 +164,7 @@ void timedString () {
     timed_str = "600";
     timed = false;
   } else {
-    timed_delay = timed_val - 600;
+    timed_delay = timed_val - BOLEX_C;
     timed = true;
   }
   Serial.println(cmd_timed);
