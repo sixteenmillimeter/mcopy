@@ -12,9 +12,10 @@ var remote = require('remote'),
 	cam = {},
 	nav = {},
 	seq = require('./lib/seq-ui.js'),
-	cmd = {},
+	cmd = require('./lib/cmd-ui.js'),
 	gui = {},
-	log = require('./lib/log-ui.js');
+	log = require('./lib/log-ui.js'),
+	mscript = require('./lib/mscript.js');
 //console.log(ipcRenderer.sendSync('light', { 'fuck' : true }) );
 
 mcopy.cfg = JSON.parse(fs.readFileSync('./data/cfg.json'), 'utf8');
@@ -57,111 +58,6 @@ mcopy.state = {
 };
 
 //mcopy.gui.updateState();
-
-cmd.proj_forward = function (callback) {
-	'use strict';
-	var res = function (ms) {
-		gui.updateState();
-		if (callback) { callback(ms); }
-	};
-	if (!mcopy.state.projector.direction) {
-		proj.set(true, function (ms) {				
-			setTimeout(function () {
-				proj.move(res);
-			}, mcopy.cfg.arduino.serialDelay);
-		});
-	} else {
-		setTimeout(function () {
-			proj.move(res);
-		}, mcopy.cfg.arduino.serialDelay);
-	}
-};
-cmd.proj_backward = function (callback) {
-	'use strict';
-	var res = function (ms) {
-		gui.updateState();
-		if (callback) { callback(ms); }
-	};
-	if (mcopy.state.projector.direction) {
-		proj.set(false, function (ms) {
-			setTimeout(function () {
-				proj.move(res);
-			}, mcopy.cfg.arduino.serialDelay);
-		});
-	} else {
-		setTimeout(function () {
-			proj.move(res);
-		}, mcopy.cfg.arduino.serialDelay);
-	}
-};
-cmd.cam_forward = function (rgb, callback) {
-	'use strict';
-	var res = function (ms) {
-		gui.updateState();
-		setTimeout(function () {
-			light.display([0,0,0]);
-			light.set([0, 0, 0], function () {
-				if (callback) { callback(ms); }
-			});
-		}, mcopy.cfg.arduino.serialDelay);	
-	};
-	if (!mcopy.state.camera.direction) {
-		cam.set(true, function () {
-			setTimeout( function () {
-				light.display(rgb);
-				light.set(rgb, function () {
-					setTimeout( function () {
-						cam.move(res);
-					}, mcopy.cfg.arduino.serialDelay);
-				});
-			}, mcopy.cfg.arduino.serialDelay);
-		});
-	} else {
-		light.display(rgb);
-		light.set(rgb, function () {
-			setTimeout(function () {
-				cam.move(res);
-			}, mcopy.cfg.arduino.serialDelay);
-		});
-	}
-};
-cmd.black_forward = function (callback) {
-	'use strict';
-	var off = [0, 0, 0];
-	cmd.cam_forward(off, callback);
-};
-cmd.cam_backward = function (rgb, callback) {
-	'use strict';
-	var res = function (ms) {
-		gui.updateState();
-		light.display([0,0,0]);
-		light.set([0, 0, 0], function () {
-			if (callback) { callback(ms); }
-		});	
-	};
-	if (mcopy.state.camera.direction) {
-		cam.set(false, function () {
-			setTimeout(function () {
-				light.display(rgb);
-				light.set(rgb, function () {
-					cam.move(res);
-				});
-			}, mcopy.cfg.arduino.serialDelay);
-		});
-	} else {
-		setTimeout(function () {
-			light.display(rgb);
-			light.set(rgb, function () {
-				cam.move(res);
-			});
-		}, mcopy.cfg.arduino.serialDelay);
-	}
-};
-cmd.black_backward = function (callback) {
-	'use strict';
-	var off = [0, 0, 0];
-	cmd.cam_backward(off, callback);
-};
 
 proj.queue = {};
 proj.lock = false;
@@ -540,8 +436,26 @@ gui.console.init = function () {
 		}
 	});
 };
+gui.console.lines = [];
+gui.console.parse = function () {
+	'use strict';
+	var lines = gui.console.elem.val().split('\n'),
+		line = lines[lines.length - 2].replace('>', '').trim();
+	gui.console.lines.push(line);
+};
 gui.console.exec = function () {
 	'use strict';
+	var command;
+	gui.console.parse();
+	command = gui.console.lines[gui.console.lines.length - 1].replace('>', '').trim();
+	console.log(command);
+	if (mscript.cmd.indexOf(command) !== -1) {
+		if (command === 'CF') {
+			cmd.cam_forward(light.color);
+		} else if (cmd === 'CB') {
+			cmd.cam_backward(light.color);
+		}
+	}
 	gui.console.newLine();
 };
 gui.console.newLine = function () {
