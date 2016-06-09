@@ -33,7 +33,8 @@
 			"proj_backward" : "h",
 			"proj_identifier" : "j",
 			"cam_identifier" : "k",
-			"mcopy_identifier" : "m"
+			"mcopy_identifier" : "m",
+			"cam_timed" : "n"
 		}
 	}
 }
