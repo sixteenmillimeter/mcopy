@@ -19,6 +19,10 @@ light.swatches = [
 		name : '2500 kelvin'
 	},
 	{
+		rgb : chroma.kelvin(3200).rgb(),
+		name : '3200 kelvin'
+	},
+	{
 		rgb : chroma.kelvin(5600).rgb(),
 		name : '5600 kelvin'
 	},
