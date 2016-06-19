@@ -10,11 +10,12 @@ var remote = require('remote'),
 	light = require('./lib/light-ui.js'),
 	proj = require('./lib/proj-ui.js'),
 	cam = require('./lib/cam-ui.js'),
-	nav = {},
+	nav = require('./lib/nav-ui.js'),
 	seq = require('./lib/seq-ui.js'),
 	cmd = require('./lib/cmd-ui.js'),
 	gui = require('./lib/gui.js'),
 	log = require('./lib/log-ui.js'),
+	devices = require('./lib/devices-ui.js'),
 	mscript = require('./lib/mscript.js');
 //console.log(ipcRenderer.sendSync('light', { 'fuck' : true }) );
 
@@ -58,28 +59,6 @@ mcopy.state = {
 };
 
 //mcopy.gui.updateState();
-
-var devices = {};
-devices.init = function () {
-	'use strict';
-	devices.listen();
-	gui.overlay(true);
-	gui.spinner(true);
-};
-devices.listen = function () {
-	'use strict';
-	ipcRenderer.on('ready', function (event, arg) {
-		//console.log(arg.camera);
-		//console.log(arg.projector);
-		devices.ready();
-		return event.returnValue = true;
-	});
-};
-devices.ready = function () {
-	'use strict';
-	gui.spinner(false);
-	gui.overlay(false);
-};
 
 var init = function () {
 	'use strict';
