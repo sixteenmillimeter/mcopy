@@ -3047,8 +3047,8 @@ var remote = require('remote'),
 	ipcRenderer = require('electron').ipcRenderer,
 	mcopy = {},
 	light = require('./lib/light-ui.js'),
-	proj = {},
-	cam = {},
+	proj = require('./lib/proj-ui.js'),
+	cam = require('./lib/cam-ui.js'),
 	nav = {},
 	seq = require('./lib/seq-ui.js'),
 	cmd = require('./lib/cmd-ui.js'),
@@ -3097,148 +3097,6 @@ mcopy.state = {
 };
 
 //mcopy.gui.updateState();
-
-proj.queue = {};
-proj.lock = false;
-proj.init = function () {
-	'use strict';
-	proj.listen();
-};
-proj.set = function (dir, callback) {
-	'use strict';
-	var obj;
-	if (proj.lock) {
-		return false;
-	}
-	obj = {
-		dir : dir,
-		id : uuid.v4()
-	};
-	ipcRenderer.sendSync('proj', obj);
-
-	if (typeof callback !== 'undefined') {
-		obj.callback = callback;
-	}
-	proj.queue[obj.id] = obj;
-	proj.lock = true;
-};
-proj.move = function (callback) {
-	'use strict';
-	var obj;
-	if (proj.lock) {
-		return false;
-	}
-	obj = {
-		frame : true,
-		id : uuid.v4()
-	};
-	ipcRenderer.sendSync('proj', obj);
-
-	if (typeof callback !== 'undefined') {
-		obj.callback = callback;
-	}
-	proj.queue[obj.id] = obj;
-	proj.lock = true;
-};
-proj.end = function (c, id, ms) {
-	'use strict';
-	if (c === mcopy.cfg.arduino.cmd.proj_forward) {
-		mcopy.state.projector.direction = true;
-	} else if (c === mcopy.cfg.arduino.cmd.proj_backward) {
-		mcopy.state.projector.direction = false;
-	} else if (c === mcopy.cfg.arduino.cmd.projector) {
-		if (mcopy.state.projector.direction) {
-			mcopy.state.projector.pos += 1;
-		} else {
-			mcopy.state.projector.pos -= 1;
-		}
-	}
-	if (typeof proj.queue[id] !== 'undefined') {
-		if (typeof proj.queue[id].callback !== 'undefined') {
-			proj.queue[id].callback(ms);
-		}
-		delete proj.queue[id];
-		proj.lock = false;
-	}
-};
-proj.listen = function () {
-	'use strict';
-	ipcRenderer.on('proj', function (event, arg) {
-		proj.end(arg.cmd, arg.id, arg.ms);		
-		return event.returnValue = true;
-	});
-};
-
-cam.queue = {};
-cam.lock = false;
-cam.init = function () {
-	'use strict';
-	cam.listen();
-};
-cam.set = function (dir, callback) {
-	'use strict';
-	var obj;
-	if (cam.lock) {
-		return false;
-	}
-	obj = {
-		dir : dir,
-		id : uuid.v4()
-	};
-	ipcRenderer.sendSync('cam', obj);
-
-	if (typeof callback !== 'undefined') {
-		obj.callback = callback;
-	}
-	cam.queue[obj.id] = obj;
-	cam.lock = true;
-};
-cam.move = function (callback) {
-	'use strict';
-	var obj;
-	if (cam.lock) {
-		return false;
-	}
-	obj = {
-		frame : true,
-		id : uuid.v4()
-	};
-	ipcRenderer.sendSync('cam', obj);
-
-	if (typeof callback !== 'undefined') {
-		obj.callback = callback;
-	}
-	cam.queue[obj.id] = obj;
-	cam.lock = true;
-};
-cam.end = function (c, id, ms) {
-	'use strict';
-	if (c === mcopy.cfg.arduino.cmd.cam_forward) {
-		mcopy.state.camera.direction = true;
-	} else if (c === mcopy.cfg.arduino.cmd.cam_backward) {
-		mcopy.state.camera.direction = false;
-	} else if (c === mcopy.cfg.arduino.cmd.camera) {
-		if (mcopy.state.camera.direction) {
-			mcopy.state.camera.pos += 1;
-		} else {
-			mcopy.state.camera.pos -= 1;
-		}
-	}
-	if (typeof cam.queue[id] !== 'undefined') {
-		if (typeof cam.queue[id].callback !== 'undefined') {
-			cam.queue[id].callback(ms);
-		}
-		delete cam.queue[id];
-		cam.lock = false;
-	}
-};
-cam.listen = function () {
-	'use strict';
-	ipcRenderer.on('cam', function (event, arg) {
-		cam.end(arg.cmd, arg.id, arg.ms);		
-		return event.returnValue = true;
-	});
-};
 
 //GUI
 gui.fmtZero = function (val, len) {
