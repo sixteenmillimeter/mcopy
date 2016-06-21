@@ -3111,5 +3111,4 @@ var init = function () {
 	proj.init();
 	cam.init();
 
-	capture.init();
 };

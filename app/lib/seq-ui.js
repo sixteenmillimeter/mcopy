@@ -64,6 +64,8 @@ seq.run = function () {
 			} else {
 				log.info('Sequence completed in ' + humanizeDuration(timeEnd), 'SEQUENCE', true);
 			}
+
+			alert(ipcRenderer.sendSync('transfer', { action: 'end'}));
 			gui.notify('Sequence done!', (mcopy.state.sequence.arr.length * mcopy.loop) + ' actions completed in ' + humanizeDuration(timeEnd));
 			//clear gui
 			$('.row input').removeClass('h');
@@ -89,6 +91,7 @@ seq.init = function (start) {
 	}
 	seq.stop(false);
 	seq.i = start;
+	ipcRenderer.sendSync('transfer', { action: 'start'});
 	seq.run();
 };
 seq.stats = function () {

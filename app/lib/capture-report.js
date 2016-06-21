@@ -17,7 +17,7 @@ capture.start = function (first) {
 };
 capture.end = function () {
 	'use strict';
-	return capture.store;
+	return capture.save();
 };
 capture.proj_start = function () {
 	'use strict';
@@ -124,6 +124,7 @@ capture.save = function () {
 		time = +new Date(),
 		json = JSON.stringify(capture.store);
 	fs.writeFileSync(file + time + '.json', json, 'utf8');
+	return file + time + '.json';
 };
 
 //ffmpeg -f image2 -framerate 24 -start_number 090000 -i input_file_%06d.ext -c:v v210 -an output_file

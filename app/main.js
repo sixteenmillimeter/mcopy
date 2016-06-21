@@ -466,8 +466,12 @@ transfer.listen = function () {
 	'use strict';
 	ipcMain.on('transfer', function (event, arg) {
 		var res = '';
-		console.dir(event);
-		console.dir(arg);
+		//also turn on and off
+		if (arg.action === 'start') {
+			capture.start();
+		} else if (arg.action === 'end') {
+			res = capture.end();
+		}
 		event.returnValue = res;
 	});
 };
