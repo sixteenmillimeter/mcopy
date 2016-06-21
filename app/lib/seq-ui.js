@@ -9,6 +9,7 @@ mcopy.loopCount = 0;
 seq.time = 0;
 seq.stopState = false;
 seq.run = function () {
+	'use strict';
 	var c = mcopy.state.sequence.arr[seq.i],
 		timeEnd = 0,
 		rgb,
@@ -72,6 +73,7 @@ seq.run = function () {
 	}
 };
 seq.stop = function (state) {
+	'use strict';
 	if (typeof state === 'undefined') {
 		return seq.stopState;
 	} else {
@@ -79,6 +81,7 @@ seq.stop = function (state) {
 	}
 };
 seq.init = function (start) {
+	'use strict';
 	if (typeof start === 'undefined') {
 		start = 0;
 		mcopy.loopCount = 0;
@@ -89,6 +92,7 @@ seq.init = function (start) {
 	seq.run();
 };
 seq.stats = function () {
+	'use strict';
 	var ms = 0,
 		c = '',
 		cam_total = 0,
@@ -156,6 +160,7 @@ seq.stats = function () {
 	return ms;
 };
 seq.clear = function () {
+	'use strict';
 	mcopy.state.sequence.size = 24;
 	mcopy.state.sequence.arr = [];
 };

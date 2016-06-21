@@ -11,6 +11,7 @@ capture.store = {
 
 capture.start = function (first) {
 	'use strict';
+	//reset storage
 	capture.store.events = [];
 	capture.store.start = +new Date();
 };
@@ -104,21 +105,15 @@ capture.test = function () {
 capture.init = function () {
 	'use strict';
 	eventEmitter.on('arduino_send', function (cmd) {
-		console.log(cmd);
 		if (capture.active
 			&& cmd.trim() === 'p') {
-			if (capture.store.start === 0) {
-				capture.start();
-			}
 			capture.proj_start();
 		}
 	});
 	eventEmitter.on('arduino_end', function (cmd) {
-		console.log(cmd);
 		if (capture.active
 			&& cmd.trim() === 'p') {
 			capture.proj_end();
-			
 		}
 	});
 };
