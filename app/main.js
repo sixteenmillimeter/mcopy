@@ -456,6 +456,22 @@ log.info = function (action, service, status, display) {
 	}
 };
 
+var transfer = {};
+
+transfer.init = function () {
+	'use strict';
+	transfer.listen();
+};
+transfer.listen = function () {
+	'use strict';
+	ipcMain.on('transfer', function (event, arg) {
+		var res = '';
+		console.dir(event);
+		console.dir(arg);
+		event.returnValue = res;
+	});
+};
+
 var init = function () {
 	'use strict';
 	mcopy.cfgInit();
@@ -466,6 +482,7 @@ var init = function () {
 	proj.init();
 	cam.init();
 
+	transfer.init();
 	capture.init();
 
 	arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg, ee);
