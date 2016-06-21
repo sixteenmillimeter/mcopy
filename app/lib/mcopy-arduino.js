@@ -1,6 +1,8 @@
 var serialport = require('serialport'),
 	SerialPort = serialport.SerialPort,
 	exec = require('child_process').exec,
+	events = require('events'),
+	eventEmitter = new events.EventEmitter(),
 	mcopy = {};
 
 /******
@@ -61,6 +63,7 @@ mcopy.arduino.send = function (serial, cmd, res) {
 				mcopy.arduino.timer = new Date().getTime();
 			});
 		}, mcopy.cfg.arduino.serialDelay);
+		eventEmitter.emit('arduino_send', cmd);
 	}
 };
 //send strings, after char triggers firmware to accept
@@ -87,6 +90,7 @@ mcopy.arduino.end = function (data) {
 		mcopy.arduino.lock = false;
 		//console.log('Command ' + data + ' took ' + ms + 'ms');
 		mcopy.arduino.queue[data](ms); //execute callback
+		eventEmitter.emit('arduino_end', data);
 		delete mcopy.arduino.queue[data];
 	} else {
 		console.log('Received stray "' + data + '"'); //silent to user
