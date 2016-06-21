@@ -4,17 +4,20 @@ var electron = require('electron'),
 	MenuItem = require('menu-item'),
 	ipcMain = require('electron').ipcMain,
 	app = electron.app,
-	BrowserWindow = electron.BrowserWindow,
-	uuid = require('node-uuid'),
 	winston = require('winston'),
 	moment = require('moment'),
+	BrowserWindow = electron.BrowserWindow,
+	uuid = require('node-uuid'),
 	Q = require('q'),
+	events = require('events'),
 	mcopy = {},
 	mainWindow,
 	mscript,
 	arduino,
 	projector,
-	camera;
+	camera,
+	capture = require('./lib/capture-report.js'),
+	log = {};
 
 mcopy.cfg = {};
 mcopy.cfgFile = './data/cfg.json';
@@ -30,24 +33,6 @@ mcopy.cfgStore = function () {
 	'use strict';
 	var data = JSON.stringify(mcopy.cfg);
 	fs.writeFileSync(mcopy.cfgFile, data, 'utf8');
-};
-
-var init = function () {
-	'use strict';
-	mcopy.cfgInit();
-	createWindow();
-	//createMenu();
-	log.init();
-	light.init();
-	proj.init();
-	cam.init();
-
-	arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg);
-	mscript = require('./lib/mscript.js');
-
-	setTimeout(function () {
-		arduino.enumerate(enumerateDevices);
-	}, 1000);
 };
 
 var enumerateDevices = function (err, devices) {
@@ -292,20 +277,6 @@ var createWindow = function () {
 	});
 }
 
-app.on('ready', init);
-
-app.on('window-all-closed', function () {
-	//if (process.platform !== 'darwin') {
-		app.quit();
-	//}
-});
-
-app.on('activate', function () {
-	if (mainWindow === null) {
-		createWindow();
-	}
-});
-
 var light = {};
 light.init = function () {
 	'use strict';
@@ -448,7 +419,6 @@ cam.end = function (cmd, id, ms) {
 	mainWindow.webContents.send('cam', {cmd: cmd, id : id, ms: ms});
 };
 
-var log = {};
 log.time = 'MM/DD/YY-HH:mm:ss';
 log.transport = new (winston.Logger)({
 	transports: [
@@ -484,3 +454,37 @@ log.info = function (action, service, status, display) {
 		log.display(obj);
 	}
 };
+
+var init = function () {
+	'use strict';
+	mcopy.cfgInit();
+	createWindow();
+	//createMenu();
+	log.init();
+	light.init();
+	proj.init();
+	cam.init();
+
+	capture.init();
+
+	arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg);
+	mscript = require('./lib/mscript.js');
+
+	setTimeout(function () {
+		arduino.enumerate(enumerateDevices);
+	}, 1000);
+};
+
+app.on('ready', init);
+
+app.on('window-all-closed', function () {
+	//if (process.platform !== 'darwin') {
+		app.quit();
+	//}
+});
+
+app.on('activate', function () {
+	if (mainWindow === null) {
+		createWindow();
+	}
+});
