@@ -3110,4 +3110,6 @@ var init = function () {
 	light.init();
 	proj.init();
 	cam.init();
+
+	capture.init();
 };

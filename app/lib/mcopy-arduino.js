@@ -1,8 +1,7 @@
 var serialport = require('serialport'),
 	SerialPort = serialport.SerialPort,
 	exec = require('child_process').exec,
-	events = require('events'),
-	eventEmitter = new events.EventEmitter(),
+	eventEmitter,
 	mcopy = {};
 
 /******
@@ -205,7 +204,8 @@ mcopy.arduino.fakeConnect = function (serial, callback) {
 };
 
 if (typeof module !== 'undefined' && module.parent) {
-	module.exports = function (cfg) {
+	module.exports = function (cfg, ee) {
+		eventEmitter = ee;
 		mcopy.cfg = cfg;
 		return mcopy.arduino;
 	}

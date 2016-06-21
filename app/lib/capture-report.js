@@ -1,16 +1,23 @@
 var capture = {},
+	eventEmitter,
 	fs = require('fs'),
 	exec = require('child_process').exec;
 
-capture.active = false;
-capture.store = {};
+capture.active = true;
+capture.store = {
+	events : [],
+	start : 0
+};
 
-capture.start = function () {
+capture.start = function (first) {
 	'use strict';
 	capture.store.events = [];
 	capture.store.start = +new Date();
 };
-
+capture.end = function () {
+	'use strict';
+	return capture.store;
+};
 capture.proj_start = function () {
 	'use strict';
 	var e = {
@@ -18,7 +25,6 @@ capture.proj_start = function () {
 	};
 	capture.store.events.push(e);
 };
-
 capture.proj_end = function () {
 	'use strict';
 	var e = {
@@ -26,56 +32,48 @@ capture.proj_end = function () {
 	};
 	capture.store.events.push(e);
 };
-
-capture.report = {};
-
-capture.report.parse = function (first, report, fps, type) {
+//out-000001
+capture.pad = function (frame, len) {
 	'use strict';
-	var output = [],
-		frame,
-		last = null,
-		buffer;
-	if (typeof fps === 'undefined') {
-		fps = 24;
-	}
-	frame = 1000 / fps; 
-	if (typeof report === 'undefined') {
-		report = capture.store;
+	var pad = '',
+		ch = '0';
+	frame += '';
+	len = len - frame.length;
+  	if (len <= 0) return frame;
+	  while (true) {
+	    if (len & 1) {
+	    	pad += ch;
+	    }
+	    len >>= 1;
+	    if (len) {
+	    	ch += ch;
+	    } else {
+	    	break;
+	    }
+	  }
+  return pad + frame;
+};
+capture.extract = function (input, output, good, real, neg) {
+	'use strict';
+	var tc = capture.report.timecode(good),
+		frame = capture.pad(real, 6),
+		neg_cmd = ' -vf lutrgb="r=negval:g=negval:b=negval" ',
+		cmd = 'ffmpeg -ss ' + tc + ' -i ' + input + '{{neg_cmd}}-vframes 1 ' + output + 'out-' + frame + '.tif';
+	if (neg) {
+		cmd = cmd.replace('{{neg_cmd}}', neg_cmd);
 	} else {
-		report = JSON.parse(fs.readFileSync(report, 'utf8'));
+		cmd = cmd.replace('{{neg_cmd}}', ' ');
 	}
-	if (typeof type === 'undefined') {
-		type = 'still';
-	}
-	if (typeof first === 'undefined') {
-		first = 0;
-	}
-	if (type === 'still') {
-		//first clean frame
-		for (i = 0; i < report.events.length; i++) {
-			if (typeof report.events[i].start !=== 'undefined') {
-				buffer = report.events[i].start;
-				if (last !== null) {
-					
-					output.push();
-				}
-			} else {
-				buffer = report.events[i].end - buffer;
-				last = report.events[i].end;
-			}
-		}
-
-	} else if (type === 'video') {
-
-	}
-	return output;
+	console.log(cmd);
+	exec(cmd, function (err, std) {
+		console.log(err);
+		console.log(std);
+	});
 };
-
-capture.report.render = function () {
+capture.cp = function (input, output, good, real) {
 	'use strict';
-
+	var still = '';
 };
-
 capture.test = function () {
 	'use strict';
 	var i = -1,
@@ -86,7 +84,7 @@ capture.test = function () {
 			if (i === len) {
 				clearInterval(intval);
 				intval = null;
-				console.dir(capture.store);
+				//console.dir(capture.store);
 				parse();
 			} else {
 				if (i % 2 === 0) {
@@ -97,12 +95,125 @@ capture.test = function () {
 			}
 	},
 	parse = function () {
-		capture.report.parse();
+		capture.report.parse(45, 0);
 	};
 	capture.start();
+	next();
 	intval = setInterval(next, 800);
 };
+capture.init = function () {
+	'use strict';
+	eventEmitter.on('arduino_send', function (cmd) {
+		console.log(cmd);
+		if (capture.active
+			&& cmd.trim() === 'p') {
+			if (capture.store.start === 0) {
+				capture.start();
+			}
+			capture.proj_start();
+		}
+	});
+	eventEmitter.on('arduino_end', function (cmd) {
+		console.log(cmd);
+		if (capture.active
+			&& cmd.trim() === 'p') {
+			capture.proj_end();
+			
+		}
+	});
+};
 
+capture.save = function () {
+	'use strict';
+	var file = './data/transfer-',
+		time = +new Date(),
+		json = JSON.stringify(capture.store);
+	fs.writeFileSync(file + time + '.json', json, 'utf8');
+};
 
-capture.test();
-//module.exports = capture;
+//ffmpeg -f image2 -framerate 24 -start_number 090000 -i input_file_%06d.ext -c:v v210 -an output_file
+//'-%06d
+
+capture.report = {};
+capture.report.parse = function (inmark, first, report, fps) {
+	'use strict';
+	var all = [],
+		output = {
+			good : [],
+			real : []
+		},
+		good = [],
+		real,
+		f,
+		frame,
+		last = -1,
+		i;
+	if (typeof fps === 'undefined') {
+		fps = 24;
+	}
+	f = 1000 / fps; 
+	if (typeof report === 'undefined') {
+		report = capture.store;
+	}
+	if (typeof first === 'undefined') {
+		first = 0;
+	}
+	if (typeof inmark === 'undefined') {
+		inmark = 0;
+	}
+	//first clean frame
+	for (i = 0; i < report.events.length; i++) {
+		if (typeof report.events[i].end !== 'undefined') {
+			frame = (report.events[i].end - report.start) / f;
+			frame = Math.round(frame);
+			last = frame;
+		} else if (typeof report.events[i].start !== 'undefined') {
+			frame = (report.events[i].start - report.start) / f;
+			frame = Math.round(frame);
+			if (last !== -1) {
+				//console.log(last + '-' + frame);
+				all.push(capture.report.arr(last, frame));
+			}
+		}
+	}
+	good = all.map(function (arr) {
+		var center = Math.round(arr.length / 2);
+		return arr[center] + inmark;
+	});
+
+	real = output.map(function (val, i) {
+		return first + i;
+	});
+
+	output.good = good;
+	output.real = real;
+
+	return output;
+};
+capture.report.arr = function (start, end) {
+	'use strict';
+	var arr = [],
+		i;
+	for (i = start; i < end + 1; i++) {
+		arr.push(i);
+	}
+	return arr;
+};
+capture.report.timecode = function (frame) {
+	'use strict';
+	 //00:03:00 no dropframe
+	 var a = capture.pad(Math.floor((frame / 60) / 60), 2),
+	 	b = capture.pad(Math.floor(frame / 60), 2),
+	 	c = capture.pad(frame % 24);
+	 return a + ':' + b + ':' + c;
+};
+capture.report.render = function () {
+	'use strict';
+
+};
+
+module.exports = function (ee) {
+	eventEmitter = ee;
+	return capture;
+};
+

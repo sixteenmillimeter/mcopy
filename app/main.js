@@ -10,13 +10,14 @@ var electron = require('electron'),
 	uuid = require('node-uuid'),
 	Q = require('q'),
 	events = require('events'),
+	ee = new events.EventEmitter(),
 	mcopy = {},
 	mainWindow,
 	mscript,
 	arduino,
 	projector,
 	camera,
-	capture = require('./lib/capture-report.js'),
+	capture = require('./lib/capture-report.js')(ee),
 	log = {};
 
 mcopy.cfg = {};
@@ -467,7 +468,7 @@ var init = function () {
 
 	capture.init();
 
-	arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg);
+	arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg, ee);
 	mscript = require('./lib/mscript.js');
 
 	setTimeout(function () {
