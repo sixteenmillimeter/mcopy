@@ -1,13 +1,18 @@
-var seq = {};
+var seq = {},
+	capture = {};
 
 /******
 	Sequence Object
 *******/
 seq.i = 0;
-mcopy.loop = 1;
-mcopy.loopCount = 0;
 seq.time = 0;
 seq.stopState = false;
+
+mcopy.loop = 1;
+mcopy.loopCount = 0;
+capture.active = false;
+capture.report = '';
+
 seq.run = function () {
 	'use strict';
 	var c = mcopy.state.sequence.arr[seq.i],
@@ -65,7 +70,10 @@ seq.run = function () {
 				log.info('Sequence completed in ' + humanizeDuration(timeEnd), 'SEQUENCE', true);
 			}
 
-			alert(ipcRenderer.sendSync('transfer', { action: 'end'}));
+			capture.report = ipcRenderer.sendSync('transfer', { action: 'end'});
+			if (capture.active) {
+				alert(capture.report);
+			}
 			gui.notify('Sequence done!', (mcopy.state.sequence.arr.length * mcopy.loop) + ' actions completed in ' + humanizeDuration(timeEnd));
 			//clear gui
 			$('.row input').removeClass('h');

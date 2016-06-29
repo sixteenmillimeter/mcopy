@@ -467,7 +467,13 @@ transfer.listen = function () {
 	ipcMain.on('transfer', function (event, arg) {
 		var res = '';
 		//also turn on and off
-		if (arg.action === 'start') {
+		if (arg.action === 'enable') {
+			capture.active = true;
+			res = capture.active;
+		} else if (arg.action === 'disable') {
+			capture.active = false;
+			res = capture.active;
+		} else if (arg.action === 'start') {
 			capture.start();
 		} else if (arg.action === 'end') {
 			res = capture.end();

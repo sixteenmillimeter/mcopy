@@ -3,7 +3,7 @@ var capture = {},
 	fs = require('fs'),
 	exec = require('child_process').exec;
 
-capture.active = true;
+capture.active = false;
 capture.store = {
 	events : [],
 	start : 0
@@ -12,12 +12,18 @@ capture.store = {
 capture.start = function (first) {
 	'use strict';
 	//reset storage
-	capture.store.events = [];
-	capture.store.start = +new Date();
+	if (capture.active) {
+		capture.store.events = [];
+		capture.store.start = +new Date();
+	}
 };
 capture.end = function () {
 	'use strict';
-	return capture.save();
+	if (capture.active) {
+		return capture.save();
+	} else {
+		return '';
+	}
 };
 capture.proj_start = function () {
 	'use strict';
