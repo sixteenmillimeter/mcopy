@@ -41,11 +41,11 @@ const int serialDelay = 5;
 void setup () {
 	Serial.begin(57600);
 	Serial.flush();
-  Serial.setTimeout(serialDelay);
+	Serial.setTimeout(serialDelay);
 	//pixieSerial.begin(115200); // Pixie REQUIRES this baud rate
-  light.begin();
-  light.setPixelColor(0, 0, 0, 0);
-  light.show();
+	light.begin();
+	light.setPixelColor(0, 0, 0, 0);
+	light.show();
 }
 
 void loop () {

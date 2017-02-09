@@ -1,3 +1,4 @@
+
 var electron = require('electron'),
 	fs = require('fs'),
 	Menu = require('menu'),
@@ -7,7 +8,7 @@ var electron = require('electron'),
 	winston = require('winston'),
 	moment = require('moment'),
 	BrowserWindow = electron.BrowserWindow,
-	uuid = require('node-uuid'),
+	uuid = require('uuid'),
 	Q = require('q'),
 	events = require('events'),
 	ee = new events.EventEmitter(),
@@ -19,6 +20,8 @@ var electron = require('electron'),
 	camera,
 	capture = require('./lib/capture-report.js')(ee),
 	log = {};
+
+	console.log(process.version);
 
 mcopy.cfg = {};
 mcopy.cfgFile = './data/cfg.json';
