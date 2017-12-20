@@ -506,7 +506,7 @@ button:focus {
 #sequence #cam_forward input[type=checkbox],
 #sequence #proj_forward input[type=checkbox],
 #sequence #black_forward input[type=checkbox] {
-  border: 1px solid #00C4A0;
+  border: 2px solid #00C4A0;
 }
 #sequence #cam_forward input[type=checkbox]:checked,
 #sequence #proj_forward input[type=checkbox]:checked,
@@ -526,7 +526,7 @@ button:focus {
 #sequence #cam_backward input[type=checkbox],
 #sequence #proj_backward input[type=checkbox],
 #sequence #black_backward input[type=checkbox] {
-  border: 1px solid #AB1A25;
+  border: 2px solid #AB1A25;
 }
 #sequence #cam_backward input[type=checkbox]:checked,
 #sequence #proj_backward input[type=checkbox]:checked,
@@ -562,7 +562,7 @@ button:focus {
   margin: 0;
   margin-bottom: 3px;
   margin-right: 3px;
-  border: 1px solid #fff;
+  border: 2px solid #fff;
   opacity: 0.5;
   cursor: pointer;
 }
