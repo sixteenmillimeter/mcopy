@@ -4,7 +4,8 @@
   "description": "16mm optical printer",
   "main": "main.js",
   "scripts": {
-    "start": "gulp && electron main.js"
+    "start": "gulp && electron main.js",
+    "install": "electron-rebuild"
   },
   "repository": {
     "type": "git",
@@ -23,20 +24,20 @@
   },
   "homepage": "https://github.com/sixteenmillimeter/mcopy#readme",
   "devDependencies": {
-    "electron-inspector": "^0.1.4",
     "electron-packager": "^8.4.0",
-    "electron-prebuilt": "^1.4.12",
     "electron-rebuild": "^1.4.0",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
     "gulp-less": "^3.3.0"
   },
   "dependencies": {
+    "electron": "^1.8.1",
     "humanize-duration": "^3.10.0",
     "moment": "^2.17.1",
     "node-notifier": "^4.6.1",
     "q": "^1.4.1",
     "serialport": "^4.0.7",
+    "sqlite3": "^3.1.13",
     "uuid": "^3.0.1",
     "winston": "^2.3.0"
   }
