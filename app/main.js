@@ -1,7 +1,7 @@
 'use strict'
 
 const electron = require('electron')
-const { Menu, MenuItem, ipcMain, BrowserWindow, app } = require('electron')
+const { Menu, MenuItem, ipcMain, BrowserWindow, app } = electron
 const fs = require('fs')
 const winston = require('winston')
 const moment = require('moment')
@@ -20,54 +20,50 @@ let projector
 let camera
 let log = {}
 
-console.log(process.version)
+//console.log(process.version)
 
 mcopy.cfg = {}
 mcopy.cfgFile = './data/cfg.json'
 mcopy.cfgInit = function () {
-	
 	if (!fs.existsSync(mcopy.cfgFile)) {
-		console.log('Using default configuration...');
-		fs.writeFileSync(mcopy.cfgFile, fs.readFileSync('./data/cfg.json.default'));
+		console.log('Using default configuration...')
+		fs.writeFileSync(mcopy.cfgFile, fs.readFileSync('./data/cfg.json.default'))
 	}
-	mcopy.cfg = JSON.parse(fs.readFileSync(mcopy.cfgFile, 'utf8'));
-};
+	mcopy.cfg = JSON.parse(fs.readFileSync(mcopy.cfgFile, 'utf8'))
+}
 mcopy.cfgStore = function () {
-	
-	var data = JSON.stringify(mcopy.cfg);
-	fs.writeFileSync(mcopy.cfgFile, data, 'utf8');
-};
+	var data = JSON.stringify(mcopy.cfg)
+	fs.writeFileSync(mcopy.cfgFile, data, 'utf8')
+}
 
 var enumerateDevices = function (err, devices) {
-	
 	if (err) {
-		log.info(err, 'SERIAL', false, true);
-		arduino.fakeConnect('projector', function () {
-			log.info('Connected to fake PROJECTOR device', 'SERIAL', true, true);
-		});
-		arduino.fakeConnect('camera', function () {
-			log.info('Connected to fake CAMERA device', 'SERIAL', true, true);
-		});
-		devicesReady('fake', 'fake');
+		log.info(err, 'SERIAL', false, true)
+		arduino.fakeConnect('projector', () => {
+			log.info('Connected to fake PROJECTOR device', 'SERIAL', true, true)
+		})
+		arduino.fakeConnect('camera', () => {
+			log.info('Connected to fake CAMERA device', 'SERIAL', true, true)
+		})
+		devicesReady('fake', 'fake')
 	} else {
-		log.info('Found ' + devices.length + ' USB devices', 'SERIAL', true, true);
-		distinguishDevices(devices);
+		log.info('Found ' + devices.length + ' USB devices', 'SERIAL', true, true)
+		distinguishDevices(devices)
 	}
-};
+}
 
 var distinguishDevice = function (device, callback) {
-	
 	var connectCb = function (err, device) {
 		if (err) {
-			return console.error(err);
+			return console.error(err)
 		}
 		setTimeout(function () {
-			arduino.verify(verifyCb);
+			arduino.verify(verifyCb)
 		}, 2000);
 	},
 	verifyCb = function (err, success) {
 		if (err) {
-			return console.error(err);
+			return console.error(err)
 		}
 		setTimeout(function () {
 			arduino.distinguish(distinguishCb);
@@ -75,65 +71,63 @@ var distinguishDevice = function (device, callback) {
 	},
 	distinguishCb = function (err, type) {
 		if (err) {
-			return console.error(err);
+			return console.error(err)
 		}
 		if (callback) { callback(err, type); }
 	}
-	arduino.connect('connect', device, true, connectCb);
+	arduino.connect('connect', device, true, connectCb)
 };
 
 //Cases for 1 or 2 arduinos connected
 var distinguishDevices = function (devices) {
-	
 	var distinguishOne = function (err, type) {
-		arduino.close(function () {
+		arduino.close(() => {
 			if (type === 'projector') {
-				arduino.connect('projector', devices[0], false, function () {
-					log.info('Connected to ' + devices[0] + ' as PROJECTOR', 'SERIAL', true, true);
+				arduino.connect('projector', devices[0], false, () => {
+					log.info('Connected to ' + devices[0] + ' as PROJECTOR', 'SERIAL', true, true)
 				});
 				if (devices.length === 1) {
-					arduino.fakeConnect('camera', function () {
-						log.info('Connected to fake CAMERA device', 'SERIAL', true, true);
-						devicesReady(devices[0], 'fake');
+					arduino.fakeConnect('camera', () => {
+						log.info('Connected to fake CAMERA device', 'SERIAL', true, true)
+						devicesReady(devices[0], 'fake')
 					});
 				}
 			} else if (type === 'camera') {
-				arduino.connect('camera', devices[0], false, function () {
-					log.info('Connected to ' + devices[0] + ' as CAMERA', 'SERIAL', true, true);
+				arduino.connect('camera', devices[0], false, () => {
+					log.info('Connected to ' + devices[0] + ' as CAMERA', 'SERIAL', true, true)
 				});
 				if (devices.length === 1) {
-					arduino.fakeConnect('projector', function () {
-						log.info('Connected to fake PROJECTOR device', 'SERIAL', true, true);
-						devicesReady('fake', devices[0]);
-					});
+					arduino.fakeConnect('projector', () => {
+						log.info('Connected to fake PROJECTOR device', 'SERIAL', true, true)
+						devicesReady('fake', devices[0])
+					})
 				}
 			}
 			if (devices.length > 1) {
-				distinguishDevice(devices[1], distinguishTwo);
+				distinguishDevice(devices[1], distinguishTwo)
 			}
-		});
+		})
 	},
 	distinguishTwo = function (err, type) {
-		arduino.close(function () {
+		arduino.close(() => {
 			if (type === 'projector') {
-				arduino.connect('projector', devices[1], false, function () {
-					log.info('Connected to ' + devices[1] + ' as PROJECTOR', 'SERIAL', true, true);
-					devicesReady(devices[1], devices[0]);
+				arduino.connect('projector', devices[1], false, () => {
+					log.info('Connected to ' + devices[1] + ' as PROJECTOR', 'SERIAL', true, true)
+					devicesReady(devices[1], devices[0])
 				});
 			} else if (type === 'camera') {
-				arduino.connect('camera', devices[1], false, function () {
-					log.info('Connected to ' + devices[1] + ' as CAMERA', 'SERIAL', true, true);
-					devicesReady(devices[0], devices[1]);
+				arduino.connect('camera', devices[1], false, () => {
+					log.info('Connected to ' + devices[1] + ' as CAMERA', 'SERIAL', true, true)
+					devicesReady(devices[0], devices[1])
 				});
 			}
 		});
 	};
-	distinguishDevice(devices[0], distinguishOne);
+	distinguishDevice(devices[0], distinguishOne)
 };
 
 var devicesReady = function (camera, projector) {
-	
-	mainWindow.webContents.send('ready', {camera: camera, projector: projector });
+	mainWindow.webContents.send('ready', {camera: camera, projector: projector })
 };
 
 var createMenu = function () {
@@ -258,262 +252,241 @@ var createMenu = function () {
 	    label: 'Help',
 	    submenu: []
 	  }
-	];
+	]
 
-	menu = Menu.buildFromTemplate(template);
+	menu = Menu.buildFromTemplate(template)
 
-	Menu.setApplicationMenu(menu);
-};
+	Menu.setApplicationMenu(menu)
+}
 
 var createWindow = function () {
-	
 	mainWindow = new BrowserWindow({
 		width: 800, 
 		height: 600,
 		minWidth : 800,
 		minHeight : 600
-	});
-	mainWindow.loadURL('file://' + __dirname + '/index.html');
-	//mainWindow.webContents.openDevTools();
-	mainWindow.on('closed', function() {
-		mainWindow = null;
+	})
+	mainWindow.loadURL('file://' + __dirname + '/index.html')
+	//mainWindow.webContents.openDevTools()
+	mainWindow.on('closed', () => {
+		mainWindow = null
 	});
 }
 
-var light = {};
+var light = {}
 light.init = function () {
-	
-	light.listen();
+	light.listen()
 };
 light.listen = function () {
-	
-	ipcMain.on('light', function(event, arg) {
-		light.set(arg.rgb, arg.id);
-		event.returnValue = true;
-	});
+	ipcMain.on('light', (event, arg) => {
+		light.set(arg.rgb, arg.id)
+		event.returnValue = true
+	})
 };
 light.set = function (rgb, id) {
-	
 	var str = rgb.join(',');
-	arduino.send('projector', mcopy.cfg.arduino.cmd.light, function (ms) {
-		light.end(rgb, id, ms);
-	});
-	arduino.string('projector', str);
+	arduino.send('projector', mcopy.cfg.arduino.cmd.light, (ms) => {
+		light.end(rgb, id, ms)
+	})
+	arduino.string('projector', str)
 };
 light.end = function (rgb, id, ms) {
-	
-	log.info('Light set to ' + rgb.join(','), 'LIGHT', true, true);
-	mainWindow.webContents.send('light', {rgb: rgb, id : id, ms: ms});
+	log.info('Light set to ' + rgb.join(','), 'LIGHT', true, true)
+	mainWindow.webContents.send('light', {rgb: rgb, id : id, ms: ms})
 };
 
-var proj = {};
+var proj = {}
 proj.state = {
 	dir : true //default dir
 };
 proj.init = function () {
-	
-	proj.listen();
-};
+	proj.listen()
+}
 proj.set = function (dir, id) {
-	
-	var cmd;
+	var cmd
 	if (dir) {
-		cmd = mcopy.cfg.arduino.cmd.proj_forward;
+		cmd = mcopy.cfg.arduino.cmd.proj_forward
 	} else {
-		cmd = mcopy.cfg.arduino.cmd.proj_backward;
+		cmd = mcopy.cfg.arduino.cmd.proj_backward
 	}
-	proj.state.dir = dir;
-	arduino.send('projector', cmd, function (ms) {
-		proj.end(cmd, id, ms);
-	});
-};
+	proj.state.dir = dir
+	arduino.send('projector', cmd, (ms) => {
+		proj.end(cmd, id, ms)
+	})
+}
 proj.move = function (frame, id) {
-	
-	arduino.send('projector', mcopy.cfg.arduino.cmd.projector, function (ms) {
-		proj.end(mcopy.cfg.arduino.cmd.projector, id, ms);
-	});
-};
+	arduino.send('projector', mcopy.cfg.arduino.cmd.projector, (ms) => {
+		proj.end(mcopy.cfg.arduino.cmd.projector, id, ms)
+	})
+}
 proj.listen = function () {
-	
-	ipcMain.on('proj', function (event, arg) {
+	ipcMain.on('proj', (event, arg) => {
 		if (typeof arg.dir !== 'undefined') {
-			proj.set(arg.dir, arg.id);
+			proj.set(arg.dir, arg.id)
 		} else if (typeof arg.frame !== 'undefined') {
-			proj.move(arg.frame, arg.id);
+			proj.move(arg.frame, arg.id)
 		}
-		event.returnValue = true;
-	});
-};
+		event.returnValue = true
+	})
+}
 proj.end = function (cmd, id, ms) {
-	
-	var message = '';
+	var message = ''
 	if (cmd === mcopy.cfg.arduino.cmd.proj_forward) {
-		message = 'Projector set to FORWARD';
+		message = 'Projector set to FORWARD'
 	} else if (cmd === mcopy.cfg.arduino.cmd.proj_backward) {
-		message = 'Projector set to BACKWARD';
+		message = 'Projector set to BACKWARD'
 	} else if (cmd === mcopy.cfg.arduino.cmd.projector) {
-		message = 'Projector ';
+		message = 'Projector '
 		if (proj.state.dir) {
-			message += 'ADVANCED';
+			message += 'ADVANCED'
 		} else {
 			message += 'REWOUND'
 		}
-		message += ' 1 frame';
+		message += ' 1 frame'
 	}
-	log.info(message, 'PROJECTOR', true, true);
-	mainWindow.webContents.send('proj', {cmd: cmd, id : id, ms: ms});
-};
+	log.info(message, 'PROJECTOR', true, true)
+	mainWindow.webContents.send('proj', {cmd: cmd, id : id, ms: ms})
+}
 
-var cam = {};
+var cam = {}
 cam.state = {
 	dir : true //default dir
-};
+}
 cam.init = function () {
-	
-	cam.listen();
-};
+	cam.listen()
+}
 cam.set = function (dir, id) {
-	
-	var cmd;
+	var cmd
 	if (dir) {
-		cmd = mcopy.cfg.arduino.cmd.cam_forward;
+		cmd = mcopy.cfg.arduino.cmd.cam_forward
 	} else {
-		cmd = mcopy.cfg.arduino.cmd.cam_backward;
+		cmd = mcopy.cfg.arduino.cmd.cam_backward
 	}
-	cam.state.dir = dir;
-	arduino.send('camera', cmd, function (ms) {
-		cam.end(cmd, id, ms);
-	});
-};
+	cam.state.dir = dir
+	arduino.send('camera', cmd, (ms) => {
+		cam.end(cmd, id, ms)
+	})
+}
 cam.move = function (frame, id) {
-	
-	arduino.send('camera', mcopy.cfg.arduino.cmd.camera, function (ms) {
-		cam.end(mcopy.cfg.arduino.cmd.camera, id, ms);
-	});
-};
+	arduino.send('camera', mcopy.cfg.arduino.cmd.camera, (ms) => {
+		cam.end(mcopy.cfg.arduino.cmd.camera, id, ms)
+	})
+}
 cam.listen = function () {
-	
-	ipcMain.on('cam', function (event, arg) {
+	ipcMain.on('cam', (event, arg) => {
 		if (typeof arg.dir !== 'undefined') {
-			cam.set(arg.dir, arg.id);
+			cam.set(arg.dir, arg.id)
 		} else if (typeof arg.frame !== 'undefined') {
-			cam.move(arg.frame, arg.id);
+			cam.move(arg.frame, arg.id)
 		}
-		event.returnValue = true;
+		event.returnValue = true
 	});
 };
 cam.end = function (cmd, id, ms) {
-	
-	var message = '';
+	var message = ''
 	if (cmd === mcopy.cfg.arduino.cmd.cam_forward) {
-		message = 'Camera set to FORWARD';
+		message = 'Camera set to FORWARD'
 	} else if (cmd === mcopy.cfg.arduino.cmd.cam_backward) {
-		message = 'Camera set to BACKWARD';
+		message = 'Camera set to BACKWARD'
 	} else if (cmd === mcopy.cfg.arduino.cmd.camera) {
-		message = 'Camera ';
+		message = 'Camera '
 		if (cam.state.dir) {
-			message += 'ADVANCED';
+			message += 'ADVANCED'
 		} else {
 			message += 'REWOUND'
 		}
-		message += ' 1 frame';
+		message += ' 1 frame'
 	}
-	log.info(message, 'CAMERA', true, true);
-	mainWindow.webContents.send('cam', {cmd: cmd, id : id, ms: ms});
+	log.info(message, 'CAMERA', true, true)
+	mainWindow.webContents.send('cam', {cmd: cmd, id : id, ms: ms})
 };
 
-log.time = 'MM/DD/YY-HH:mm:ss';
+log.time = 'MM/DD/YY-HH:mm:ss'
 log.transport = new (winston.Logger)({
 	transports: [
 		new (winston.transports.Console)(),
 		new (winston.transports.File)({ filename: './logs/mcopy.log' })
 	]
-});
+})
 log.init = function () {
-	
-	log.listen();
+	log.listen()
 };
 log.display = function (obj) {
-	
-	mainWindow.webContents.send('log', obj);
+	mainWindow.webContents.send('log', obj)
 };
 log.listen = function () {
-	
-	ipcMain.on('log', function (event, arg) {
-		log.transport.info('renderer', arg);
-		event.returnValue = true;
-	});
+	ipcMain.on('log', (event, arg) => {
+		log.transport.info('renderer', arg)
+		event.returnValue = true
+	})
 };
 log.info = function (action, service, status, display) {
-	
 	var obj = {
 		time : moment().format(log.time),
 		action : action,
 		service : service,
 		status : status
-	};
-	log.transport.info('main', obj);
+	}
+	log.transport.info('main', obj)
 	if (display) {
-		log.display(obj);
+		log.display(obj)
 	}
 };
 
-var transfer = {};
+var transfer = {}
 
 transfer.init = function () {
-	
-	transfer.listen();
+	transfer.listen()
 };
 transfer.listen = function () {
-	
-	ipcMain.on('transfer', function (event, arg) {
+	ipcMain.on('transfer', (event, arg) => {
 		var res = '';
 		//also turn on and off
 		if (arg.action === 'enable') {
-			capture.active = true;
-			res = capture.active;
+			capture.active = true
+			res = capture.active
 		} else if (arg.action === 'disable') {
-			capture.active = false;
-			res = capture.active;
+			capture.active = false
+			res = capture.active
 		} else if (arg.action === 'start') {
-			capture.start();
+			capture.start()
 		} else if (arg.action === 'end') {
-			res = capture.end();
+			res = capture.end()
 		}
-		event.returnValue = res;
-	});
-};
+		event.returnValue = res
+	})
+}
 
 var init = function () {
 	
-	mcopy.cfgInit();
-	createWindow();
-	//createMenu();
-	log.init();
-	light.init();
-	proj.init();
-	cam.init();
+	mcopy.cfgInit()
+	createWindow()
+	//createMenu()
+	log.init()
+	light.init()
+	proj.init()
+	cam.init()
 
-	transfer.init();
-	capture.init();
+	transfer.init()
+	capture.init()
 
-	arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg, ee);
-	mscript = require('./lib/mscript.js');
+	arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg, ee)
+	mscript = require('./lib/mscript.js')
 
-	setTimeout(function () {
-		arduino.enumerate(enumerateDevices);
-	}, 1000);
-};
+	setTimeout( () => {
+		arduino.enumerate(enumerateDevices)
+	}, 1000)
+}
 
-app.on('ready', init);
+app.on('ready', init)
 
-app.on('window-all-closed', function () {
+app.on('window-all-closed', () => {
 	//if (process.platform !== 'darwin') {
 		app.quit();
 	//}
 });
 
-app.on('activate', function () {
+app.on('activate', () => {
 	if (mainWindow === null) {
 		createWindow();
 	}
