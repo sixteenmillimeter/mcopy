@@ -1,5 +1,4 @@
-var serialport = require('serialport'),
-	SerialPort = serialport.SerialPort,
+var SerialPort = require('serialport'),
 	exec = require('child_process').exec,
 	eventEmitter,
 	mcopy = {};
