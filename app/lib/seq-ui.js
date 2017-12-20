@@ -24,6 +24,9 @@ seq.run = function () {
 			seq.run();
 		}, mcopy.cfg.arduino.sequenceDelay);
 	}
+	if (seq.i == 0) {
+		$('#loop_current').text(gui.fmtZero(mcopy.loopCount + 1, 6));
+	}
 	if (seq.stop()) {
 		$('.row input').removeClass('h');
 		$('#numbers div').removeClass('h');
@@ -55,6 +58,7 @@ seq.run = function () {
 		}
 	} else {
 		mcopy.loopCount++;
+		$('#loop_current').text(gui.fmtZero(mcopy.loopCount + 1, 6));
 		if (mcopy.loopCount < mcopy.loop) {
 			log.info('Loop ' + mcopy.loopCount + ' completed', 'SEQUENCE', true);
 			$('.row input').removeClass('h');
@@ -78,6 +82,7 @@ seq.run = function () {
 			//clear gui
 			$('.row input').removeClass('h');
 			$('#numbers div').removeClass('h');
+			$('#loop_current').text('');
 			seq.stats();
 		}
 	}
@@ -88,6 +93,10 @@ seq.stop = function (state) {
 		return seq.stopState;
 	} else {
 		seq.stopState = state;
+	}
+	if (state === false) {
+		mcopy.loopCount = 0
+		$('#loop_current').text('');
 	}
 };
 seq.init = function (start) {
