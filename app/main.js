@@ -1,32 +1,31 @@
+'use strict'
 
-var electron = require('electron'),
-	Menu  = electron.Menu,
-	MenuItem = electron.MenuItem,
-	ipcMain = electron.ipcMain,
-	BrowserWindow = electron.BrowserWindow,
-	app = electron.app,
-	fs = require('fs'),
-	winston = require('winston'),
-	moment = require('moment'),
-	uuid = require('uuid'),
-	Q = require('q'),
-	events = require('events'),
-	ee = new events.EventEmitter(),
-	mcopy = {},
-	mainWindow,
-	mscript,
-	arduino,
-	projector,
-	camera,
-	capture = require('./lib/capture-report.js')(ee),
-	log = {};
+const electron = require('electron')
+const { Menu, MenuItem, ipcMain, BrowserWindow, app } = require('electron')
+const fs = require('fs')
+const winston = require('winston')
+const moment = require('moment')
+const uuid = require('uuid')
+const Q = require('q')
+const events = require('events')
+const ee = new events.EventEmitter()
+const capture = require('./lib/capture-report.js')(ee)
+	
+const mcopy = {}
 
-	console.log(process.version);
+let mainWindow
+let mscript
+let arduino
+let projector
+let camera
+let log = {}
 
-mcopy.cfg = {};
-mcopy.cfgFile = './data/cfg.json';
+console.log(process.version)
+
+mcopy.cfg = {}
+mcopy.cfgFile = './data/cfg.json'
 mcopy.cfgInit = function () {
-	'use strict';
+	
 	if (!fs.existsSync(mcopy.cfgFile)) {
 		console.log('Using default configuration...');
 		fs.writeFileSync(mcopy.cfgFile, fs.readFileSync('./data/cfg.json.default'));
@@ -34,13 +33,13 @@ mcopy.cfgInit = function () {
 	mcopy.cfg = JSON.parse(fs.readFileSync(mcopy.cfgFile, 'utf8'));
 };
 mcopy.cfgStore = function () {
-	'use strict';
+	
 	var data = JSON.stringify(mcopy.cfg);
 	fs.writeFileSync(mcopy.cfgFile, data, 'utf8');
 };
 
 var enumerateDevices = function (err, devices) {
-	'use strict';
+	
 	if (err) {
 		log.info(err, 'SERIAL', false, true);
 		arduino.fakeConnect('projector', function () {
@@ -57,7 +56,7 @@ var enumerateDevices = function (err, devices) {
 };
 
 var distinguishDevice = function (device, callback) {
-	'use strict';
+	
 	var connectCb = function (err, device) {
 		if (err) {
 			return console.error(err);
@@ -85,7 +84,7 @@ var distinguishDevice = function (device, callback) {
 
 //Cases for 1 or 2 arduinos connected
 var distinguishDevices = function (devices) {
-	'use strict';
+	
 	var distinguishOne = function (err, type) {
 		arduino.close(function () {
 			if (type === 'projector') {
@@ -133,7 +132,7 @@ var distinguishDevices = function (devices) {
 };
 
 var devicesReady = function (camera, projector) {
-	'use strict';
+	
 	mainWindow.webContents.send('ready', {camera: camera, projector: projector });
 };
 
@@ -267,7 +266,7 @@ var createMenu = function () {
 };
 
 var createWindow = function () {
-	'use strict';
+	
 	mainWindow = new BrowserWindow({
 		width: 800, 
 		height: 600,
@@ -283,18 +282,18 @@ var createWindow = function () {
 
 var light = {};
 light.init = function () {
-	'use strict';
+	
 	light.listen();
 };
 light.listen = function () {
-	'use strict';
+	
 	ipcMain.on('light', function(event, arg) {
 		light.set(arg.rgb, arg.id);
 		event.returnValue = true;
 	});
 };
 light.set = function (rgb, id) {
-	'use strict';
+	
 	var str = rgb.join(',');
 	arduino.send('projector', mcopy.cfg.arduino.cmd.light, function (ms) {
 		light.end(rgb, id, ms);
@@ -302,7 +301,7 @@ light.set = function (rgb, id) {
 	arduino.string('projector', str);
 };
 light.end = function (rgb, id, ms) {
-	'use strict';
+	
 	log.info('Light set to ' + rgb.join(','), 'LIGHT', true, true);
 	mainWindow.webContents.send('light', {rgb: rgb, id : id, ms: ms});
 };
@@ -312,11 +311,11 @@ proj.state = {
 	dir : true //default dir
 };
 proj.init = function () {
-	'use strict';
+	
 	proj.listen();
 };
 proj.set = function (dir, id) {
-	'use strict';
+	
 	var cmd;
 	if (dir) {
 		cmd = mcopy.cfg.arduino.cmd.proj_forward;
@@ -329,13 +328,13 @@ proj.set = function (dir, id) {
 	});
 };
 proj.move = function (frame, id) {
-	'use strict';
+	
 	arduino.send('projector', mcopy.cfg.arduino.cmd.projector, function (ms) {
 		proj.end(mcopy.cfg.arduino.cmd.projector, id, ms);
 	});
 };
 proj.listen = function () {
-	'use strict';
+	
 	ipcMain.on('proj', function (event, arg) {
 		if (typeof arg.dir !== 'undefined') {
 			proj.set(arg.dir, arg.id);
@@ -346,7 +345,7 @@ proj.listen = function () {
 	});
 };
 proj.end = function (cmd, id, ms) {
-	'use strict';
+	
 	var message = '';
 	if (cmd === mcopy.cfg.arduino.cmd.proj_forward) {
 		message = 'Projector set to FORWARD';
@@ -370,11 +369,11 @@ cam.state = {
 	dir : true //default dir
 };
 cam.init = function () {
-	'use strict';
+	
 	cam.listen();
 };
 cam.set = function (dir, id) {
-	'use strict';
+	
 	var cmd;
 	if (dir) {
 		cmd = mcopy.cfg.arduino.cmd.cam_forward;
@@ -387,13 +386,13 @@ cam.set = function (dir, id) {
 	});
 };
 cam.move = function (frame, id) {
-	'use strict';
+	
 	arduino.send('camera', mcopy.cfg.arduino.cmd.camera, function (ms) {
 		cam.end(mcopy.cfg.arduino.cmd.camera, id, ms);
 	});
 };
 cam.listen = function () {
-	'use strict';
+	
 	ipcMain.on('cam', function (event, arg) {
 		if (typeof arg.dir !== 'undefined') {
 			cam.set(arg.dir, arg.id);
@@ -404,7 +403,7 @@ cam.listen = function () {
 	});
 };
 cam.end = function (cmd, id, ms) {
-	'use strict';
+	
 	var message = '';
 	if (cmd === mcopy.cfg.arduino.cmd.cam_forward) {
 		message = 'Camera set to FORWARD';
@@ -431,22 +430,22 @@ log.transport = new (winston.Logger)({
 	]
 });
 log.init = function () {
-	'use strict';
+	
 	log.listen();
 };
 log.display = function (obj) {
-	'use strict';
+	
 	mainWindow.webContents.send('log', obj);
 };
 log.listen = function () {
-	'use strict';
+	
 	ipcMain.on('log', function (event, arg) {
 		log.transport.info('renderer', arg);
 		event.returnValue = true;
 	});
 };
 log.info = function (action, service, status, display) {
-	'use strict';
+	
 	var obj = {
 		time : moment().format(log.time),
 		action : action,
@@ -462,11 +461,11 @@ log.info = function (action, service, status, display) {
 var transfer = {};
 
 transfer.init = function () {
-	'use strict';
+	
 	transfer.listen();
 };
 transfer.listen = function () {
-	'use strict';
+	
 	ipcMain.on('transfer', function (event, arg) {
 		var res = '';
 		//also turn on and off
@@ -486,7 +485,7 @@ transfer.listen = function () {
 };
 
 var init = function () {
-	'use strict';
+	
 	mcopy.cfgInit();
 	createWindow();
 	//createMenu();

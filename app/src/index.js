@@ -1,12 +1,13 @@
-var remote = require('remote'),
+
+var mcopy = {};
+
+var { remote, ipcRenderer } = require('electron'),
 	dialog = require('electron').remote.dialog,
 	notifier = require('node-notifier'),
 	fs = require('fs'),
 	uuid = require('uuid'),
 	moment = require('moment'),
 	humanizeDuration = require('humanize-duration')
-	ipcRenderer = require('electron').ipcRenderer,
-	mcopy = {},
 	light = require('./lib/light-ui.js'),
 	proj = require('./lib/proj-ui.js'),
 	cam = require('./lib/cam-ui.js'),
@@ -17,7 +18,7 @@ var remote = require('remote'),
 	log = require('./lib/log-ui.js'),
 	devices = require('./lib/devices-ui.js'),
 	mscript = require('./lib/mscript.js');
-//console.log(ipcRenderer.sendSync('light', { 'fuck' : true }) );
+
 
 mcopy.cfg = JSON.parse(fs.readFileSync('./data/cfg.json'), 'utf8');
 
