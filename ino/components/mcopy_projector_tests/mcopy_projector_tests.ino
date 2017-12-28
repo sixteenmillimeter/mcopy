@@ -57,7 +57,10 @@ const char cmd_projector = 'p';
 const char cmd_proj_forward = 'g';
 const char cmd_proj_backward = 'h';
 const char cmd_mcopy_identifier = 'm';
-const char cmd_proj_identifier = 'j';
+//for just proj
+//const char cmd_proj_identifier = 'j';
+//for proj + light
+const char cmd_proj_identifier = 'q';
 
 const char cmd_debug = 'd';
 const char cmd_connect = 'i';

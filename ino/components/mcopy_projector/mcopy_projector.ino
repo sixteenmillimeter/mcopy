@@ -13,6 +13,9 @@ const char cmd_proj_backward = 'h';
 const char cmd_debug = 'd';
 const char cmd_connect = 'i';
 volatile char cmd_char = 'z';
+const char cmd_mcopy_identifier = 'm';
+const char cmd_proj_identifier = 'j';
+
 const int serialDelay = 5;
 
 void setup() {
