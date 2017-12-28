@@ -1,4 +1,12 @@
 //Test lighting with NeoPixels instead of Pixies to prevent eye damage.
+//NeoPixel wiring, put 1000uF cap across 5V and GND and 470ohm resistor
+//in series with the data connection to the Arduino pin
+//
+// ARDUINO                     NEOPIXEL
+//  5VDC      --|--| 1000uF     5V   
+//  GND       --|--| 1000uF     GND
+//  PIN 3     --==-- 470ohm     Din
+
 
 //#include "SoftwareSerial.h"
 //#include "Adafruit_Pixie.h"
@@ -90,7 +98,7 @@ void colorString () {
 		//Wait for color string
 	}
 	color = Serial.readString();
-  //Serial.println(color);
+  Serial.println(color);
 
 	commaR = color.indexOf(','); //comma trailing R
 	commaG = color.indexOf(',', commaR + 1);
