@@ -32,10 +32,13 @@ module male_jk103_neg () {
         difference() {
             color("red") cube([20, 20, 24], center = true);
             rounded_cube([17 - 5, 18 - 5, 24 + 2], d = 2, center = true, $fn = 60);
+            //alignment notch
+            translate([-6, 0 , 10]) cube([6, 3, 4], center = true);
         }
         translate([0, 0, -12]) cube([20, 20, 24], center = true);
         //access
       translate([3.5, 6.2, 0]) cube([6, 6, 6], center = true);  
+    
     translate([3.5, -6.2, 0]) cube([6, 6, 6], center = true);
     translate([-6.5, 5, 0]) cube([6, 6, 6], center = true);  
     translate([-6.5, -5, 0]) cube([6, 6, 6], center = true); 
@@ -47,7 +50,10 @@ module male_jk103 () {
         body();
         translate([0, 0, -10]) pins(0, 20);
         translate([0, 0, -3]) male_jk103_neg();
+        //bolt
+        translate([15, 0, 5]) rotate([0,90,0]) cylinder(r = 1, h = 20, center = true, $fn = 40);
     }
+    
 }
 
 module male_jk103_back (){
@@ -59,6 +65,8 @@ module male_jk103_back (){
         male_jk103();
         translate([0, 0, 3]) rounded_cube([17 - 5, 18 - 5, 24], d = 2, center = true, $fn = 60);
         cylinder(r = 3, h = 24 * 2, center = true, $fn = 300);
+        //bolt
+        translate([15, 0, 5]) rotate([0,90,0]) cylinder(r = 1, h = 20, center = true, $fn = 40);
     }
     
 }
