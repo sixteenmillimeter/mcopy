@@ -41,7 +41,7 @@ void cmd (char val) {
   } else if (val == cmd_connect) {
     connect();
   } else if (val == cmd_projector) {
-    projector();
+    proj_start();
   } else if (val == cmd_proj_forward) {
     proj_direction(true);
   } else if (val == cmd_proj_backward) {
@@ -60,26 +60,36 @@ void connect () {
   log("connect()");
 }
 
-void projector () {
-  /* FROM INTVAL
-   * WILL USE OPTICAL ENDSTOP
-   * Time_start();
-  cam_dir = dir;
-  if (cam_dir) {
-    analogWrite(PIN_MOTOR_FORWARD, fwd_speed);
-    analogWrite(PIN_MOTOR_BACKWARD, 0);
+void proj_start () {
+  if (proj_dir) {
+    digitalWrite(proj_fwd_pin, HIGH);
+    digitalWrite(proj_bwd_pin, LOW); 
   } else {
-    analogWrite(PIN_MOTOR_BACKWARD, bwd_speed);
-    analogWrite(PIN_MOTOR_FORWARD, 0);
+    digitalWrite(proj_bwd_pin, HIGH); 
+    digitalWrite(proj_fwd_pin, LOW); 
   }
-  running = true;
-  if (fwd_speed == 255) {
-      delay(300);
-  } else {
-      delay(600);
-  }
-  micro_primed = false;*/
-  delay(1300); //TEMPORARY DELAY FOR TESTING TIMING
+  proj_running = true;
+  delay(500); // Let bump pass out of microswitch
+
+  //delay(1300); //TEMPORARY DELAY FOR TESTING TIMING
+}
+
+void proj_reading () {
+   proj_micro_raw = digitalRead(proj_micro_pin);
+    if (proj_micro_raw == 1) {
+        //do nothing
+    } else if (proj_micro_raw == 0) {
+        proj_stop();
+    }
+    //delay(1); //needed?
+}
+
+void proj_stop () {
+  digitalWrite(proj_bwd_pin, LOW); 
+  digitalWrite(proj_fwd_pin, LOW);
+  
+  proj_running = false;
+  
   Serial.println(cmd_projector);
   log("projector()");
 }
@@ -93,6 +103,7 @@ void proj_direction (boolean state) {
     Serial.println(cmd_proj_backward);
     log("proj_direction -> false");
   }
+  //delay(50); //delay after direction change to account for slippage of the belt
 }
 
 void log (String msg) {
