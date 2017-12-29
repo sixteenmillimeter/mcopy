@@ -53,5 +53,5 @@ module camera_mount () {
     }
 }
 
-bellows_camera_board();
+//bellows_camera_board();
 //translate([0, 0, 9]) color("red") camera_mount();
