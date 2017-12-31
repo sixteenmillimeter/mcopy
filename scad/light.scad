@@ -1,5 +1,16 @@
 include <./common.scad>;
 
+/*
+    CynKen 1Pcs Optical Glass RGB Dispersion Prism X-CUBE for Physics Teach Decoration Art
+    Specifications:
+    Material: K9 Cristal
+    Size: 2cm x 2cm x 1.7cm/0.8'' x 0.8''
+*/
+
+module prism () {
+    cube([20, 20, 17], center = true);
+}
+
 module adafruit_pixie () {
     $fn = 60;
     W = 0.8 * 25.4;
