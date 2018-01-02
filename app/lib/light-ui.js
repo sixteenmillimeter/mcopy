@@ -70,7 +70,7 @@ light.colorPickers = function () {
 		active: 'kelvin',
 		tabs: [
 			{ id: 'kelvin', caption: 'Kelvin'},
-			{ id: 'cmy', caption: 'CMY'},
+			//{ id: 'cmy', caption: 'CMY'},
 			{ id: 'rgb', caption: 'RGB' }
 		],
 		onClick: function (event) {
