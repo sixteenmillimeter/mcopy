@@ -28,11 +28,11 @@
     "electron-rebuild": "^1.4.0",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
-    "gulp-less": "^3.3.0"
+    "gulp-less": "^3.4.0"
   },
   "dependencies": {
     "async": "^2.6.0",
-    "electron": "^1.8.1",
+    "electron": "^1.7.10",
     "humanize-duration": "^3.10.0",
     "moment": "^2.17.1",
     "node-notifier": "^4.6.1",
