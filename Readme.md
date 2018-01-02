@@ -13,9 +13,23 @@
 
 The mcopy project is comprised of software and hardware for optical printers, built with repurposed broken projectors.
 
+
+
+#### Components
+
+* Sequencer desktop app
+* Scripting language, called mscript, for complex sequences
+* Arduino firmware for projectors, cameras, lights and existing printers
+* 3D models of parts
+
 ## Software <a name="software"></a>
 
+The mcopy desktop app is an Electron-based project which can be built for any platform.
+
+
 ## Hardware <a name="hardware"></a>
+
+
 
 ## Why? <a name="why"></a>
 
