@@ -40,13 +40,7 @@ mcopy.cfgStore = function () {
 var enumerateDevices = function (err, devices) {
 	if (err) {
 		log.info(err, 'SERIAL', false, true)
-		arduino.fakeConnect('projector', () => {
-			log.info('Connected to fake PROJECTOR device', 'SERIAL', true, true)
-		})
-		arduino.fakeConnect('camera', () => {
-			log.info('Connected to fake CAMERA device', 'SERIAL', true, true)
-		})
-		devicesReady('fake', 'fake')
+		distinguishDevices([])
 	} else {
 		log.info('Found ' + devices.length + ' USB devices', 'SERIAL', true, true)
 		distinguishDevices(devices)
