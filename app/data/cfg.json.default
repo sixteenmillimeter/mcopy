@@ -24,17 +24,27 @@
 			"debug" : "d",
 			"connect":  "i",
 			"light" : "l",
+
 			"camera" : "c",
 			"projector" : "p",
 			"black" : "b",
+
 			"cam_forward" : "e",
 			"cam_backward" : "f",
+			"cam_timed" : "n",
+
 			"proj_forward" : "g",
 			"proj_backward" : "h",
+
+			"mcopy_identifier" : "m",
+
 			"proj_identifier" : "j",
 			"cam_identifier" : "k",
-			"mcopy_identifier" : "m",
-			"cam_timed" : "n"
+			"light_identifier" : "o",
+
+			"proj_light_identifier" : "q",
+			"proj_cam_light_identifier" : "r",
+			"proj_cam_identifier" : "s"
 		}
 	}
 }
