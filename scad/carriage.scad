@@ -87,8 +87,8 @@ module carriage_handle () {
 		cylinder(r = 18 / 2, h = 25.4 / 2, center = true, $fn = 60);
 		cylinder(r = 12 / 2, h = (25.4 / 2) + 1, center = true, $fn = 60);
 	}
-	translate([20, 0, 20 - 4]) cylinder(r2 = 4, r1 = 3, h = 8, center = true, $fn = 100);
-	translate([20, 0, 20]) sphere(r = 4, center = true, $fn = 100);
+	translate([20, 0, 20 - 2]) cylinder(r2 = 5, r1 = 4, h = 12, center = true, $fn = 100);
+	translate([20, 0, 24]) sphere(r = 5, center = true, $fn = 100);
 }
 
 
@@ -106,9 +106,49 @@ module carriage_assembled () {
 }
 
 
-carriage_assembled();
+//carriage_assembled();
 
+module carriage_join_tab () {
+    translate([0, 5, 0]) difference () {
+        cube([100, 10, 20], center = true);
+        translate([0, 0, 20]) rotate([30, 0, 0]) cube([100, 40, 20], center = true);
+        translate([0, 0, -20]) rotate([-30, 0, 0]) cube([100, 40, 20], center = true);
+    }
+}
 
+module carriage_end_HALF (side = true) {
+    difference () {
+        carriage_end();
+        if (side){
+            difference () {
+                translate([0, 100, 0]) cube([200, 200, 200], center = true);
+                carriage_join_tab();
+            }
+        } else {
+            translate([0, -100, 0]) cube([200, 200, 200], center = true);
+            carriage_join_tab();
+        }
+    }
+}
+
+module carriage_sled_b_HALF(side=true) {
+    difference () {
+        carriage_sled_b();
+        if (side){
+            difference () {
+                translate([0, 100, 0]) cube([200, 200, 200], center = true);
+                carriage_join_tab();
+            }
+        } else {
+            translate([0, -100, 0]) cube([200, 200, 200], center = true);
+            carriage_join_tab();
+        }
+    }
+}
+
+//carriage_end_HALF(false);
+//carriage_sled_b_HALF();
+carriage_handle();
 difference () {
 	//carriage_sled_b();
 	//translate([0, -85, 0]) cube([200, 200, 200], center = true);

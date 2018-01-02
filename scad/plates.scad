@@ -14,7 +14,10 @@ module connectors_plate () {
 	translate([0, 0, 12])  female_jk103();
 }
 
-module light_plate () {}
+module light_plate () {
+        //adafruit_pixie();
+        rotate([-90, 0, 0]) pixie_mount();
+}
 
 module motor_plate () {}
 
@@ -33,7 +36,9 @@ module motor_plate () {}
 //connectors_plate();
 
 //light.scad
-
+//adafruit_pixie();
+//pixie_mount();
+light_vent_top();
 //light_plate();
 
 //motor.scad
