@@ -83,22 +83,27 @@
         </div>
         <div id="buttons">
           <div>
-            <button id="cmd_cam_forward" onclick="cmd.cam_forward(light.color);" class="cmd"><i class="fa fa-step-forward"></i>CAM FORWARD</button>
+            <div>
+              <button id="cmd_cam_forward" onclick="cmd.cam_forward(light.color);" class="cmd fwd"><i class="fa fa-step-forward"></i>CAM FORWARD</button>
+            </div>
+            <div>
+              <button id="cmd_cam_backward" onclick="cmd.cam_backward(light.color);" class="cmd bwd"><i class="fa fa-step-backward"></i>CAM BACKWARD</button>
+            </div>
+            <div>
+              <button id="cmd_black_forward" onclick="cmd.black_forward();" class="cmd fwd"><i class="fa fa-step-forward"></i>BLACK FORWARD</button>
+            </div>
+            <div>
+              <button id="cmd_black_backward" onclick="cmd.black_backward();" class="cmd bwd"><i class="fa fa-step-backward"></i>BLACK BACKWARD</button>
+            </div>
           </div>
           <div>
-            <button id="cmd_cam_backward" onclick="cmd.cam_backward(light.color);" class="cmd"><i class="fa fa-step-backward"></i>CAM BACKWARD</button>
-          <div>
-            <button id="cmd_black_forward" onclick="cmd.black_forward();" class="cmd"><i class="fa fa-step-forward"></i>BLACK FORWARD</button>
+            <div>
+              <button id="proj_forward" onclick="cmd.proj_forward();" class="cmd fwd"><i class="fa fa-step-forward"></i>PROJ FORWARD</button>
+            </div>
+            <div>
+              <button id="proj_backward" onclick="cmd.proj_backward();" class="cmd bwd"><i class="fa fa-step-backward"></i>PROJ BACKWARD</button>
+            </div>
           </div>
-          <div>
-            <button id="cmd_black_backward" onclick="cmd.black_backward();" class="cmd"><i class="fa fa-step-backward"></i>BLACK BACKWARD</button>
-          </div>
-        </div>
-        <div>
-          <button id="proj_forward" onclick="cmd.proj_forward();" class="cmd"><i class="fa fa-step-forward"></i>PROJ FORWARD</button>
-        </div>
-        <div>
-          <button id="proj_backward" onclick="cmd.proj_backward();" class="cmd"><i class="fa fa-step-backward"></i>PROJ BACKWARD</button>
         </div>
         <footer>
           <div id="log"></div>

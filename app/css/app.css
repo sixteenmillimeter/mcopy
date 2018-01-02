@@ -538,6 +538,37 @@ button:focus {
   background: black;
   color: #fff;
 }
+#buttons > div {
+  width: 50%;
+  float: left;
+}
+.cmd {
+  width: 200px;
+  text-align: center;
+}
+.cmd i {
+  float: left;
+}
+.cmd.fwd i {
+  color: #00C4A0;
+}
+.cmd.bwd i {
+  color: #AB1A25;
+}
+.cmd:active.fwd,
+.cmd .active.fwd {
+  background: #00C4A0;
+  border-color: #00C4A0;
+}
+.cmd:active.bwd,
+.cmd .active.bwd {
+  background: #AB1A25;
+  border-color: #AB1A25;
+}
+.cmd:active i,
+.cmd .active i {
+  color: #272b30;
+}
 #log {
   position: fixed;
   width: 100%;

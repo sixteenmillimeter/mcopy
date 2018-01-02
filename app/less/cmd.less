@@ -1,0 +1,34 @@
+#buttons{
+	> div{
+		width: 50%;
+		float: left;
+	}
+}
+
+.cmd{
+	width: 200px;
+	text-align: center;
+	i{
+		float: left;
+	}
+	&.fwd i{
+		color: @FORWARD;
+	}
+	&.bwd i{	
+		color: @BACKWARD;
+	}
+	&:active,
+	.active{
+		&.fwd{
+			background: @FORWARD;
+			border-color: @FORWARD;
+		}
+		&.bwd{
+			background: @BACKWARD;
+			border-color: @BACKWARD;
+		}
+		i{
+			color: @BG;
+		}
+	}
+}

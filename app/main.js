@@ -40,7 +40,9 @@ mcopy.cfgStore = function () {
 var enumerateDevices = function (err, devices) {
 	if (err) {
 		log.info(err, 'SERIAL', false, true)
-		distinguishDevices([])
+		setTimeout(() =>{
+			distinguishDevices([])
+		}, 1000)
 	} else {
 		log.info('Found ' + devices.length + ' USB devices', 'SERIAL', true, true)
 		distinguishDevices(devices)
