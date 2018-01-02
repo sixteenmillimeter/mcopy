@@ -9,6 +9,8 @@ const actionTable = `CREATE TABLE IF NOT EXISTS actions (
 	type TEXT,
 	length INTEGER,
 	counter INTEGER,
-	light TEXT
+	light TEXT,
+	dir INTEGER,
+	sequence INTEGER
 
 );`
