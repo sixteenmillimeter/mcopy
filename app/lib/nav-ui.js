@@ -8,11 +8,11 @@ nav.init = function () {
 		name: 'toolbar',
 		items: [
 			{ type: 'radio',  id: 'sequencer',  group: '1', caption: 'Sequencer', icon: 'fa fa-th', checked: true },
-			{ type: 'radio',  id: 'script',  group: '1', caption: 'Script', icon: 'fa fa-code' },
 			{ type: 'radio',  id: 'controls',  group: '1', caption: 'Controls', icon: 'fa fa-tasks' },
 			{ type: 'radio',  id: 'light',  group: '1', caption: 'Light', icon: 'mcopy-light' },
+			{ type: 'radio',  id: 'script',  group: '1', caption: 'Script', icon: 'fa fa-code' },
 			{ type: 'spacer' },
-			{ type: 'button',  id: 'settings',  group: '1', caption: 'Settings', icon: 'fa fa-cogs' }
+			{ type: 'radio',  id: 'settings',  group: '1', caption: 'Settings', icon: 'fa fa-cogs' }
 		],
 		onClick : function (event) {
 			nav.change(event.target);

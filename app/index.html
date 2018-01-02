@@ -81,6 +81,25 @@
             <input type="number" id="seq_proj_count_2" class="count" value="00000" onchange="gui.counterFormat(this, mcopy.state.projector.pos);" onblur="gui.updateProj(this);" />
           </div>
         </div>
+        <div id="buttons">
+          <div>
+            <button id="cmd_cam_forward" onclick="cmd.cam_forward(light.color);" class="cmd"><i class="fa fa-step-forward"></i>CAM FORWARD</button>
+          </div>
+          <div>
+            <button id="cmd_cam_backward" onclick="cmd.cam_backward(light.color);" class="cmd"><i class="fa fa-step-backward"></i>CAM BACKWARD</button>
+          <div>
+            <button id="cmd_black_forward" onclick="cmd.black_forward();" class="cmd"><i class="fa fa-step-forward"></i>BLACK FORWARD</button>
+          </div>
+          <div>
+            <button id="cmd_black_backward" onclick="cmd.black_backward();" class="cmd"><i class="fa fa-step-backward"></i>BLACK BACKWARD</button>
+          </div>
+        </div>
+        <div>
+          <button id="proj_forward" onclick="cmd.proj_forward();" class="cmd"><i class="fa fa-step-forward"></i>PROJ FORWARD</button>
+        </div>
+        <div>
+          <button id="proj_backward" onclick="cmd.proj_backward();" class="cmd"><i class="fa fa-step-backward"></i>PROJ BACKWARD</button>
+        </div>
         <footer>
           <div id="log"></div>
         </footer>
@@ -101,7 +120,7 @@
                 </div>
             </div>
           </div>
-          <div id="cmy-page" class="colors-page">
+          <!--<div id="cmy-page" class="colors-page">
             <div id="dial-c" class="dial-wrapper">
               <div class="dial-container dial-container1">
                 <div class="dial-wedge"></div>
@@ -150,7 +169,7 @@
             <div id="cmy-preview">
               rgb(0, 0, 0)
             </div>
-          </div>
+          </div>-->
           <div id="rgb-page" class="colors-page">
             <input id="rgb" value="rgb(0, 0, 0)" />
           </div>
@@ -175,6 +194,26 @@
             <i class="fa fa-plus"></i>
           </div>
         </footer>
+      </div>
+      <div id="settings" class="screen">
+        <h4>Devices</h4>
+        <select>
+          
+        </select>
+        <button title="Refresh devices"><i class="fa fa-refresh"></i></button>
+        <h4>Projector</h4>
+        <select>
+          
+        </select>
+        <h4>Camera</h4>
+        <select>
+          
+        </select>
+        <input type="text" id="intval" name="intval" placeholder="INTVAL3 URL"/>
+        <h4>Light</h4>
+        <select>
+          
+        </select>
       </div>
     </div>
     <div id="overlay" onclick="gui.overlay(false);gui.spinner(false);"></div>
