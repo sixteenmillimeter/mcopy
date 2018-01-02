@@ -1,0 +1,282 @@
+#colors-tabs{
+	width: 411px;
+}
+#colors-content{
+	width: 411px;
+    float: left;
+    .colors-page{
+    	display: none;
+    }
+}
+#kelvin-page{
+	h3{
+		text-align: center;
+	}
+	h4{
+		text-align: center;
+	    width: 411px;
+	    position: absolute;
+	    top: 121px;
+	    left: 110px;
+	}
+}
+#kelvin{
+	background: @INPUT_BG;
+	color: @COMMON;
+	border: 1px solid @COMMON;
+	width: 140px;
+    font-size: 20px;
+    margin: 20px auto;
+    display: block;
+    text-align: center;
+}
+
+#kelvin-slider{
+	position: relative;
+	width: 352px;
+	margin: 40px auto 0;
+	padding-bottom: 2px;
+	cursor: pointer;
+}
+#kelvin-scale{
+	width: 350px;
+    height: 60px;
+	border: 1px solid @COMMON;
+    span{
+    	display: inline-block;
+    	height: 58px;
+    	width: 1px;
+    }
+}
+#kelvin-pos{
+    height: 64px;
+    border: 2px solid #000;
+    width: 5px;
+    position: absolute;
+    left: -1px;
+    top: -2px;
+    &:before{
+    	font-family: 'FontAwesome';
+    	content: '\f107';
+    	position: absolute;
+    	color: #000;
+    	top: -24px;
+    	left: -8px;
+    	font-size: 27px;
+    }
+}
+
+#kelvin-preview {
+	margin-top: 25px;
+	width: 350px;
+    height: 60px;
+	border: 1px solid @COMMON;
+	text-align: center;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	line-height: 60px;
+	color: @BG;
+}
+
+//@dial_size : 5.5em;
+//@dial_thickness : 0.5em;
+@dial_size : 80px;
+@dial_thickness : 14px;
+
+@dial_cyan : #00FFFF;
+@dial_magenta : #FF00FF;
+@dial_yellow : #FFFF00;
+@dial_black : #000;
+@dial_left : 15px;
+@dial_spacing : 90px;
+
+.dial-class (@color, @i) {
+	margin-left: @dial_left + (@dial_spacing * @i);
+	margin-top: 85px;
+	.dial-wedge,
+	.dial-marker{
+		background: @color;
+	}
+	input{
+		color: @color;
+		border-color: @color;
+	}
+}
+
+#dial-c {
+	.dial-class(@dial_cyan, 0);
+}
+#dial-m {
+	.dial-class(@dial_magenta, 1);
+}
+#dial-y {
+	.dial-class(@dial_yellow, 2);
+}
+#dial-k {
+	.dial-class(@dial_black, 3);
+	input{
+		color: #fff;
+		border-color: #fff;
+	}
+}
+
+.dial-wrapper {
+	position: absolute;
+	width: @dial_size;
+	height: @dial_size;
+	&:after {
+		content: "";
+		background: @BG;
+		border-radius: 50%;
+		width: @dial_size - @dial_thickness;
+		height: @dial_size - @dial_thickness;
+		position: absolute;
+		top: @dial_thickness / 2;
+		left: @dial_thickness / 2;
+	}
+	input{
+		margin-top: @dial_size + @dial_thickness;
+	    width: @dial_size - (@dial_thickness * 2);
+		margin-left: @dial_thickness;
+		background: @BG;
+		border: 1px solid;
+		text-align: center;
+	}
+}
+.dial-container {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	overflow: hidden;
+	width: @dial_size / 2;
+	&.dial-container1 {
+		left: @dial_size / 2;
+		.dial-wedge {
+			transform: rotateZ(0deg);
+			border-radius: 0 @dial_size @dial_size 0;
+			left: 0;
+			transform-origin: 0 50%;
+		}
+	}
+	&.dial-container2 {
+	  	left: 0;
+		.dial-wedge {
+			transform: rotateZ(0deg);
+			border-radius: @dial_size 0 0 @dial_size;
+			transform-origin: @dial_size/2 @dial_size/2;
+		}
+	}
+}
+.dial-wedge {
+	height: @dial_size;
+	width: @dial_size / 2;
+}
+.dial-marker {
+	border-radius: 50%;
+	height: @dial_thickness / 2;
+	width: @dial_thickness / 2;
+	position: absolute;
+	top: 0;
+	left: calc(50% - (@dial_thickness * 2));
+}
+.dial-end {
+  transform: rotateZ(0deg);
+  transform-origin: 50% (@dial_size/2);
+}
+
+#cmy-preview {
+	position: absolute;
+    margin-top: 220px;
+    margin-left: 15px;
+	width: 350px;
+    height: 60px;
+	border: 1px solid @COMMON;
+	text-align: center;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	line-height: 60px;
+	color: @BG;
+}
+
+.mcopy-light{
+	background: #000;
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+}
+#light-status{
+	width: 360px;
+	float: right;
+	margin-top: -25px;
+	h3{
+		font-size: 20px;
+		text-align: center;
+	}
+	>div{
+		position: relative;
+    	clear: both;
+    	&:after{
+    		content: "";
+    		display: block;
+    	}
+	}
+	form{
+		float: left;
+		line-height: 30px;
+		width: 40%;
+		span{
+			width: 20px;
+			margin-left: 40px;
+			display: inline-block;
+		}
+		input[type=text]{
+			width: 40px;
+			background: @INPUT_BG;
+			color: @COMMON;
+			border: 1px solid @COMMON;
+		}
+	}
+}
+#light-swatches{
+	width: 100%;
+	.swatch{
+		cursor: pointer;
+		width: 50px;
+		height: 50px;
+		display: inline-block;
+		margin: 3px;
+		box-sizing: border-box;
+		border: 1px solid #fff;
+		&.default{
+			border-color: #9ecaed;
+    		box-shadow: 0 0 10px #9ecaed;
+		}
+	}
+	#new-swatch{
+		cursor: pointer;
+		display: inline-block;
+	    border: 1px solid rgb(255, 255, 255);
+	    width: 50px;
+	    height: 50px;
+	    margin: 3px;
+	    box-sizing: border-box;
+	    line-height: 88px;
+	    text-align: center;
+	    font-size: 22px;
+	    position: relative;
+	    opacity: 0.25;
+	    &:hover{
+	    	opacity: 0.5;
+	    }
+	    &:active{
+	    	opacity: 1;
+	    }
+	    i{
+	    	display: block; 
+	    	position: absolute;
+    		top: 14px;
+    		left: 16px;
+    		color: #fff;
+	    }
+	}
+}

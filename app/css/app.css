@@ -22,17 +22,6 @@ footer {
   width: 100%;
   height: 150px;
 }
-#log {
-  position: fixed;
-  width: 100%;
-  height: 150px;
-}
-#screens {
-  overflow-x: hidden;
-}
-.screen {
-  display: none;
-}
 #colors-tabs {
   width: 411px;
 }
@@ -317,6 +306,17 @@ footer {
   top: 14px;
   left: 16px;
   color: #fff;
+}
+#log {
+  position: fixed;
+  width: 100%;
+  height: 150px;
+}
+#screens {
+  overflow-x: hidden;
+}
+.screen {
+  display: none;
 }
 #w2ui-popup .swatch {
   cursor: pointer;
