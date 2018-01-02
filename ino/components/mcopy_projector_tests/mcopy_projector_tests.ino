@@ -1,3 +1,4 @@
+//Test projector + light combination
 //Test lighting with NeoPixels instead of Pixies to prevent eye damage.
 //NeoPixel wiring, put 1000uF cap across 5V and GND and 470ohm resistor
 //in series with the data connection to the Arduino pin
@@ -8,18 +9,18 @@
 //  PIN 3     --==-- 470ohm     Din
 
 //LIGHT HEADERS
-//#include "SoftwareSerial.h"
-//#include "Adafruit_Pixie.h"
-#include <Adafruit_NeoPixel.h>
+#include "SoftwareSerial.h"
+#include "Adafruit_Pixie.h"
+//#include <Adafruit_NeoPixel.h>
 
 #define NUMPIXELS 1 // Number of Pixies in the strip
-//#define PIXIEPIN  6 // Pin number for SoftwareSerial output
-#define PIXELPIN  3 // Pin number for SoftwareSerial output
+#define PIXIEPIN  6 // Pin number for SoftwareSerial output
+//#define PIXELPIN  3 // Pin number for SoftwareSerial output
 
-//SoftwareSerial pixieSerial(-1, PIXIEPIN);
-//Adafruit_Pixie light = Adafruit_Pixie(NUMPIXELS, &pixieSerial);
+SoftwareSerial pixieSerial(-1, PIXIEPIN);
+Adafruit_Pixie light = Adafruit_Pixie(NUMPIXELS, &pixieSerial);
 
-Adafruit_NeoPixel light = Adafruit_NeoPixel(1, PIXELPIN, NEO_GRB + NEO_KHZ800);
+//Adafruit_NeoPixel light = Adafruit_NeoPixel(1, PIXELPIN, NEO_GRB + NEO_KHZ800);
 
 /*
 ----------------------------------------------------
@@ -82,8 +83,8 @@ void setup() {
   Serial.flush();
   Serial.setTimeout(serialDelay);
   
-  //pixieSerial.begin(115200); // Pixie REQUIRES this baud rate
-  light.begin(); //neopixel only
+  pixieSerial.begin(115200); // Pixie REQUIRES this baud rate
+  //light.begin(); //neopixel only
   light.setPixelColor(0, 0, 0, 0);
   light.show();
 
