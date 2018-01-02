@@ -22,6 +22,34 @@ footer {
   width: 100%;
   height: 150px;
 }
+button {
+  display: block;
+  border-radius: 5px;
+  border: 2px solid #fff;
+  text-align: center;
+  background: transparent;
+  color: #fff;
+  padding: 8px 0;
+  font-size: 12px;
+  font-weight: 400;
+  display: inline-block;
+  padding: 4px 16px;
+  font-size: 14px;
+}
+button span {
+  display: block;
+  font-size: 16px;
+  font-weight: 200;
+}
+button:active,
+button .active {
+  background: #fff;
+  color: #272b30;
+  outline: none;
+}
+button:focus {
+  outline: none;
+}
 #colors-tabs {
   width: 411px;
 }
@@ -307,105 +335,6 @@ footer {
   left: 16px;
   color: #fff;
 }
-#log {
-  position: fixed;
-  width: 100%;
-  height: 150px;
-}
-#screens {
-  overflow-x: hidden;
-}
-.screen {
-  display: none;
-}
-#w2ui-popup .swatch {
-  cursor: pointer;
-  width: 50px;
-  height: 50px;
-  display: inline-block;
-  margin: 3px;
-  box-sizing: border-box;
-  border: 1px solid #fff;
-}
-#w2ui-popup .swatch.default {
-  border-color: #9ecaed;
-  box-shadow: 0 0 10px #9ecaed;
-}
-#w2ui-popup #new-swatch {
-  display: none;
-}
-#preview-wrap {
-  margin-top: 140px;
-}
-#preview-wrap h4 {
-  display: inline-block;
-  margin: 0;
-  margin-left: 123px;
-  margin-right: 10px;
-  width: 81px;
-  height: 30px;
-}
-#preview-wrap h4 span {
-  display: block;
-  margin-top: 6px;
-  position: absolute;
-}
-#rgb {
-  border: 0;
-  border-radius: 0;
-  width: 411px;
-  font-size: 12px;
-  text-align: center;
-}
-#color {
-  width: 100px;
-  height: 100px;
-  margin: 0 50px;
-  background-color: #000;
-  float: right;
-}
-#counters .cam,
-#counters_2 .cam,
-#counters .proj,
-#counters_2 .proj {
-  width: 50%;
-  padding-bottom: 25px;
-}
-#counters .cam label,
-#counters_2 .cam label,
-#counters .proj label,
-#counters_2 .proj label {
-  text-align: center;
-  font-size: 24px;
-  display: block;
-}
-#counters .cam input,
-#counters_2 .cam input,
-#counters .proj input,
-#counters_2 .proj input {
-  background: rgba(255, 255, 255, 0.05);
-  color: #fff;
-  padding: 6px 12px;
-  font-size: 21px;
-  display: block;
-  margin: 0 auto;
-  text-align: center;
-  font-family: 'Menlo', monospace;
-}
-#counters .cam input.changed,
-#counters_2 .cam input.changed,
-#counters .proj input.changed,
-#counters_2 .proj input.changed {
-  color: #DAE035;
-}
-#counters .cam,
-#counters_2 .cam {
-  float: left;
-}
-#counters .proj,
-#counters_2 .proj {
-  float: right;
-}
 #seq_scroll {
   width: 100%;
   overflow-x: scroll;
@@ -464,34 +393,6 @@ footer {
   width: 121px;
   margin-top: 10px;
   padding: 6px 12px;
-}
-button {
-  display: block;
-  border-radius: 5px;
-  border: 2px solid #fff;
-  text-align: center;
-  background: transparent;
-  color: #fff;
-  padding: 8px 0;
-  font-size: 12px;
-  font-weight: 400;
-  display: inline-block;
-  padding: 4px 16px;
-  font-size: 14px;
-}
-button span {
-  display: block;
-  font-size: 16px;
-  font-weight: 200;
-}
-button:active,
-button .active {
-  background: #fff;
-  color: #272b30;
-  outline: none;
-}
-button:focus {
-  outline: none;
 }
 #sequence {
   width: 970px;
@@ -591,6 +492,9 @@ button:focus {
   color: #DAE035;
   opacity: 1;
 }
+.spacer {
+  margin-top: 15px;
+}
 #seq_labels {
   font-family: 'Menlo', monospace;
   background-color: #272b30;
@@ -634,6 +538,105 @@ button:focus {
   background: black;
   color: #fff;
 }
+#log {
+  position: fixed;
+  width: 100%;
+  height: 150px;
+}
+#screens {
+  overflow-x: hidden;
+}
+.screen {
+  display: none;
+}
+#w2ui-popup .swatch {
+  cursor: pointer;
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+  margin: 3px;
+  box-sizing: border-box;
+  border: 1px solid #fff;
+}
+#w2ui-popup .swatch.default {
+  border-color: #9ecaed;
+  box-shadow: 0 0 10px #9ecaed;
+}
+#w2ui-popup #new-swatch {
+  display: none;
+}
+#preview-wrap {
+  margin-top: 140px;
+}
+#preview-wrap h4 {
+  display: inline-block;
+  margin: 0;
+  margin-left: 123px;
+  margin-right: 10px;
+  width: 81px;
+  height: 30px;
+}
+#preview-wrap h4 span {
+  display: block;
+  margin-top: 6px;
+  position: absolute;
+}
+#rgb {
+  border: 0;
+  border-radius: 0;
+  width: 411px;
+  font-size: 12px;
+  text-align: center;
+}
+#color {
+  width: 100px;
+  height: 100px;
+  margin: 0 50px;
+  background-color: #000;
+  float: right;
+}
+#counters .cam,
+#counters_2 .cam,
+#counters .proj,
+#counters_2 .proj {
+  width: 50%;
+  padding-bottom: 25px;
+}
+#counters .cam label,
+#counters_2 .cam label,
+#counters .proj label,
+#counters_2 .proj label {
+  text-align: center;
+  font-size: 24px;
+  display: block;
+}
+#counters .cam input,
+#counters_2 .cam input,
+#counters .proj input,
+#counters_2 .proj input {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  padding: 6px 12px;
+  font-size: 21px;
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+  font-family: 'Menlo', monospace;
+}
+#counters .cam input.changed,
+#counters_2 .cam input.changed,
+#counters .proj input.changed,
+#counters_2 .proj input.changed {
+  color: #DAE035;
+}
+#counters .cam,
+#counters_2 .cam {
+  float: left;
+}
+#counters .proj,
+#counters_2 .proj {
+  float: right;
+}
 #overlay {
   position: fixed;
   top: 0;
@@ -644,9 +647,6 @@ button:focus {
   height: 100%;
   background: rgba(0, 0, 0, 0.4);
   display: none;
-}
-.spacer {
-  margin-top: 15px;
 }
 .cp-app {
   position: relative !important;

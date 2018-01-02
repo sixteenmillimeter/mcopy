@@ -1,0 +1,207 @@
+//SEQUENCER UI
+
+#seq_scroll{
+	width: 100%;
+	overflow-x: scroll;
+	>div>div>div{
+		float: left;
+		input{
+			float: none;
+		}
+	}
+}
+#numbers{
+	div{
+		font-size: 10px;
+		text-align: center;
+		color: rgb(220, 220, 220);
+	}
+}
+#actions{
+	padding: 8px 0 0 55px;
+	input[type=number] {
+		background: @INPUT_BG;
+	    border: 2px solid @COMMON;
+	    color: @COMMON;
+	    padding: 6px;
+	    border-radius: 5px;
+	    float: right;
+	    width: 90px;
+	    margin-right: 60px;
+	}
+}
+#seq_stats{
+	width: 40%;
+	float: right;
+	padding: 20px 61px 0 0;
+	h3{
+		font-size: 20px;
+		margin: 16px 0 3px;
+	}
+	span{
+		font-weight: 600;
+		float: right;
+	}
+	.timing{
+	}
+}
+#seq_loop{
+	width: 40%;
+	float: left;
+	padding: 0 0 0 56px;
+	h3{
+		font-size: 20px;
+		margin: 12px 0 3px;
+	}
+	input{
+		.monospace();
+		background: @INPUT_BG;
+    	color: @COMMON;
+    	font-size: 21px;
+		width: 121px;
+		margin-top: 10px;
+		padding: 6px 12px;
+	}
+}
+
+#sequencer{
+
+}
+#sequence{
+	width: 970px;
+	padding-bottom: 21px;
+	padding-left: 70px;
+	#cam_forward,
+	#proj_forward,
+	#black_forward{
+		clear: both;
+		input[type=checkbox]{
+			border: 2px solid @FORWARD;
+			&:checked{
+				background: @FORWARD;
+				//background: radial-gradient(circle at 25px 25px, #00C4A0, #343434);
+			}
+		}
+		>div{
+			color: @FORWARD;
+		}
+	}
+	#cam_backward,
+	#proj_backward,
+	#black_backward{
+		clear: both;
+		input[type=checkbox]{
+			border: 2px solid @BACKWARD;
+			&:checked{
+				background: @BACKWARD;
+				//background: radial-gradient(circle at 25px 25px, #AB1A25, #343434);
+			}
+		}
+		>div{
+			color: @BACKWARD;
+		}
+	}
+	input[type=checkbox]{
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+		background: transparent;
+		outline: none;
+		width: 35px;
+		height: 35px;
+		border-radius: 5px;
+		margin: 0;
+		margin-bottom: 3px;
+		margin-right: 3px;
+    	display: inline-block;
+		box-sizing: border-box;
+		cursor: pointer;
+	}
+	.L{
+		display: inline-block;
+		width: 35px;
+		height: 35px;
+		border-radius: 35px;
+		margin: 0;
+		margin-bottom: 3px;
+		margin-right: 3px;
+		border: 2px solid @COMMON;
+		opacity: 0.5;
+		cursor: pointer;
+		&.a{
+			opacity: 1;
+		}
+	}
+	input.h{
+		//background: @SELECTED !important;
+		border-color: @SELECTED !important;
+		&:checked{
+			background: @SELECTED !important;
+		}
+	}
+	#numbers{
+		clear: both;
+		> div{
+			width: 35px;
+			color: @COMMON;
+			font-family: monospace;
+			float: left;
+			margin-right: 3px;
+			text-align: center;
+			opacity: 0.5;
+			&.h{
+				color: @SELECTED;
+				opacity: 1;
+			}
+		}
+	}
+}
+
+.spacer{
+	margin-top: 15px;
+}
+#seq_labels{
+	.monospace();
+	background-color: #272b30;
+	position: absolute;
+	top: 128px;
+	padding-top: 2px;
+	padding-bottom: 15px;
+	width: 54px;
+	div{
+		height: 43px;
+		line-height: 35px;
+	}
+	span{
+		text-indent: 7px;
+    	display: inline-block;
+    	margin-right: 5px;
+	}
+}
+
+#loop_current{
+    margin-top: 54px;
+    width: 121px;
+    text-align: center;
+    color: @SELECTED;
+}
+
+#console{
+	background: #000;
+	border-top: 2px solid rgba(255, 255, 255, 0.3);
+	textarea{
+		.monospace();
+		font-size: 12px;
+		line-height: 17px;
+		outline: none !important;
+		border: none;
+		box-sizing: border-box;
+		margin: 0;
+		padding: 20px;
+		width: 100%;
+		height: @FOOTER_H;
+		display: block;
+		background: black;
+		color: @COMMON;
+	}
+}

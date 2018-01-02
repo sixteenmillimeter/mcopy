@@ -1,0 +1,28 @@
+.monospace () {
+	font-family: 'Menlo', monospace;
+}
+
+.button (@color: @COMMON) {
+	display: block;
+	border-radius: 5px;
+	border: 2px solid @color;
+	text-align: center;
+	background: transparent;
+	color: @color;
+	padding: 8px 0;
+	font-size: 12px;
+	font-weight: 400;
+	span{
+		display: block;
+		font-size: 16px;
+		font-weight: 200;
+	}
+	&:active,.active{
+		background: @color;
+		color: @BG;
+		outline: none;
+	}
+	&:focus{
+		outline: none;
+	}
+}

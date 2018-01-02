@@ -1,0 +1,33 @@
+*{
+	cursor: default;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+}
+
+html, body{
+	-webkit-overflow-scrolling: auto;
+	overflow-x: hidden;
+}
+
+input {
+	background: @INPUT_BG;
+	color: @COMMON;
+	border-color: @COMMON;
+	&:focus{
+		outline: none !important;
+	}
+}
+
+footer{
+	position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: @FOOTER_H;
+}
+
+button{
+	.button();
+	display: inline-block;
+	padding: 4px 16px;
+	font-size: 14px;
+}
