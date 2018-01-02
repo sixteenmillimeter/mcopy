@@ -8,9 +8,10 @@ const moment = require('moment')
 const uuid = require('uuid')
 const Q = require('q')
 const events = require('events')
+const async = require('async')
 const ee = new events.EventEmitter()
 const capture = require('./lib/capture-report.js')(ee)
-	
+
 const mcopy = {}
 
 let mainWindow
@@ -32,7 +33,7 @@ mcopy.cfgInit = function () {
 	mcopy.cfg = JSON.parse(fs.readFileSync(mcopy.cfgFile, 'utf8'))
 }
 mcopy.cfgStore = function () {
-	var data = JSON.stringify(mcopy.cfg)
+	var data = JSON.stringify(mcopy.cfg, null, '\t')
 	fs.writeFileSync(mcopy.cfgFile, data, 'utf8')
 }
 
@@ -65,6 +66,7 @@ var distinguishDevice = function (device, callback) {
 		if (err) {
 			return console.error(err)
 		}
+		log.info(`Verified ${device} as mcopy device`, 'SERIAL', true, true)
 		setTimeout(function () {
 			arduino.distinguish(distinguishCb);
 		}, 1000);
@@ -73,6 +75,7 @@ var distinguishDevice = function (device, callback) {
 		if (err) {
 			return console.error(err)
 		}
+		log.info(`Determined ${device} to be ${type}`, 'SERIAL', true, true)
 		if (callback) { callback(err, type); }
 	}
 	arduino.connect('connect', device, true, connectCb)
@@ -80,54 +83,112 @@ var distinguishDevice = function (device, callback) {
 
 //Cases for 1 or 2 arduinos connected
 var distinguishDevices = function (devices) {
-	var distinguishOne = function (err, type) {
+	var connected = {
+		projector : false,
+		camera : false,
+		light : false
+	}
+	var checklist = []
+	var fakeProjector = function () {
+		connected.projector = '/dev/fake'
+		arduino.fakeConnect('projector', () => {
+			log.info('Connected to fake PROJECTOR device', 'SERIAL', true, true)
+			
+		})
+	}
+	var fakeCamera = function () {
+		connected.camera = '/dev/fake'
+		arduino.fakeConnect('camera', () => {
+			log.info('Connected to fake CAMERA device', 'SERIAL', true, true)
+		})
+	}
+	var fakeLight = function () {
+		connected.light = '/dev/fake'
+		arduino.fakeConnect('light', () => {
+			log.info('Connected to fake LIGHT device', 'SERIAL', true, true)
+			
+		})
+	}
+	var distinguishCb = function (device, type, cb) {
 		arduino.close(() => {
 			if (type === 'projector') {
-				arduino.connect('projector', devices[0], false, () => {
-					log.info('Connected to ' + devices[0] + ' as PROJECTOR', 'SERIAL', true, true)
-				});
-				if (devices.length === 1) {
-					arduino.fakeConnect('camera', () => {
-						log.info('Connected to fake CAMERA device', 'SERIAL', true, true)
-						devicesReady(devices[0], 'fake')
-					});
-				}
+				connected.projector = device
+				arduino.connect('projector', device, false, () => {
+					log.info(`Connected to ${device} as PROJECTOR`, 'SERIAL', true, true)
+					cb()
+				})
 			} else if (type === 'camera') {
-				arduino.connect('camera', devices[0], false, () => {
-					log.info('Connected to ' + devices[0] + ' as CAMERA', 'SERIAL', true, true)
-				});
-				if (devices.length === 1) {
-					arduino.fakeConnect('projector', () => {
-						log.info('Connected to fake PROJECTOR device', 'SERIAL', true, true)
-						devicesReady('fake', devices[0])
-					})
-				}
-			}
-			if (devices.length > 1) {
-				distinguishDevice(devices[1], distinguishTwo)
+				connected.camera = device
+				arduino.connect('camera', device, false, () => {
+					log.info(`Connected to ${device} as CAMERA`, 'SERIAL', true, true)
+					cb()
+				})
+			} else if (type === 'light') {
+				connected.light = device
+				arduino.connect('light', device, false, () => {
+					log.info(`Connected to ${device} as LIGHT`, 'SERIAL', true, true)
+					cb()
+				})
+			} else if (type === 'projector,light') {
+				connected.projector = device
+				connected.light = device
+				arduino.connect('projector', device, false, () => {
+					log.info(`Connected to ${device} as PROJECTOR + LIGHT`, 'SERIAL', true, true)
+					cb()
+				})
+				arduino.alias('light', device)
+			} else if (type === 'projector,camera,light') {
+				connected.projector = device
+				connected.camera = device
+				connected.light = device
+				arduino.connect('projector', device, false, () => {
+					log.info(`Connected to ${device} as PROJECTOR + CAMERA + LIGHT`, 'SERIAL', true, true)
+					cb()
+				})
+				arduino.alias('camera', device)
+				arduino.alias('light', device)
+			} else if (type === 'projector,camera') {
+				connected.projector = device
+				connected.camera = device
+				arduino.connect('projector', device, false, () => {
+					log.info(`Connected to ${device} as PROJECTOR`, 'SERIAL', true, true)
+					cb()
+				})
+				arduino.alias('camera', device)
+			} else {
+				cb()
 			}
 		})
-	},
-	distinguishTwo = function (err, type) {
-		arduino.close(() => {
-			if (type === 'projector') {
-				arduino.connect('projector', devices[1], false, () => {
-					log.info('Connected to ' + devices[1] + ' as PROJECTOR', 'SERIAL', true, true)
-					devicesReady(devices[1], devices[0])
-				});
-			} else if (type === 'camera') {
-				arduino.connect('camera', devices[1], false, () => {
-					log.info('Connected to ' + devices[1] + ' as CAMERA', 'SERIAL', true, true)
-					devicesReady(devices[0], devices[1])
-				});
-			}
-		});
-	};
-	distinguishDevice(devices[0], distinguishOne)
+	}
+
+	checklist = devices.map(device => {
+		return next => {
+			distinguishDevice(device, (err, type) => {
+				if (err) {
+					console.error(err)
+					return next()
+				}
+				distinguishCb(device, type, next)
+			})
+		}
+	})
+	async.series(checklist, () => {
+		//done checking devices
+		if (!connected.projector) {
+			fakeProjector()
+		}
+		if (!connected.camera) {
+			fakeCamera()
+		}
+		if (!connected.light) {
+			fakeLight()
+		}
+		devicesReady(connected.projector, connected.camera, connected.light)
+	})
 };
 
-var devicesReady = function (camera, projector) {
-	mainWindow.webContents.send('ready', {camera: camera, projector: projector })
+var devicesReady = function (camera, projector, light) {
+	mainWindow.webContents.send('ready', {camera: camera, projector: projector, light: light })
 };
 
 var createMenu = function () {
@@ -285,10 +346,10 @@ light.listen = function () {
 };
 light.set = function (rgb, id) {
 	var str = rgb.join(',');
-	arduino.send('projector', mcopy.cfg.arduino.cmd.light, (ms) => {
+	arduino.send('light', mcopy.cfg.arduino.cmd.light, (ms) => {
 		light.end(rgb, id, ms)
 	})
-	arduino.string('projector', str)
+	arduino.string('light', str)
 };
 light.end = function (rgb, id, ms) {
 	log.info('Light set to ' + rgb.join(','), 'LIGHT', true, true)
