@@ -15,7 +15,6 @@ var scripts = [
 	'./src/jsColor.js',
 	'./src/chroma.min.js',
 	'./src/spin.js',
-	'./lib/mscript.js', //rather than script tag
 	'./src/index.js'
 ];
 
