@@ -40,6 +40,8 @@ void cmd (char val) {
     debug();
   } else if (val == cmd_connect) {
     connect();
+  } else if (val == cmd_mcopy_identifier) {
+    identify();
   } else if (val == cmd_projector) {
     proj_start();
   } else if (val == cmd_proj_forward) {
@@ -58,6 +60,11 @@ void debug () {
 void connect () {
   Serial.println(cmd_connect);
   log("connect()");
+}
+
+void identify () {
+  Serial.println(cmd_proj_identifier);
+  log("identify()");  
 }
 
 void proj_start () {
