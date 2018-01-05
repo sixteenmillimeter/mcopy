@@ -10,7 +10,7 @@ const events = require('events')
 const async = require('async')
 const path = require('path')
 const ee = new events.EventEmitter()
-const capture = require('./lib/capture-report.js')(ee)
+const capture = require('./lib/capture')(ee)
 const Server = require('./lib/server')
 const settings = require('./lib/settings')
 
@@ -422,8 +422,8 @@ var init = function () {
 	//transfer.init()
 	//capture.init()
 
-	arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg, ee)
-	mscript = require('./lib/mscript.js')
+	arduino = require('./lib/mcopy')(mcopy.cfg, ee)
+	mscript = require('./lib/mscript')
 
 
 	setTimeout( () => {

@@ -8,16 +8,17 @@ var { remote, ipcRenderer } = require('electron'),
 	uuid = require('uuid'),
 	moment = require('moment'),
 	humanizeDuration = require('humanize-duration')
-	light = require('./lib/light-ui.js'),
-	proj = require('./lib/proj-ui.js'),
-	cam = require('./lib/cam-ui.js'),
-	nav = require('./lib/nav-ui.js'),
-	seq = require('./lib/seq-ui.js'),
-	cmd = require('./lib/cmd-ui.js'),
-	gui = require('./lib/gui.js'),
-	log = require('./lib/log-ui.js'),
-	devices = require('./lib/devices-ui.js'),
-	mscript = require('./lib/mscript.js');
+	gui = require('./lib/ui'),
+	light = require('./lib/ui/light.js'),
+	proj = require('./lib/ui/proj.js'),
+	cam = require('./lib/ui/cam.js'),
+	nav = require('./lib/ui/nav.js'),
+	seq = require('./lib/ui/seq.js'),
+	cmd = require('./lib/ui/cmd.js'),
+	
+	log = require('./lib/ui/log.js'),
+	devices = require('./lib/ui/devices.js'),
+	mscript = require('./lib/mscript');
 
 
 mcopy.cfg = require('./data/cfg.json')
