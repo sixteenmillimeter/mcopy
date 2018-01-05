@@ -8,9 +8,14 @@ devices.init = function () {
 };
 devices.listen = function () {
 	'use strict';
+	let opt
 	ipcRenderer.on('ready', function (event, arg) {
-		//console.log(arg.camera);
-		//console.log(arg.projector);
+		opt = $('<option>')
+		opt.value = arg.camera
+		opt.text = arg.camera
+		$('#camera_device').empty()
+		$('#camera_device').append(opt)
+		console.dir(arg)
 		devices.ready();
 		return event.returnValue = true;
 	});

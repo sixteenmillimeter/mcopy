@@ -178,7 +178,7 @@ var distinguishDevices = function (devices) {
 	})
 };
 
-var devicesReady = function (camera, projector, light) {
+var devicesReady = function (projector, camera, light) {
 	mainWindow.webContents.send('ready', {camera: camera, projector: projector, light: light })
 	settings.update('camera', { arduino : camera })
 	settings.update('projector', { arduino : projector })
@@ -414,7 +414,7 @@ var init = function () {
 	settings.restore()
 
 	createWindow()
-	createMenu()
+	//createMenu()
 	log.init()
 	light.init()
 	proj.init()
