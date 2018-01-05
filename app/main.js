@@ -343,11 +343,10 @@ cam.end = function (cmd, id, ms) {
 };
 
 log.file = function () {
-	const platform = process.platform
 	let logPath = `/var/log/mcopy/`
-	if (platform === 'darwin') {
+	if (process.platform === 'darwin') {
 
-	} else if (platform === 'win32') {
+	} else if (process.platform === 'win32') {
 
 	}
 

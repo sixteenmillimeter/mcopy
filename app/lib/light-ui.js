@@ -109,7 +109,7 @@ light.colorPickers = function () {
 	});
 	light.rgb.init();
 	light.kelvin.init();
-	light.cmy.init();
+	//light.cmy.init();
 };
 light.set = function (rgb, callback) { //rgb = [0,0,0]
 	'use strict';

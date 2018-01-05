@@ -74,10 +74,10 @@ seq.run = function () {
 				log.info('Sequence completed in ' + humanizeDuration(timeEnd), 'SEQUENCE', true);
 			}
 
-			capture.report = ipcRenderer.sendSync('transfer', { action: 'end'});
-			if (capture.active) {
-				alert(capture.report);
-			}
+			//capture.report = ipcRenderer.sendSync('transfer', { action: 'end'});
+			//if (capture.active) {
+				//alert(capture.report);
+			//}
 			gui.notify('Sequence done!', (mcopy.state.sequence.arr.length * mcopy.loop) + ' actions completed in ' + humanizeDuration(timeEnd));
 			//clear gui
 			$('.row input').removeClass('h');
@@ -108,7 +108,7 @@ seq.init = function (start) {
 	}
 	seq.stop(false);
 	seq.i = start;
-	ipcRenderer.sendSync('transfer', { action: 'start'});
+	//ipcRenderer.sendSync('transfer', { action: 'start'});
 	seq.run();
 };
 seq.stats = function () {
