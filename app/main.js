@@ -6,11 +6,13 @@ const fs = require('fs')
 const winston = require('winston')
 const moment = require('moment')
 const uuid = require('uuid')
-const Q = require('q')
 const events = require('events')
 const async = require('async')
+const path = require('path')
 const ee = new events.EventEmitter()
 const capture = require('./lib/capture-report.js')(ee)
+const Server = require('./lib/server')
+const settings = require('./lib/settings')
 
 const mcopy = {}
 
@@ -19,23 +21,15 @@ let mscript
 let arduino
 let projector
 let camera
+let server
+let menu
 let log = {}
 
 //console.log(process.version)
 
-mcopy.cfg = {}
-mcopy.cfgFile = './data/cfg.json'
-mcopy.cfgInit = function () {
-	if (!fs.existsSync(mcopy.cfgFile)) {
-		console.log('Using default configuration...')
-		fs.writeFileSync(mcopy.cfgFile, fs.readFileSync('./data/cfg.json.default'))
-	}
-	mcopy.cfg = JSON.parse(fs.readFileSync(mcopy.cfgFile, 'utf8'))
-}
-mcopy.cfgStore = function () {
-	var data = JSON.stringify(mcopy.cfg, null, '\t')
-	fs.writeFileSync(mcopy.cfgFile, data, 'utf8')
-}
+//cfg is now hardcoded, should only be modified by developers
+//settings is now the source of user editable variables
+mcopy.cfg = require('./data/cfg.json')
 
 var enumerateDevices = function (err, devices) {
 	if (err) {
@@ -79,12 +73,13 @@ var distinguishDevice = function (device, callback) {
 
 //Cases for 1 or 2 arduinos connected
 var distinguishDevices = function (devices) {
-	var connected = {
+	const connected = {
 		projector : false,
 		camera : false,
 		light : false
 	}
-	var checklist = []
+
+	let checklist = []
 	var fakeProjector = function () {
 		connected.projector = '/dev/fake'
 		arduino.fakeConnect('projector', () => {
@@ -185,134 +180,15 @@ var distinguishDevices = function (devices) {
 
 var devicesReady = function (camera, projector, light) {
 	mainWindow.webContents.send('ready', {camera: camera, projector: projector, light: light })
+	settings.update('camera', { arduino : camera })
+	settings.update('projector', { arduino : projector })
+	settings.update('light', { arduino : light })
+	settings.save()
 };
 
 var createMenu = function () {
-	var template = [
-	  {
-	    label: 'mcopy',
-	    submenu: [
-	      {
-	        label: 'About mcopy',
-	        selector: 'orderFrontStandardAboutPanel:'
-	      },
-	      {
-	        type: 'separator'
-	      },
-	      {
-	        label: 'Services',
-	        submenu: []
-	      },
-	      {
-	        type: 'separator'
-	      },
-	      {
-	        label: 'Hide mcopy',
-	        accelerator: 'Command+H',
-	        selector: 'hide:'
-	      },
-	      {
-	        label: 'Hide Others',
-	        accelerator: 'Command+Shift+H',
-	        selector: 'hideOtherApplications:'
-	      },
-	      {
-	        label: 'Show All',
-	        selector: 'unhideAllApplications:'
-	      },
-	      {
-	        type: 'separator'
-	      },
-	      {
-	        label: 'Quit',
-	        accelerator: 'Command+Q',
-	        selector: 'terminate:'
-	      },
-	    ]
-	  },
-	  {
-	    label: 'Edit',
-	    submenu: [
-	      {
-	        label: 'Undo',
-	        accelerator: 'Command+Z',
-	        selector: 'undo:'
-	      },
-	      {
-	        label: 'Redo',
-	        accelerator: 'Shift+Command+Z',
-	        selector: 'redo:'
-	      },
-	      {
-	        type: 'separator'
-	      },
-	      {
-	        label: 'Cut',
-	        accelerator: 'Command+X',
-	        selector: 'cut:'
-	      },
-	      {
-	        label: 'Copy',
-	        accelerator: 'Command+C',
-	        selector: 'copy:'
-	      },
-	      {
-	        label: 'Paste',
-	        accelerator: 'Command+V',
-	        selector: 'paste:'
-	      },
-	      {
-	        label: 'Select All',
-	        accelerator: 'Command+A',
-	        selector: 'selectAll:'
-	      }
-	    ]
-	  },
-	  {
-	    label: 'View',
-	    submenu: [
-	      {
-	        label: 'Reload',
-	        accelerator: 'Command+R',
-	        click: function() { getCurrentWindow().reload(); }
-	      },
-	      {
-	        label: 'Toggle DevTools',
-	        accelerator: 'Alt+Command+I',
-	        click: function() { getCurrentWindow().toggleDevTools(); }
-	      },
-	    ]
-	  },
-	  {
-	    label: 'Window',
-	    submenu: [
-	      {
-	        label: 'Minimize',
-	        accelerator: 'Command+M',
-	        selector: 'performMiniaturize:'
-	      },
-	      {
-	        label: 'Close',
-	        accelerator: 'Command+W',
-	        selector: 'performClose:'
-	      },
-	      {
-	        type: 'separator'
-	      },
-	      {
-	        label: 'Bring All to Front',
-	        selector: 'arrangeInFront:'
-	      }
-	    ]
-	  },
-	  {
-	    label: 'Help',
-	    submenu: []
-	  }
-	]
-
+	const template = require('./data/menu.json')
 	menu = Menu.buildFromTemplate(template)
-
 	Menu.setApplicationMenu(menu)
 }
 
@@ -327,7 +203,7 @@ var createWindow = function () {
 	//mainWindow.webContents.openDevTools()
 	mainWindow.on('closed', () => {
 		mainWindow = null
-	});
+	})
 }
 
 var light = {}
@@ -424,10 +300,18 @@ cam.set = function (dir, id) {
 		cam.end(cmd, id, ms)
 	})
 }
+cam.setWeb = function (dir, id) {
+
+}
+
 cam.move = function (frame, id) {
 	arduino.send('camera', mcopy.cfg.arduino.cmd.camera, (ms) => {
 		cam.end(mcopy.cfg.arduino.cmd.camera, id, ms)
 	})
+}
+
+cam.moveWeb = function (frame, id) {
+
 }
 cam.listen = function () {
 	ipcMain.on('cam', (event, arg) => {
@@ -458,6 +342,17 @@ cam.end = function (cmd, id, ms) {
 	mainWindow.webContents.send('cam', {cmd: cmd, id : id, ms: ms})
 };
 
+log.file = function () {
+	const platform = process.platform
+	let logPath = `/var/log/mcopy/`
+	if (platform === 'darwin') {
+
+	} else if (platform === 'win32') {
+
+	}
+
+	return path.join(logPath, 'mcopy.log')
+}
 log.time = 'MM/DD/YY-HH:mm:ss'
 log.transport = new (winston.Logger)({
 	transports: [
@@ -467,16 +362,16 @@ log.transport = new (winston.Logger)({
 })
 log.init = function () {
 	log.listen()
-};
+}
 log.display = function (obj) {
 	mainWindow.webContents.send('log', obj)
-};
+}
 log.listen = function () {
 	ipcMain.on('log', (event, arg) => {
 		log.transport.info('renderer', arg)
 		event.returnValue = true
 	})
-};
+}
 log.info = function (action, service, status, display) {
 	var obj = {
 		time : moment().format(log.time),
@@ -488,7 +383,7 @@ log.info = function (action, service, status, display) {
 	if (display) {
 		log.display(obj)
 	}
-};
+}
 
 var transfer = {}
 
@@ -516,19 +411,21 @@ transfer.listen = function () {
 
 var init = function () {
 	
-	mcopy.cfgInit()
+	settings.restore()
+
 	createWindow()
-	//createMenu()
+	createMenu()
 	log.init()
 	light.init()
 	proj.init()
 	cam.init()
 
-	transfer.init()
-	capture.init()
+	//transfer.init()
+	//capture.init()
 
 	arduino = require('./lib/mcopy-arduino.js')(mcopy.cfg, ee)
 	mscript = require('./lib/mscript.js')
+
 
 	setTimeout( () => {
 		arduino.enumerate(enumerateDevices)
