@@ -20,7 +20,7 @@ var { remote, ipcRenderer } = require('electron'),
 	mscript = require('./lib/mscript.js');
 
 
-mcopy.cfg = JSON.parse(fs.readFileSync('./data/cfg.json'), 'utf8');
+mcopy.cfg = require('./data/cfg.json')
 
 /******
 	State shared by ALL interfaces
