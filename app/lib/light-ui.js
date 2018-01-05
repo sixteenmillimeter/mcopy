@@ -36,6 +36,30 @@ light.swatches = [
 		default : true
 	}
 ];
+
+/*
+	Light Source		Kelvin	R G B Values Color
+	Candle 				1900 	255, 147, 41
+	40W Tungsten 		2600 	255, 197, 143
+	100W Tungsten 		2850 	255, 214, 170
+	Halogen 			3200 	255, 241, 224
+	Carbon Arc 			5200 	255, 250, 244
+	High Noon Sun 		5400 	255, 255, 251
+	Direct Sunlight	 	6000 	255, 255, 255
+	Overcast Sky 		7000 	201, 226, 255
+	Clear Blue Sky 		20000 	64, 156, 255
+	Warm Fluorescent 			255, 244, 229
+	Standard Fluorescent 		244, 255, 250
+	Cool White Fluorescent 		212, 235, 255
+	Full Spectrum Fluorescent 	255, 244, 242
+	Grow Light Fluorescent 		255, 239, 247
+	Black Light Fluorescent 	167, 0, 255
+	Mercury Vapor 				216, 247, 255
+	Sodium Vapor 				255, 209, 178
+	Metal Halide 				242, 252, 255
+	High Pressure Sodium 		255, 183, 76
+*/
+
 light.queue = {};
 light.lock = false;
 light.init = function () {
