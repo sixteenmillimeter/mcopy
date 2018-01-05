@@ -422,7 +422,7 @@ var init = function () {
 	//transfer.init()
 	//capture.init()
 
-	arduino = require('./lib/mcopy')(mcopy.cfg, ee)
+	arduino = require('./lib/arduino')(mcopy.cfg, ee)
 	mscript = require('./lib/mscript')
 
 
