@@ -543,11 +543,12 @@ button:focus {
   float: left;
 }
 .cmd {
-  width: 200px;
+  width: 240px;
   text-align: center;
 }
 .cmd i {
   float: left;
+  margin-right: 5px;
 }
 .cmd.fwd i {
   color: #00C4A0;
