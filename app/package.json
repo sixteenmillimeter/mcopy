@@ -24,8 +24,11 @@
   },
   "homepage": "https://github.com/sixteenmillimeter/mcopy#readme",
   "devDependencies": {
-    "electron-packager": "^8.4.0",
+    "electron-installer-debian": "^0.7.1",
+    "electron-installer-dmg": "^0.2.1",
+    "electron-packager": "^10.1.1",
     "electron-rebuild": "^1.4.0",
+    "electron-wix-msi": "^1.2.3",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
     "gulp-less": "^3.4.0"
