@@ -3,6 +3,7 @@
 const electron = require('electron')
 const { Menu, MenuItem, ipcMain, BrowserWindow, app } = electron
 const fs = require('fs')
+const os = require('os')
 const winston = require('winston')
 const moment = require('moment')
 const uuid = require('uuid')
@@ -11,14 +12,17 @@ const async = require('async')
 const path = require('path')
 const ee = new events.EventEmitter()
 const capture = require('./lib/capture')(ee)
-const Server = require('./lib/server')
 const settings = require('./lib/settings')
+
+const Server = require('./lib/server')
+const Intval = require('./lib/intval')
 
 const mcopy = {}
 
 let mainWindow
 let mscript
 let arduino
+let intval
 let projector
 let camera
 let server
@@ -287,9 +291,10 @@ cam.state = {
 }
 cam.init = function () {
 	cam.listen()
+	cam.intval = new Intval('camera', '192.168.1.224')
 }
 cam.set = function (dir, id) {
-	var cmd
+	let cmd
 	if (dir) {
 		cmd = mcopy.cfg.arduino.cmd.cam_forward
 	} else {
@@ -300,19 +305,17 @@ cam.set = function (dir, id) {
 		cam.end(cmd, id, ms)
 	})
 }
-cam.setWeb = function (dir, id) {
-
-}
 
 cam.move = function (frame, id) {
-	arduino.send('camera', mcopy.cfg.arduino.cmd.camera, (ms) => {
-		cam.end(mcopy.cfg.arduino.cmd.camera, id, ms)
+	let cmd = mcopy.cfg.arduino.cmd.camera
+	/*arduino.send('camera', cmd, (ms) => {
+		cam.end(cmd, id, ms)
+	})*/
+	cam.intval.move('camera', (ms) => {
+		cam.end(cmd, id, ms)
 	})
 }
 
-cam.moveWeb = function (frame, id) {
-
-}
 cam.listen = function () {
 	ipcMain.on('cam', (event, arg) => {
 		if (typeof arg.dir !== 'undefined') {
@@ -343,20 +346,22 @@ cam.end = function (cmd, id, ms) {
 };
 
 log.file = function () {
-	let logPath = `/var/log/mcopy/`
+	let logPath = path.join(os.homedir(), `/.config/mcopy/`)
 	if (process.platform === 'darwin') {
-
+		logPath = path.join(os.homedir(), `/Library/Logs/mcopy/`)
 	} else if (process.platform === 'win32') {
-
+		logPath = path.join(os.homedir(), `/AppData/Roaming/mcopy/`)
 	}
-
+	if (!fs.existsSync(logPath)) {
+		fs.mkdirSync(logPath)
+	}
 	return path.join(logPath, 'mcopy.log')
 }
 log.time = 'MM/DD/YY-HH:mm:ss'
 log.transport = new (winston.Logger)({
 	transports: [
 		new (winston.transports.Console)(),
-		new (winston.transports.File)({ filename: './logs/mcopy.log' })
+		new (winston.transports.File)({ filename: log.file() })
 	]
 })
 log.init = function () {
