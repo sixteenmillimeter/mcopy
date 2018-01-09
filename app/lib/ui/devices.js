@@ -8,22 +8,22 @@ devices.init = function () {
 };
 devices.listen = function () {
 	'use strict';
-	let opt
-	ipcRenderer.on('ready', function (event, arg) {
-		opt = $('<option>')
-		opt.value = arg.camera
-		opt.text = arg.camera
-		$('#camera_device').empty()
-		$('#camera_device').append(opt)
-		console.dir(arg)
-		devices.ready();
-		return event.returnValue = true;
-	});
+	
+	ipcRenderer.on('ready', devices.ready);
 };
-devices.ready = function () {
+devices.ready = function (event, arg) {
 	'use strict';
+	let opt;
 	gui.spinner(false);
 	gui.overlay(false);
+	for (let i in arg) {
+		opt = $('<option>');
+		opt.val(arg[i]);
+		opt.text(arg[i]);
+		$(`#${i}_device`).empty();
+		$(`#${i}_device`).append(opt);
+	}
+	return event.returnValue = true;
 };
 
 module.exports = devices;
