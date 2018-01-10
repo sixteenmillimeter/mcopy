@@ -35,8 +35,8 @@
   },
   "dependencies": {
     "async": "^2.6.0",
-    "electron": "^1.7.10",
-    "humanize-duration": "^3.10.0",
+    "electron": "^1.8.1",
+    "humanize-duration": "^3.12.1",
     "moment": "^2.17.1",
     "node-notifier": "^4.6.1",
     "serialport": "^4.0.7",
