@@ -12,5 +12,12 @@ const actionTable = `CREATE TABLE IF NOT EXISTS actions (
 	light TEXT,
 	dir INTEGER,
 	sequence INTEGER
-
 );`
+
+class DB {
+	constructor () {
+		
+	}
+}
+
+module.exports = DB
