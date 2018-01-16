@@ -48,7 +48,7 @@ module pixie_mount () {
     }
     
     //pins for mounting pixie
-    translate ([0, -3, 0]) rotate([90, 0, 0]) {
+    translate ([0, -0.5, 0]) rotate([90, 0, 0]) {
         translate([W/2, 0, -2]) cylinder(r = INNER_D / 2, h = Z + 1, center = true);
         translate([-W/2, 0, -2]) cylinder(r = INNER_D / 2, h = Z + 1, center = true);
         
@@ -76,14 +76,20 @@ module pixie_mount () {
     
     //outer shell surrounding pixie
     translate ([0, -1 + LENS_OFFSET, -6]) {
+        
         difference () {
-            translate([0, 0, 6]) rounded_cube([W + 16, 36, 32], d = 6, center = true);
+            translate([0, 0, 6]) rounded_cube([W + 20, 40, 32], d = 6, center = true);
             translate([0, 0, 6]) rounded_cube([(W + 16) - 4, 36 - 4, 32 + 1], d = 4, center = true);
-            translate([0, -8, 8]) rotate([90, 0, 0]) cylinder(r = 10, h = 5, center = true);//circular void
-            translate([0, -50, 0]) cube([100, 100, 100], center = true); //half
+            //inner tab for centering
+            translate([0, 0, 6]) cube([W + 16, 10, 32 - 10], center = true);
+            //cylinder void for bolt
+            translate([0, 3, 6]) rotate([0, 90, 0]) cylinder(r = 1, h = 40 + 1, center = true, $fn = 60);
+            //cut in half
+            translate([0, -50, 0]) cube([100, 100, 100], center = true);
             
             //wires
             translate([0, 0, -3]) cube([10, 40, 5], center = true);
+            translate([-5, 0, -5.5]) cube([2, 40, 10], center = true);
         }
     }
 }
@@ -93,18 +99,27 @@ module diffuser_mount () {
     W = 0.8 * 25.4;
     translate ([0, 0, -6]) {
         difference () {
-            translate([0, 0, 6]) rounded_cube([W + 16, 36, 32], d = 6, center = true);
+            translate([0, 0, 6]) rounded_cube([W + 20, 40, 32], d = 6, center = true);
             translate([0, 0, 6]) rounded_cube([(W + 16) - 4, 36 - 4, 32 + 1], d = 4, center = true);
-            translate([0, -8, 8]) rotate([90, 0, 0]) cylinder(r = 10, h = 5, center = true);//circular void
-            translate([0, 50, 0]) cube([100, 100, 100], center = true); //half
+            //circular void
+            translate([0, -8, 8]) rotate([90, 0, 0]) cylinder(r = 10, h = 5, center = true);
+            //cylinder void for bolt
+            translate([0, 3, 6]) rotate([0, 90, 0]) cylinder(r = 1, h = 40 + 1, center = true, $fn = 60);
+            //cut in half
+            translate([0, 50, 0]) {
+                difference () {
+                    cube([100, 100, 100], center = true);
+                    translate([0, -50, 6]) cube([W + 16, 10, 32 - 10], center = true);
+                }
+            }
             
             translate ([0, -18, 6]) rotate([90, 90, 0]) cylinder(r = 30 / 2, h = 20, center = true);
         }
     }
     translate ([0, -15.5, 0]) rotate([90, 90, 0]) {
         difference () {
-            cylinder(r = 30 / 2, h = 5, center = true);
-            cylinder(r = 28 / 2, h = 5 + 1, center = true);
+            cylinder(r = 30 / 2, h = 9, center = true);
+            cylinder(r = 28 / 2, h = 9 + 1, center = true);
         }
     }    
 }
