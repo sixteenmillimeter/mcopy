@@ -114,6 +114,8 @@ module diffuser_mount () {
             }
             
             translate ([0, -18, 6]) rotate([90, 90, 0]) cylinder(r = 30 / 2, h = 20, center = true);
+            //void for attachment
+            translate([20, -8.5, 6]) cube([8, 8, 8], center = true);
         }
     }
     translate ([0, -15.5, 0]) rotate([90, 90, 0]) {
@@ -172,18 +174,24 @@ module light_body () {
 }
 
 module light_vent_top () {
-   $fn = 60;
-   difference () {
-       rounded_cube([36+4, 36+4, 10], d = 6, center = true);
-       rounded_cube([36, 36, 10 + 1], d = 6, center = true);
+       $fn = 60;
+    W = 0.8 * 25.4;
+    L = 0.78 * 25.4;
+    Z = 12;
+   translate([0, 0, -1.5]) difference () {
+        rounded_cube([W + 20 + 6, 40 + 6, 13], d = 6, center = true);
+        rounded_cube([W + 20, 40, 13 + 1], d = 6, center = true);
+       translate([0, -15, -20 + 1.5]) rotate([90, 0, 0]) cylinder(r = 31 / 2, h = 30, center = true);
     }
     translate([0, 0, 1]) difference() {
-        rounded_cube([36+2, 36+2, 8], d = 6, center = true);
+        rounded_cube([W + 20 + 1, 40 + 1, 8], d = 6, center = true);
         for (i = [0:5]) {
             translate([i * 6, 0, 0]) rotate([0, -40, 0]) cube([4, 36 + 3, 12], center = true);
             translate([(i + 1) * -6, 0, 0]) rotate([0, -40, 0]) cube([4, 36 + 3, 12], center = true);
         }
+        //translate([50, 0, 0]) cube([100, 100, 100], center = true);
     }
+    
 }
 
 module fan () {
@@ -200,4 +208,75 @@ module fan () {
         translate([(FAN_W - SCREW_INNER)/2, -(FAN_W - SCREW_INNER)/2, 0]) cylinder(r = SCREW_D/2, h = FAN_Z + 1, center = true);
         cylinder(r = (FAN_W - SCREW_INNER) /2, h = FAN_Z + 1, center = true);
     }
+}
+
+module flashlight_mount () {
+        $fn = 100;
+        FLASHLIGHT_D = 25.3;
+        ROD_D = 12.6;
+        difference () {
+            rotate([0, 90, 0]) cylinder(r = FLASHLIGHT_D / 2 + 3, h = ROD_D, center = true);
+            rotate([0, 90, 0]) cylinder(r = FLASHLIGHT_D / 2, h = ROD_D + .1, center = true);
+        }
+        
+        translate([0, -35, 0]) rotate([90, 0, 0]) {
+            difference () {
+                cylinder(r = ROD_D / 2, h = 43, center = true);
+                translate([-10, 0, 24.5]) cube([15, 15, 15], center = true);
+            }
+        }
+        translate([0, -46.4, 0]) {
+            difference() {
+                    rotate ([90, 90, 0]) cylinder(r = (ROD_D / 2) + 2, h = 3, center = true);
+                    translate([50 + (ROD_D / 2), 0, 0]) cube([100, 100, 100], center = true);
+                    translate([-50 - (ROD_D / 2), 0, 0]) cube([100, 100, 100], center = true);
+            }
+        }
+}
+
+module flashlight_mount_cap (DEBUG = false) {
+    $fn = 120;
+    ROD_D = 12.6;
+    translate([0, 0, 0]) rotate([90, 0, 0]) {
+        difference () {
+            union () {
+                translate([0, 0, 0]) cylinder(r = 9, h = 7, center = true);
+                translate([-6, 0, 0]) cube([12, 18, 7], center = true);
+                translate([-10.75, 0, -3]) cube([2.5, 18, 11], center = true);
+            }
+            difference () {
+                translate([0, 0, -(7 - 4.5) / 2 - .1]) cylinder(r = ROD_D / 2, h = 4.5, center = true);
+                translate([-10, 0, 0]) cube([15, 15, 15], center = true);
+            }
+            if (DEBUG) {
+                translate([0, 50, 0]) cube([100, 100, 100], center = true);
+            }
+        }
+    }
+}
+
+module impromptu_mount () {
+        $fn = 100;
+        ROD_D = 12.6;
+        
+        translate([0, -35, 0]) rotate([90, 0, 0]) {
+            difference () {
+                union() {
+                    cylinder(r = ROD_D / 2, h = 43, center = true);
+                    translate([0, 0, -5]) cylinder(r = (ROD_D / 2) + 2, h = 30, center = true);
+                }
+                //notch for cap
+                translate([-10, 0, 24.5]) cube([15, 15, 15], center = true);
+                translate([0, 0, -22.25]) cube([45, 45, 15], center = true);
+            }
+            translate([0, 0, -17]) cube([8, 8, 5], center = true);
+        }
+        translate([0, -46.4, 0]) {
+            difference() {
+                    rotate ([90, 90, 0]) cylinder(r = (ROD_D / 2) + 2, h = 3, center = true);
+                    translate([50 + (ROD_D / 2), 0, 0]) cube([100, 100, 100], center = true);
+                    translate([-50 - (ROD_D / 2), 0, 0]) cube([100, 100, 100], center = true);
+            }
+        }
+
 }
