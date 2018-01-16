@@ -256,27 +256,44 @@ module flashlight_mount_cap (DEBUG = false) {
 }
 
 module impromptu_mount () {
-        $fn = 100;
-        ROD_D = 12.6;
-        
-        translate([0, -35, 0]) rotate([90, 0, 0]) {
-            difference () {
-                union() {
-                    cylinder(r = ROD_D / 2, h = 43, center = true);
-                    translate([0, 0, -5]) cylinder(r = (ROD_D / 2) + 2, h = 30, center = true);
-                }
-                //notch for cap
-                translate([-10, 0, 24.5]) cube([15, 15, 15], center = true);
-                translate([0, 0, -22.25]) cube([45, 45, 15], center = true);
+    $fn = 100;
+    ROD_D = 12.6;
+    
+    translate([0, -35, 0]) rotate([90, 0, 0]) {
+        difference () {
+            union() {
+                cylinder(r = ROD_D / 2, h = 43, center = true);
+                translate([0, 0, -5]) cylinder(r = (ROD_D / 2) + 2, h = 30, center = true);
             }
-            translate([0, 0, -17]) cube([8, 8, 5], center = true);
+            //notch for cap
+            translate([-10, 0, 24.5]) cube([15, 15, 15], center = true);
+            translate([0, 0, -22.25]) cube([45, 45, 15], center = true);
         }
-        translate([0, -46.4, 0]) {
-            difference() {
-                    rotate ([90, 90, 0]) cylinder(r = (ROD_D / 2) + 2, h = 3, center = true);
-                    translate([50 + (ROD_D / 2), 0, 0]) cube([100, 100, 100], center = true);
-                    translate([-50 - (ROD_D / 2), 0, 0]) cube([100, 100, 100], center = true);
-            }
+        translate([0, 0, -17]) cube([8, 8, 5], center = true);
+    }
+    translate([0, -46.4, 0]) {
+        difference() {
+                rotate ([90, 90, 0]) cylinder(r = (ROD_D / 2) + 2, h = 3, center = true);
+                translate([50 + (ROD_D / 2), 0, 0]) cube([100, 100, 100], center = true);
+                translate([-50 - (ROD_D / 2), 0, 0]) cube([100, 100, 100], center = true);
         }
+    }
+}
 
+module fresnel_laser(outer = 13, h = 3, spacing = 0.2) {
+    $fn = 120;
+    count = ceil(outer / spacing);
+    for(i = [0 : count]) {
+        if (i % 2 != 0) {
+            difference() {
+                cylinder(r = outer - (spacing * i), h = h);
+                cylinder(r = outer - (spacing * (i + 1)), h = h + 1);
+            }
+        }
+    }
+}
+
+module fresnel_laser_outer (outer = 13, h = 3) {
+    $fn = 120;
+    cylinder(r = outer, h = h);
 }
