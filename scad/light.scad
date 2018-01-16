@@ -173,8 +173,27 @@ module light_body () {
     
 }
 
+module light_body35 () {
+    $fn = 60;
+
+    W = 0.8 * 25.4;
+    L = 0.78 * 25.4;
+    Z = 12;
+    FAN_W = 35;
+    FAN_Z = 10;
+    translate([0, 0, 5]) difference () {
+        rounded_cube([W + 20 + 6, 40 + 6, 13], d = 6, center = true);
+        rounded_cube([W + 20, 40, 13 + 1], d = 6, center = true);
+       translate([0, -15, 20 - 1.5]) rotate([90, 0, 0]) cylinder(r = 31 / 2, h = 30, center = true);
+    }
+    translate([0, 0, 0]) difference() {
+        rounded_cube([W + 20 + 6, 40 + 6, FAN_Z], d = 6, center = true);
+        rounded_cube([FAN_W + 0.2, FAN_W + 0.2, FAN_Z + 1], d = 4, center = true);
+    }
+}
+
 module light_vent_top () {
-       $fn = 60;
+    $fn = 60;
     W = 0.8 * 25.4;
     L = 0.78 * 25.4;
     Z = 12;
@@ -194,9 +213,9 @@ module light_vent_top () {
     
 }
 
-module fan () {
+module fan (SIZE = 50) {
     $fn = 60;
-    FAN_W = 50;
+    FAN_W = SIZE;
     FAN_Z = 10;
     SCREW_D = 4;
     SCREW_INNER = 6;
@@ -280,7 +299,7 @@ module impromptu_mount () {
     }
 }
 
-module fresnel_laser(outer = 13, h = 3, spacing = 0.2) {
+module fresnel_laser(outer = 14, h = 3, spacing = 0.2) {
     $fn = 120;
     count = ceil(outer / spacing);
     for(i = [0 : count]) {
