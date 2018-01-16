@@ -13,3 +13,4 @@ color("green") diffuser_mount();
 //translate ([0, -20, 0]) rotate([90, 90, 0]) color("red") diffuser_spacer();
 //rotate([0, 0, 90]) flashlight_mount();
 //translate([0, -8.5, 0]) rotate([0, 0, 90]) impromptu_mount();
+//translate([30, -8.5, 0]) rotate([0, 0, 90]) flashlight_mount_cap();
