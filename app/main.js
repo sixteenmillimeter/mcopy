@@ -291,7 +291,6 @@ cam.state = {
 }
 cam.init = function () {
 	cam.listen()
-	cam.intval = new Intval('camera', '192.168.1.224')
 }
 cam.set = function (dir, id) {
 	let cmd
@@ -304,14 +303,27 @@ cam.set = function (dir, id) {
 	arduino.send('camera', cmd, (ms) => {
 		cam.end(cmd, id, ms)
 	})
+	/*
+	intval.setDir('camera', dir, (ms) => {
+		cam.end(cmd, id, ms)
+	})
+	*/
 }
 
 cam.move = function (frame, id) {
 	let cmd = mcopy.cfg.arduino.cmd.camera
-	/*arduino.send('camera', cmd, (ms) => {
+	arduino.send('camera', cmd, (ms) => {
 		cam.end(cmd, id, ms)
-	})*/
-	cam.intval.move('camera', (ms) => {
+	})
+	/*
+	intval.move('camera', (ms) => {
+		cam.end(cmd, id, ms)
+	})
+	*/
+}
+
+cam.exposure = function (exposure, id) {
+	intval.setDir('camera', exposure, (ms) => {
 		cam.end(cmd, id, ms)
 	})
 }

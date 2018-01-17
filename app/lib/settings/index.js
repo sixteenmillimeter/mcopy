@@ -38,6 +38,10 @@ settings.get = function (key) {
 	return settings.state[key]
 }
 
+settings.all = function () {
+	return settings.state
+}
+
 settings.restore = function () {
 	let str
 	settings.checkDir()

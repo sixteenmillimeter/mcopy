@@ -1,10 +1,11 @@
-
 /*
   Wiring
 
   For "MONITOR" pins with INPUT_PULLUP resistors:
   GND-----\ | \-----PIN
   No additional resistors/caps needed.
+  --Note: not needed in prototype
+  
 
   CAMERA + CAMERA_DIR and PROJECTOR + PROJECTOR_DIR:
   Wire directly to corresponding relay pins.
@@ -14,27 +15,23 @@
 
 boolean debug_state = false;
 
-unsigned long now; //to be compared to stored values every loop
+//unsigned long now; //to be compared to stored values every loop
 
+//CAMERA CONSTANTS
 const int CAMERA = 2;
 const int CAMERA_DIR = 3;
-const int CAMERA_MONITOR = 4;
-
-unsigned long cam_momentary_end;
-const long cam_moment = 300;
+const int CAMERA_MOMENT = 200;
+const int CAMERA_FRAME = 800;
+//CAMERA VARIABLES
 boolean cam_dir = true; 
-boolean cam_running = false;
-boolean cam_momentary = false;
 
+//PROJECTOR CONSTANTS
 const int PROJECTOR = 8;
 const int PROJECTOR_DIR = 9;
-const int PROJECTOR_MONITOR = 10;
-
-unsigned long proj_momentary_end;
-const long proj_moment = 300;
+const int PROJECTOR_MOMENT = 200;
+const int PROJECTOR_FRAME = 800;
+//PROJECTOR VARIABLES
 boolean proj_dir = true;
-boolean proj_running = false;
-boolean proj_momentary = false;
 
 //PROJECTOR COMMANDS
 const char cmd_projector = 'p';
@@ -59,13 +56,13 @@ const int serialDelay = 5;
 void setup () {
   Serial.begin(57600);
   Serial.flush();
-  Serial.setTimeout(serialDelay);
+  //Serial.setTimeout(serialDelay);
 
   pins();
 }
 
 void loop () {
-  now = millis();
+  //now = millis();
   if (Serial.available()) {
     /* read the most recent byte */
     cmd_char = (char)Serial.read();
@@ -74,14 +71,11 @@ void loop () {
     cmd(cmd_char);
     cmd_char = 'z';
   }
-  
-  if (cam_running) {
-    monitorCam();
-  }
 
-  if (proj_running) {
-    monitorProj();
-  }
+  /*delay(2000);
+  cam_start();
+  delay(2000);
+  proj_start();*/
 }
 
 void pins () {
@@ -91,10 +85,6 @@ void pins () {
 
   pinMode(CAMERA_DIR, OUTPUT);
   pinMode(PROJECTOR_DIR, OUTPUT);
-
-  //PULLUP
-  pinMode(CAMERA_MONITOR, INPUT_PULLUP);
-  pinMode(PROJECTOR_MONITOR, INPUT_PULLUP);
 
   //SET LOW
   digitalWrite(CAMERA, LOW);
@@ -125,42 +115,6 @@ void cmd (char val) {
   }
 }
 
-
-void monitorCam () {
-  int position = digitalRead(CAMERA_MONITOR);
-  if (cam_momentary && now >= cam_momentary_end) {
-    digitalWrite(CAMERA, LOW);
-    cam_momentary = false;
-  }
-  if (!cam_momentary) {
-    if (position == LOW) {
-      cam_stop();
-    }
-  }
-}
-
-void monitorProj () {
-  int position = digitalRead(PROJECTOR_MONITOR);
-  if (proj_momentary && now >= proj_momentary_end) {
-    digitalWrite(PROJECTOR, LOW);
-    proj_momentary = false;
-  }
-  if (!proj_momentary) {
-    //If internam microswitch is set to LOW?
-    if (position == LOW) {
-      proj_stop();
-    }
-  }
-}
-
-void setDir (int pin, boolean dir) {
-  if (dir) {
-    digitalWrite(pin, HIGH);
-  } else {
-    digitalWrite(pin, LOW);
-  }
-}
-
 void debug () {
   debug_state = true;
   Serial.println(cmd_debug);
@@ -177,35 +131,56 @@ void identify () {
   log("identify()");  
 }
 
+void setDir (int pin, boolean dir) {
+  if (!dir) {
+    digitalWrite(pin, HIGH);
+  } else {
+    digitalWrite(pin, LOW);
+  }
+}
+
 void proj_start () {
+  if (proj_dir == false) {
+    setDir(PROJECTOR_DIR, false);
+  }
   digitalWrite(PROJECTOR, HIGH);
-  proj_running = true;
-  proj_momentary = true;
-  proj_momentary_end = now + proj_moment;
+  delay(PROJECTOR_MOMENT);
+  digitalWrite(PROJECTOR, LOW);
+  delay(PROJECTOR_FRAME);
+  if (proj_dir == false) {
+    setDir(PROJECTOR_DIR, true);
+  }
+  proj_stop();
 }
 
 void cam_start () {
+  if (cam_dir == false) {
+    setDir(CAMERA_DIR, false);
+  }
   digitalWrite(CAMERA, HIGH);
-  cam_running = true;
-  cam_momentary = true;
-  cam_momentary_end = now + cam_moment;
+  delay(CAMERA_MOMENT);
+  digitalWrite(CAMERA, LOW);
+  delay(CAMERA_FRAME);
+  if (cam_dir == false) {
+    setDir(CAMERA_DIR, true);
+  }
+  cam_stop();
 }
 
 void proj_stop () {
-  proj_running = false;
   Serial.println(cmd_projector);
   log("projector()");
 }
 
 void cam_stop () {
-  cam_running = false;
   Serial.println(cmd_camera);
   log("camera()");
 }
 
 void proj_direction (boolean state) {
   proj_dir = state;
-  setDir(PROJECTOR_DIR, state);
+  //UNO can only set 2 relays to high at a time
+  //setDir(PROJECTOR_DIR, state);
   if (state) {
     Serial.println(cmd_proj_forward);
     log("proj_direction -> true");
@@ -217,7 +192,7 @@ void proj_direction (boolean state) {
 
 void cam_direction (boolean state) {
   cam_dir = state;
-  setDir(CAMERA_DIR, state);
+  //setDir(CAMERA_DIR, state);
   if (state) {
     Serial.println(cmd_cam_forward);
     log("cam_direction -> true");
@@ -232,3 +207,4 @@ void log (String msg) {
     Serial.println(msg);
   }
 }
+
