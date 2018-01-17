@@ -38,7 +38,6 @@
 			"proj_identifier" : "j",
 			"cam_identifier" : "k",
 			"light_identifier" : "o",
-
 			"proj_light_identifier" : "q",
 			"proj_cam_light_identifier" : "r",
 			"proj_cam_identifier" : "s"
