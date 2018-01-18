@@ -296,8 +296,13 @@ module impromptu_mount () {
             //notch for cap
             translate([-10, 0, 24.5]) cube([15, 15, 15], center = true);
             translate([0, 0, -22.25]) cube([45, 45, 15], center = true);
+            translate([0, 0, -12.5 - 0.5]) scale([4, 1, 1]) rotate([0, -90, 90]) light_diffuser_notch();
+
         }
-        translate([0, 0, -17]) cube([8, 8, 5], center = true);
+        difference () {
+            translate([0, 0, -12.25 + 1]) cube([40, 12, 7], center = true);
+            translate([0, 0, -12.5 - 0.5]) scale([4, 1, 1]) rotate([0, -90, 90]) light_diffuser_notch();
+        }
     }
     translate([0, -46.4, 0]) {
         difference() {
