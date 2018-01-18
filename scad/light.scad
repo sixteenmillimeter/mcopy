@@ -115,8 +115,9 @@ module diffuser_mount () {
             
             translate ([0, -18, 6]) rotate([90, 90, 0]) cylinder(r = 30 / 2, h = 20, center = true);
             //void for attachment
-            translate([20, -8.5, 6]) cube([8, 8, 8], center = true);
+            //translate([20, -8.5, 6]) cube([8, 8, 8], center = true);
         }
+        translate([22, -8.5, 6]) light_diffuser_notch();
     }
     translate ([0, -15.5, 0]) rotate([90, 90, 0]) {
         difference () {
@@ -124,6 +125,14 @@ module diffuser_mount () {
             cylinder(r = 28 / 2, h = 9 + 1, center = true);
         }
     }    
+}
+
+module light_diffuser_notch () {
+    difference () {
+        cube([6, 12, 8], center = true);
+        translate([-1, 0, 7]) rotate([0, -20, 0]) cube([8, 12 + 1, 8], center = true);
+        translate([-1, 0, -7]) rotate([0, 20, 0]) cube([8, 12 + 1, 8], center = true);
+    }
 }
 
 module diffuser_spacer () {
@@ -299,20 +308,15 @@ module impromptu_mount () {
     }
 }
 
-module fresnel_laser(outer = 14, h = 3, spacing = 0.2) {
-    $fn = 120;
-    count = ceil(outer / spacing);
-    for(i = [0 : count]) {
-        if (i % 2 != 0) {
-            difference() {
-                cylinder(r = outer - (spacing * i), h = h);
-                cylinder(r = outer - (spacing * (i + 1)), h = h + 1);
-            }
-        }
-    }
-}
+module light_fresnel (D = 24, BASE = 3, RINGS = 4, d) {
+    $fn = 200;
+    STEP = D / RINGS;
 
-module fresnel_laser_outer (outer = 13, h = 3) {
-    $fn = 120;
-    cylinder(r = outer, h = h);
+    cylinder(r = D / 2, h = BASE, center = true);
+
+    translate([0, 0, 4]) for (i = [0 : RINGS]) {
+        cylinder(r1 = (D - (STEP * (i + 1))) / 2, r2 = (D - (STEP * i)) / 2, h = 2, center = true);
+
+    }
+
 }
