@@ -11,9 +11,9 @@ include <./motor.scad>;
 //translate([0, 0, -51.2]) light_body35();
 //translate([0, 0, 20]) light_vent_top();
 //translate ([0, -20, 0]) rotate([90, 90, 0]) color("red") diffuser_insert();
-translate ([0, -20, 0]) rotate([90, 90, 0]) color("red") diffuser_spacer();
+//translate ([0, -10, 0]) rotate([90, 90, 0]) color("red") diffuser_spacer();
 //rotate([0, 0, 90]) flashlight_mount();
 //translate([0, -8.5, 0]) rotate([0, 0, 90]) impromptu_mount();
 //translate([30, -8.5, 0]) rotate([90, 0, 90]) flashlight_mount_cap();
-
-//light_fresnel();
+//translate([0, -9, 0]) cube([15, 15, 15], center = true);
+light_fresnel();
