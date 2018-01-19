@@ -137,11 +137,12 @@ module light_diffuser_notch () {
 
 module diffuser_spacer () {
     $fn = 100;
-    LEN = 10;
+    LEN = 15;
+    THICKNESS = 3;
     difference () {
         cylinder(r = 27.9 / 2, h = LEN, center = true);
-        cylinder(r = 24 / 2, h = LEN + 1, center = true);
-        translate([0, 0, (LEN / 2) - (2/2) ]) cylinder(r = 26 / 2, h = 2, center = true);
+        cylinder(r = 23 / 2, h = LEN + 1, center = true);
+        translate([0, 0, (LEN / 2) - (THICKNESS / 2)]) cylinder(r = 26 / 2, h = THICKNESS, center = true);
     }
     
 }
