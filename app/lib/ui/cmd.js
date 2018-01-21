@@ -113,7 +113,7 @@ cmd.cam_backward = function (rgb, callback) {
 			if (callback) { callback(ms); }
 		});	
 	};
-	$('#cmd_cam_backward').addlass('active');
+	$('#cmd_cam_backward').addClass('active');
 	if (mcopy.state.camera.direction) {
 		cam.set(false, function () {
 			setTimeout(function () {
@@ -139,7 +139,7 @@ cmd.black_backward = function (callback) {
 		$('#cmd_black_backward').removeClass('active');
 		gui.updateState();
 	};
-	$('#cmd_black_backward').addlass('active');
+	$('#cmd_black_backward').addClass('active');
 	if (mcopy.state.camera.direction) {
 		cam.set(false, function () {
 			setTimeout(function () {
