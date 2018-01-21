@@ -14,7 +14,8 @@ const actionTable = `CREATE TABLE IF NOT EXISTS actions (
 	counter INTEGER,
 	light TEXT,
 	dir INTEGER,
-	sequence INTEGER
+	sequence INTEGER,
+	device TEXT
 );`
 
 var checkDir = function () {

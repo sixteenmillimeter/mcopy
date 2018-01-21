@@ -31,9 +31,8 @@ let log = {}
 
 //console.log(process.version)
 
-//cfg is now hardcoded, should only be modified by developers
-//settings is now the source of user editable variables
 mcopy.cfg = require('./data/cfg.json')
+mcopy.settings = {}
 
 var enumerateDevices = function (err, devices) {
 	if (err) {
@@ -426,8 +425,6 @@ transfer.listen = function () {
 }
 
 var init = function () {
-	
-	settings.restore()
 
 	createWindow()
 	//createMenu()
@@ -441,7 +438,10 @@ var init = function () {
 
 	arduino = require('./lib/arduino')(mcopy.cfg, ee)
 	mscript = require('./lib/mscript')
+	
 
+	settings.restore()
+	mcopy.settings = settings.all()
 
 	setTimeout( () => {
 		arduino.enumerate(enumerateDevices)
