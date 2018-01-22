@@ -60,6 +60,7 @@ var distinguishDevice = function (device, callback) {
 			return console.error(err)
 		}
 		log.info(`Verified ${device} as mcopy device`, 'SERIAL', true, true)
+
 		setTimeout(function () {
 			arduino.distinguish(distinguishCb);
 		}, 1000);
@@ -68,6 +69,8 @@ var distinguishDevice = function (device, callback) {
 		if (err) {
 			return console.error(err)
 		}
+		rememberDevice(device, type)
+
 		log.info(`Determined ${device} to be ${type}`, 'SERIAL', true, true)
 		if (callback) { callback(err, type); }
 	}
@@ -154,6 +157,8 @@ var distinguishDevices = function (devices) {
 			}
 		})
 	}
+	console.dir(mcopy.settings)
+	console.dir(checklist)
 
 	checklist = devices.map(device => {
 		return next => {
@@ -180,6 +185,24 @@ var distinguishDevices = function (devices) {
 		devicesReady(connected.projector, connected.camera, connected.light)
 	})
 };
+
+var rememberDevice = function (device, type) {
+	let deviceEntry
+	let match = mcopy.settings.devices.filter(dev => {
+		if (dev.arduino && dev.arduino === device) {
+			return dev
+		}
+	})
+	if (match.length === 0) {
+		deviceEntry = {
+			arduino : device,
+			type : type
+		}
+		mcopy.settings.devices.push(deviceEntry)
+		settings.update('devices', mcopy.settings.devices)
+		settings.save()
+	}
+}
 
 var devicesReady = function (projector, camera, light) {
 	mainWindow.webContents.send('ready', {camera: camera, projector: projector, light: light })
