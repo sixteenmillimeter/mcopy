@@ -1,6 +1,7 @@
 /*
   Wiring
 
+  HOLD OFF FOR NOW
   For "MONITOR" pins with INPUT_PULLUP resistors:
   GND-----\ | \-----PIN
   No additional resistors/caps needed.
@@ -19,7 +20,8 @@ boolean debug_state = false;
 
 //CAMERA CONSTANTS
 const int CAMERA = 2;
-const int CAMERA_DIR = 3;
+const int CAMERA_FWD = 3;
+const int CAMERA_BWD = 4;
 const int CAMERA_MOMENT = 200;
 const int CAMERA_FRAME = 800;
 //CAMERA VARIABLES
@@ -27,7 +29,8 @@ boolean cam_dir = true;
 
 //PROJECTOR CONSTANTS
 const int PROJECTOR = 8;
-const int PROJECTOR_DIR = 9;
+const int PROJECTOR_FWD = 9;
+const int PROJECTOR_BWD = 10;
 const int PROJECTOR_MOMENT = 200;
 const int PROJECTOR_FRAME = 800;
 //PROJECTOR VARIABLES
@@ -83,14 +86,20 @@ void pins () {
   pinMode(CAMERA, OUTPUT);
   pinMode(PROJECTOR, OUTPUT);
 
-  pinMode(CAMERA_DIR, OUTPUT);
-  pinMode(PROJECTOR_DIR, OUTPUT);
+  pinMode(CAMERA_FWD, OUTPUT);
+  pinMode(CAMERA_BWD, OUTPUT);
+  pinMode(PROJECTOR_FWD, OUTPUT);
+  pinMode(PROJECTOR_BWD, OUTPUT);
 
   //SET LOW
   digitalWrite(CAMERA, LOW);
-  digitalWrite(CAMERA_DIR, LOW);
   digitalWrite(PROJECTOR, LOW);
-  digitalWrite(PROJECTOR_DIR, LOW);
+
+  digitalWrite(CAMERA_FWD, HIGH);
+  digitalWrite(CAMERA_BWD, LOW);
+
+  digitalWrite(PROJECTOR_FWD, HIGH);
+  digitalWrite(PROJECTOR_BWD, LOW);
 }
 
 void cmd (char val) {
@@ -140,30 +149,18 @@ void setDir (int pin, boolean dir) {
 }
 
 void proj_start () {
-  if (proj_dir == false) {
-    setDir(PROJECTOR_DIR, false);
-  }
   digitalWrite(PROJECTOR, HIGH);
   delay(PROJECTOR_MOMENT);
   digitalWrite(PROJECTOR, LOW);
   delay(PROJECTOR_FRAME);
-  if (proj_dir == false) {
-    setDir(PROJECTOR_DIR, true);
-  }
   proj_stop();
 }
 
 void cam_start () {
-  if (cam_dir == false) {
-    setDir(CAMERA_DIR, false);
-  }
   digitalWrite(CAMERA, HIGH);
   delay(CAMERA_MOMENT);
   digitalWrite(CAMERA, LOW);
   delay(CAMERA_FRAME);
-  if (cam_dir == false) {
-    setDir(CAMERA_DIR, true);
-  }
   cam_stop();
 }
 
@@ -179,12 +176,16 @@ void cam_stop () {
 
 void proj_direction (boolean state) {
   proj_dir = state;
-  //UNO can only set 2 relays to high at a time
-  //setDir(PROJECTOR_DIR, state);
   if (state) {
+    digitalWrite(PROJECTOR_BWD, LOW);
+    delay(10);
+    digitalWrite(PROJECTOR_FWD, HIGH);
     Serial.println(cmd_proj_forward);
     log("proj_direction -> true");
   } else {
+    digitalWrite(PROJECTOR_FWD, LOW);
+    delay(10);
+    digitalWrite(PROJECTOR_BWD, HIGH);
     Serial.println(cmd_proj_backward);
     log("proj_direction -> false");
   }
@@ -192,11 +193,16 @@ void proj_direction (boolean state) {
 
 void cam_direction (boolean state) {
   cam_dir = state;
-  //setDir(CAMERA_DIR, state);
   if (state) {
+    digitalWrite(CAMERA_BWD, LOW);
+    delay(10);
+    digitalWrite(CAMERA_FWD, HIGH);
     Serial.println(cmd_cam_forward);
     log("cam_direction -> true");
   } else {
+    digitalWrite(CAMERA_FWD, LOW);
+    delay(10);
+    digitalWrite(CAMERA_BWD, HIGH);
     Serial.println(cmd_cam_backward);
     log("cam_direction -> false");
   }
