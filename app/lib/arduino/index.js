@@ -1,7 +1,10 @@
 'use strict'
 
 const SerialPort = require('serialport')
+const Readline = SerialPort.parsers.Readline
 const exec = require('child_process').exec
+const parser = new Readline('')
+const newlineRe = new RegExp('\n', 'g')
 let eventEmitter
 
 const mcopy = {}
@@ -107,8 +110,8 @@ mcopy.arduino.connect = function (serial, device, confirm, callback) {
 	mcopy.arduino.alias[serial] = device;
 	mcopy.arduino.serial[device] = new SerialPort(mcopy.arduino.path[serial], {
 		autoOpen : false,
-		baudrate: mcopy.cfg.arduino.baud,
-		parser: SerialPort.parsers.readline("\n")
+		baudRate: mcopy.cfg.arduino.baud,
+		parser: parser
 	});
 	mcopy.arduino.serial[device].open(error => {
 		if (error) {
@@ -118,13 +121,16 @@ mcopy.arduino.connect = function (serial, device, confirm, callback) {
 			console.log(`Opened connection with ${mcopy.arduino.path[serial]} as ${serial}`);
 			if (!confirm) {
 				mcopy.arduino.serial[device].on('data', data => {
-					data = data.replace('\r', '')
-					mcopy.arduino.end(data)
+					let d = data.toString('utf8')
+					
+					d = d.replace(newlineRe, '')
+					mcopy.arduino.end(d)
 				})
 			} else {
 				mcopy.arduino.serial[device].on('data', data => {
-					data = data.replace('\r', '')
-					mcopy.arduino.confirmEnd(data)
+					let d = data.toString('utf8')
+					d = d.replace(newlineRe, '')
+					mcopy.arduino.confirmEnd(d)
 				})
 			}
 			if (callback) { 
