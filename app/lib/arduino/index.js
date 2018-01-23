@@ -5,6 +5,7 @@ const Readline = SerialPort.parsers.Readline
 const exec = require('child_process').exec
 const parser = new Readline('')
 const newlineRe = new RegExp('\n', 'g')
+const returnRe = new RegExp('\r', 'g')
 let eventEmitter
 
 const mcopy = {}
@@ -122,14 +123,13 @@ mcopy.arduino.connect = function (serial, device, confirm, callback) {
 			if (!confirm) {
 				mcopy.arduino.serial[device].on('data', data => {
 					let d = data.toString('utf8')
-					
-					d = d.replace(newlineRe, '')
+					d = d.replace(newlineRe, '').replace(returnRe, '')
 					mcopy.arduino.end(d)
 				})
 			} else {
 				mcopy.arduino.serial[device].on('data', data => {
 					let d = data.toString('utf8')
-					d = d.replace(newlineRe, '')
+					d = d.replace(newlineRe, '').replace(returnRe, '')
 					mcopy.arduino.confirmEnd(d)
 				})
 			}
@@ -142,6 +142,7 @@ mcopy.arduino.connect = function (serial, device, confirm, callback) {
 
 mcopy.arduino.confirmExec = {};
 mcopy.arduino.confirmEnd = function (data) {
+	//console.dir(data)
 	if (data === mcopy.cfg.arduino.cmd.connect
 		|| data === mcopy.cfg.arduino.cmd.proj_identifier
 		|| data === mcopy.cfg.arduino.cmd.cam_identifier
