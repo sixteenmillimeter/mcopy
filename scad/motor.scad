@@ -489,9 +489,9 @@ module flashlight_mount_cap (DEBUG = false) {
     translate([0, 0, 0]) rotate([90, 0, 0]) {
         difference () {
             union () {
-                translate([0, 0, 0]) cylinder(r = 9, h = 7, center = true);
-                translate([-6, 0, 0]) cube([12, 18, 7], center = true);
-                translate([-10.75, 0, -3]) cube([2.5, 18, 11], center = true);
+                translate([0, 0, 0]) cylinder(r = 11, h = 7, center = true);
+                translate([-6, 0, 0]) cube([12, 22, 7], center = true);
+                translate([-11.5, 0, -3]) cube([4, 22, 13], center = true);
             }
             difference () {
                 translate([0, 0, -(7 - 4.5) / 2 - .1]) cylinder(r = ROD_D / 2, h = 4.5, center = true);
@@ -521,3 +521,4 @@ module bolex_stand () {
         //translate([0, 0, 40]) cube([35, 150, 30], center = true);
     }
 }
+

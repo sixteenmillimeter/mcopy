@@ -1,5 +1,7 @@
 volatile char cmd_char = 'z';
 
+const char cmd_id = 'i';
+
 void setup() {
     Serial.begin(57600);
     Serial.flush();
@@ -17,7 +19,7 @@ void loop() {
 }
 
 void cmd (char val) {
-  if (val == 'i') {
-    Serial.println("i");//End of action
+  if (val == cmd_id) {
+    Serial.println(cmd_id);//End of action
   }
 }

@@ -31,9 +31,8 @@ let log = {}
 
 //console.log(process.version)
 
-//cfg is now hardcoded, should only be modified by developers
-//settings is now the source of user editable variables
 mcopy.cfg = require('./data/cfg.json')
+mcopy.settings = {}
 
 var enumerateDevices = function (err, devices) {
 	if (err) {
@@ -61,6 +60,7 @@ var distinguishDevice = function (device, callback) {
 			return console.error(err)
 		}
 		log.info(`Verified ${device} as mcopy device`, 'SERIAL', true, true)
+
 		setTimeout(function () {
 			arduino.distinguish(distinguishCb);
 		}, 1000);
@@ -69,6 +69,8 @@ var distinguishDevice = function (device, callback) {
 		if (err) {
 			return console.error(err)
 		}
+		rememberDevice(device, type)
+
 		log.info(`Determined ${device} to be ${type}`, 'SERIAL', true, true)
 		if (callback) { callback(err, type); }
 	}
@@ -155,6 +157,8 @@ var distinguishDevices = function (devices) {
 			}
 		})
 	}
+	console.dir(mcopy.settings)
+	console.dir(checklist)
 
 	checklist = devices.map(device => {
 		return next => {
@@ -181,6 +185,24 @@ var distinguishDevices = function (devices) {
 		devicesReady(connected.projector, connected.camera, connected.light)
 	})
 };
+
+var rememberDevice = function (device, type) {
+	let deviceEntry
+	let match = mcopy.settings.devices.filter(dev => {
+		if (dev.arduino && dev.arduino === device) {
+			return dev
+		}
+	})
+	if (match.length === 0) {
+		deviceEntry = {
+			arduino : device,
+			type : type
+		}
+		mcopy.settings.devices.push(deviceEntry)
+		settings.update('devices', mcopy.settings.devices)
+		settings.save()
+	}
+}
 
 var devicesReady = function (projector, camera, light) {
 	mainWindow.webContents.send('ready', {camera: camera, projector: projector, light: light })
@@ -291,7 +313,6 @@ cam.state = {
 }
 cam.init = function () {
 	cam.listen()
-	cam.intval = new Intval('camera', '192.168.1.224')
 }
 cam.set = function (dir, id) {
 	let cmd
@@ -304,14 +325,27 @@ cam.set = function (dir, id) {
 	arduino.send('camera', cmd, (ms) => {
 		cam.end(cmd, id, ms)
 	})
+	/*
+	intval.setDir('camera', dir, (ms) => {
+		cam.end(cmd, id, ms)
+	})
+	*/
 }
 
 cam.move = function (frame, id) {
 	let cmd = mcopy.cfg.arduino.cmd.camera
-	/*arduino.send('camera', cmd, (ms) => {
+	arduino.send('camera', cmd, (ms) => {
 		cam.end(cmd, id, ms)
-	})*/
-	cam.intval.move('camera', (ms) => {
+	})
+	/*
+	intval.move('camera', (ms) => {
+		cam.end(cmd, id, ms)
+	})
+	*/
+}
+
+cam.exposure = function (exposure, id) {
+	intval.setDir('camera', exposure, (ms) => {
 		cam.end(cmd, id, ms)
 	})
 }
@@ -414,8 +448,6 @@ transfer.listen = function () {
 }
 
 var init = function () {
-	
-	settings.restore()
 
 	createWindow()
 	//createMenu()
@@ -429,7 +461,10 @@ var init = function () {
 
 	arduino = require('./lib/arduino')(mcopy.cfg, ee)
 	mscript = require('./lib/mscript')
+	
 
+	settings.restore()
+	mcopy.settings = settings.all()
 
 	setTimeout( () => {
 		arduino.enumerate(enumerateDevices)

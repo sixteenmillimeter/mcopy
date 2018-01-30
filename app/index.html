@@ -11,7 +11,7 @@
     <link href="./css/monokai.css" rel="stylesheet">
     <link href="./css/app.css" rel="stylesheet">
   </head>
-  <body onload="init();">
+  <body onload="init();" style="background:#272b30;">
     <nav id="toolbar"></nav>
     <div id="screens">
       <div id="sequencer" class="screen" style="display: block;">
@@ -213,24 +213,38 @@
         </footer>
       </div>
       <div id="settings" class="screen">
-        <h4>Devices</h4>
-        <select id="devices">
-          
-        </select>
-        <button title="Refresh devices"><i class="fa fa-refresh"></i></button>
-        <h4>Projector</h4>
-        <select id="projector_device">
-          
-        </select>
-        <h4>Camera</h4>
-        <select id="camera_device">
-          
-        </select>
-        <input type="text" id="intval" name="intval" placeholder="INTVAL3 URL"/>
-        <h4>Light</h4>
-        <select id="light_device">
-          
-        </select>
+        <div>
+          <div>
+            <h4>Devices</h4>
+            <select id="devices">
+              <option>Not Set</option>
+            </select>
+            <button title="Refresh devices"><i class="fa fa-refresh"></i></button>
+          </div>
+          <div>
+            <h4>Projector</h4>
+            <select id="projector_device">
+              <option>Not Set</option>
+            </select>
+          </div>
+          <div>
+            <h4>Camera</h4>
+            <select id="camera_device">
+              <option>Not Set</option>
+            </select>
+            <input type="radio" name="camera_type" value="arduino" checked="checked" />
+          </div>
+          <div class="spacer">
+            <input type="text" id="intval" name="intval" placeholder="INTVAL3 URL"/>
+            <input type="radio" name="camera_type" value="intval" />
+          </div>
+          <div>
+            <h4>Light</h4>
+            <select id="light_device">
+              <option>Not Set</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
     <div id="overlay" onclick="gui.overlay(false);gui.spinner(false);"></div>

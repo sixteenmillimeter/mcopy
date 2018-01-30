@@ -11,7 +11,7 @@ class Intval {
 		const timeStart = +new Date()
 		const baseUrl = devices[device]
 		const url = `${baseUrl}/frame`
-		console.log(url)
+		//console.log(url)
 		req(url, (err, res, body) => {
 			let ms = (+new Date()) - timeStart
 			if (err) {
@@ -24,7 +24,7 @@ class Intval {
 		const timeStart = +new Date()
 		const baseUrl = devices[device]
 		const url = `${baseUrl}/dir?dir=${dir}`
-		console.log(url)
+		//console.log(url)
 		req(url, (err, res, body) => {
 			let ms = (+new Date()) - timeStart
 			if (err) {
@@ -38,7 +38,7 @@ class Intval {
 		const timeStart = +new Date()
 		const baseUrl = devices[device]
 		const url = `${baseUrl}/exposure?exposure=${exposure}`
-		console.log(url)
+		//console.log(url)
 		req(url, (err, res, body) => {
 			let ms = (+new Date()) - timeStart
 			if (err) {

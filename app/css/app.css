@@ -545,6 +545,7 @@ button:focus {
 .cmd {
   width: 240px;
   text-align: center;
+  margin: 0 auto;
 }
 .cmd i {
   float: left;
@@ -588,6 +589,58 @@ button:focus {
 }
 ::-webkit-scrollbar-thumb:window-inactive {
   background: rgba(0, 0, 0, 0.05);
+}
+#settings > div {
+  width: 300px;
+  margin: 0 auto;
+}
+#settings > div > div {
+  width: 360px;
+}
+#settings input[type=text],
+#settings select {
+  display: block;
+  border-radius: 5px;
+  border: 2px solid #fff;
+  text-align: center;
+  background: transparent;
+  color: #fff;
+  padding: 8px 0;
+  font-size: 12px;
+  font-weight: 400;
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 21px;
+  min-width: 300px;
+}
+#settings input[type=text] span,
+#settings select span {
+  display: block;
+  font-size: 16px;
+  font-weight: 200;
+}
+#settings input[type=text]:active,
+#settings select:active,
+#settings input[type=text] .active,
+#settings select .active {
+  background: #fff;
+  color: #272b30;
+  outline: none;
+}
+#settings input[type=text]:focus,
+#settings select:focus {
+  outline: none;
+}
+#settings button {
+  margin-top: -1px;
+  float: right;
+}
+#settings input[type=radio] {
+  float: right;
+  margin-right: 20px;
+}
+#settings .spacer {
+  margin-top: 10px;
 }
 #log {
   position: fixed;
