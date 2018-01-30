@@ -545,7 +545,9 @@ button:focus {
 .cmd {
   width: 240px;
   text-align: center;
-  margin: 0 auto;
+  margin: 5px auto;
+  display: block;
+  font-size: 16px;
 }
 .cmd i {
   float: left;
