@@ -22,8 +22,8 @@ boolean debug_state = false;
 const int CAMERA = 2;
 const int CAMERA_FWD = 3;
 const int CAMERA_BWD = 4;
-const int CAMERA_MOMENT = 200;
-const int CAMERA_FRAME = 800;
+const int CAMERA_MOMENT = 240;
+const int CAMERA_FRAME = 600;
 //CAMERA VARIABLES
 boolean cam_dir = true; 
 
@@ -31,8 +31,8 @@ boolean cam_dir = true;
 const int PROJECTOR = 8;
 const int PROJECTOR_FWD = 9;
 const int PROJECTOR_BWD = 10;
-const int PROJECTOR_MOMENT = 200;
-const int PROJECTOR_FRAME = 800;
+const int PROJECTOR_MOMENT = 240;
+const int PROJECTOR_FRAME = 950;
 //PROJECTOR VARIABLES
 boolean proj_dir = true;
 
@@ -152,7 +152,7 @@ void proj_start () {
   digitalWrite(PROJECTOR, HIGH);
   delay(PROJECTOR_MOMENT);
   digitalWrite(PROJECTOR, LOW);
-  delay(PROJECTOR_FRAME);
+  delay(PROJECTOR_FRAME - PROJECTOR_MOMENT);
   proj_stop();
 }
 
@@ -160,7 +160,7 @@ void cam_start () {
   digitalWrite(CAMERA, HIGH);
   delay(CAMERA_MOMENT);
   digitalWrite(CAMERA, LOW);
-  delay(CAMERA_FRAME);
+  delay(CAMERA_FRAME - CAMERA_MOMENT);
   cam_stop();
 }
 

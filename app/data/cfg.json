@@ -6,6 +6,40 @@
 		"board" : "uno",
 		"serialDelay" : 20,
 		"sequenceDelay" : 100,
+		"profiles" : {
+			"jk_original" : {
+				"cam" : {
+					"time" : 750,
+					"delay" : 50,
+					"momentary" : 300
+				},
+				"proj" : {
+					"time" : 1300,
+					"delay" : 50,
+					"momentary" : 300
+				},
+				"black" : {
+					"before" : 250,
+					"after" : 250
+				}
+			},
+			"jk103" : {
+				"cam" : {
+					"time" : 600,
+					"delay" : 50,
+					"momentary" : 240
+				},
+				"proj" : {
+					"time" : 950,
+					"delay" : 50,
+					"momentary" : 240
+				},
+				"black" : {
+					"before" : 0,
+					"after" : 0
+				}
+			}
+		},
 		"cam" : {
 			"time" : 750,
 			"delay" : 50,
