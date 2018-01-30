@@ -10,6 +10,7 @@ settings.state = {
 		enabled : true
 	},
 	devices : [],
+	profile : 'mcopy',
 	camera : {},
 	projector : {},
 	light : {}

@@ -7,6 +7,22 @@
 		"serialDelay" : 20,
 		"sequenceDelay" : 100,
 		"profiles" : {
+			"mcopy" : {
+				"cam" : {
+					"time" : 630,
+					"delay" : 50,
+					"momentary" : 0
+				},
+				"proj" : {
+					"time" : 1300,
+					"delay" : 50,
+					"momentary" : 0
+				},
+				"black" : {
+					"before" : 0,
+					"after" : 0
+				}
+			},
 			"jk_original" : {
 				"cam" : {
 					"time" : 750,
