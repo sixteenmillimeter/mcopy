@@ -18,7 +18,8 @@ mcopy.arduino = {
 		'/dev/tty.usbmodem1a131',
 		'/dev/tty.usbserial-a900f6de',
 		'/dev/tty.usbmodem1a141',
-		'/dev/ttyACM0'
+		'/dev/ttyACM0',
+		'COM3'
 	],
 	alias : {
 
@@ -38,6 +39,7 @@ mcopy.arduino = {
 mcopy.arduino.enumerate = function (callback) {
 	let matches = []
 	SerialPort.list((err, ports) => {
+		//console.dir(ports)
 		ports.forEach(port => {
 			if (mcopy.arduino.known.indexOf(port.comName) !== -1) {
 				matches.push(port.comName)
