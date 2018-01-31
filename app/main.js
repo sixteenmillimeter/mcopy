@@ -157,8 +157,6 @@ var distinguishDevices = function (devices) {
 			}
 		})
 	}
-	console.dir(mcopy.settings)
-	console.dir(checklist)
 
 	checklist = devices.map(device => {
 		return next => {
@@ -171,6 +169,7 @@ var distinguishDevices = function (devices) {
 			})
 		}
 	})
+
 	async.series(checklist, () => {
 		//done checking devices
 		if (!connected.projector) {
@@ -307,7 +306,9 @@ proj.end = function (cmd, id, ms) {
 	mainWindow.webContents.send('proj', {cmd: cmd, id : id, ms: ms})
 }
 
-var cam = {}
+var cam = {
+	intval : null
+}
 cam.state = {
 	dir : true //default dir
 }
@@ -358,8 +359,24 @@ cam.listen = function () {
 			cam.move(arg.frame, arg.id)
 		}
 		event.returnValue = true
-	});
-};
+	})
+	ipcMain.on('intval', (event, arg) => {
+		console.dir(arg)
+		if (arg.connect) {
+			cam.intval = new Intval(arg.url)
+			/*cam.intval.connect((err, ms, state) => {
+				if (err) {
+					log.info(`Cannot connect to ${arg.url}`, 'INTVAL', true, true)
+					cam.intval = null
+				} else {
+					log.info()
+				}
+			})*/
+		} else if (arg.disconnect) {
+			cam.intval = null
+		}
+	})
+}
 cam.end = function (cmd, id, ms) {
 	var message = ''
 	if (cmd === mcopy.cfg.arduino.cmd.cam_forward) {
