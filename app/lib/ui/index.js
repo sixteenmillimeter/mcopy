@@ -1,10 +1,13 @@
-var gui = {};
+/* jslint esversion: 6*/
+
+const gui = {};
 
 //GUI
 gui.fmtZero = function (val, len) {
-	var raw = val,
-		str = val + '',
-		output = ''
+	'use strict';
+	const raw = val;
+	let str = val + '';
+	let output = '';
 	if (raw < 0) {
 		output = '-' + Array(len - (str.length - 1)).join('0') + str.replace('-', '');
 	} else {
@@ -18,16 +21,13 @@ gui.fmtZero = function (val, len) {
 	return output;
 };
 gui.counterFormat = function (t, normal, prevent) {
-	var raw = t.value;
+	'use strict';
+	const raw = t.value;
 	t.value = gui.fmtZero(raw, 6);
 	if (typeof normal !== 'undefined' && parseInt(raw) !== normal) {
 		$(t).addClass('changed');
 	} else {
 		$(t).removeClass('changed');
-	}
-	if (typeof prevent === 'undefined') { prevent = false; }
-	if (!prevent) {
-		gui.shootGoto(t);
 	}
 };
 gui.notify = function (title, message) {
@@ -42,38 +42,16 @@ gui.notify = function (title, message) {
 		// Response is response from notification 
 	});
 };
-gui.shootGoto = function (t) {
-	var elem = $(t),
-		id = elem.attr('id').split('_'),
-		val = 0,
-		comp = 0,
-		other = {};
-	if (id[1] === 'cam') {
-		comp = mcopy.state.camera.pos;
-	} else if (id[1] === 'proj') {
-		comp = mcopy.state.projector.pos;
-	}
-	if (id[0] === 'shoot') {
-		other = $('#goto_' + id[1]);
-		val = parseInt(elem.val()) + comp;
-		other.val(val);
-		gui.counterFormat(other[0], comp, true);
-		//other.trigger('change');
-	} else if (id[0] === 'goto'){
-		other = $('#shoot_' + id[1]);
-		val = parseInt(elem.val()) - comp;
-		other.val(val);
-		gui.counterFormat(other[0], undefined, true);
-	} else {
-		//ALLOW TO EXECUTE WITH NO RESULTS
-		//console.log('You screwed up the markup.');
-	}
-};
 gui.updateCam = function (t) {
-	var val = t.value,
-		change;
-	if (parseInt(val) === mcopy.state.camera.pos) { return false; }
-	change = confirm('Are you sure you want to set camera counter to ' + val + '?');
+	'use strict';
+	const val = t.value;
+	let change;
+
+	if (parseInt(val) === mcopy.state.camera.pos) { 
+		return false; 
+	}
+	change = confirm(`Are you sure you want to set camera counter to ${val}?`);
+
 	if (change) {
 		mcopy.state.camera.pos = parseInt(val);
 		gui.updateState();
@@ -83,10 +61,13 @@ gui.updateCam = function (t) {
 	}
 };
 gui.updateProj = function (t) {
-	var val = t.value,
-		change;
-	if (parseInt(val) === mcopy.state.projector.pos) { return false; }
-	change = confirm('Are you sure you want to set projector counter to ' + val + '?');
+	'use strict';
+	const val = t.value;
+	let change;
+	if (parseInt(val) === mcopy.state.projector.pos) { 
+		return false; 
+	}
+	change = confirm(`Are you sure you want to set projector counter to ${val}?`);
 	if (change) {
 		mcopy.state.projector.pos = parseInt(val);
 		gui.updateState();
@@ -96,8 +77,9 @@ gui.updateProj = function (t) {
 	}
 };
 gui.updateState = function () {
-	var cpos = mcopy.state.camera.pos,
-		ppos = mcopy.state.projector.pos;
+	'use strict';
+	const cpos = mcopy.state.camera.pos;
+	const ppos = mcopy.state.projector.pos;
 
 	$('#seq_cam_count').val(cpos).change();
 	$('#seq_proj_count').val(ppos).change();
@@ -122,12 +104,13 @@ gui.spinnerCfg =  {
 	zIndex: 2e9, // The z-index (defaults to 2000000000)
 	top: '50%', // Top position relative to parent
 	left: '50%' // Left position relative to parent
-}
-gui.spinner = function (state, msg = '') {
-	var target,
-	spinner;
-	if (msg !== '') {
-		gui.spinnerMsg(msg)
+};
+gui.spinner = function (state, msg) {
+	'use strict';
+	let target;
+	let spinner;
+	if (msg && msg !== '') {
+		gui.spinnerMsg(msg);
 	}
 	if (state && !$('#spinner').hasClass('created')) {
 		target = document.getElementById('spinner');
@@ -137,14 +120,16 @@ gui.spinner = function (state, msg = '') {
 		$('#spinner').show();
 	} else if (!state) {
 		$('#spinner').hide();
-		gui.spinnerMsg('')
+		gui.spinnerMsg('');
 	}
 
 };
 gui.spinnerMsg = function (msg) {
-	$('#spinnerMsg').text(msg)
-}
+	'use strict';
+	$('#spinnerMsg').text(msg);
+};
 gui.overlay = function (state) {
+	'use strict';
 	if (state) {
 		$('#overlay').show();
 	} else {
@@ -154,7 +139,7 @@ gui.overlay = function (state) {
 
 gui.info = function (title, message) {
 	'use strict';
-	var config = {
+	const config = {
 		type : 'info',
 		buttons : ['Ok'],
 		title: title,
@@ -176,7 +161,7 @@ gui.info = function (title, message) {
 gui.confirm = function () {};
 gui.warn = function (title, message) {
 	'use strict';
-	var config = {
+	const config = {
 		type : 'warning',
 		buttons : ['Ok'],
 		title: title,
@@ -204,10 +189,10 @@ gui.mscript.init = function () {
 	});
 	gui.mscript.editor.setSize(null, $(window).height() - $('footer').eq(0).height() - 30);
 	gui.mscript.editor.on('change', function (e) {
-		var data = gui.mscript.editor.getValue(),
-			output = gui.mscript.parse(data);
+		const data = gui.mscript.editor.getValue();
+		const output = gui.mscript.parse(data);
 	});
-	$(document).on('resize', function () {
+	$(document).on('resize', function (e) {
 		gui.mscript.editor.setSize(null, $(window).height() - $('footer').eq(0).height() - 30);
 	});
 };
@@ -218,9 +203,11 @@ gui.mscript.open = function () {
 };
 gui.mscript.update = function () {
 	//ehhhhh
+	'use strict';
 	$('#mscript textarea').val(mcopy.state.sequence.arr.join('\n'));
 };
 gui.mscript.parse = function (str) {
+	'use strict';
 	/*var cmd = 'node mscript.js "' + str + '\n"';
 	gui.mscript.raw = str;
 	mcopy.exec(cmd, function (data) {
@@ -248,13 +235,13 @@ gui.console.init = function () {
 gui.console.lines = [];
 gui.console.parse = function () {
 	'use strict';
-	var lines = gui.console.elem.val().split('\n'),
-		line = lines[lines.length - 2].replace('>', '').trim();
+	const lines = gui.console.elem.val().split('\n');
+	const line = lines[lines.length - 2].replace('>', '').trim();
 	gui.console.lines.push(line);
 };
 gui.console.exec = function () {
 	'use strict';
-	var command;
+	let command;
 	gui.console.parse();
 	command = gui.console.lines[gui.console.lines.length - 1].replace('>', '').trim();
 	console.log(command);
@@ -269,7 +256,7 @@ gui.console.exec = function () {
 };
 gui.console.newLine = function () {
 	'use strict';
-	var current = gui.console.elem.val();
+	let current = gui.console.elem.val();
 	current += '> ';
 	gui.console.elem.val(current);
 };
@@ -288,16 +275,15 @@ gui.grid.init = function () {
 
 gui.grid.state = function (i) {
 	'use strict';
-	var elem = $('input[x=' + i + ']'),
-		lightElem = $('.L' + '[x=' + i + ']');
+	const elem = $(`input[x=${i}]`);
+	const lightElem = $(`.L[x=${i}]`);
 	if (typeof mcopy.state.sequence.arr[i] !== 'undefined') {
 		elem.prop('checked', false);
-		$('.' + mcopy.state.sequence.arr[i] + '[x=' + i + ']').prop('checked', true);
-		if (mcopy.state.sequence.arr[i] === 'CF'
-			|| mcopy.state.sequence.arr[i] === 'CB') {
-			lightElem.css('background', 'rgb(' + mcopy.state.sequence.light[i] + ')')
+		$(`.${mcopy.state.sequence.arr[i]}[x=${i}]`).prop('checked', true);
+		if (mcopy.state.sequence.arr[i] === 'CF' || mcopy.state.sequence.arr[i] === 'CB') {
+			lightElem.css('background', `rgb(${mcopy.state.sequence.light[i]})`)
 				.addClass('a')
-				.prop('title', 'rgb(' + mcopy.state.sequence.light[i] + ')');
+				.prop('title', `rgb(${mcopy.state.sequence.light[i]})`);
 
 		} else {
 			lightElem.css('background', 'transparent')
@@ -312,15 +298,16 @@ gui.grid.state = function (i) {
 };
 gui.grid.refresh = function () {
 	'use strict';
-	var cmds = ['cam_forward', 'proj_forward', 'cam_backward', 'proj_backward', 'light_set', 'numbers'],
-		check = '<input type="checkbox" x="xxxx" />',
-		div = '<div x="xxxx"></div>',
-		elem,
-		width = 970 - 34 + ((940 / 24) * Math.abs(24 - mcopy.state.sequence.size));
-	$('#sequence').width(width + 'px');
-	for (var i = 0; i < cmds.length; i++) {
+	const cmds = ['cam_forward', 'proj_forward', 'cam_backward', 'proj_backward', 'light_set', 'numbers'];
+	const check = '<input type="checkbox" x="xxxx" />';
+	const div = '<div x="xxxx"></div>';
+	const width = 970 - 34 + ((940 / 24) * Math.abs(24 - mcopy.state.sequence.size));
+	let elem;
+	
+	$('#sequence').width(`${width}px`);
+	for (let i = 0; i < cmds.length; i++) {
 		$('#' + cmds[i]).empty();
-		for (var x = 0; x < mcopy.state.sequence.size; x++) {
+		for (let x = 0; x < mcopy.state.sequence.size; x++) {
 			if (i === cmds.length - 1) {
 				elem = div.replace('xxxx', x);
 				$('#' + cmds[i]).append($(elem).text(x));
@@ -337,13 +324,12 @@ gui.grid.refresh = function () {
 };
 gui.grid.click = function (t) {
 	'use strict';
-	var i = parseInt($(t).attr('x')),
-		c;
+	const i = parseInt($(t).attr('x'));
+	let c;
 	if ($(t).prop('checked')) {
 		c = $(t).attr('class').replace('.', '');
 		mcopy.state.sequence.arr[i] = c;
-		if (c === 'CF'
-			|| c === 'CB') {
+		if (c === 'CF' || c === 'CB') {
 			mcopy.state.sequence.light[i] = light.color.join(',');
 		} else {
 			mcopy.state.sequence.light[i] = '';
@@ -357,7 +343,7 @@ gui.grid.click = function (t) {
 };
 gui.grid.clear = function () {
 	'use strict';
-	var doit = confirm('Are you sure you want to clear this sequence?');
+	const doit = confirm('Are you sure you want to clear this sequence?');
 	if (doit) {
 		seq.clear();
 		gui.grid.refresh();
@@ -367,7 +353,7 @@ gui.grid.clear = function () {
 };
 gui.grid.loopChange = function (t) {
 	'use strict';
-	var count = parseInt(t.value);
+	const count = parseInt(t.value);
 	mcopy.loop = count;
 	seq.stats();
 };
@@ -375,7 +361,7 @@ gui.grid.plus_24 = function () {
 	'use strict';
 	mcopy.state.sequence.size += 24;
 	gui.grid.refresh();
-	console.log('Sequencer expanded to ' + mcopy.state.sequence.size + ' steps');
+	console.log(`Sequencer expanded to ${mcopy.state.sequence.size} steps`);
 };
 gui.grid.setLight = function (x, rgb) {
 	'use strict';
@@ -383,8 +369,8 @@ gui.grid.setLight = function (x, rgb) {
 	gui.grid.state(x);
 };
 gui.grid.blackout = function (t) {
-	var elem = $(t),
-		i = elem.attr('x');
+	const elem = $(t);
+	const i = elem.attr('x');
 	if (typeof mcopy.state.sequence.light[i] === 'undefined') {
 		return false;
 	}
@@ -396,34 +382,29 @@ gui.grid.blackout = function (t) {
 };
 gui.grid.changeAll = function (rgb) {
 	'use strict';
-	var i;
-	for (i = 0; i < mcopy.state.sequence.arr.length; i++) {
-		if (mcopy.state.sequence.arr[i] === 'CF'
-			|| mcopy.state.sequence.arr[i] === 'CB') {
+	for (let [i, c] of mcopy.state.sequence.arr.entries()) {
+		if (c === 'CF' || c === 'CB') {
 			gui.grid.setLight(i, rgb);
 		}
 	}
 };
 gui.grid.swatches = function (x) {
 	'use strict';
-	var current = mcopy.state.sequence.light[x];
+	const current = mcopy.state.sequence.light[x];
 	gui.grid.swatchesElem = w2popup.open({
 		title   : 'Select Color',
 		body    : $('#light-swatches').html(),
 		buttons : '<button id="sequencer-ok" class="btn btn-default">Ok</button> <button id="sequencer-changeall" class="btn btn-warning">Change All</button> <button id="sequencer-cancel" class="btn btn-default">Cancel</button>',
-		onClose : function () {
-		}
+		onClose : () => {}
 	});
 	$('.w2ui-msg-body .swatch').removeClass('default set');
-	$('.w2ui-msg-body .swatch[color="' + current + '"').eq(0).addClass('default set');
+	$(`.w2ui-msg-body .swatch[color="${current}"`).eq(0).addClass('default set');
 
-	$('#sequencer-cancel').on('click', function () {
-		gui.grid.swatchesElem.close();
-	});
+	$('#sequencer-cancel').on('click', gui.grid.swatchesElem.close);
 	$('#sequencer-changeall').on('click', function () {
-		var doit = confirm('You sure you want to change all light settings?'),
-			elem = $('.w2ui-msg-body .default'),
-			rgb;
+		const doit = confirm('You sure you want to change all light settings?');
+		const elem = $('.w2ui-msg-body .default');
+		let rgb;
 		if (doit && elem.length > 0) {
 			rgb = elem.attr('color').split(',');
 			gui.grid.changeAll(rgb);
