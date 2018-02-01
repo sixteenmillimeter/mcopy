@@ -4,7 +4,8 @@
   "description": "Small guage film optical printer platform",
   "main": "main.js",
   "scripts": {
-    "start": "gulp && electron main.js",
+    "start": "electron main.js",
+    "dev" : "gulp && electron main.js -d",
     "install": "electron-rebuild"
   },
   "repository": {
