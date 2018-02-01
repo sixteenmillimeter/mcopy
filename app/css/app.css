@@ -50,6 +50,11 @@ button .active {
 button:focus {
   outline: none;
 }
+.clearfix:after {
+  content: "";
+  clear: both;
+  display: table;
+}
 #colors-tabs {
   width: 411px;
 }
@@ -545,12 +550,19 @@ button:focus {
 .cmd {
   width: 240px;
   text-align: center;
-  margin: 5px auto;
+  margin: 10px auto;
   display: block;
   font-size: 16px;
 }
 .cmd i {
+  margin-top: 3px;
+}
+.cmd i:first-child {
   float: left;
+  margin-right: 5px;
+}
+.cmd i:last-child {
+  float: right;
   margin-right: 5px;
 }
 .cmd.fwd i {
@@ -560,17 +572,17 @@ button:focus {
   color: #AB1A25;
 }
 .cmd:active.fwd,
-.cmd .active.fwd {
+.cmd.active.fwd {
   background: #00C4A0;
   border-color: #00C4A0;
 }
 .cmd:active.bwd,
-.cmd .active.bwd {
+.cmd.active.bwd {
   background: #AB1A25;
   border-color: #AB1A25;
 }
 .cmd:active i,
-.cmd .active i {
+.cmd.active i {
   color: #272b30;
 }
 ::-webkit-scrollbar {
@@ -632,6 +644,11 @@ button:focus {
 #settings input[type=text]:focus,
 #settings select:focus {
   outline: none;
+}
+#settings input[type=text].active,
+#settings select.active {
+  border-color: #DAE035;
+  color: #DAE035;
 }
 #settings button {
   margin-top: -1px;
@@ -703,23 +720,29 @@ button:focus {
 }
 #counters .cam,
 #counters_2 .cam,
+#move_to .cam,
 #counters .proj,
-#counters_2 .proj {
+#counters_2 .proj,
+#move_to .proj {
   width: 50%;
   padding-bottom: 25px;
 }
 #counters .cam label,
 #counters_2 .cam label,
+#move_to .cam label,
 #counters .proj label,
-#counters_2 .proj label {
+#counters_2 .proj label,
+#move_to .proj label {
   text-align: center;
   font-size: 24px;
   display: block;
 }
 #counters .cam input,
 #counters_2 .cam input,
+#move_to .cam input,
 #counters .proj input,
-#counters_2 .proj input {
+#counters_2 .proj input,
+#move_to .proj input {
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
   padding: 6px 12px;
@@ -731,17 +754,28 @@ button:focus {
 }
 #counters .cam input.changed,
 #counters_2 .cam input.changed,
+#move_to .cam input.changed,
 #counters .proj input.changed,
-#counters_2 .proj input.changed {
+#counters_2 .proj input.changed,
+#move_to .proj input.changed {
   color: #DAE035;
 }
 #counters .cam,
-#counters_2 .cam {
+#counters_2 .cam,
+#move_to .cam {
   float: left;
 }
 #counters .proj,
-#counters_2 .proj {
+#counters_2 .proj,
+#move_to .proj {
   float: right;
+}
+#move_to {
+  margin-top: 20px;
+}
+#move_to .cam label,
+#move_to .proj label {
+  font-size: 18px;
 }
 #overlay {
   position: fixed;
