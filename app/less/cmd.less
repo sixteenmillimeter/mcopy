@@ -8,12 +8,19 @@
 .cmd{
 	width: 240px;
 	text-align: center;
-	margin: 5px auto;
+	margin: 10px auto;
 	display: block;
 	font-size: 16px;
 	i{
-		float: left;
-		margin-right: 5px;
+		margin-top: 3px;
+		&:first-child{
+			float: left;
+			margin-right: 5px;
+		}
+		&:last-child{
+			float: right;
+			margin-right: 5px;
+		}
 	}
 	&.fwd i{
 		color: @FORWARD;
@@ -22,7 +29,7 @@
 		color: @BACKWARD;
 	}
 	&:active,
-	.active{
+	&.active{
 		&.fwd{
 			background: @FORWARD;
 			border-color: @FORWARD;
