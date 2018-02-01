@@ -1,27 +1,28 @@
 
-var mcopy = {};
-
-var { remote, ipcRenderer } = require('electron'),
-	dialog = require('electron').remote.dialog,
-	notifier = require('node-notifier'),
-	fs = require('fs'),
-	uuid = require('uuid'),
-	moment = require('moment'),
-	humanizeDuration = require('humanize-duration')
-	gui = require('./lib/ui'),
-	light = require('./lib/ui/light.js'),
-	proj = require('./lib/ui/proj.js'),
-	cam = require('./lib/ui/cam.js'),
-	nav = require('./lib/ui/nav.js'),
-	seq = require('./lib/ui/seq.js'),
-	cmd = require('./lib/ui/cmd.js'),
-	
-	log = require('./lib/ui/log.js'),
-	devices = require('./lib/ui/devices.js'),
-	mscript = require('./lib/mscript');
+const mcopy = {};
+mcopy.cfg = require('./data/cfg.json');
 
 
-mcopy.cfg = require('./data/cfg.json')
+const { remote, ipcRenderer } = require('electron');
+const dialog 	= require('electron').remote.dialog;
+const notifier 	= require('node-notifier');
+const fs 		= require('fs');
+const uuid 		= require('uuid');
+const moment 	= require('moment');
+const humanizeDuration = require('humanize-duration');
+const gui 		= require('./lib/ui');
+const light 	= require('./lib/ui/light.js');
+const proj 		= require('./lib/ui/proj.js');
+const cam 		= require('./lib/ui/cam.js');
+const nav 		= require('./lib/ui/nav.js');
+const seq 		= require('./lib/ui/seq.js');
+const cmd 		= require('./lib/ui/cmd.js');
+const log 		= require('./lib/ui/log.js');
+const devices 	= require('./lib/ui/devices.js');
+const mscript 	= require('./lib/mscript');
+
+
+
 
 /******
 	State shared by ALL interfaces
@@ -60,9 +61,7 @@ mcopy.state = {
 	}
 };
 
-//mcopy.gui.updateState();
-
-var init = function () {
+function init () {
 	'use strict';
 	nav.init();
 	gui.grid.init();
@@ -73,5 +72,4 @@ var init = function () {
 	light.init();
 	proj.init();
 	cam.init();
-
 };
