@@ -301,7 +301,7 @@ module impromptu_mount () {
 
         }
         difference () {
-            translate([0, 0, -12.25 + 1]) cube([40, 12, 7], center = true);
+            translate([0, 0, -12.25 + 2]) cube([40, 17, 9], center = true);
             translate([0, 0, -12.5 - 0.5]) scale([4, 1, 1]) rotate([0, -90, 90]) light_diffuser_notch();
         }
     }
