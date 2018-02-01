@@ -42,8 +42,33 @@ var enumerateDevices = function (err, devices) {
 		}, 1000)
 	} else {
 		log.info('Found ' + devices.length + ' USB devices', 'SERIAL', true, true)
+		console.dir(devices)
+		devices = favorDevices(devices)
+		console.dir(devices)
 		distinguishDevices(devices)
 	}
+}
+
+var favorDevices = function (devices) {
+	const past = mcopy.settings.devices.filter(dev => {
+		if (dev.arduino) {
+			return dev
+		}
+	}).map(dev => {
+		return dev.arduino
+	})
+	if (past.length === 0) {
+		return devices
+	}
+	devices.sort((a, b) => {
+		if (past.indexOf(a) !== -1 && past.indexOf(b) === -1) {
+			return 1
+		} else if (past.indexOf(a) === -1 && past.indexOf(b) !== -1) {
+			return -1
+		}
+		return 0
+	})
+	return devices
 }
 
 var distinguishDevice = function (device, callback) {
@@ -361,17 +386,17 @@ cam.listen = function () {
 		event.returnValue = true
 	})
 	ipcMain.on('intval', (event, arg) => {
-		console.dir(arg)
 		if (arg.connect) {
 			cam.intval = new Intval(arg.url)
-			/*cam.intval.connect((err, ms, state) => {
+			cam.intval.connect((err, ms, state) => {
 				if (err) {
+					mainWindow.webContents.send('intval', { connected : false })
 					log.info(`Cannot connect to ${arg.url}`, 'INTVAL', true, true)
 					cam.intval = null
 				} else {
 					log.info()
 				}
-			})*/
+			})
 		} else if (arg.disconnect) {
 			cam.intval = null
 		}
