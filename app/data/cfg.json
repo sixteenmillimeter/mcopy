@@ -1,63 +1,74 @@
 {
 	"version" : "2.0.0",
 	"ext_port" : 1111,
+	"profiles" : {
+		"mcopy" : {
+			"label" : "Default mcopy profile",
+			"cam" : {
+				"time" : 850,
+				"delay" : 50,
+				"momentary" : 0
+			},
+			"proj" : {
+				"time" : 1400,
+				"delay" : 50,
+				"momentary" : 0
+			},
+			"black" : {
+				"before" : 0,
+				"after" : 0
+			}
+		},
+		"jk103" : {
+			"label" : "JK103",
+			"cam" : {
+				"time" : 600,
+				"delay" : 50,
+				"momentary" : 240
+			},
+			"proj" : {
+				"time" : 950,
+				"delay" : 50,
+				"momentary" : 240
+			},
+			"black" : {
+				"before" : 0,
+				"after" : 0
+			}
+		},
+		"jk_original" : {
+			"label" : "JK45 profile",
+			"cam" : {
+				"time" : 750,
+				"delay" : 50,
+				"momentary" : 300
+			},
+			"proj" : {
+				"time" : 1300,
+				"delay" : 50,
+				"momentary" : 300
+			},
+			"black" : {
+				"before" : 250,
+				"after" : 250
+			}
+		},
+		"intval3" : {
+			"label" : "INTVAL3",
+			"cam" : {
+				"time" : 630,
+				"delay" : 50,
+				"momentary" : 0
+			}
+		}
+	},
 	"arduino" : {
 		"baud" : 57600,
 		"board" : "uno",
 		"serialDelay" : 20,
 		"sequenceDelay" : 100,
-		"profiles" : {
-			"mcopy" : {
-				"cam" : {
-					"time" : 630,
-					"delay" : 50,
-					"momentary" : 0
-				},
-				"proj" : {
-					"time" : 1300,
-					"delay" : 50,
-					"momentary" : 0
-				},
-				"black" : {
-					"before" : 0,
-					"after" : 0
-				}
-			},
-			"jk_original" : {
-				"cam" : {
-					"time" : 750,
-					"delay" : 50,
-					"momentary" : 300
-				},
-				"proj" : {
-					"time" : 1300,
-					"delay" : 50,
-					"momentary" : 300
-				},
-				"black" : {
-					"before" : 250,
-					"after" : 250
-				}
-			},
-			"jk103" : {
-				"cam" : {
-					"time" : 600,
-					"delay" : 50,
-					"momentary" : 240
-				},
-				"proj" : {
-					"time" : 950,
-					"delay" : 50,
-					"momentary" : 240
-				},
-				"black" : {
-					"before" : 0,
-					"after" : 0
-				}
-			}
-		},
 		"cam" : {
-			"time" : 750,
+			"time" : 850,
 			"delay" : 50,
 			"momentary" : 300
 		},

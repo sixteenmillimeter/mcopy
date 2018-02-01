@@ -1,3 +1,6 @@
+/* jshint esversion: 6, asi: true, strict: true*/
+/* global require, setTimeout, process, console*/
+
 'use strict'
 
 const electron = require('electron')
@@ -11,13 +14,18 @@ const events = require('events')
 const async = require('async')
 const path = require('path')
 const ee = new events.EventEmitter()
-const capture = require('./lib/capture')(ee)
+//const capture = require('./lib/capture')(ee)
 const settings = require('./lib/settings')
 
 const Server = require('./lib/server')
 const Intval = require('./lib/intval')
 
 const mcopy = {}
+const log = {}
+const proj = {}
+const cam = {}
+const light = {}
+const dev = {}
 
 let mainWindow
 let mscript
@@ -27,35 +35,32 @@ let projector
 let camera
 let server
 let menu
-let log = {}
 
 //console.log(process.version)
 
 mcopy.cfg = require('./data/cfg.json')
 mcopy.settings = {}
 
-var enumerateDevices = function (err, devices) {
+dev.enumerate = function (err, devices) {
 	if (err) {
 		log.info(err, 'SERIAL', false, true)
 		setTimeout(() =>{
-			distinguishDevices([])
+			dev.all([])
 		}, 1000)
 	} else {
-		log.info('Found ' + devices.length + ' USB devices', 'SERIAL', true, true)
-		console.dir(devices)
-		devices = favorDevices(devices)
-		console.dir(devices)
-		distinguishDevices(devices)
+		log.info(`Found ${devices.length} USB devices`, 'SERIAL', true, true)
+		devices = dev.favor(devices)
+		dev.all(devices)
 	}
 }
 
-var favorDevices = function (devices) {
-	const past = mcopy.settings.devices.filter(dev => {
-		if (dev.arduino) {
-			return dev
+dev.favor = function (devices) {
+	const past = mcopy.settings.devices.filter(device => {
+		if (device.arduino) {
+			return device
 		}
-	}).map(dev => {
-		return dev.arduino
+	}).map(device => {
+		return device.arduino
 	})
 	if (past.length === 0) {
 		return devices
@@ -71,7 +76,7 @@ var favorDevices = function (devices) {
 	return devices
 }
 
-var distinguishDevice = function (device, callback) {
+dev.distinguish = function (device, callback) {
 	var connectCb = function (err, device) {
 		if (err) {
 			return console.error(err)
@@ -94,7 +99,7 @@ var distinguishDevice = function (device, callback) {
 		if (err) {
 			return console.error(err)
 		}
-		rememberDevice(device, type)
+		dev.remember('arduino', device, type)
 
 		log.info(`Determined ${device} to be ${type}`, 'SERIAL', true, true)
 		if (callback) { callback(err, type); }
@@ -103,7 +108,7 @@ var distinguishDevice = function (device, callback) {
 };
 
 //Cases for 1 or 2 arduinos connected
-var distinguishDevices = function (devices) {
+dev.all = function (devices) {
 	const connected = {
 		projector : false,
 		camera : false,
@@ -185,7 +190,7 @@ var distinguishDevices = function (devices) {
 
 	checklist = devices.map(device => {
 		return next => {
-			distinguishDevice(device, (err, type) => {
+			dev.distinguish(device, (err, type) => {
 				if (err) {
 					console.error(err)
 					return next()
@@ -197,42 +202,65 @@ var distinguishDevices = function (devices) {
 
 	async.series(checklist, () => {
 		//done checking devices
+
+		let c = {}
+		let p = {}
+		let l = {}
+
 		if (!connected.projector) {
 			fakeProjector()
 		}
+		p.arduino = connected.projector
 		if (!connected.camera) {
 			fakeCamera()
 		}
+		c.arduino = connected.camera
+
+		if (mcopy.settings.camera.intval) {
+			c.intval = mcopy.settings.camera.intval
+			console.dir(mcopy.settings.camera)
+			setTimeout(() => {
+				cam.connectIntval(null, { connect : true,  url : c.intval })
+			}, 1000)
+		}
+
 		if (!connected.light) {
 			fakeLight()
 		}
-		devicesReady(connected.projector, connected.camera, connected.light)
+		l.arduino = connected.light
+
+		dev.ready(p, c, l)
 	})
 };
 
-var rememberDevice = function (device, type) {
+dev.remember = function (which, device, type) {
 	let deviceEntry
-	let match = mcopy.settings.devices.filter(dev => {
-		if (dev.arduino && dev.arduino === device) {
+	const match = mcopy.settings.devices.filter(dev => {
+		if (dev[which] && dev[which] === device) {
 			return dev
 		}
 	})
 	if (match.length === 0) {
 		deviceEntry = {
-			arduino : device,
 			type : type
 		}
+		deviceEntry[which] = device
 		mcopy.settings.devices.push(deviceEntry)
 		settings.update('devices', mcopy.settings.devices)
 		settings.save()
 	}
-}
+};
 
-var devicesReady = function (projector, camera, light) {
-	mainWindow.webContents.send('ready', {camera: camera, projector: projector, light: light })
-	settings.update('camera', { arduino : camera })
-	settings.update('projector', { arduino : projector })
-	settings.update('light', { arduino : light })
+dev.ready = function (projector, camera, light) {
+	mainWindow.webContents.send('ready', { 
+		camera: camera, 
+		projector: projector, 
+		light: light, 
+		profile: mcopy.settings.profile 
+	})
+	settings.update('camera', camera)
+	settings.update('projector', projector)
+	settings.update('light', light)
 	settings.save()
 };
 
@@ -250,38 +278,38 @@ var createWindow = function () {
 		minHeight : 600
 	})
 	mainWindow.loadURL('file://' + __dirname + '/index.html')
-	//mainWindow.webContents.openDevTools()
+	if (process.argv.indexOf('-d') !== -1 || process.argv.indexOf('--dev') !== -1) {
+		mainWindow.webContents.openDevTools()
+	}
 	mainWindow.on('closed', () => {
 		mainWindow = null
 	})
 }
 
-var light = {}
 light.init = function () {
 	light.listen()
-};
+}
 light.listen = function () {
 	ipcMain.on('light', (event, arg) => {
 		light.set(arg.rgb, arg.id)
 		event.returnValue = true
 	})
-};
+}
 light.set = function (rgb, id) {
 	var str = rgb.join(',');
 	arduino.send('light', mcopy.cfg.arduino.cmd.light, (ms) => {
 		light.end(rgb, id, ms)
 	})
 	arduino.string('light', str)
-};
+}
 light.end = function (rgb, id, ms) {
 	log.info('Light set to ' + rgb.join(','), 'LIGHT', true, true)
 	mainWindow.webContents.send('light', {rgb: rgb, id : id, ms: ms})
-};
+}
 
-var proj = {}
 proj.state = {
 	dir : true //default dir
-};
+}
 proj.init = function () {
 	proj.listen()
 }
@@ -331,9 +359,7 @@ proj.end = function (cmd, id, ms) {
 	mainWindow.webContents.send('proj', {cmd: cmd, id : id, ms: ms})
 }
 
-var cam = {
-	intval : null
-}
+cam.intval = null
 cam.state = {
 	dir : true //default dir
 }
@@ -348,32 +374,59 @@ cam.set = function (dir, id) {
 		cmd = mcopy.cfg.arduino.cmd.cam_backward
 	}
 	cam.state.dir = dir
-	arduino.send('camera', cmd, (ms) => {
-		cam.end(cmd, id, ms)
-	})
-	/*
-	intval.setDir('camera', dir, (ms) => {
-		cam.end(cmd, id, ms)
-	})
-	*/
+
+	if (cam.intval) {
+		cam.intval.setDir(dir, ms => {
+			cam.end(cmd, id, ms)
+		})
+	} else {
+		arduino.send('camera', cmd, ms => {
+			cam.end(cmd, id, ms)
+		})
+	}
 }
 
 cam.move = function (frame, id) {
 	let cmd = mcopy.cfg.arduino.cmd.camera
-	arduino.send('camera', cmd, (ms) => {
-		cam.end(cmd, id, ms)
-	})
-	/*
-	intval.move('camera', (ms) => {
-		cam.end(cmd, id, ms)
-	})
-	*/
+	if (cam.intval) {
+		cam.intval.move(ms => {
+			cam.end(cmd, id, ms)
+		})
+	} else { 
+		arduino.send('camera', cmd, ms => {
+			cam.end(cmd, id, ms)
+		})
+	}
 }
 
 cam.exposure = function (exposure, id) {
-	intval.setDir('camera', exposure, (ms) => {
+	let cmd = 'E'
+	cam.intval.setDir('camera', exposure, ms => {
 		cam.end(cmd, id, ms)
 	})
+}
+
+cam.connectIntval = function (event, arg) {
+	if (arg.connect) {
+		cam.intval = new Intval(arg.url)
+		cam.intval.connect((err, ms, state) => {
+			if (err) {
+				mainWindow.webContents.send('intval', { connected : false })
+				log.info(`Cannot connect to ${arg.url}`, 'INTVAL', true, true)
+				cam.intval = null
+				delete cam.intval
+			} else {
+				mainWindow.webContents.send('intval', { connected : true, url : arg.url, state : state })
+				log.info(`Connected to INTVAL3 @ ${arg.url}`, 'INTVAL', true, true)
+				settings.update('camera', { intval : arg.url })
+				settings.save()
+				dev.remember('intval', arg.url, 'camera')
+
+			}
+		})
+	} else if (arg.disconnect) {
+		cam.intval = null
+	}
 }
 
 cam.listen = function () {
@@ -385,22 +438,7 @@ cam.listen = function () {
 		}
 		event.returnValue = true
 	})
-	ipcMain.on('intval', (event, arg) => {
-		if (arg.connect) {
-			cam.intval = new Intval(arg.url)
-			cam.intval.connect((err, ms, state) => {
-				if (err) {
-					mainWindow.webContents.send('intval', { connected : false })
-					log.info(`Cannot connect to ${arg.url}`, 'INTVAL', true, true)
-					cam.intval = null
-				} else {
-					log.info()
-				}
-			})
-		} else if (arg.disconnect) {
-			cam.intval = null
-		}
-	})
+	ipcMain.on('intval', cam.connectIntval)
 }
 cam.end = function (cmd, id, ms) {
 	var message = ''
@@ -464,7 +502,7 @@ log.info = function (action, service, status, display) {
 		log.display(obj)
 	}
 }
-
+/*
 var transfer = {}
 
 transfer.init = function () {
@@ -472,7 +510,7 @@ transfer.init = function () {
 };
 transfer.listen = function () {
 	ipcMain.on('transfer', (event, arg) => {
-		var res = '';
+		let res = '';
 		//also turn on and off
 		if (arg.action === 'enable') {
 			capture.active = true
@@ -488,11 +526,11 @@ transfer.listen = function () {
 		event.returnValue = res
 	})
 }
-
+*/
 var init = function () {
 
 	createWindow()
-	//createMenu()
+	createMenu()
 	log.init()
 	light.init()
 	proj.init()
@@ -509,7 +547,7 @@ var init = function () {
 	mcopy.settings = settings.all()
 
 	setTimeout( () => {
-		arduino.enumerate(enumerateDevices)
+		arduino.enumerate(dev.enumerate)
 	}, 1000)
 }
 
@@ -526,3 +564,8 @@ app.on('activate', () => {
 		createWindow();
 	}
 });
+
+mcopy.relaunch = function () {
+	app.relaunch({args: process.argv.slice(1).concat(['--relaunch'])})
+	app.exit(0)
+}
