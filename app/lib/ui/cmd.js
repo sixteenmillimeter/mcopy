@@ -1,4 +1,4 @@
-var cmd = {};
+const cmd = {};
 
 cmd.proj_forward = function (callback) {
 	'use strict';
@@ -158,5 +158,31 @@ cmd.black_backward = function (callback) {
 		}, mcopy.cfg.arduino.serialDelay);
 	}
 };
+
+cmd.cam_to = function (t) {
+	const val = parseInt(t.value)
+	let proceed = false
+	let total
+	if (val !== mcopy.state.camera.pos) {
+		if (val < mcopy.state.camera.pos) {
+			total = mcopy.state.camera.pos - val
+		} else if (val > mcopy.state.camera.pos) {
+			total = val - mcopy.state.camera.pos
+		}
+	}
+	
+};
+cmd.proj_to = function (t) {
+	const val = parseInt(t.value)
+	let proceed = false
+	let total
+	if (val !== mcopy.state.projector.pos) {
+		if (val < mcopy.state.projector.pos) {
+			total = mcopy.state.projector.pos - val
+		} else if (val > mcopy.state.projector.pos) {
+			total = val - mcopy.state.projector.pos
+		}
+	}
+}
 
 module.exports = cmd;
