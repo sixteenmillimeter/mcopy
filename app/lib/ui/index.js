@@ -105,35 +105,45 @@ gui.updateState = function () {
 	$('#seq_cam_count_2').val(cpos).change();
 	$('#seq_proj_count_2').val(ppos).change();
 };
-gui.spinner = function (state) {
-	var cfg = {
-		lines: 11, // The number of lines to draw
-		length: 15, // The length of each line
-		width: 7, // The line thickness
-		radius: 20, // The radius of the inner circle
-		corners: 1, // Corner roundness (0..1)
-		rotate: 0, // The rotation offset
-		direction: 1, // 1: clockwise, -1: counterclockwise
-		color: '#F2F2F1', // #rgb or #rrggbb or array of colors
-		speed: 1, // Rounds per second
-		trail: 60, // Afterglow percentage
-		shadow: true, // Whether to render a shadow
-		hwaccel: true, // Whether to use hardware acceleration
-		className: 'spinner', // The CSS class to assign to the spinner
-		zIndex: 2e9, // The z-index (defaults to 2000000000)
-		top: '50%', // Top position relative to parent
-		left: '50%' // Left position relative to parent
-	},
-	target,
+gui.spinnerCfg =  {
+	lines: 11, // The number of lines to draw
+	length: 15, // The length of each line
+	width: 7, // The line thickness
+	radius: 20, // The radius of the inner circle
+	corners: 1, // Corner roundness (0..1)
+	rotate: 0, // The rotation offset
+	direction: 1, // 1: clockwise, -1: counterclockwise
+	color: '#F2F2F1', // #rgb or #rrggbb or array of colors
+	speed: 1, // Rounds per second
+	trail: 60, // Afterglow percentage
+	shadow: true, // Whether to render a shadow
+	hwaccel: true, // Whether to use hardware acceleration
+	className: 'spinner', // The CSS class to assign to the spinner
+	zIndex: 2e9, // The z-index (defaults to 2000000000)
+	top: '50%', // Top position relative to parent
+	left: '50%' // Left position relative to parent
+}
+gui.spinner = function (state, msg = '') {
+	var target,
 	spinner;
-	if (state) {
-		target = document.getElementById('spinner');
-		spinner = new Spinner(cfg).spin(target);
-	} else {
-		$('#spinner').hide();
-		$('#psinner').empty();
+	if (msg !== '') {
+		gui.spinnerMsg(msg)
 	}
+	if (state && !$('#spinner').hasClass('created')) {
+		target = document.getElementById('spinner');
+		spinner = new Spinner(gui.spinnerCfg).spin(target);
+		$('#spinner').addClass('created');
+	} else if (state) {
+		$('#spinner').show();
+	} else if (!state) {
+		$('#spinner').hide();
+		gui.spinnerMsg('')
+	}
+
 };
+gui.spinnerMsg = function (msg) {
+	$('#spinnerMsg').text(msg)
+}
 gui.overlay = function (state) {
 	if (state) {
 		$('#overlay').show();
