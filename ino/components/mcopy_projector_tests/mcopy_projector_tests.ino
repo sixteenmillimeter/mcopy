@@ -9,8 +9,8 @@
 //  PIN 3     --==-- 470ohm     Din
 
 //LIGHT HEADERS
-#include "SoftwareSerial.h"
-#include "Adafruit_Pixie.h"
+#include <SoftwareSerial.h>
+#include <Adafruit_Pixie.h>
 //#include <Adafruit_NeoPixel.h>
 
 #define NUMPIXELS 1 // Number of Pixies in the strip
@@ -85,6 +85,7 @@ void setup() {
   
   pixieSerial.begin(115200); // Pixie REQUIRES this baud rate
   //light.begin(); //neopixel only
+  light.setBrightness(255);
   light.setPixelColor(0, 0, 0, 0);
   light.show();
 
@@ -108,6 +109,11 @@ void loop() {
   }
   //send light signal to pixie every second
   if (now - light_time >= 1000) {
+      /*Serial.print(r);
+      Serial.print(",");
+      Serial.print(g);
+      Serial.print(",");
+      Serial.println(b);*/
       light.setPixelColor(0, r, g, b);
       light.show();
       light_time = now;
