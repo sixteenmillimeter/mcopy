@@ -232,11 +232,11 @@
             <select id="camera_device">
               <option>Not Set</option>
             </select>
-            <input type="radio" name="camera_type" value="arduino" checked="checked" />
+            <input type="radio" id="camera_type_arduino" name="camera_type" value="arduino" checked="checked" />
           </div>
           <div class="spacer">
             <input type="text" id="intval" name="intval" placeholder="INTVAL3 URL"/>
-            <input type="radio" name="camera_type" value="intval" onclick="devices.intval();" />
+            <input type="radio" id="camera_type_intval" name="camera_type" value="intval" onclick="devices.intval();" />
           </div>
           <div>
             <h4>Light</h4>
@@ -248,7 +248,9 @@
       </div>
     </div>
     <div id="overlay" onclick="gui.overlay(false);gui.spinner(false);"></div>
-    <div id="spinner"></div>
+    <div id="spinner">
+      <div id="spinnerMsg"></div>
+    </div>
     <script src="./js/app.js"></script>
   </body>
 </html>
