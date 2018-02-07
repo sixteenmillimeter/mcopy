@@ -31,6 +31,7 @@ devices.profile = function (profile) {
 	for (let key of keys) {
 		mcopy.cfg[key] = keys[key]
 	}
+	ipcRenderer.send('profile', { profile })
 };
 devices.listen = function () {
 	'use strict';
@@ -71,6 +72,10 @@ devices.ready = function (event, arg) {
 			opt.text(i);
 			$('#devices').append(opt);
 		}
+	}
+	if (arg && arg.profile) {
+		$('#profile').val(arg.profile)
+		//devices.profile(arg.profile)
 	}
 	return event.returnValue = true;
 };

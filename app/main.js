@@ -41,6 +41,18 @@ let menu
 mcopy.cfg = require('./data/cfg.json')
 mcopy.settings = {}
 
+dev.init = function () {
+	dev.listen()
+}
+
+dev.listen = function () {
+	ipcMain.on('profile', (event, arg) => {
+		console.log(`Saving profile ${arg.profile}`)
+		settings.update('profile', arg.profile)
+		settings.save()
+	})
+}
+
 dev.enumerate = function (err, devices) {
 	if (err) {
 		log.info(err, 'SERIAL', false, true)
@@ -535,6 +547,8 @@ var init = function () {
 	light.init()
 	proj.init()
 	cam.init()
+	dev.init()
+
 
 	//transfer.init()
 	//capture.init()
