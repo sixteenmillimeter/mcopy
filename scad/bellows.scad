@@ -32,7 +32,7 @@ module bellows_camera_board () {
             rotate([0, 0, i * (360 / 4) + 45 ]) translate([43.5, 0, 0]) cube([11, 11, H + 1], center = true);
         }
         //bolt
-        translate([0, 30, 0]) rotate([90, 0, 0]) cylinder(r = 2.2, h = 30, center = true, $fn = 30);
+        translate([0, 30, 0]) rotate([90, 0, 0]) cylinder(r = 1.6, h = 30, center = true, $fn = 30);
     }
 }
 
@@ -53,5 +53,5 @@ module camera_mount () {
     }
 }
 
-//bellows_camera_board();
+bellows_camera_board();
 //translate([0, 0, 9]) color("red") camera_mount();
