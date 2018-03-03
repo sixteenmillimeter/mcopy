@@ -95,7 +95,7 @@ dev.favor = function (devices) {
 	return devices
 }
 
-dev.distinguish = async function (device, callback) {
+dev.distinguish = async function (device) {
 	let connectSuccess
 	let verifySuccess
 	let type
@@ -249,6 +249,11 @@ dev.connectDevice = async function (device, type) {
 
 //Cases for 1 or 2 arduinos connected
 dev.all = async function (devices) {
+	let c = {}
+	let p = {}
+	let l = {}
+	let all
+
 	dev.connected = {
 		projector : false,
 		camera : false,
@@ -257,31 +262,30 @@ dev.all = async function (devices) {
 
 	let checklist = []
 
-	/*await Promise.all(devices.map(async (device) => {
-		return new Promise( async (resolve, reject) => {
+	all = Promise.all(devices.map(async (device) => {
+		return new Promise(async (resolve, reject) => {
 			let type
 			let d
+
 			try {
 				type = await dev.distinguish(device)
 			} catch (err) {
 				console.error(err)
 				return reject(err)
 			}
+
 			try {
 				d = await dev.connectDevice(device, type)
 			} catch (err) {
 				console.error(err)
 				return reject(err)
 			}
-			return resolve(d)
+
+			return d
 		})
-	})*/
+	}))
 
 	//done checking devices
-
-	let c = {}
-	let p = {}
-	let l = {}
 
 	if (!dev.connected.projector) {
 		await dev.fakeProjector()
@@ -294,7 +298,6 @@ dev.all = async function (devices) {
 
 	if (mcopy.settings.camera.intval) {
 		c.intval = mcopy.settings.camera.intval
-		console.dir(mcopy.settings.camera)
 		await delay(1000)
 		cam.connectIntval(null, { connect : true,  url : c.intval })
 	}
@@ -305,7 +308,7 @@ dev.all = async function (devices) {
 
 	l.arduino = dev.connected.light
 
-	dev.ready(p, c, l)
+	return dev.ready(p, c, l)
 }
 
 dev.remember = function (which, device, type) {
@@ -337,6 +340,7 @@ dev.ready = function (projector, camera, light) {
 	settings.update('projector', projector)
 	settings.update('light', light)
 	settings.save()
+	return true
 };
 
 var createMenu = function () {
@@ -370,16 +374,20 @@ light.listen = function () {
 		event.returnValue = true
 	})
 }
-light.set = function (rgb, id) {
-	var str = rgb.join(',');
-	arduino.send('light', mcopy.cfg.arduino.cmd.light, (ms) => {
-		light.end(rgb, id, ms)
-	})
-	arduino.string('light', str)
+light.set = async function (rgb, id) {
+	const str = rgb.join(',');
+	let ms
+	try {
+		ms = await arduino.send('light', mcopy.cfg.arduino.cmd.light)
+	} catch (err) {
+		console.error(err)
+	}
+	await arduino.string('light', str)
+	return await light.end(rgb, id, ms)
 }
-light.end = function (rgb, id, ms) {
+light.end = async function (rgb, id, ms) {
 	log.info('Light set to ' + rgb.join(','), 'LIGHT', true, true)
-	mainWindow.webContents.send('light', {rgb: rgb, id : id, ms: ms})
+	return await mainWindow.webContents.send('light', {rgb: rgb, id : id, ms: ms})
 }
 
 proj.state = {
@@ -388,22 +396,31 @@ proj.state = {
 proj.init = function () {
 	proj.listen()
 }
-proj.set = function (dir, id) {
-	var cmd
+proj.set = async function (dir, id) {
+	let cmd
+	let ms
 	if (dir) {
 		cmd = mcopy.cfg.arduino.cmd.proj_forward
 	} else {
 		cmd = mcopy.cfg.arduino.cmd.proj_backward
 	}
 	proj.state.dir = dir
-	arduino.send('projector', cmd, (ms) => {
-		proj.end(cmd, id, ms)
-	})
+	try {
+		ms = await arduino.send('projector', cmd)
+	} catch (err) {
+		console.error(err)
+	}
+	return await proj.end(cmd, id, ms)
 }
-proj.move = function (frame, id) {
-	arduino.send('projector', mcopy.cfg.arduino.cmd.projector, (ms) => {
-		proj.end(mcopy.cfg.arduino.cmd.projector, id, ms)
-	})
+proj.move = async function (frame, id) {
+	const cmd = mcopy.cfg.arduino.cmd.projector
+	let ms
+	try {
+		ms = await arduino.send('projector', cmd)
+	} catch (err) {
+		console.error(err)
+	}
+	return await proj.end(mcopy.cfg.arduino.cmd.projector, id, ms)
 }
 proj.listen = function () {
 	ipcMain.on('proj', (event, arg) => {
@@ -415,8 +432,8 @@ proj.listen = function () {
 		event.returnValue = true
 	})
 }
-proj.end = function (cmd, id, ms) {
-	var message = ''
+proj.end = async function (cmd, id, ms) {
+	let message = ''
 	if (cmd === mcopy.cfg.arduino.cmd.proj_forward) {
 		message = 'Projector set to FORWARD'
 	} else if (cmd === mcopy.cfg.arduino.cmd.proj_backward) {
@@ -431,7 +448,7 @@ proj.end = function (cmd, id, ms) {
 		message += ' 1 frame'
 	}
 	log.info(message, 'PROJECTOR', true, true)
-	mainWindow.webContents.send('proj', {cmd: cmd, id : id, ms: ms})
+	return await mainWindow.webContents.send('proj', {cmd: cmd, id : id, ms: ms})
 }
 
 cam.intval = null
@@ -441,8 +458,9 @@ cam.state = {
 cam.init = function () {
 	cam.listen()
 }
-cam.set = function (dir, id) {
+cam.set = async function (dir, id) {
 	let cmd
+	let ms
 	if (dir) {
 		cmd = mcopy.cfg.arduino.cmd.cam_forward
 	} else {
@@ -451,27 +469,31 @@ cam.set = function (dir, id) {
 	cam.state.dir = dir
 
 	if (cam.intval) {
-		cam.intval.setDir(dir, ms => {
-			cam.end(cmd, id, ms)
-		})
+		try {
+			ms = await cam.intval.setDir(dir)
+		} catch (err) {
+			console.error(err)
+		}
 	} else {
-		arduino.send('camera', cmd, ms => {
-			cam.end(cmd, id, ms)
-		})
+		try {
+			ms = await arduino.send('camera', cmd)
+		} catch (err) {
+			console.error(err)
+		}
 	}
+	return await cam.end(cmd, id, ms)
 }
 
-cam.move = function (frame, id) {
-	let cmd = mcopy.cfg.arduino.cmd.camera
+cam.move = async function (frame, id) {
+	const cmd = mcopy.cfg.arduino.cmd.camera
+	let ms
 	if (cam.intval) {
-		cam.intval.move(ms => {
-			cam.end(cmd, id, ms)
-		})
+		ms = await cam.intval.move()
 	} else { 
-		arduino.send('camera', cmd, ms => {
-			cam.end(cmd, id, ms)
-		})
+		ms = await arduino.send('camera', cmd)
 	}
+	console.log(ms)
+	return cam.end(cmd, id, ms)
 }
 
 cam.exposure = function (exposure, id) {
@@ -515,7 +537,7 @@ cam.listen = function () {
 	})
 	ipcMain.on('intval', cam.connectIntval)
 }
-cam.end = function (cmd, id, ms) {
+cam.end = async function (cmd, id, ms) {
 	var message = ''
 	if (cmd === mcopy.cfg.arduino.cmd.cam_forward) {
 		message = 'Camera set to FORWARD'
