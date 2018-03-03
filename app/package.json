@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron main.js",
-    "dev" : "gulp && electron main.js -d",
+    "dev": "gulp && electron main.js -d",
     "install": "electron-rebuild"
   },
   "repository": {
