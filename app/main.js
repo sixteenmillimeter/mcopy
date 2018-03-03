@@ -36,6 +36,12 @@ let camera
 let server
 let menu
 
+async function delay (ms) {
+	return new Promise(resolve => {
+		return setTimeout(resolve, ms)
+	})
+}
+
 //console.log(process.version)
 
 mcopy.cfg = require('./data/cfg.json')
@@ -53,17 +59,18 @@ dev.listen = function () {
 	})
 }
 
-dev.enumerate = function (err, devices) {
-	if (err) {
+dev.enumerate = async function () {
+	let devices
+	try{
+		devices = await arduino.enumerate()
+	} catch (err) {
 		log.info(err, 'SERIAL', false, true)
-		setTimeout(() =>{
-			dev.all([])
-		}, 1000)
-	} else {
-		log.info(`Found ${devices.length} USB devices`, 'SERIAL', true, true)
-		devices = dev.favor(devices)
-		dev.all(devices)
+		await delay(1000)
+		return dev.all([])
 	}
+	log.info(`Found ${devices.length} USB devices`, 'SERIAL', true, true)
+	devices = dev.favor(devices)
+	return dev.all(devices)
 }
 
 dev.favor = function (devices) {
@@ -88,162 +95,218 @@ dev.favor = function (devices) {
 	return devices
 }
 
-dev.distinguish = function (device, callback) {
-	var connectCb = function (err, device) {
-		if (err) {
-			return console.error(err)
-		}
-		setTimeout(function () {
-			arduino.verify(verifyCb)
-		}, 2000);
-	},
-	verifyCb = function (err, success) {
-		if (err) {
-			return console.error(err)
-		}
-		log.info(`Verified ${device} as mcopy device`, 'SERIAL', true, true)
+dev.distinguish = async function (device, callback) {
+	let connectSuccess
+	let verifySuccess
+	let type
 
-		setTimeout(function () {
-			arduino.distinguish(distinguishCb);
-		}, 1000);
-	},
-	distinguishCb = function (err, type) {
-		if (err) {
-			return console.error(err)
-		}
-		dev.remember('arduino', device, type)
-
-		log.info(`Determined ${device} to be ${type}`, 'SERIAL', true, true)
-		if (callback) { callback(err, type); }
+	try {
+		connectSuccess = await arduino.connect('connect', device, true)
+	} catch (err) {
+		console.error(err)
+		return null
 	}
-	arduino.connect('connect', device, true, connectCb)
-};
+	
+	await delay(2000)
+
+	try {
+		verifySuccess = await arduino.verify()
+	} catch (err) {
+		console.error(err)
+		return null
+	}
+
+	log.info(`Verified ${device} as mcopy device`, 'SERIAL', true, true)
+
+	await delay(1000)
+
+	try {
+		type = await arduino.distinguish()
+	} catch (err) {
+		console.error(err)
+		return null
+	}
+
+	dev.remember('arduino', device, type)
+	log.info(`Determined ${device} to be ${type}`, 'SERIAL', true, true)
+	
+	return type
+}
+
+dev.fakeProjector = async function () {
+	dev.connected.projector = '/dev/fake'
+	try {
+		await arduino.fakeConnect('projector')
+	} catch (err) {
+		console.error(err)
+		log.error(`Error connecting to fake PRONECTOR device`, 'SERIAL', true, true)
+		return false
+	}
+	log.info('Connected to fake PROJECTOR device', 'SERIAL', true, true)
+	return true
+}
+dev.fakeCamera = async function () {
+	dev.connected.camera = '/dev/fake'
+	try {
+		await arduino.fakeConnect('camera')
+	} catch (err) {
+		console.error(err)
+		log.error(`Error connecting to fake CAMERA device`, 'SERIAL', true, true)
+		return false
+	}
+	log.info('Connected to fake CAMERA device', 'SERIAL', true, true)
+	return true
+}
+dev.fakeLight = async function () {
+	dev.connected.light = '/dev/fake'
+	try {
+		await arduino.fakeConnect('light')
+	} catch (err) {
+		console.error(err)
+		log.error(`Error connecting to fake LIGHT device`, 'SERIAL', true, true)
+		return false
+	}
+	log.info('Connected to fake LIGHT device', 'SERIAL', true, true)
+	return true
+}
+
+dev.connectDevice = async function (device, type) {
+	let closeSuccess
+	let connectSuccess
+	try  {
+		closeSuccess = await arduino.close()
+	} catch (err) {
+		console.error(err)
+		return false
+	}
+	if (type === 'projector') {
+		dev.connected.projector = device
+		try {
+			connectSuccess = await arduino.connect('projector', device, false)
+		} catch (err) {
+			console.error(err)
+			return false
+		}
+		log.info(`Connected to ${device} as PROJECTOR`, 'SERIAL', true, true)
+	} else if (type === 'camera') {
+		dev.connected.camera = device
+		try {
+			connectSuccess = await arduino.connect('camera', device, false)
+		} catch (err) {
+			console.error(err)
+			return false
+		}
+		log.info(`Connected to ${device} as CAMERA`, 'SERIAL', true, true)
+	} else if (type === 'light') {
+		dev.connected.light = device
+		try {
+			connectSuccess = await arduino.connect('light', device, false)
+		} catch (err) {
+			console.error(err)
+			return false
+		}
+		log.info(`Connected to ${device} as LIGHT`, 'SERIAL', true, true)
+	} else if (type === 'projector,light') {
+		dev.connected.projector = device
+		dev.connected.light = device
+		arduino.alias('light', device)
+		try{
+			connectSuccess = await arduino.connect('projector', device, false)
+		} catch (err) {
+			console.error(err)
+			return false
+		}
+		log.info(`Connected to ${device} as PROJECTOR + LIGHT`, 'SERIAL', true, true)
+		
+	} else if (type === 'projector,camera,light') {
+		dev.connected.projector = device
+		dev.connected.camera = device
+		dev.connected.light = device
+		arduino.alias('camera', device)
+		arduino.alias('light', device)
+		try {
+			connectSuccess = await arduino.connect('projector', device, false)
+		} catch (err) {
+			console.error(err)
+			return false
+		}	
+		log.info(`Connected to ${device} as PROJECTOR + CAMERA + LIGHT`, 'SERIAL', true, true)
+
+	} else if (type === 'projector,camera') {
+		dev.connected.projector = device
+		dev.connected.camera = device
+		arduino.alias('camera', device)
+		try {
+			connectSuccess = await arduino.connect('projector', device, false)
+		} catch (err) {
+			console.error(err)
+			return false
+		}
+		log.info(`Connected to ${device} as PROJECTOR`, 'SERIAL', true, true)
+	}
+	return connectSuccess
+}
 
 //Cases for 1 or 2 arduinos connected
-dev.all = function (devices) {
-	const connected = {
+dev.all = async function (devices) {
+	dev.connected = {
 		projector : false,
 		camera : false,
 		light : false
 	}
 
 	let checklist = []
-	var fakeProjector = function () {
-		connected.projector = '/dev/fake'
-		arduino.fakeConnect('projector', () => {
-			log.info('Connected to fake PROJECTOR device', 'SERIAL', true, true)
-			
-		})
-	}
-	var fakeCamera = function () {
-		connected.camera = '/dev/fake'
-		arduino.fakeConnect('camera', () => {
-			log.info('Connected to fake CAMERA device', 'SERIAL', true, true)
-		})
-	}
-	var fakeLight = function () {
-		connected.light = '/dev/fake'
-		arduino.fakeConnect('light', () => {
-			log.info('Connected to fake LIGHT device', 'SERIAL', true, true)
-			
-		})
-	}
-	var distinguishCb = function (device, type, cb) {
-		arduino.close(() => {
-			if (type === 'projector') {
-				connected.projector = device
-				arduino.connect('projector', device, false, () => {
-					log.info(`Connected to ${device} as PROJECTOR`, 'SERIAL', true, true)
-					cb()
-				})
-			} else if (type === 'camera') {
-				connected.camera = device
-				arduino.connect('camera', device, false, () => {
-					log.info(`Connected to ${device} as CAMERA`, 'SERIAL', true, true)
-					cb()
-				})
-			} else if (type === 'light') {
-				connected.light = device
-				arduino.connect('light', device, false, () => {
-					log.info(`Connected to ${device} as LIGHT`, 'SERIAL', true, true)
-					cb()
-				})
-			} else if (type === 'projector,light') {
-				connected.projector = device
-				connected.light = device
-				arduino.connect('projector', device, false, () => {
-					log.info(`Connected to ${device} as PROJECTOR + LIGHT`, 'SERIAL', true, true)
-					cb()
-				})
-				arduino.alias('light', device)
-			} else if (type === 'projector,camera,light') {
-				connected.projector = device
-				connected.camera = device
-				connected.light = device
-				arduino.connect('projector', device, false, () => {
-					log.info(`Connected to ${device} as PROJECTOR + CAMERA + LIGHT`, 'SERIAL', true, true)
-					cb()
-				})
-				arduino.alias('camera', device)
-				arduino.alias('light', device)
-			} else if (type === 'projector,camera') {
-				connected.projector = device
-				connected.camera = device
-				arduino.connect('projector', device, false, () => {
-					log.info(`Connected to ${device} as PROJECTOR`, 'SERIAL', true, true)
-					cb()
-				})
-				arduino.alias('camera', device)
-			} else {
-				cb()
+
+	/*await Promise.all(devices.map(async (device) => {
+		return new Promise( async (resolve, reject) => {
+			let type
+			let d
+			try {
+				type = await dev.distinguish(device)
+			} catch (err) {
+				console.error(err)
+				return reject(err)
 			}
+			try {
+				d = await dev.connectDevice(device, type)
+			} catch (err) {
+				console.error(err)
+				return reject(err)
+			}
+			return resolve(d)
 		})
+	})*/
+
+	//done checking devices
+
+	let c = {}
+	let p = {}
+	let l = {}
+
+	if (!dev.connected.projector) {
+		await dev.fakeProjector()
+	}
+	p.arduino = dev.connected.projector
+	if (!dev.connected.camera) {
+		await dev.fakeCamera()
+	}
+	c.arduino = dev.connected.camera
+
+	if (mcopy.settings.camera.intval) {
+		c.intval = mcopy.settings.camera.intval
+		console.dir(mcopy.settings.camera)
+		await delay(1000)
+		cam.connectIntval(null, { connect : true,  url : c.intval })
 	}
 
-	checklist = devices.map(device => {
-		return next => {
-			dev.distinguish(device, (err, type) => {
-				if (err) {
-					console.error(err)
-					return next()
-				}
-				distinguishCb(device, type, next)
-			})
-		}
-	})
+	if (!dev.connected.light) {
+		await dev.fakeLight()
+	}
 
-	async.series(checklist, () => {
-		//done checking devices
+	l.arduino = dev.connected.light
 
-		let c = {}
-		let p = {}
-		let l = {}
-
-		if (!connected.projector) {
-			fakeProjector()
-		}
-		p.arduino = connected.projector
-		if (!connected.camera) {
-			fakeCamera()
-		}
-		c.arduino = connected.camera
-
-		if (mcopy.settings.camera.intval) {
-			c.intval = mcopy.settings.camera.intval
-			console.dir(mcopy.settings.camera)
-			setTimeout(() => {
-				cam.connectIntval(null, { connect : true,  url : c.intval })
-			}, 1000)
-		}
-
-		if (!connected.light) {
-			fakeLight()
-		}
-		l.arduino = connected.light
-
-		dev.ready(p, c, l)
-	})
-};
+	dev.ready(p, c, l)
+}
 
 dev.remember = function (which, device, type) {
 	let deviceEntry
@@ -539,7 +602,7 @@ transfer.listen = function () {
 	})
 }
 */
-var init = function () {
+var init = async function () {
 
 	createWindow()
 	createMenu()
@@ -560,9 +623,8 @@ var init = function () {
 	settings.restore()
 	mcopy.settings = settings.all()
 
-	setTimeout( () => {
-		arduino.enumerate(dev.enumerate)
-	}, 1000)
+	await delay(1000)
+	await dev.enumerate()
 }
 
 app.on('ready', init)
