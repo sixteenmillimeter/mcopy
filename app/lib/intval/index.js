@@ -35,15 +35,17 @@ class Intval {
 		})
 	}
 	async setExposure (exposure, cb) {
-		const timeStart = +new Date()
-		const url = `${this._baseUrl}/exposure?exposure=${exposure}`
-		//console.log(url)
-		req(url, (err, res, body) => {
-			let ms = (+new Date()) - timeStart
-			if (err) {
-				console.error(err)
-			}
-			cb(ms)
+		return new Promise ((resolve, reject) => {
+			const timeStart = +new Date()
+			const url = `${this._baseUrl}/exposure?exposure=${exposure}`
+			//console.log(url)
+			return req(url, (err, res, body) => {
+				let ms = (+new Date()) - timeStart
+				if (err) {
+					return reject(err)
+				}
+				return resolve(ms)
+			})
 		})
 	}
 	connect (cb) {
