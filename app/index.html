@@ -66,12 +66,11 @@
       </div>
       <div id="script" class="screen">
         <textarea id="editor"></textarea>
-        <div id="mscript_cmd">
-          <button id="mscript_compile" onclick="">Compile</button>
-          <button id="mscript_run" onclick="">Run</button>
-          <button id="mscript_seq" onclick="">To Sequencer</button>
-        </div>
         <footer id="console">
+        <div id="mscript_cmd">
+          <button id="mscript_compile" onclick="mse.mscript.eval()">EVAL</button>
+          <button id="mscript_seq" onclick="">TO SEQUENCE</button>
+        </div>
           <textarea>> </textarea>
         </footer>
       </div>
