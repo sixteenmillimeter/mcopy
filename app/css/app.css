@@ -20,7 +20,7 @@ footer {
   position: fixed;
   bottom: 0;
   width: 100%;
-  height: 150px;
+  height: 160px;
 }
 button {
   display: block;
@@ -538,7 +538,7 @@ button:focus {
   margin: 0;
   padding: 20px;
   width: 100%;
-  height: 150px;
+  height: 160px;
   display: block;
   background: black;
   color: #fff;
@@ -661,10 +661,23 @@ button:focus {
 #settings .spacer {
   margin-top: 10px;
 }
+.cm-s-monokai.CodeMirror {
+  background: #272b30 !important;
+}
+.cm-s-monokai .CodeMirror-gutters {
+  background: #363a3f !important;
+}
+#mscript_cmd {
+  margin: 7px 0 0 10px;
+}
+#mscript_cmd button {
+  font-size: 12px;
+  padding: 6px 14px 4px;
+}
 #log {
   position: fixed;
   width: 100%;
-  height: 150px;
+  height: 160px;
 }
 #screens {
   overflow-x: hidden;
@@ -808,10 +821,4 @@ button:focus {
 }
 .cp-app .cp-memo {
   bottom: 2px !important;
-}
-.cm-s-monokai.CodeMirror {
-  background: #272b30 !important;
-}
-.cm-s-monokai .CodeMirror-gutters {
-  background: #363a3f !important;
 }
