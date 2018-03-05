@@ -34,7 +34,7 @@ nav.change = function (id) {
 			light.rgb.set(light.color);
 		}
 	} else if (id === 'script') {
-		gui.mscript.open();
+		mse.mscript.open();
 	}
 };
 

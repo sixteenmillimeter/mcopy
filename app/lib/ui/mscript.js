@@ -39,6 +39,7 @@ mse.mscript.eval = function () {
 	const data = mse.mscript.editor.getValue();
 	const output = mscript.interpret(data, function (output) {
 		console.dir(output);
+		mse.console.print(JSON.stringify(output, null, '\t'))
 	});
 };
 
@@ -88,4 +89,12 @@ mse.console.newLine = function () {
 	mse.console.elem.val(current);
 };
 
-module.exports = mse
+mse.console.print = function (str) {
+	'use strict'
+	let current = mse.console.elem.val();
+	current += '> ';
+	current += str;
+	mse.console.elem.val(current);
+};
+
+module.exports = mse;
