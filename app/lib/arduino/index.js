@@ -302,10 +302,11 @@ mcopy.arduino.fakeConnect = async function (serial) {
 			let end
 			if (typeof timeout === 'undefined') timeout = 10
 			mcopy.arduino.timer = +new Date()
-			return setTimeout(() => {
+			setTimeout(() => {
 				mcopy.arduino.end(cmd)
 				return cb()
 			}, timeout)
+
 		}, 
 		string : async function (str) {
 			//do nothing
