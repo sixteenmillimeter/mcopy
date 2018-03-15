@@ -1,5 +1,5 @@
 {
-  "dest": "../dest/installers/",
+  "dest": "../dist/installers/",
   "icon": "./assets/icons/icon.png",
   "categories": [
     "Video"
