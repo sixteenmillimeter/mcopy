@@ -837,3 +837,11 @@ button:focus {
 .cp-app .cp-memo {
   bottom: 2px !important;
 }
+.progress {
+  width: 240px;
+  margin: 85px -120px;
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}

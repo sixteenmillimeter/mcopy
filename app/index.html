@@ -49,7 +49,7 @@
           <button id="seq_stop" onclick="seq.stop(true);">STOP</button>
           <button id="seq_clear" onclick="gui.grid.clear();">CLEAR</button>
           <button id="seq_plus24" onclick="gui.grid.plus_24();">+ 24</button>
-          <button id="seq_mscript" onclick="gui.mscript.generate(mcopy.state.sequence.arr);">TO SCRIPT</button>
+          <button id="seq_mscript" onclick="mse.mscript.fromSequence();">TO SCRIPT</button>
           <input id="seq_scroll_state" type="number" min="0" value="00000" />
         </div>
         <div id="seq_stats">
@@ -68,8 +68,9 @@
         <textarea id="editor"></textarea>
         <footer id="console">
         <div id="mscript_cmd">
-          <button id="mscript_compile" onclick="mse.mscript.eval()">EVAL</button>
-          <button id="mscript_seq" onclick="">TO SEQUENCE</button>
+          <button id="mscript_compile" onclick="mse.mscript.compile()">COMPILE</button>
+          <button id="mscript_compile" onclick="mse.mscript.run()">RUN</button>
+          <button id="mscript_seq" onclick="mse.mscript.toSequence();">TO SEQUENCE</button>
         </div>
           <textarea>> </textarea>
         </footer>
@@ -83,6 +84,22 @@
           <div class="proj">
             <label>PROJECTOR</label>
             <input type="number" id="seq_proj_count_2" class="count" value="00000" onchange="gui.counterFormat(this, mcopy.state.projector.pos);" onblur="gui.updateProj(this);" />
+          </div>
+        </div>
+        <div id="move_to">
+          <div class="cam">
+            <!--<label>MOVE TO</label>-->
+            <div>
+              <input type="number" id="move_cam_to" class="count" value="00000" onchange="gui.counterFormat(this, this.value);" />
+              <button id="move_cam_to_go" onclick="return cmd.cam_to();">GO TO</button>
+            </div>
+          </div>
+          <div class="proj">
+            <!--<label>MOVE TO</label>-->
+            <div>
+              <input type="number" id="move_proj_to" class="count" value="00000" onchange="gui.counterFormat(this, this.value);"/>
+              <button id="move_proj_to_go" onclick="return cmd.proj_to();">GO TO</button>
+            </div>
           </div>
         </div>
         <div id="buttons" class="clearfix">
@@ -104,14 +121,14 @@
             <div>
               <button id="cmd_black_forward" onclick="cmd.black_forward();" class="cmd fwd">
                 <i class="fa fa-times-circle"></i> 
-                BLACK FRAME +1
+                BLANK +1
                 <i class="fa fa-step-forward"></i>
               </button>
             </div>
             <div>
               <button id="cmd_black_backward" onclick="cmd.black_backward();" class="cmd bwd">
                 <i class="fa fa-times-circle"></i> 
-                BLACK FRAME -1
+                BLANK -1
                 <i class="fa fa-step-backward"></i>
               </button>
             </div>
@@ -131,16 +148,6 @@
                 <i class="fa fa-step-backward"></i>
               </button>
             </div>
-          </div>
-        </div>
-        <div id="move_to">
-          <div class="cam">
-            <label>MOVE CAMERA TO</label>
-            <input type="number" id="move_cam_to" class="count" value="00000" onchange="gui.counterFormat(this, this.value);" onblur="cmd.cam_to(this)" />
-          </div>
-          <div class="proj">
-            <label>MOVE PROJECTOR TO</label>
-            <input type="number" id="move_cam_to" class="count" value="00000" onchange="gui.counterFormat(this, this.value);" onblur="cmd.proj_to(this);" />
           </div>
         </div>
         <footer>
@@ -282,6 +289,11 @@
     <div id="overlay" onclick="gui.overlay(false);gui.spinner(false);"></div>
     <div id="spinner">
       <div id="spinnerMsg"></div>
+      <div id="spinnerProgress" class="progress">
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+          <span class="sr-only">0% Complete</span>
+        </div>
+      </div>
     </div>
     <script src="./js/app.js"></script>
   </body>
