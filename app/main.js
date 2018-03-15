@@ -371,38 +371,36 @@ light.init = function () {
 }
 light.listen = function () {
 	ipcMain.on('light', async (event, arg) => {
-		//return new Promise(async(resolve, reject) => {
-			try {
-				await light.set(arg.rgb, arg.id)
-			}catch (err) {
-				console.error(err)
-				return reject(err)
-			}
-			event.returnValue = true
-		//	return resolve(true)
-		//})
+		try {
+			await light.set(arg.rgb, arg.id)
+		}catch (err) {
+			console.error(err)
+			return reject(err)
+		}
+		event.returnValue = true
 	})
 }
 light.set = async function (rgb, id) {
 	const str = rgb.join(',');
 	let ms
 	try {
-		ms = await arduino.send('light', mcopy.cfg.arduino.cmd.light)
+		ms = arduino.send('light', mcopy.cfg.arduino.cmd.light)
 	} catch (err) {
 		console.error(err)
 	}
-	console.log(ms)
-	await delay(10)
+	await delay(1)
 	try {
 		arduino.string('light', str)
 	} catch (err) {
 		console.error(err)
 	}
+	await delay(1)
+	await ms
 	return await light.end(rgb, id, ms)
 }
 light.end = async function (rgb, id, ms) {
 	log.info('Light set to ' + rgb.join(','), 'LIGHT', true, true)
-	return await mainWindow.webContents.send('light', {rgb: rgb, id : id, ms: ms})
+	return await mainWindow.webContents.send('light', { rgb: rgb, id : id, ms: ms })
 }
 
 proj.state = {
