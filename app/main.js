@@ -354,7 +354,8 @@ var createWindow = function () {
 		width: 800, 
 		height: 600,
 		minWidth : 800,
-		minHeight : 600
+		minHeight : 600,
+		icon: path.join(__dirname, 'assets/icons/icon.png')
 	})
 	mainWindow.loadURL('file://' + __dirname + '/index.html')
 	if (process.argv.indexOf('-d') !== -1 || process.argv.indexOf('--dev') !== -1) {
@@ -369,9 +370,17 @@ light.init = function () {
 	light.listen()
 }
 light.listen = function () {
-	ipcMain.on('light', (event, arg) => {
-		light.set(arg.rgb, arg.id)
-		event.returnValue = true
+	ipcMain.on('light', async (event, arg) => {
+		//return new Promise(async(resolve, reject) => {
+			try {
+				await light.set(arg.rgb, arg.id)
+			}catch (err) {
+				console.error(err)
+				return reject(err)
+			}
+			event.returnValue = true
+		//	return resolve(true)
+		//})
 	})
 }
 light.set = async function (rgb, id) {
@@ -382,7 +391,13 @@ light.set = async function (rgb, id) {
 	} catch (err) {
 		console.error(err)
 	}
-	await arduino.string('light', str)
+	console.log(ms)
+	await delay(10)
+	try {
+		arduino.string('light', str)
+	} catch (err) {
+		console.error(err)
+	}
 	return await light.end(rgb, id, ms)
 }
 light.end = async function (rgb, id, ms) {
@@ -423,11 +438,19 @@ proj.move = async function (frame, id) {
 	return await proj.end(mcopy.cfg.arduino.cmd.projector, id, ms)
 }
 proj.listen = function () {
-	ipcMain.on('proj', (event, arg) => {
+	ipcMain.on('proj', async (event, arg) => {
 		if (typeof arg.dir !== 'undefined') {
-			proj.set(arg.dir, arg.id)
+			try {
+				await proj.set(arg.dir, arg.id)
+			} catch (err) {
+				console.error(err)
+			}
 		} else if (typeof arg.frame !== 'undefined') {
-			proj.move(arg.frame, arg.id)
+			try {
+				await proj.move(arg.frame, arg.id)
+			} catch (err) {
+				console.error(err)
+			}
 		}
 		event.returnValue = true
 	})
@@ -488,6 +511,7 @@ cam.move = async function (frame, id) {
 	const cmd = mcopy.cfg.arduino.cmd.camera
 	let ms
 	if (cam.intval) {
+
 		ms = await cam.intval.move()
 	} else { 
 		ms = await arduino.send('camera', cmd)
@@ -527,11 +551,19 @@ cam.connectIntval = function (event, arg) {
 }
 
 cam.listen = function () {
-	ipcMain.on('cam', (event, arg) => {
+	ipcMain.on('cam', async (event, arg) => {
 		if (typeof arg.dir !== 'undefined') {
-			cam.set(arg.dir, arg.id)
+			try {
+				await cam.set(arg.dir, arg.id)
+			} catch (err) {
+				console.error(err)
+			}
 		} else if (typeof arg.frame !== 'undefined') {
-			cam.move(arg.frame, arg.id)
+			try {
+				await cam.move(arg.frame, arg.id)
+			} catch (err) {
+				console.error(err)
+			}
 		}
 		event.returnValue = true
 	})

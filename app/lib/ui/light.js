@@ -124,6 +124,8 @@ light.set = function (rgb, callback) { //rgb = [0,0,0]
 		rgb : rgb,
 		id : uuid.v4()
 	};
+	console.log(rgb)
+	console.log(obj)
 	ipcRenderer.sendSync('light', obj);
 
 	if (typeof callback !== 'undefined') {
