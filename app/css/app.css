@@ -524,25 +524,6 @@ button:focus {
   text-align: center;
   color: #DAE035;
 }
-#console {
-  background: #000;
-  border-top: 2px solid rgba(255, 255, 255, 0.3);
-}
-#console textarea {
-  font-family: 'Menlo', monospace;
-  font-size: 12px;
-  line-height: 17px;
-  outline: none !important;
-  border: none;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 20px;
-  width: 100%;
-  height: 160px;
-  display: block;
-  background: black;
-  color: #fff;
-}
 #buttons > div {
   width: 50%;
   float: left;
@@ -566,10 +547,10 @@ button:focus {
   margin-right: 5px;
 }
 .cmd.fwd i {
-  color: #00C4A0;
+  color: #fff;
 }
 .cmd.bwd i {
-  color: #AB1A25;
+  color: #fff;
 }
 .cmd:active.fwd,
 .cmd.active.fwd {
@@ -674,6 +655,25 @@ button:focus {
   font-size: 12px;
   padding: 6px 14px 4px;
 }
+#console {
+  background: #000;
+  border-top: 2px solid rgba(255, 255, 255, 0.3);
+}
+#console textarea {
+  font-family: 'Menlo', monospace;
+  font-size: 12px;
+  line-height: 17px;
+  outline: none !important;
+  border: none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 20px;
+  width: 100%;
+  height: 122px;
+  display: block;
+  background: black;
+  color: #fff;
+}
 #log {
   position: fixed;
   width: 100%;
@@ -738,7 +738,7 @@ button:focus {
 #counters_2 .proj,
 #move_to .proj {
   width: 50%;
-  padding-bottom: 25px;
+  padding-bottom: 10px;
 }
 #counters .cam label,
 #counters_2 .cam label,
@@ -786,9 +786,24 @@ button:focus {
 #move_to {
   margin-top: 20px;
 }
+#move_to .cam > div,
+#move_to .proj > div {
+  width: 294px;
+  margin: 0 auto;
+}
 #move_to .cam label,
 #move_to .proj label {
   font-size: 18px;
+}
+#move_to .cam input,
+#move_to .proj input {
+  display: inline-block;
+  width: 206px;
+}
+#move_to .cam button,
+#move_to .proj button {
+  padding: 7px 16px;
+  float: right;
 }
 #overlay {
   position: fixed;
