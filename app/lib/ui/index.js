@@ -105,7 +105,7 @@ gui.spinnerCfg =  {
 	top: '50%', // Top position relative to parent
 	left: '50%' // Left position relative to parent
 };
-gui.spinner = function (state, msg) {
+gui.spinner = function (state, msg, progress) {
 	'use strict';
 	let target;
 	let spinner;
@@ -115,18 +115,29 @@ gui.spinner = function (state, msg) {
 	if (state && !$('#spinner').hasClass('created')) {
 		target = document.getElementById('spinner');
 		spinner = new Spinner(gui.spinnerCfg).spin(target);
+		$('#spinnerProgress').hide();
 		$('#spinner').addClass('created');
 	} else if (state) {
 		$('#spinner').show();
 	} else if (!state) {
 		$('#spinner').hide();
 		gui.spinnerMsg('');
+		$('#spinnerProgress').hide();
 	}
-
+	if (progress) {
+		gui.spinnerProgress(progress);
+	}
 };
 gui.spinnerMsg = function (msg) {
 	'use strict';
 	$('#spinnerMsg').text(msg);
+};
+gui.spinnerProgress = function (progress) {
+	'use strict';
+	let elem = $('#spinnerProgress .progress-bar');
+	$('#spinnerProgress').show();
+	elem.attr('aria-valuenow', progress);
+	elem.css('width', `${progress}%`);
 };
 gui.overlay = function (state) {
 	'use strict';
