@@ -35,7 +35,8 @@ mse.mscript.fromSequence = function () {
 	let str;
 	let tmp = [];
 	let cont;
-	str = mcopy.state.sequence.arr.join('\n'); //quick hack
+	//str = mcopy.state.sequence.arr.join('\n'); //quick hack
+	console.dir(mcopy.state.sequence);
 	for (let cmd of mcopy.state.sequence.arr) {
 		if (tmp.length > 0 && tmp[tmp.length - 1].cmd === cmd) {
 			tmp[tmp.length - 1].num++;
@@ -52,9 +53,45 @@ mse.mscript.fromSequence = function () {
 	if (cont) {
 		mse.mscript.editor.getDoc().setValue(str);
 	}
-	
-
 };
+mse.mscript.toGUI = function () {
+	'use strict';
+	let c;
+	for (let i = 0; i < mse.mscript.data.arr.length; i++) {
+		c = mse.mscript.data.arr[i];
+		mcopy.state.sequence.arr[i] = c;
+		//if (c === 'CF' || c === 'CB') {
+			mcopy.state.sequence.light[i] = light.color.join(',');
+		//} else {
+			//mcopy.state.sequence.light[i] = '';
+		//}
+		gui.grid.state(i);
+	}
+};
+mse.mscript.toSequence = function () {
+	'use strict';
+	const data = mse.mscript.editor.getValue();
+	let cont;
+	if (data !== mse.mscript.raw) {
+		cont = confirm(`Current script has not been compiled. Compile first?`);
+		if (cont) {
+			return mse.mscript.compile(() => {
+				mse.console.print(`Sending compiled script to GUI sequencer...`);
+				seq.clear();
+				mse.mscript.toGUI();
+				gui.grid.refresh();
+				seq.stats();
+				return nav.change('sequencer');
+			})
+		}
+	}
+	mse.console.print(`Sending compiled script to GUI sequencer...`);
+	seq.clear();
+	mse.mscript.toGUI();
+	gui.grid.refresh();
+	seq.stats();
+	return nav.change('sequencer');
+}
 mse.mscript.compile = function (cb) {
 	'use strict';
 	const data = mse.mscript.editor.getValue();
