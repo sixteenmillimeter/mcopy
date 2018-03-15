@@ -185,4 +185,80 @@ seq.clear = function () {
 	mcopy.state.sequence.arr = [];
 };
 
+/**
+ * Queue for exec function
+ */
+seq.queue = [];
+seq.running = false;
+seq.state = {};
+/**
+ * Execute an array of commands, locking up the UI during execution.
+ */
+seq.exec = function (arr) {
+	'use strict';
+	seq.running = true;
+	seq.state.len = arr.length;
+	//setup queue
+	seq.queue = arr;
+	//console.dir(arr);
+	gui.overlay(true);
+	gui.spinner(true, `Running sequence of ${arr.length} frame${(arr.length === 1 ? '' : 's')}`, 0);
+	log.info(`Sequence started`, 'SEQUENCE', true);
+	seq.step();
+};
+
+seq.execStop = function (msg) {
+	'use strict';
+	gui.overlay(false);
+	gui.spinner(false);
+	log.info(`Sequence ${msg}`, 'SEQUENCE', true);
+	return false;
+};
+
+seq.step = function () {
+	'use strict';
+	let elem;
+	let c;
+	let rgb;
+	let current;
+	let max;
+
+	if (!seq.running) {
+		return seq.execStop('stopped');
+	}
+
+	return setTimeout(() => {
+		elem = seq.queue.shift();
+		if (typeof elem !== 'undefined') {
+			c = elem.cmd;
+			if (typeof elem.light !== 'undefined') {
+				rgb = elem.light.split(',');
+			} else {
+				rgb = light.color;
+			}
+		} else {
+			return seq.execStop('completed');
+		}
+		if (typeof elem !== 'undefined') {
+			current = seq.state.len - seq.queue.length;
+			max = seq.state.len;
+			gui.spinner(true, `Sequence: step ${c} ${current}/${max}`, (current / max) * 100);
+			log.info(`Sequence: step ${c} ${current}/${max}`, 'SEQUENCE', true);
+			if (c === 'CF'){
+				cmd.cam_forward(rgb, seq.step);
+			} else if (c === 'CB') {
+				cmd.cam_backward(rgb, seq.step);
+			} else if (c === 'PF') {
+				cmd.proj_forward(seq.step);
+			} else if (c === 'PB') {
+				cmd.proj_backward(seq.step);
+			} else if (c === 'BF') {
+				cmd.black_forward(seq.step);
+			} else if (c === 'BB') {
+				cmd.black_backward(seq.step);
+			}
+		}
+	}, mcopy.cfg.arduino.sequenceDelay);
+};
+
 module.exports = seq;
