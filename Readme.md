@@ -4,7 +4,7 @@ An open platform for controlling small-gauge film optical printers (16mm, Super8
 
 -------
 1. <a href="#intro">Introduction</a>
-2. <a href="#download"></a>
+2. <a href="#download">Downloads</a>
 2. <a href="#software">Software</a>
 3. <a href="#firmware">Firmware</a>
 3. <a href="#hardware">Hardware</a>
@@ -16,15 +16,14 @@ An open platform for controlling small-gauge film optical printers (16mm, Super8
 
 The `mcopy` project is comprised of software and hardware for optical printers, built with re-purposed broken projectors.
 
-## Downloads
-
-
 #### Components
 
 * Sequencer desktop app
-* Scripting language, called mscript, for complex sequences
+* Scripting language, called `mscript`, for orchestrating complex sequences
 * Arduino firmware for projectors, cameras, lights and existing printers
-* 3D models of parts
+* 3D models of parts used for modifying projectors
+
+## Downloads <a name="downloads"></a>
 
 ## Software <a name="software"></a>
 
