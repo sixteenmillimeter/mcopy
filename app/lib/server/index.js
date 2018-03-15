@@ -8,13 +8,15 @@ let cam
 let proj
 let light
 
+const PACKAGE = require('../../package.json')
+
 class Server {
 	constructor (camera, projector, light) {
 		restify = require('restify')
 		os = require('os')
 		app = restify.createServer({
 			name: 'mcopy-server',
-			version: '2.0.0'
+			version: PACKAGE.version
 		})
 
 		this.ip = this.getIp()
