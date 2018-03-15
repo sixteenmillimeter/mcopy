@@ -79,7 +79,8 @@ cmd.black_forward = function (callback) {
 	var off = [0, 0, 0];
 	var res = function (ms) {
 		$('#cmd_black_forward').removeClass('active');
-		gui.updateState();		
+		gui.updateState();	
+		if (callback) { callback(ms); }	
 	};
 	$('#cmd_black_forward').addClass('active');
 	if (!mcopy.state.camera.direction) {
@@ -138,6 +139,7 @@ cmd.black_backward = function (callback) {
 	var res = function (ms) {
 		$('#cmd_black_backward').removeClass('active');
 		gui.updateState();
+		if (callback) { callback(ms); }
 	};
 	$('#cmd_black_backward').addClass('active');
 	if (mcopy.state.camera.direction) {
@@ -160,27 +162,58 @@ cmd.black_backward = function (callback) {
 };
 
 cmd.cam_to = function (t) {
-	const val = parseInt(t.value)
-	let proceed = false
-	let total
+	const raw = $('#move_cam_to').val();
+	const val = parseInt(raw);
+	let proceed = false;
+	let total;
+	let steps = [];
+	let c;
+	let cont;
 	if (val !== mcopy.state.camera.pos) {
 		if (val < mcopy.state.camera.pos) {
-			total = mcopy.state.camera.pos - val
+			total = -(mcopy.state.camera.pos - val)
 		} else if (val > mcopy.state.camera.pos) {
 			total = val - mcopy.state.camera.pos
 		}
+		if (total > 0) {
+			c = 'BF';
+		} else if (total < 0) {
+			c = 'BB';
+		}
+		for (let i = 0; i < Math.abs(total); i++) {
+			steps.push({ cmd : c })
+		}
+		cont = confirm(`Do you want to ${(total > 0 ? 'advance' : 'rewind')} the camera ${total} frame${(total === 1 ? '' : 's')} to frame ${val}?`)
+		if (cont) {
+			seq.exec(steps);
+		}
 	}
-	
 };
 cmd.proj_to = function (t) {
-	const val = parseInt(t.value)
-	let proceed = false
-	let total
+	const raw = $('#move_proj_to').val();
+	const val = parseInt(raw);
+	let proceed = false;
+	let total;
+	let steps = [];
+	let c;
+	let cont
 	if (val !== mcopy.state.projector.pos) {
 		if (val < mcopy.state.projector.pos) {
-			total = mcopy.state.projector.pos - val
+			total = -(mcopy.state.projector.pos - val)
 		} else if (val > mcopy.state.projector.pos) {
 			total = val - mcopy.state.projector.pos
+		}
+		if (total > 0) {
+			c = 'PF';
+		} else if (total < 0) {
+			c = 'PB';
+		}
+		for (let i = 0; i < Math.abs(total); i++) {
+			steps.push({ cmd : c })
+		}
+		cont = confirm(`Do you want to ${(total > 0 ? 'advance' : 'rewind')} the projector ${total} frame${(total === 1 ? '' : 's')} to frame ${val}?`)
+		if (cont) {
+			seq.exec(steps);
 		}
 	}
 }
