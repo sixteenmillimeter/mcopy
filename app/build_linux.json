@@ -1,0 +1,10 @@
+{
+  "dest": "../dest/installers/",
+  "icon": "./assets/icons/icon.png",
+  "categories": [
+    "Video"
+  ],
+  "lintianOverrides": [
+    "changelog-file-missing-in-native-package"
+  ]
+}
