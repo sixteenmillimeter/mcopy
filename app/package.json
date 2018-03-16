@@ -6,7 +6,8 @@
   "scripts": {
     "start": "./node_modules/.bin/electron main.js",
     "dev": "./node_modules/.bin/gulp && ./node_modules/.bin/electron main.js -d",
-    "install": "./node_modules/.bin/electron-rebuild"
+    "install": "./node_modules/.bin/electron-rebuild",
+    "test": "./node_modules/.bin/qunit test/index.js"
   },
   "repository": {
     "type": "git",
