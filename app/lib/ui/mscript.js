@@ -60,11 +60,16 @@ mse.mscript.toGUI = function () {
 	for (let i = 0; i < mse.mscript.data.arr.length; i++) {
 		c = mse.mscript.data.arr[i];
 		mcopy.state.sequence.arr[i] = c;
-		//if (c === 'CF' || c === 'CB') {
-			mcopy.state.sequence.light[i] = light.color.join(',');
-		//} else {
-			//mcopy.state.sequence.light[i] = '';
-		//}
+		console.dir(mse.mscript.data);
+		if (c === 'CF' || c === 'CB') {
+			if (typeof mse.mscript.data.light[i] !== 'undefined' && mse.mscript.data.light[i] !== '') {
+				mcopy.state.sequence.light[i] = mse.mscript.data.light[i];
+			} else {
+				mcopy.state.sequence.light[i] = light.color.join(',');
+			}
+		} else {
+			mcopy.state.sequence.light[i] = '';
+		}
 		gui.grid.state(i);
 	}
 };
@@ -114,11 +119,11 @@ mse.mscript.prepare = function () {
 		obj = {
 			cmd : mse.mscript.data.arr[i]
 		};
-		/*if (mse.mscript.data.light[i] !== '') {
+		if (typeof mse.mscript.data.light[i] !== 'undefined' && mse.mscript.data.light[i] !== '') {
 			obj.light = mse.mscript.data.light[i];
 		} else {
 			obj.light = light.color.join(',');
-		}*/
+		}
 		arr.push(obj);
 	}
 	return arr;
