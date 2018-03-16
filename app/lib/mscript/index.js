@@ -1,10 +1,22 @@
 'use strict';
 
+/** @module lib/mscript */
+
 let fs;
 let input;
 
+/** object mscript */
 const mscript = {};
 
+/**
+ * Check for the presence of specific arguments in process
+ * argv
+ *
+ * @param {string} shrt 	Short version of argument or flag
+ * @param {string} lng 		Long version of argument or flag
+ *
+ * @return {boolean} Is flag present
+ */
 mscript.arg = function arg (shrt, lng) {
 	if (process.argv.indexOf(shrt) !== -1 ||
 		process.argv.indexOf(lng) !== -1) {
@@ -13,6 +25,15 @@ mscript.arg = function arg (shrt, lng) {
 	return false;
 };
 
+/**
+ * Check for the position of specific arguments in process
+ * argv
+ *
+ * @param {string} shrt 	Short version of argument or flag
+ * @param {string} lng 		Long version of argument or flag
+ *
+ * @return {boolean} Position of arg or flag, for locating input
+ */
 mscript.arg_pos = function arg_pos (shrt, lng) {
 	var pos = -1;
 	pos = process.argv.indexOf(shrt);
@@ -21,6 +42,7 @@ mscript.arg_pos = function arg_pos (shrt, lng) {
 	}
 	return pos;
 };
+
 mscript.black = '0,0,0';
 mscript.cmd = [
 	'CF',
@@ -33,13 +55,19 @@ mscript.cmd = [
 mscript.alts = {
 	'CF' : ['CAMERA FORWARD', 'CAM FORWARD'],
 	'PF' : ['PROJECTOR FORWARD', 'PROJ FORWARD'],
-	'BF': ['BLACK FORWARD'],
+	'BF': ['BLACK FORWARD', 'BLACK', 'BLANK FORWARD', 'BLANK'],
 	'CB' : ['CAMERA BACKWARD', 'CAM BACKWARD', 'CAMERA BACK', 'CAM BACK'],
 	'PB' : ['PROJECTOR FORWARD', 'PROJ FORWARD', 'PROJECTOR BACK', 'PROJ BACK'],
-	'BB' : ['BLACK BACKWARD', 'BLACK BACK'],
-	'L ' : ['LIGHT', 'COLOR', 'LAMP']
+	'BB' : ['BLACK BACKWARD', 'BLACK BACK', 'BLANK BACK'],
+	'L ' : ['LIGHT', 'COLOR', 'LAMP'],
+	'F ' : ['FADE']
 };
+
 mscript.state = {};
+
+/**
+ * Clear the state object
+ */
 mscript.state_clear = function state_clear () {
 	mscript.state = {
 		cam : 0,
@@ -49,6 +77,9 @@ mscript.state_clear = function state_clear () {
 		rec : -1
 	};
 };
+/**
+ *
+ */
 mscript.alts_unique = function alts_unique () {
 	var ids = Object.keys(mscript.alts),
 		all = [];
@@ -60,6 +91,9 @@ mscript.alts_unique = function alts_unique () {
 		}
 	}
 };
+/**
+ *
+ */
 mscript.interpret = function interpret (text, callback) {
 	mscript.state_clear();
 	if (typeof text === 'undefined') {
@@ -214,12 +248,21 @@ mscript.interpret = function interpret (text, callback) {
 		return mscript.output(output);
 	}
 };
+/**
+ *
+ */
 mscript.last_loop = function last_loop () {
 	return mscript.state.loops[mscript.state.loops.length - 1];
 };
+/**
+ *
+ */
 mscript.parent_loop = function parent_loop () {
 	return mscript.state.loops[mscript.state.loops.length - 2];
 };
+/**
+ *
+ */
 mscript.state_update = function state_update (cmd, val) {
 	if (cmd === 'END') {
 		for (var i = 0; i < val; i++) {
@@ -271,6 +314,9 @@ mscript.state_update = function state_update (cmd, val) {
 
 	}
 };
+/**
+ *
+ */
 mscript.str_to_arr = function str_to_arr (str, cmd) {
 	var cnt = str.split(cmd),
 		c = parseInt(cnt[1]),
@@ -286,11 +332,17 @@ mscript.str_to_arr = function str_to_arr (str, cmd) {
 	}
 	return arr;
 };
+/**
+ *
+ */
 mscript.light_state = function light_state (str) {
 	//add parsers for other color spaces
 	var color = str.replace('L ', '').trim();
 	mscript.state.color = color;
 };
+/**
+ *
+ */
 mscript.light_to_arr = function light_to_arr (str, cmd) {
 	var cnt = str.split(cmd),
 		c = parseInt(cnt[1]),
@@ -313,13 +365,25 @@ mscript.light_to_arr = function light_to_arr (str, cmd) {
 	}
 	return arr;
 };
+/**
+ *
+ */
 mscript.loop_count = function loop_count (str) {
-	return parseInt(str.split('LOOP ')[1]);
+	return parseInt(str.split(' ')[1]);
 };
+mscript.fade_count = function fade_count (str) {
+	return parseInt(str.split(' ')[1]);
+}
+/**
+ *
+ */
 mscript.fail = function fail (reason) {
 	console.error(JSON.stringify({success: false, error: true, msg : reason}));
 	if (process) process.exit();
 };
+/**
+ *
+ */
 mscript.output = function output (data) {
 	var json = true; //default
 	if (mscript.arg('-j', '--json')) {
@@ -339,6 +403,9 @@ mscript.output = function output (data) {
 		}
 	}
 };
+/**
+ *
+ */
 mscript.init = function init () {
 	if (mscript.arg('-t', '--tests')) {
 		return mscript.tests();
@@ -367,7 +434,9 @@ mscript.init = function init () {
 		console.timeEnd('mscript');
 	}
 };
-
+/**
+ * Legacy tests. To be deprecated in future releases.
+ */
 mscript.tests = function tests () {
 	console.log('Running mscript tests');
 	console.time('Tests took');
