@@ -36,6 +36,13 @@ class Mscript {
 		this.color = '';
 		this.loops = [];
 		this.rec = -1;
+
+		this.two = '';
+		this.arr = [];
+		this.light = [];
+		this.target = 0; //move to target using CAM # or PROJ #
+		this.dist = 0;
+
 		this.output = {};
 	}
 	/**
@@ -52,170 +59,207 @@ class Mscript {
 
 		//split string into lines, each containing a command
 		let lines = text.split('\n');
-			
-		let two = '';
-		
-		let arr = [];
-			
-		let light = [];
-		
-		let target = 0;// move to target using CAM # or PROJ #
-			
-		let dist = 0; //?
 
 		for (let line of lines) {
 			line = line.replace(/\t+/g, ""); //strip tabs
 			line = line.trim(); //remove excess whitespace before and after command
-			two = line.substring(0, 2);
-			if (CMD.indexOf(two) !== -1) {
-
-				if (this.loops.length > 0) {
-					//hold generated arr in state loop array
-					this.loops[this.rec].arr
-						.push.apply(this.loops[this.rec].arr, 
-									this.str_to_arr(line, 
-									two));
-					this.loops[this.rec].light
-						.push.apply(this.loops[this.rec].light, 
-									this.light_to_arr(line, 
-									two));
-				} else {
-					arr.push.apply(arr, this.str_to_arr(line, two));
-					light.push.apply(light, this.light_to_arr(line, two))
-				}
-
+			line = line.toUpperCase();
+			this.two = line.substring(0, 2);
+			if (CMD.indexOf(this.two) !== -1) {
+				this.basic_cmd(line);
 			} else if (line.substring(0, 4) === 'LOOP') {
-				this.rec++;
-				this.loops[this.rec] = {
-					arr : [],
-					light : [],
-					cam : 0,
-					proj : 0,
-					cmd : line + ''
-				};
+				this.new_loop(line);
 			} else if (line.substring(0, 2) === 'L ') {
 				this.light_state(line);
+			} else if (line.substring(0, 2) === 'F ') {
+				//fade
 			} else if (line.substring(0, 3) === 'END') {
-				for (var x = 0; x < this.loop_count(this.loops[this.rec].cmd); x++) {
-					if (this.rec === 0) {
-						arr.push.apply(arr, this.loops[this.rec].arr);
-						light.push.apply(light, this.loops[this.rec].light);
-					} else if (this.rec >= 1) {
-						this.loops[this.rec - 1].arr
-							.push.apply(this.loops[this.rec - 1].arr, 
-										this.loops[this.rec].arr);
-						this.loops[this.rec - 1].light
-							.push.apply(this.loops[this.rec - 1].light, 
-										this.loops[this.rec].light);
-					}
-				}
-				this.update('END', this.loop_count(this.loops[this.rec].cmd));
-				delete this.loops[this.rec];
-				this.rec--;
+				this.end_loop(line);
 			} else if (line.substring(0, 3) === 'CAM') { //directly go to that frame (black?)
-				target = parseInt(line.split('CAM ')[1]);
-				if (this.loops.length > 0) {
-					if (target > this.cam) {
-						dist = target - this.cam;
-						for (var x = 0; x < dist; x++) {
-							this.loops[this.rec].arr.push('BF');
-							this.loops[this.rec].light.push(BLACK);
-							this.update('BF');
-						} 
-					} else {
-						dist = this.cam - target;
-						for (var x = 0; x < dist; x++) {
-							this.loops[this.rec].arr.push('BB');
-							this.loops[this.rec].light.push(BLACK);
-							this.update('BB');
-						}
-					}
-				} else {
-					if (target > this.cam) {
-						dist = target - this.cam;
-						for (var x = 0; x < dist; x++) {
-							arr.push('BF');
-							light.push(BLACK);
-							this.update('BF');
-						} 
-					} else {
-						dist = this.cam - target;
-						for (var x = 0; x < dist; x++) {
-							arr.push('BB');
-							light.push(BLACK);
-							this.update('BB');
-						}
-					}
-				}
+				this.move_cam(line);
 			} else if (line.substring(0, 4) === 'PROJ') { //directly go to that frame
-				target = parseInt(line.split('PROJ ')[1]);
-				if (this.loops.length > 0) {
-					if (target > this.proj) {
-						dist = target - this.proj;
-						for (var x = 0; x < dist; x++) {
-							this.loops[this.rec].arr.push('PF');
-							this.loops[this.rec].light.push('');
-							this.update('PF');
-						} 
-					} else {
-						dist = this.proj - target;
-						for (var x = 0; x < dist; x++) {
-							this.loops[this.rec].arr.push('PB');
-							this.loops[this.rec].light.push('');
-							this.update('PB');
-						} 
-					}
-				} else {
-					if (target > this.proj) {
-						dist = target - this.proj;
-						for (var x = 0; x < dist; x++) {
-							arr.push('PF');
-							light.push('');
-							this.update('PF');
-						} 
-					} else {
-						dist = this.proj - target;
-						for (var x = 0; x < dist; x++) {
-							arr.push('PB');
-							light.push('');
-							this.update('PB');
-						} 
-					}
-				}
+				this.move_proj(line);
 			} else if (line.substring(0, 3) === 'SET') { //set that state
-				if (line.substring(0, 7) === 'SET CAM') {
-					this.cam = parseInt(line.split('SET CAM')[1]);
-				} else if (line.substring(0, 8) === 'SET PROJ') {
-					this.proj = parseInt(line.split('SET PROJ')[1]);
-				}
+				this.set_state(line);
 			} else if (line.substring(0, 1) === '#' || line.substring(0, 2) === '//') {
 				//comments
 				//ignore while parsing
 			}
 		}
 
-
 		this.output.success = true;
-		this.output.arr = arr; //all instructions
-		this.output.light = light; //all light instructions
+		this.output.arr = this.arr; //all instructions
+		this.output.light = this.light; //all light instructions
 		this.output.cam = this.cam;
 		this.output.proj = this.proj;
-
 
 		if (typeof callback !== 'undefined') {
 			//should only be invoked by running mscript.tests()
 			callback(this.output);
 		}
 	}
+	/**
+	 * Apply a basic two character command
+	 */
+	basic_cmd (line) {
+		if (this.loops.length > 0) {
+			//hold generated arr in state loop array
+			this.loops[this.rec].arr
+				.push.apply(this.loops[this.rec].arr, 
+							this.str_to_arr(line, 
+							this.two));
+			this.loops[this.rec].light
+				.push.apply(this.loops[this.rec].light, 
+							this.light_to_arr(line, 
+							this.two));
+		} else {
+			this.arr.push.apply(this.arr, this.str_to_arr(line, this.two));
+			this.light.push.apply(this.light, this.light_to_arr(line, this.two))
+		}
+	}
+	/**
+	 * Start a new loop
+	 */
+	new_loop (line) {
+		this.rec++;
+		this.loops[this.rec] = {
+			arr : [],
+			light : [],
+			cam : 0,
+			proj : 0,
+			cmd : line + ''
+		};
+	}
+	/**
+	 * Close the most recent loop
+	 */
+	end_loop (line) {
+		for (let x = 0; x < this.loop_count(this.loops[this.rec].cmd); x++) {
+			if (this.rec === 0) {
+				this.arr.push.apply(this.arr, this.loops[this.rec].arr);
+				this.light.push.apply(this.light, this.loops[this.rec].light);
+			} else if (this.rec >= 1) {
+				this.loops[this.rec - 1].arr
+					.push.apply(this.loops[this.rec - 1].arr, 
+								this.loops[this.rec].arr);
+				this.loops[this.rec - 1].light
+					.push.apply(this.loops[this.rec - 1].light, 
+								this.loops[this.rec].light);
+			}
+		}
+		this.update('END', this.loop_count(this.loops[this.rec].cmd));
+		delete this.loops[this.rec];
+		this.rec--;
+	}
+	/**
+	 * Move camera to explicitly-defined frame
+	 */
+	move_cam (line) {
+		this.target = parseInt(line.split('CAM ')[1]);
+		if (this.loops.length > 0) {
+			if (this.target > this.cam) {
+				this.dist = this.target - this.cam;
+				for (let x = 0; x < this.dist; x++) {
+					this.loops[this.rec].arr.push('BF');
+					this.loops[this.rec].light.push(BLACK);
+					this.update('BF');
+				} 
+			} else {
+				this.dist = this.cam - this.target;
+				for (let x = 0; x < this.dist; x++) {
+					this.loops[this.rec].arr.push('BB');
+					this.loops[this.rec].light.push(BLACK);
+					this.update('BB');
+				}
+			}
+		} else {
+			if (target > this.cam) {
+				this.dist = this.target - this.cam;
+				for (let x = 0; x < this.dist; x++) {
+					this.arr.push('BF');
+					this.light.push(BLACK);
+					this.update('BF');
+				} 
+			} else {
+				this.dist = this.cam - this.target;
+				for (let x = 0; x < this.dist; x++) {
+					this.arr.push('BB');
+					this.light.push(BLACK);
+					this.update('BB');
+				}
+			}
+		}
+	}
+	/**
+	 * Move projector to explicitly-defined frame
+	 */
+	move_proj (line) {
+		this.target = parseInt(line.split('PROJ ')[1]);
+		if (this.loops.length > 0) {
+			if (this.target > this.proj) {
+				this.dist = this.target - this.proj;
+				for (let x = 0; x < this.dist; x++) {
+					this.loops[this.rec].arr.push('PF');
+					this.loops[this.rec].light.push('');
+					this.update('PF');
+				} 
+			} else {
+				this.dist = this.proj - this.target;
+				for (let x = 0; x < this.dist; x++) {
+					this.loops[this.rec].arr.push('PB');
+					this.loops[this.rec].light.push('');
+					this.update('PB');
+				} 
+			}
+		} else {
+			if (this.target > this.proj) {
+				this.dist = this.target - this.proj;
+				for (let x = 0; x < this.dist; x++) {
+					this.arr.push('PF');
+					this.light.push('');
+					this.update('PF');
+				} 
+			} else {
+				this.dist = this.proj - this.target;
+				for (let x = 0; x < this.dist; x++) {
+					this.arr.push('PB');
+					this.light.push('');
+					this.update('PB');
+				} 
+			}
+		}
+	}
+	/**
+	 * Set the state of either the cam or projector
+	 */
+	set_state (line) {
+		if (line.substring(0, 7) === 'SET CAM') {
+			this.cam = parseInt(line.split('SET CAM')[1]);
+		} else if (line.substring(0, 8) === 'SET PROJ') {
+			this.proj = parseInt(line.split('SET PROJ')[1]);
+		}
+	}
+	/**
+	 * Return the last loop
+	 */
 	last_loop () {
 		return this.loops[this.loops.length - 1];
 	}
+	/**
+	 * Return the second-last loop
+	 */
 	parent_loop () {
 		return this.loops[this.loops.length - 2];
 	}
+	/**
+	 * Extract the loop count integer from a LOOP cmd
+	 */
 	loop_count (str) {
 		return parseInt(str.split(' ')[1]);
 	}
+	/**
+	 * Extract the fade length integer from a FADE cmd
+	 */
 	fade_count (str) {
 		return parseInt(str.split(' ')[1]);
 	}
@@ -292,7 +336,7 @@ class Mscript {
 		return arr;
 	}
 	/**
-	 *
+	 * Split a string on a command to extract data for light array
 	 */
 	light_to_arr (str, cmd) {
 		const cnt = str.split(cmd);
@@ -317,7 +361,7 @@ class Mscript {
 		return arr;
 	}
 	/**
-	 *
+	 * Split a string to extract an rgb color value
 	 */
 	light_state (str) {
 		//add parsers for other color spaces
@@ -326,7 +370,7 @@ class Mscript {
 	}
 
 	/**
-	 *
+	 * Throw an error with specific message
 	 */
 	fail (msg) {
 		throw new Error(msg);
