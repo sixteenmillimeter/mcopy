@@ -1,6 +1,7 @@
 'use strict';
 
-const mscript = require('../lib/mscript');
+const Mscript = require('../lib/mscript');
+const mscript = new Mscript();
 
 QUnit.test(`Basic functions`, (assert) => {
 	const script1 = 'CF\nPF\nCB\nPB\nBF\nBB';
@@ -93,7 +94,7 @@ QUnit.test('Loop', (assert) => {
 			&& obj.proj === 8
 			&& obj.arr.length === 16
 			&& obj.light.length === 16
-			&& obj.light[0] === mscript.black) {
+			&& obj.light[0] === '0,0,0') {
 			pass = true;
 		}
 		assert.ok(pass, 'Basic cam/proj loop');
@@ -128,7 +129,7 @@ QUnit.test('Light', (assert) => {
 			&& obj.light.length === 3
 			&& obj.light[0] === '255,255,255'
 			&& obj.light[1] === ''
-			&& obj.light[2] === mscript.black) {
+			&& obj.light[2] === '0,0,0') {
 			pass = true;
 		}
 		assert.ok(pass, 'Basic black');
