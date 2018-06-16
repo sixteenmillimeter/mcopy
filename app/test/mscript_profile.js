@@ -3,7 +3,8 @@
 //the purpose of this script is to test the performance of the
 //mscript rewrite against the original
 
-const mscript = require('../lib/mscript');
+const Mscript = require('../lib/mscript');
+const mscript = new Mscript();
 const mscriptOld = require('../lib/mscript/index.old.js');
 
 mscriptOld.state_clear();
@@ -16,7 +17,7 @@ for (let i = 0; i < 100000; i++) {
 
 console.timeEnd('mscript old str_to_arr')
 
-mscript.state_clear();
+mscript.clear()
 console.time('mscript str_to_arr');
 
 for (let i = 0; i < 100000; i++) {
