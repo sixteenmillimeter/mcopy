@@ -100,6 +100,7 @@ mse.mscript.toSequence = function () {
 mse.mscript.compile = function (cb) {
 	'use strict';
 	const data = mse.mscript.editor.getValue();
+	let mscript = new Mscript();
 	let output;
 	mse.mscript.raw = data;
 	mscript.interpret(data, (output) => {
