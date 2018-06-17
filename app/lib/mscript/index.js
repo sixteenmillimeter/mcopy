@@ -23,6 +23,7 @@ const ALTS = {
 	'F ' : ['FADE']
 };
 
+/** class Mscript */
 class Mscript {
 	constructor () {
 		this.output = {};
