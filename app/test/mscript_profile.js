@@ -8,11 +8,10 @@ const mscript = new Mscript();
 const mscriptOld = require('../lib/mscript/index.old.js');
 
 
-mscript.interpret(`F 20 100,100,100 50,255,0
+mscript.interpret(`F 72 0,0,0 10,20,30
 CF
 END
-CF
-PF
+PF 10
 	`, (output) => {
 	console.dir(output)
 });

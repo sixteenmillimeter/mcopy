@@ -35,9 +35,7 @@ class Mscript {
 		this.proj = 0;
 		this.color = '';
 		this.loops = [];
-		this.fades = [];
 		this.rec = -1;
-		this.fade_rec = -1;
 
 		this.two = '';
 		this.arr = [];
@@ -104,7 +102,7 @@ class Mscript {
 	 * Apply a basic two character command
 	 */
 	basic_cmd (line) {
-		if (this.loops.length > 0) {
+		if (this.rec !== -1) {
 			//hold generated arr in state loop array
 			this.loops[this.rec].arr
 				.push.apply(this.loops[this.rec].arr, 
@@ -176,7 +174,7 @@ class Mscript {
 	 */
 	move_cam (line) {
 		this.target = parseInt(line.split('CAM ')[1]);
-		if (this.loops.length > 0) {
+		if (this.rec !== -1) {
 			if (this.target > this.cam) {
 				this.dist = this.target - this.cam;
 				for (let x = 0; x < this.dist; x++) {
@@ -215,7 +213,7 @@ class Mscript {
 	 */
 	move_proj (line) {
 		this.target = parseInt(line.split('PROJ ')[1]);
-		if (this.loops.length > 0) {
+		if (this.rec !== -1) {
 			if (this.target > this.proj) {
 				this.dist = this.target - this.proj;
 				for (let x = 0; x < this.dist; x++) {
@@ -291,9 +289,6 @@ class Mscript {
 		this.loops[this.rec].fade_count = 0;
 		this.loops[this.rec].fade_len = len;
 	}
-	end_fade (line) {
-
-	}
 	/**
 	 * Extract the fade length integer from a FADE cmd
 	 */
@@ -318,15 +313,16 @@ class Mscript {
 		let cur = [];
 		let diff;
 		for (let i = 0; i < 3; i++) {
-			if (start[i] >= end[i]) {
+			if (x === len - 1) {
+				cur[i] = end[i];
+			} else if (start[i] >= end[i]) {
 				diff = start[i] - end[i];
-				cur[i] = start[i] - Math.round((diff / len) * x);
+				cur[i] = start[i] - Math.round((diff / (len - 1)) * x);
 			} else {
 				diff = end[i] - start[i];
-				cur[i] = start[i] + Math.round((diff / len) * x);
+				cur[i] = start[i] + Math.round((diff / (len - 1)) * x);
 			}
 		}
-		console.log(diff, len, x)
 		return this.rgb_str(cur);
 
 	}
@@ -356,37 +352,37 @@ class Mscript {
 				}
 			}
 		} else if (cmd === 'CF') {
-			if (this.loops.length < 1) {
+			if (this.rec === -1) {
 				this.cam += val;
 			} else {
 				this.loops[this.rec].cam += val;
 			}
 		} else if (cmd === 'CB') {
-			if (this.loops.length < 1) {
+			if (this.rec === -1) {
 				this.cam -= val;
 			} else {
 				this.loops[this.rec].cam--;
 			}
 		} else if (cmd === 'PF') {
-			if (this.loops.length < 1) {
+			if (this.rec === -1) {
 				this.proj += val;
 			} else {
 				this.loops[this.rec].proj += val;
 			}		
 		} else if (cmd === 'PB') {
-			if (this.loops.length < 1) {
+			if (this.rec === -1) {
 				this.proj -= val;
 			} else {
 				this.loops[this.rec].proj--;
 			}		
 		} else if (cmd === 'BF') {
-			if (this.loops.length < 1) {
+			if (this.rec === -1) {
 				this.cam += val;
 			} else {
 				this.loops[this.rec].cam += val;
 			}		
 		} else if (cmd === 'BB') {
-			if (this.loops.length < 1) {
+			if (this.rec === -1) {
 				this.cam -= val;
 			} else {
 				this.loops[this.rec].cam -= val;
