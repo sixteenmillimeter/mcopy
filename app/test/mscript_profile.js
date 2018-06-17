@@ -7,6 +7,18 @@ const Mscript = require('../lib/mscript');
 const mscript = new Mscript();
 const mscriptOld = require('../lib/mscript/index.old.js');
 
+
+mscript.interpret(`F 20 100,100,100 50,255,0
+CF
+END
+CF
+PF
+	`, (output) => {
+	console.dir(output)
+});
+
+process.exit()
+
 mscriptOld.state_clear();
 console.time('mscript old str_to_arr');
 

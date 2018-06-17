@@ -3,6 +3,7 @@
 /** @module lib/mscript */
 
 const BLACK = '0,0,0';
+const WHITE = '255,255,255';
 const CMD = [
 	'CF',
 	'PF',
@@ -26,7 +27,6 @@ class Mscript {
 	constructor () {
 		this.output = {};
 	}
-
 	/**
 	 * Clear the state of the script
 	 */
@@ -35,7 +35,9 @@ class Mscript {
 		this.proj = 0;
 		this.color = '';
 		this.loops = [];
+		this.fades = [];
 		this.rec = -1;
+		this.fade_rec = -1;
 
 		this.two = '';
 		this.arr = [];
@@ -72,7 +74,7 @@ class Mscript {
 			} else if (line.substring(0, 2) === 'L ') {
 				this.light_state(line);
 			} else if (line.substring(0, 2) === 'F ') {
-				//fade
+				this.new_loop(line, true);
 			} else if (line.substring(0, 3) === 'END') {
 				this.end_loop(line);
 			} else if (line.substring(0, 3) === 'CAM') { //directly go to that frame (black?)
@@ -120,7 +122,7 @@ class Mscript {
 	/**
 	 * Start a new loop
 	 */
-	new_loop (line) {
+	new_loop (line, fade) {
 		this.rec++;
 		this.loops[this.rec] = {
 			arr : [],
@@ -129,22 +131,40 @@ class Mscript {
 			proj : 0,
 			cmd : line + ''
 		};
+		if (fade) {
+			this.fade(line);
+		}
 	}
 	/**
 	 * Close the most recent loop
 	 */
 	end_loop (line) {
+		let light_arr;
+		let start;
+		let end;
+		let len;
+		
 		for (let x = 0; x < this.loop_count(this.loops[this.rec].cmd); x++) {
+			light_arr = this.loops[this.rec].light;
+			if (this.loops[this.rec].fade) {
+				start = this.loops[this.rec].start;
+				end = this.loops[this.rec].end;
+				len = this.loops[this.rec].fade_len;
+				light_arr = light_arr.map(l => {
+					return this.fade_rgb(start, end, len, x);
+				})
+			}
 			if (this.rec === 0) {
 				this.arr.push.apply(this.arr, this.loops[this.rec].arr);
-				this.light.push.apply(this.light, this.loops[this.rec].light);
+				this.light.push.apply(this.light, light_arr);
 			} else if (this.rec >= 1) {
 				this.loops[this.rec - 1].arr
 					.push.apply(this.loops[this.rec - 1].arr, 
 								this.loops[this.rec].arr);
+
 				this.loops[this.rec - 1].light
 					.push.apply(this.loops[this.rec - 1].light, 
-								this.loops[this.rec].light);
+								light_arr);
 			}
 		}
 		this.update('END', this.loop_count(this.loops[this.rec].cmd));
@@ -258,10 +278,66 @@ class Mscript {
 		return parseInt(str.split(' ')[1]);
 	}
 	/**
+	 * Execute a fade of frame length, from color to another color
+	 */
+	fade (line) {
+		let len = this.fade_count(line);
+		let start = this.fade_start(line);
+		let end = this.fade_end(line);
+
+		this.loops[this.rec].start = start;
+		this.loops[this.rec].end = end;
+		this.loops[this.rec].fade = true;
+		this.loops[this.rec].fade_count = 0;
+		this.loops[this.rec].fade_len = len;
+	}
+	end_fade (line) {
+
+	}
+	/**
 	 * Extract the fade length integer from a FADE cmd
 	 */
 	fade_count (str) {
 		return parseInt(str.split(' ')[1]);
+	}
+	/**
+	 * Extract the start color from a string
+	 */
+	fade_start (str) {
+		let color = str.split(' ')[2];
+		return this.rgb(color.trim())
+	}
+	/**
+	 * Extract the end color from a string
+	 */
+	fade_end (str) {
+		let color = str.split(' ')[3];
+		return this.rgb(color.trim())
+	}
+	fade_rgb (start, end, len, x) {
+		let cur = [];
+		let diff;
+		for (let i = 0; i < 3; i++) {
+			if (start[i] >= end[i]) {
+				diff = start[i] - end[i];
+				cur[i] = start[i] - Math.round((diff / len) * x);
+			} else {
+				diff = end[i] - start[i];
+				cur[i] = start[i] + Math.round((diff / len) * x);
+			}
+		}
+		console.log(diff, len, x)
+		return this.rgb_str(cur);
+
+	}
+	rgb (str) {
+		let rgb = str.split(',');
+		return rgb.map( char => {
+			return parseInt(char);
+		})
+	} 
+	rgb_str (arr) {
+		return arr.join(',');
 	}
 	/**
 	 * Increase the state of a specific object, such as the camera/projector,
