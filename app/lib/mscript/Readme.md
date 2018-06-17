@@ -3,134 +3,177 @@
 ## lib/mscript
 
 * [lib/mscript](#module_lib/mscript)
-    * [~mscript](#module_lib/mscript..mscript)
-        * [.arg(shrt, lng)](#module_lib/mscript..mscript.arg) ⇒ <code>boolean</code>
-        * [.arg_pos(shrt, lng)](#module_lib/mscript..mscript.arg_pos) ⇒ <code>boolean</code>
-        * [.state_clear()](#module_lib/mscript..mscript.state_clear)
-        * [.alts_unique()](#module_lib/mscript..mscript.alts_unique)
-        * [.interpret()](#module_lib/mscript..mscript.interpret)
-        * [.last_loop()](#module_lib/mscript..mscript.last_loop)
-        * [.parent_loop()](#module_lib/mscript..mscript.parent_loop)
-        * [.state_update()](#module_lib/mscript..mscript.state_update)
-        * [.str_to_arr()](#module_lib/mscript..mscript.str_to_arr)
-        * [.light_state()](#module_lib/mscript..mscript.light_state)
-        * [.light_to_arr()](#module_lib/mscript..mscript.light_to_arr)
-        * [.loop_count()](#module_lib/mscript..mscript.loop_count)
-        * [.fail()](#module_lib/mscript..mscript.fail)
-        * [.output()](#module_lib/mscript..mscript.output)
-        * [.init()](#module_lib/mscript..mscript.init)
-        * [.tests()](#module_lib/mscript..mscript.tests)
+    * [~Mscript](#module_lib/mscript..Mscript)
+        * [.clear()](#module_lib/mscript..Mscript+clear)
+        * [.interpret()](#module_lib/mscript..Mscript+interpret)
+        * [.basic_cmd()](#module_lib/mscript..Mscript+basic_cmd)
+        * [.new_loop()](#module_lib/mscript..Mscript+new_loop)
+        * [.end_loop()](#module_lib/mscript..Mscript+end_loop)
+        * [.move_cam()](#module_lib/mscript..Mscript+move_cam)
+        * [.move_proj()](#module_lib/mscript..Mscript+move_proj)
+        * [.set_state()](#module_lib/mscript..Mscript+set_state)
+        * [.last_loop()](#module_lib/mscript..Mscript+last_loop)
+        * [.parent_loop()](#module_lib/mscript..Mscript+parent_loop)
+        * [.loop_count()](#module_lib/mscript..Mscript+loop_count)
+        * [.fade()](#module_lib/mscript..Mscript+fade)
+        * [.fade_count()](#module_lib/mscript..Mscript+fade_count)
+        * [.fade_start()](#module_lib/mscript..Mscript+fade_start)
+        * [.fade_end()](#module_lib/mscript..Mscript+fade_end)
+        * [.update()](#module_lib/mscript..Mscript+update)
+        * [.str_to_arr()](#module_lib/mscript..Mscript+str_to_arr)
+        * [.light_to_arr()](#module_lib/mscript..Mscript+light_to_arr)
+        * [.light_state()](#module_lib/mscript..Mscript+light_state)
+        * [.fail()](#module_lib/mscript..Mscript+fail)
 
-<a name="module_lib/mscript..mscript"></a>
+<a name="module_lib/mscript..Mscript"></a>
 
-### lib/mscript~mscript
-object mscript
+### lib/mscript~Mscript
+class Mscript
 
-**Kind**: inner constant of [<code>lib/mscript</code>](#module_lib/mscript)  
+**Kind**: inner class of [<code>lib/mscript</code>](#module_lib/mscript)  
 
-* [~mscript](#module_lib/mscript..mscript)
-    * [.arg(shrt, lng)](#module_lib/mscript..mscript.arg) ⇒ <code>boolean</code>
-    * [.arg_pos(shrt, lng)](#module_lib/mscript..mscript.arg_pos) ⇒ <code>boolean</code>
-    * [.state_clear()](#module_lib/mscript..mscript.state_clear)
-    * [.alts_unique()](#module_lib/mscript..mscript.alts_unique)
-    * [.interpret()](#module_lib/mscript..mscript.interpret)
-    * [.last_loop()](#module_lib/mscript..mscript.last_loop)
-    * [.parent_loop()](#module_lib/mscript..mscript.parent_loop)
-    * [.state_update()](#module_lib/mscript..mscript.state_update)
-    * [.str_to_arr()](#module_lib/mscript..mscript.str_to_arr)
-    * [.light_state()](#module_lib/mscript..mscript.light_state)
-    * [.light_to_arr()](#module_lib/mscript..mscript.light_to_arr)
-    * [.loop_count()](#module_lib/mscript..mscript.loop_count)
-    * [.fail()](#module_lib/mscript..mscript.fail)
-    * [.output()](#module_lib/mscript..mscript.output)
-    * [.init()](#module_lib/mscript..mscript.init)
-    * [.tests()](#module_lib/mscript..mscript.tests)
+* [~Mscript](#module_lib/mscript..Mscript)
+    * [.clear()](#module_lib/mscript..Mscript+clear)
+    * [.interpret()](#module_lib/mscript..Mscript+interpret)
+    * [.basic_cmd()](#module_lib/mscript..Mscript+basic_cmd)
+    * [.new_loop()](#module_lib/mscript..Mscript+new_loop)
+    * [.end_loop()](#module_lib/mscript..Mscript+end_loop)
+    * [.move_cam()](#module_lib/mscript..Mscript+move_cam)
+    * [.move_proj()](#module_lib/mscript..Mscript+move_proj)
+    * [.set_state()](#module_lib/mscript..Mscript+set_state)
+    * [.last_loop()](#module_lib/mscript..Mscript+last_loop)
+    * [.parent_loop()](#module_lib/mscript..Mscript+parent_loop)
+    * [.loop_count()](#module_lib/mscript..Mscript+loop_count)
+    * [.fade()](#module_lib/mscript..Mscript+fade)
+    * [.fade_count()](#module_lib/mscript..Mscript+fade_count)
+    * [.fade_start()](#module_lib/mscript..Mscript+fade_start)
+    * [.fade_end()](#module_lib/mscript..Mscript+fade_end)
+    * [.update()](#module_lib/mscript..Mscript+update)
+    * [.str_to_arr()](#module_lib/mscript..Mscript+str_to_arr)
+    * [.light_to_arr()](#module_lib/mscript..Mscript+light_to_arr)
+    * [.light_state()](#module_lib/mscript..Mscript+light_state)
+    * [.fail()](#module_lib/mscript..Mscript+fail)
 
-<a name="module_lib/mscript..mscript.arg"></a>
+<a name="module_lib/mscript..Mscript+clear"></a>
 
-#### mscript.arg(shrt, lng) ⇒ <code>boolean</code>
-Check for the presence of specific arguments in process
-argv
+#### mscript.clear()
+Clear the state of the script
 
-**Kind**: static method of [<code>mscript</code>](#module_lib/mscript..mscript)  
-**Returns**: <code>boolean</code> - Is flag present  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| shrt | <code>string</code> | Short version of argument or flag |
-| lng | <code>string</code> | Long version of argument or flag |
-
-<a name="module_lib/mscript..mscript.arg_pos"></a>
-
-#### mscript.arg_pos(shrt, lng) ⇒ <code>boolean</code>
-Check for the position of specific arguments in process
-argv
-
-**Kind**: static method of [<code>mscript</code>](#module_lib/mscript..mscript)  
-**Returns**: <code>boolean</code> - Position of arg or flag, for locating input  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| shrt | <code>string</code> | Short version of argument or flag |
-| lng | <code>string</code> | Long version of argument or flag |
-
-<a name="module_lib/mscript..mscript.state_clear"></a>
-
-#### mscript.state_clear()
-Clear the state object
-
-**Kind**: static method of [<code>mscript</code>](#module_lib/mscript..mscript)  
-<a name="module_lib/mscript..mscript.alts_unique"></a>
-
-#### mscript.alts_unique()
-**Kind**: static method of [<code>mscript</code>](#module_lib/mscript..mscript)  
-<a name="module_lib/mscript..mscript.interpret"></a>
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+interpret"></a>
 
 #### mscript.interpret()
-**Kind**: static method of [<code>mscript</code>](#module_lib/mscript..mscript)  
-<a name="module_lib/mscript..mscript.last_loop"></a>
+Main function, accepts multi-line string, parses into lines
+and interprets the instructions from the text. Returns an array
+of steps to be fed into the mcopy.
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+basic_cmd"></a>
+
+#### mscript.basic_cmd()
+Apply a basic two character command
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+new_loop"></a>
+
+#### mscript.new_loop()
+Start a new loop
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+end_loop"></a>
+
+#### mscript.end_loop()
+Close the most recent loop
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+move_cam"></a>
+
+#### mscript.move_cam()
+Move camera to explicitly-defined frame
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+move_proj"></a>
+
+#### mscript.move_proj()
+Move projector to explicitly-defined frame
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+set_state"></a>
+
+#### mscript.set_state()
+Set the state of either the cam or projector
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+last_loop"></a>
 
 #### mscript.last_loop()
-**Kind**: static method of [<code>mscript</code>](#module_lib/mscript..mscript)  
-<a name="module_lib/mscript..mscript.parent_loop"></a>
+Return the last loop
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+parent_loop"></a>
 
 #### mscript.parent_loop()
-**Kind**: static method of [<code>mscript</code>](#module_lib/mscript..mscript)  
-<a name="module_lib/mscript..mscript.state_update"></a>
+Return the second-last loop
 
-#### mscript.state_update()
-**Kind**: static method of [<code>mscript</code>](#module_lib/mscript..mscript)  
-<a name="module_lib/mscript..mscript.str_to_arr"></a>
-
-#### mscript.str_to_arr()
-**Kind**: static method of [<code>mscript</code>](#module_lib/mscript..mscript)  
-<a name="module_lib/mscript..mscript.light_state"></a>
-
-#### mscript.light_state()
-**Kind**: static method of [<code>mscript</code>](#module_lib/mscript..mscript)  
-<a name="module_lib/mscript..mscript.light_to_arr"></a>
-
-#### mscript.light_to_arr()
-**Kind**: static method of [<code>mscript</code>](#module_lib/mscript..mscript)  
-<a name="module_lib/mscript..mscript.loop_count"></a>
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+loop_count"></a>
 
 #### mscript.loop_count()
-**Kind**: static method of [<code>mscript</code>](#module_lib/mscript..mscript)  
-<a name="module_lib/mscript..mscript.fail"></a>
+Extract the loop count integer from a LOOP cmd
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+fade"></a>
+
+#### mscript.fade()
+Execute a fade of frame length, from color to another color
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+fade_count"></a>
+
+#### mscript.fade_count()
+Extract the fade length integer from a FADE cmd
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+fade_start"></a>
+
+#### mscript.fade_start()
+Extract the start color from a string
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+fade_end"></a>
+
+#### mscript.fade_end()
+Extract the end color from a string
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+update"></a>
+
+#### mscript.update()
+Increase the state of a specific object, such as the camera/projector,
+by the value defined in val
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+str_to_arr"></a>
+
+#### mscript.str_to_arr()
+Split string on command, extract any integers from string
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+light_to_arr"></a>
+
+#### mscript.light_to_arr()
+Split a string on a command to extract data for light array
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+light_state"></a>
+
+#### mscript.light_state()
+Split a string to extract an rgb color value
+
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..Mscript+fail"></a>
 
 #### mscript.fail()
-**Kind**: static method of [<code>mscript</code>](#module_lib/mscript..mscript)  
-<a name="module_lib/mscript..mscript.output"></a>
+Throw an error with specific message
 
-#### mscript.output()
-**Kind**: static method of [<code>mscript</code>](#module_lib/mscript..mscript)  
-<a name="module_lib/mscript..mscript.init"></a>
-
-#### mscript.init()
-**Kind**: static method of [<code>mscript</code>](#module_lib/mscript..mscript)  
-<a name="module_lib/mscript..mscript.tests"></a>
-
-#### mscript.tests()
-Legacy tests. To be deprecated in future releases.
-
-**Kind**: static method of [<code>mscript</code>](#module_lib/mscript..mscript)  
+**Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
