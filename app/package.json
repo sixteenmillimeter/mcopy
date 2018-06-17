@@ -6,7 +6,8 @@
   "scripts": {
     "start": "./node_modules/.bin/electron main.js",
     "dev": "./node_modules/.bin/gulp && ./node_modules/.bin/electron main.js -d",
-    "install": "./node_modules/.bin/electron-rebuild"
+    "install": "./node_modules/.bin/electron-rebuild",
+    "test": "./node_modules/.bin/qunit test/index.js"
   },
   "repository": {
     "type": "git",
@@ -25,7 +26,7 @@
   },
   "homepage": "https://github.com/sixteenmillimeter/mcopy#readme",
   "devDependencies": {
-    "electron-installer-debian": "^0.7.1",
+    "electron-installer-debian": "^0.8.1",
     "electron-installer-dmg": "^0.2.1",
     "electron-packager": "^10.1.1",
     "electron-rebuild": "^1.4.0",
@@ -34,11 +35,12 @@
     "gulp-concat": "^2.6.1",
     "gulp-less": "^3.4.0",
     "jsdoc-to-markdown": "^4.0.1",
-    "qunit": "^2.5.1"
+    "qunit": "^2.6.1"
   },
   "dependencies": {
     "async": "^2.6.0",
     "electron": "^1.8.2-beta.4",
+    "fs-extra": "^6.0.1",
     "humanize-duration": "^3.12.1",
     "moment": "^2.17.1",
     "node-notifier": "^5.1.2",

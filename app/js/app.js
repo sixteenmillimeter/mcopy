@@ -2494,7 +2494,7 @@ const cmd 		= require('./lib/ui/cmd.js');
 const log 		= require('./lib/ui/log.js');
 const devices 	= require('./lib/ui/devices.js');
 const mse 		= require('./lib/ui/mscript.js');
-const mscript 	= require('./lib/mscript');
+const Mscript 	= require('./lib/mscript');
 
 
 
