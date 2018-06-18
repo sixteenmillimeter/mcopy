@@ -6,18 +6,15 @@ const mscript = new Mscript();
 QUnit.test(`Basic functions`, (assert) => {
 	const script1 = 'CF\nPF\nCB\nPB\nBF\nBB';
 	const script2 = `CF 3\nPF 3`
-	assert.expect( 2 );
+	assert.expect( 5 );
 
 	mscript.interpret(script1, (obj) => {
-		let pass = false;
-		if (obj.success === true 
-			&& obj.cam === 0
-			&& obj.proj === 0 
-			&& obj.arr.length === 6) {
-			pass = true;
-		}
-		assert.ok(pass, `Simple script1 compiles`)
+		assert.ok(obj.success, `Simple script1 compiles`)
+		assert.equal(obj.cam, 0, 'Camera gets equaled out');
+		assert.equal(obj.proj, 0, 'Projector gets cancelled out');
+		assert.equal(obj.arr.length, 6, 'Generate sequence of 6 steps');
 	});
+
 	mscript.interpret(script2, (obj) => {
 		let pass = false;
 		if (obj.success === true 
@@ -149,3 +146,50 @@ QUnit.test('Light', (assert) => {
 		assert.ok(pass, 'Basic light');
 	});
 });
+
+QUnit.test('Fade', (assert) => {
+	assert.expect(13);
+	const script1 = 
+`F 72 0,0,0 10,20,30
+CF
+END
+PF 10`
+	mscript.interpret(script1, (obj) => {
+		//console.dir(obj)
+		assert.ok(obj.success, 'Basic fade compiles');
+		assert.equal(obj.cam, 72, `Camera moves forward 72 frames`);
+		assert.equal(obj.proj, 10, 'Projector moves forward 10 frames');
+		assert.equal(obj.arr.length, 82, 'Generates 82 steps');
+		assert.equal(obj.light[0], '0,0,0', 'Fade starts with starting color');
+		assert.equal(obj.light[71], '10,20,30', 'Fade ends with ending color');
+		assert.equal(obj.light[72], '', 'Frame after fade is default color');
+	});
+
+	const script2 =
+`
+F 24 25,255,125 225,125,10
+CF
+END
+L 225,125,10
+CF 10`
+	mscript.interpret(script2, (obj) => {
+		//console.dir(obj)
+		assert.ok(obj.success, 'Mscript labeled output success');
+		assert.equal(obj.cam, 34, 'There are 34 camera frames');
+		assert.equal(obj.arr.length, 34, 'There are 34 steps in the script');
+		assert.equal(obj.light[0], '25,255,125', 'First frame is equal to start color');
+		assert.equal(obj.light[23], '225,125,10', 'Last frame in fade is equal to end color');
+		assert.equal(obj.light[24], '225,125,10', 'First frame after fade is set using Light command');
+	});
+})
+
+QUnit.test('Variables', (assert) => {
+	const script1 = 
+`@LIGHT=200,200,200;
+CF 20
+PF`
+	mscript.interpret(script1, obj => {
+		//console.dir(obj)
+		assert.ok(true)
+	})
+})
