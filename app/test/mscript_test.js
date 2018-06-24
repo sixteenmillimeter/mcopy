@@ -185,9 +185,12 @@ CF 10`
 
 QUnit.test('Variables', (assert) => {
 	const script1 = 
-`@LIGHT=200,200,200;
+`@LIGHT=200,200,200
+@COUNT=1
 CF 20
-PF`
+PF
+@COUNT++
+`
 	mscript.interpret(script1, obj => {
 		//console.dir(obj)
 		assert.ok(true)
