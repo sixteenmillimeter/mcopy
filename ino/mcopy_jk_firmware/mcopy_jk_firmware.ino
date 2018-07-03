@@ -31,7 +31,7 @@ boolean cam_dir = true;
 const int PROJECTOR = 8;
 const int PROJECTOR_FWD = 9;
 const int PROJECTOR_BWD = 10;
-const int PROJECTOR_MOMENT = 240;
+const int PROJECTOR_MOMENT = 200;
 const int PROJECTOR_FRAME = 950;
 //PROJECTOR VARIABLES
 boolean proj_dir = true;
