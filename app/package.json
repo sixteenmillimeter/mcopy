@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/sixteenmillimeter/mcopy#readme",
   "devDependencies": {
+    "electron": "^2.0.8",
     "electron-installer-debian": "^0.8.1",
     "electron-installer-dmg": "^0.2.1",
     "electron-packager": "^10.1.1",
@@ -39,7 +40,6 @@
   },
   "dependencies": {
     "async": "^2.6.0",
-    "electron": "^1.8.2-beta.4",
     "fs-extra": "^6.0.1",
     "humanize-duration": "^3.12.1",
     "moment": "^2.17.1",
