@@ -47,7 +47,19 @@ mse.mscript.fromSequence = function () {
 	tmp = tmp.map(line => {
 		return `${line.cmd} ${line.num}`
 	})
+	
+	if (mcopy.loop > 1) {
+		tmp.map(line => {
+			return `	${line}`;
+		})
+		tmp.reverse();
+		tmp.push(`LOOP ${mcopy.loop}`);
+		tmp.reverse();
+		tmp.push('END');
+	}
+
 	str = tmp.join('\n');
+
 	nav.change('script');
 	cont = confirm(`Are you sure you want to over-write the current sequence?`);
 	if (cont) {

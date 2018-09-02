@@ -23,6 +23,21 @@ const ALTS = {
 	'F ' : ['FADE']
 };
 
+/** helper functions */
+
+/** startswith function from lodash, do not want the entire lib for this */
+function startsWith(string, target, position) {
+	const { length } = string;
+	position = position == null ? 0 : position;
+	if (position < 0) {
+		position = 0;
+	} else if (position > length) {
+		position = length;
+	}
+	target = `${target}`;
+	return string.slice(position, position + target.length) == target;
+}
+
 /** class Mscript */
 class Mscript {
 	constructor () {
@@ -32,6 +47,8 @@ class Mscript {
 	 * Clear the state of the script
 	 */
 	clear () {
+		this.lines = [];
+
 		this.cam = 0;
 		this.proj = 0;
 		this.color = '';
@@ -43,6 +60,8 @@ class Mscript {
 		this.light = [];
 		this.target = 0; //move to target using CAM # or PROJ #
 		this.dist = 0;
+
+		this.variables = {};
 
 		this.output = {};
 	}
@@ -59,30 +78,36 @@ class Mscript {
 		}
 
 		//split string into lines, each containing a command
-		let lines = text.split('\n');
+		this.lines = text.split('\n');
 
-		for (let line of lines) {
-			line = line.replace(/\t+/g, ""); //strip tabs
+		this.lines = this.lines.map(line => {
+			line = line.replace(/\t+/g, ''); //strip tabs
 			line = line.trim(); //remove excess whitespace before and after command
 			line = line.toUpperCase();
+			return line;
+		})
+
+		for (let line of this.lines) {
 			this.two = line.substring(0, 2);
 			if (CMD.indexOf(this.two) !== -1) {
 				this.basic_cmd(line);
-			} else if (line.substring(0, 4) === 'LOOP') {
+			} else if (startsWith(line, '@') || line.indexOf('@') !== -1) {
+				this.variable(line);
+			} else if (startsWith(line, 'LOOP')) {
 				this.new_loop(line);
-			} else if (line.substring(0, 2) === 'L ') {
+			} else if (startsWith(line, 'L ')) {
 				this.light_state(line);
-			} else if (line.substring(0, 2) === 'F ') {
+			} else if (startsWith(line, 'F ')) {
 				this.new_loop(line, true);
-			} else if (line.substring(0, 3) === 'END') {
+			} else if (startsWith(line, 'END')) {
 				this.end_loop(line);
-			} else if (line.substring(0, 3) === 'CAM') { //directly go to that frame (black?)
+			} else if (startsWith(line, 'CAM')) { //directly go to that frame (black?)
 				this.move_cam(line);
-			} else if (line.substring(0, 4) === 'PROJ') { //directly go to that frame
+			} else if (startsWith(line, 'PROJ')) { //directly go to that frame
 				this.move_proj(line);
-			} else if (line.substring(0, 3) === 'SET') { //set that state
+			} else if (startsWith(line, 'SET')) { //set that state
 				this.set_state(line);
-			} else if (line.substring(0, 1) === '#' || line.substring(0, 2) === '//') {
+			} else if (startsWith(line, '#') || startsWith(line, '//')) {
 				//comments
 				//ignore while parsing
 			}
@@ -98,6 +123,46 @@ class Mscript {
 			//should only be invoked by running mscript.tests()
 			callback(this.output);
 		}
+	}
+	variable (line) {
+		let parts = line.split('=');
+		let key = parts[0];
+		let value = parts[1];
+		let update = false;
+
+		if (value && value.indexOf('#') !== -1) {
+			value = value.split('#')[0];
+		}
+
+		if (value && value.indexOf('//') !== -1) {
+			value = value.split('//')[0];
+		}
+
+		if (value && value.indexOf('+') !== -1) {
+			if (value)
+			update = true;
+		}
+
+		if (line.indexOf('-') !== -1) {
+
+			update = true;
+		}
+
+		if (line.indexOf(',') === -1) { //if not color string
+			try {
+				value = parseInt(value);
+			} catch (err) {
+				//supress parsing error
+			}
+		}
+		//console.dir(parts)
+		if (!this.variables[key] || update) {
+			this.variables[key] = value;
+		}
+		console.dir(this.variables)
+	}
+	variable_replace(line) {
+
 	}
 	/**
 	 * Apply a basic two character command
@@ -252,9 +317,9 @@ class Mscript {
 	 * Set the state of either the cam or projector
 	 */
 	set_state (line) {
-		if (line.substring(0, 7) === 'SET CAM') {
+		if (startsWith(line, 'SET CAM')) {
 			this.cam = parseInt(line.split('SET CAM')[1]);
-		} else if (line.substring(0, 8) === 'SET PROJ') {
+		} else if (startsWith(line, 'SET PROJ')) {
 			this.proj = parseInt(line.split('SET PROJ')[1]);
 		}
 	}
@@ -466,7 +531,7 @@ END LOOP - (or END) closes loop
 
 L #RGB - sets light to rgb value
 
-FADE
+FADE 24 0,0,0 255,255,255
 
 CF - Camera forwards
 PF - Projector forwards
