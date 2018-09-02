@@ -600,7 +600,7 @@ log.file = function () {
 	return path.join(logPath, 'mcopy.log')
 }
 log.time = 'MM/DD/YY-HH:mm:ss'
-log.transport = new (winston.Logger)({
+log.transport = winston.createLogger({
 	transports: [
 		new (winston.transports.Console)(),
 		new (winston.transports.File)({ filename: log.file() })
