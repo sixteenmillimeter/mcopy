@@ -33,7 +33,9 @@ For Windows, you can [install from source](https://github.com/sixteenmillimeter/
 
 ## Usage <a name="usage"></a>
 
-The software requires your hardware to be in place before 
+The software requires your hardware to be in place before the mcopy control app is useful.
+
+![mcopy app](docs/mcopy.png?raw=true "mcopy app")
 
 ## Software <a name="software"></a>
 
