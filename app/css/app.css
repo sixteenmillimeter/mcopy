@@ -239,7 +239,7 @@ button:focus {
   width: 7px;
   position: absolute;
   top: 0;
-  left: calc(50% - (14px * 2));
+  left: calc(22%);
 }
 .dial-end {
   transform: rotateZ(0deg);
