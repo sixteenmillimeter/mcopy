@@ -27,7 +27,6 @@
   "homepage": "https://github.com/sixteenmillimeter/mcopy#readme",
   "devDependencies": {
     "electron": "^3.0.10",
-    "electron-installer-debian": "^1.0.0",
     "electron-installer-dmg": "^2.0.0",
     "electron-packager": "^12.2.0",
     "electron-rebuild": "^1.8.2",
@@ -48,5 +47,8 @@
     "sqlite3": "^4.0.4",
     "uuid": "^3.3.2",
     "winston": "^3.0.0"
+  },
+  "optionalDependencies": {
+    "electron-installer-debian": "^1.0.0"
   }
 }
