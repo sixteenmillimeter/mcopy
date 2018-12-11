@@ -71,7 +71,7 @@ dev.enumerate = async function () {
 	}
 	log.info(`Found ${devices.length} USB devices`, 'SERIAL', true, true)
 	devices = dev.favor(devices)
-	return dev.all(devices)
+	return await dev.all(devices)
 }
 
 dev.favor = function (devices) {
@@ -253,7 +253,9 @@ dev.all = async function (devices) {
 	let c = {}
 	let p = {}
 	let l = {}
-	let all
+	let type
+	let d
+
 
 	dev.connected = {
 		projector : false,
@@ -263,28 +265,21 @@ dev.all = async function (devices) {
 
 	let checklist = []
 
-	all = Promise.all(devices.map(async (device) => {
-		return new Promise(async (resolve, reject) => {
-			let type
-			let d
+	for (let device of devices) {
+		try {
+			type = await dev.distinguish(device)
+		} catch (err) {
+			console.error(err)
+			return reject(err)
+		}
 
-			try {
-				type = await dev.distinguish(device)
-			} catch (err) {
-				console.error(err)
-				return reject(err)
-			}
-
-			try {
-				d = await dev.connectDevice(device, type)
-			} catch (err) {
-				console.error(err)
-				return reject(err)
-			}
-
-			return d
-		})
-	}))
+		try {
+			await dev.connectDevice(device, type)
+		} catch (err) {
+			console.error(err)
+			return reject(err)
+		}
+	}
 
 	//done checking devices
 
@@ -300,7 +295,7 @@ dev.all = async function (devices) {
 	if (mcopy.settings.camera.intval) {
 		c.intval = mcopy.settings.camera.intval
 		await delay(1000)
-		cam.connectIntval(null, { connect : true,  url : c.intval })
+		awaitcam.connectIntval(null, { connect : true,  url : c.intval })
 	}
 
 	if (!dev.connected.light) {
@@ -331,10 +326,11 @@ dev.remember = function (which, device, type) {
 };
 
 dev.ready = function (projector, camera, light) {
+	console.log('HAPPNED')
 	mainWindow.webContents.send('ready', { 
-		camera: camera, 
-		projector: projector, 
-		light: light, 
+		camera, 
+		projector, 
+		light, 
 		profile: mcopy.settings.profile 
 	})
 	settings.update('camera', camera)
@@ -526,27 +522,31 @@ cam.exposure = function (exposure, id) {
 	})
 }
 
-cam.connectIntval = function (event, arg) {
-	if (arg.connect) {
-		cam.intval = new Intval(arg.url)
-		cam.intval.connect((err, ms, state) => {
-			if (err) {
-				mainWindow.webContents.send('intval', { connected : false })
-				log.info(`Cannot connect to ${arg.url}`, 'INTVAL', true, true)
-				cam.intval = null
-				delete cam.intval
-			} else {
-				mainWindow.webContents.send('intval', { connected : true, url : arg.url, state : state })
-				log.info(`Connected to INTVAL3 @ ${arg.url}`, 'INTVAL', true, true)
-				settings.update('camera', { intval : arg.url })
-				settings.save()
-				dev.remember('intval', arg.url, 'camera')
+cam.connectIntval = async function (event, arg) {
+	return new Promise((resolve, reject) => {
+		if (arg.connect) {
+			cam.intval = new Intval(arg.url)
+			cam.intval.connect((err, ms, state) => {
+				if (err) {
+					mainWindow.webContents.send('intval', { connected : false })
+					log.info(`Cannot connect to ${arg.url}`, 'INTVAL', true, true)
+					cam.intval = null
+					delete cam.intval
+				} else {
+					mainWindow.webContents.send('intval', { connected : true, url : arg.url, state : state })
+					log.info(`Connected to INTVAL3 @ ${arg.url}`, 'INTVAL', true, true)
+					settings.update('camera', { intval : arg.url })
+					settings.save()
+					dev.remember('intval', arg.url, 'camera')
+				}
+				return resolve(true)
+			})
+		} else if (arg.disconnect) {
+			cam.intval = null
+			return resolve(false)
+		}
+	})
 
-			}
-		})
-	} else if (arg.disconnect) {
-		cam.intval = null
-	}
 }
 
 cam.listen = function () {
@@ -676,7 +676,7 @@ var init = async function () {
 	settings.restore()
 	mcopy.settings = settings.all()
 
-	await delay(1000)
+	await delay(2000)
 	await dev.enumerate()
 }
 
