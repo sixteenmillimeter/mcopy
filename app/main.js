@@ -43,8 +43,6 @@ async function delay (ms) {
 	})
 }
 
-//console.log(process.version)
-
 mcopy.cfg = require('./data/cfg.json')
 mcopy.settings = {}
 
@@ -54,7 +52,7 @@ dev.init = function () {
 
 dev.listen = function () {
 	ipcMain.on('profile', (event, arg) => {
-		console.log(`Saving profile ${arg.profile}`)
+		log.info(`Saving profile ${arg.profile}`, 'SETTINGS', false, false)
 		settings.update('profile', arg.profile)
 		settings.save()
 	})
@@ -326,7 +324,6 @@ dev.remember = function (which, device, type) {
 };
 
 dev.ready = function (projector, camera, light) {
-	console.log('HAPPNED')
 	mainWindow.webContents.send('ready', { 
 		camera, 
 		projector, 
@@ -511,7 +508,7 @@ cam.move = async function (frame, id) {
 	} else { 
 		ms = await arduino.send('camera', cmd)
 	}
-	console.log(ms)
+	log.info('Camera move time', { ms })
 	return cam.end(cmd, id, ms)
 }
 
