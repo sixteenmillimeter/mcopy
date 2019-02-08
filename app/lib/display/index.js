@@ -88,7 +88,7 @@ async function end () {
 	if (system.platform !== 'nix') {
 		await wv.close();
 	} else {
-		cp.kill()
+		if (cp) cp.kill()
 	}
 }
 

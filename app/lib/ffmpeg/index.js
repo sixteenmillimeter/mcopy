@@ -40,8 +40,8 @@ async function frame (video, frame, obj) {
 	//-vf "select=gte(n\,${frame})" -compression_algo raw -pix_fmt rgb24 "export-${padded}.png"
 
 	try {
-		output = await exec(cmd);
 		console.log(cmd);
+		output = await exec(cmd);
 	} catch (err) {
 		console.error(err);
 	}
@@ -145,7 +145,7 @@ async function checkDir () {
 
 module.exports = (sys) => {
 	system = sys;
-	TMPDIR = path.join(system.tmp, 'intval_go_node');
+	TMPDIR = path.join(system.tmp, 'mcopy_digital');
 
 	checkDir();
 

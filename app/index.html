@@ -259,11 +259,11 @@
             <select id="projector_device">
               <option>Not Set</option>
             </select>
-            <input type="radio" id="digital_type_arduino" name="digital_type" value="arduino" checked="checked" />
+            <input type="radio" id="projector_type_arduino" name="projector_type" value="arduino" checked="checked" />
           </div>
           <div class="spacer">
-            <input type="text" id="digital" name="digital" placeholder="Digital file" onclick="devices.digitalSelect();" readonly />
-            <input type="radio" id="digital_type" name="digital_type" value="video" onclick="devices.digital();" />
+            <input type="text" id="digital" name="digital" placeholder="Digital file" onclick="devices.digitalSelect();" data-file="" readonly />
+            <input type="radio" id="projector_type" name="projector_type" value="video" onclick="devices.digital();" />
           </div>
           <div>
             <h4>Camera</h4>

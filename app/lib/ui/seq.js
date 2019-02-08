@@ -26,6 +26,7 @@ seq.run = function () {
 	}
 	if (seq.i == 0) {
 		$('#loop_current').text(gui.fmtZero(mcopy.loopCount + 1, 6));
+		ipcRenderer.send('seq', { action : 'loop' });
 	}
 	if (seq.stop()) {
 		$('.row input').removeClass('h');
@@ -73,7 +74,7 @@ seq.run = function () {
 			} else {
 				log.info('Sequence completed in ' + humanizeDuration(timeEnd), 'SEQUENCE', true);
 			}
-
+			ipcRenderer.send('seq', { action : 'stop' });
 			//capture.report = ipcRenderer.sendSync('transfer', { action: 'end'});
 			//if (capture.active) {
 				//alert(capture.report);
@@ -90,6 +91,9 @@ seq.run = function () {
 seq.stop = function (state) {
 	'use strict';
 	if (typeof state === 'undefined') {
+		if (seq.stopState === true) {
+			ipcRenderer.send('seq', { action : 'stop' });
+		}
 		return seq.stopState;
 	} else {
 		seq.stopState = state;
@@ -97,7 +101,10 @@ seq.stop = function (state) {
 	if (state === false) {
 		mcopy.loopCount = 0
 		$('#loop_current').text('');
+	} else {
+		ipcRenderer.send('seq', { action : 'stop' });
 	}
+	return state
 };
 seq.init = function (start) {
 	'use strict';
@@ -108,7 +115,9 @@ seq.init = function (start) {
 	}
 	seq.stop(false);
 	seq.i = start;
+
 	//ipcRenderer.sendSync('transfer', { action: 'start'});
+	ipcRenderer.send('seq', { action : 'start' });
 	seq.run();
 };
 seq.stats = function () {

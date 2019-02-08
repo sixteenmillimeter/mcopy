@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 
 const exec = require('exec');
 //const spawn = require('spawn');
-const exit = require('exit');
+//const exit = require('exit');
 
 let system = {};
 
@@ -21,17 +21,24 @@ async function info (video) {
 		return exit(err, 5);
 	}
 	if (!exists) {
-		return exit(`File ${video} does not exist`, 6);
+		//return exit(`File ${video} does not exist`, 6);
+		console.error(err);
+		return false
 	}
+	
 	try {
+		console.log(cmd);
 		raw = await exec(cmd);
 	} catch (err) {
-		return exit(err, 7);
+		//return exit(err, 7);
+		console.error(err);
+		return false
 	}
+
 	try {
-		json = JSON.parse(raw);
+		json = JSON.parse(raw.stdout);
 	} catch (err) {
-		return raw;
+		return raw.stdout;
 	}
 
 	if (json && json.streams) {
@@ -57,22 +64,28 @@ async function frames (video) {
 	try {
 		exists = await fs.exists(video);
 	} catch (err) {
-		return exit(err, 5);
+		//return exit(err, 5);
+		console.error(err);
+		return false
 	}
 	if (!exists) {
-		return exit(`File ${video} does not exist`, 6);
+		//return exit(`File ${video} does not exist`, 6);
+		console.error(err);
+		return false;
 	}
-
+	
 	try {
+		console.log(cmd);
 		raw = await exec(cmd);
 	} catch (err) {
 		console.error(err);
+		return false;
 	}
 
 	try {
-		frames = parseInt(raw)
+		frames = parseInt(raw.stdout)
 	} catch (err) {
-		return raw;
+		return raw.stdout;
 	}
 
 	return frames;

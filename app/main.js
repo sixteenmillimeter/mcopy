@@ -405,7 +405,8 @@ light.end = async function (rgb, id, ms) {
 }
 
 proj.state = {
-	dir : true //default dir
+	dir : true, //default dir
+	digital : false
 }
 proj.init = function () {
 	proj.listen()
@@ -419,20 +420,32 @@ proj.set = async function (dir, id) {
 		cmd = mcopy.cfg.arduino.cmd.proj_backward
 	}
 	proj.state.dir = dir
-	try {
-		ms = await arduino.send('projector', cmd)
-	} catch (err) {
-		console.error(err)
+	if (proj.digital) {
+		dig.set(dir)
+	} else {
+		try {
+			ms = await arduino.send('projector', cmd)
+		} catch (err) {
+			console.error(err)
+		}
 	}
 	return await proj.end(cmd, id, ms)
 }
 proj.move = async function (frame, id) {
 	const cmd = mcopy.cfg.arduino.cmd.projector
 	let ms
-	try {
-		ms = await arduino.send('projector', cmd)
-	} catch (err) {
-		console.error(err)
+	if (proj.digital) {
+		try {
+			ms = await dig.move()
+		} catch (err) {
+			console.error(err)
+		}
+	} else {
+		try {
+			ms = await arduino.send('projector', cmd)
+		} catch (err) {
+			console.error(err)
+		}
 	}
 	return await proj.end(mcopy.cfg.arduino.cmd.projector, id, ms)
 }
@@ -453,6 +466,7 @@ proj.listen = function () {
 		}
 		event.returnValue = true
 	})
+	ipcMain.on('digital', proj.connectDigital)
 }
 proj.end = async function (cmd, id, ms) {
 	let message = ''
@@ -471,6 +485,94 @@ proj.end = async function (cmd, id, ms) {
 	}
 	log.info(message, 'PROJECTOR', true, true)
 	return await mainWindow.webContents.send('proj', {cmd: cmd, id : id, ms: ms})
+}
+
+/**
+ * Use a file as the "digital" source on "projector"
+ *
+ **/
+proj.connectDigital = async function (evt, arg) {
+	let info;
+	let frames = 0;
+
+	try {
+		info = await ffprobe.info(arg.path);
+	} catch (err) {
+		log.error(err, 'DIGITAL', true, true);
+		proj.digital = false;
+		await mainWindow.webContents.send('digital', { valid : false });
+		return false;
+	}
+	try {
+		frames = await ffprobe.frames(arg.path);
+	} catch (err) {
+		log.error(err, 'DIGITAL', true, true);
+		proj.digital = false;
+		await mainWindow.webContents.send('digital', { valid : false });
+		return false;
+	}
+
+	dig.state.frame = 0;
+	dig.state.path = arg.path;
+	dig.state.fileName = arg.fileName;
+	dig.state.frames = frames;
+	dig.state.info = info;
+
+	console.dir(dig.state);
+
+	log.info(`Opened ${dig.state.fileName}`, 'DIGITAL', true, true);
+	log.info(`Frames : ${frames}`, 'DIGITAL', true, true);
+	proj.digital = true;
+	return await mainWindow.webContents.send('digital', { valid : true, state : JSON.stringify(dig.state) });
+}
+
+const dig = {};
+dig.state = {
+	frame : 0,
+	frames : 0,
+	path : null,
+	fileName : null,
+	info : {},
+	dir : true
+};
+
+dig.set  = function (dir) {
+	dig.state.dir = dir;
+}
+
+dig.move = async function () {
+	let start = +new Date()
+	let last = dig.state.dir + 0;
+	if (dig.state.dir) {
+		dig.state.frame++
+	} else {
+		dig.state.frame--
+	}
+	if (dig.state.frame < 1) {
+		dig.state.frame = 1
+	}
+
+	if (last > 0) {
+		display.end()
+		//wipe last frame
+		try {
+			await ffmpeg.clear(last)
+		} catch (err) {
+			console.error(err)
+		}
+	}
+
+	try {
+		await ffmpeg.frame(dig.state.path, dig.state.frame)
+	} catch (err) {
+		console.error(err)
+	}
+
+	display.start(dig.state.frame)
+
+	await delay(100)
+
+	return (+new Date()) - start
 }
 
 cam.intval = null
@@ -510,10 +612,17 @@ cam.move = async function (frame, id) {
 	const cmd = mcopy.cfg.arduino.cmd.camera
 	let ms
 	if (cam.intval) {
-
-		ms = await cam.intval.move()
+		try {
+			ms = await cam.intval.move()
+		} catch (err) {
+			console.error(err);
+		}
 	} else { 
-		ms = await arduino.send('camera', cmd)
+		try {
+			ms = await arduino.send('camera', cmd)
+		} catch (err) {
+			console.error(err)
+		}
 	}
 	log.info('Camera move time', { ms })
 	return cam.end(cmd, id, ms)
@@ -590,6 +699,19 @@ cam.end = async function (cmd, id, ms) {
 	log.info(message, 'CAMERA', true, true)
 	mainWindow.webContents.send('cam', {cmd: cmd, id : id, ms: ms})
 };
+
+const seq = {};
+seq.init = function () {
+	seq.listen();
+}
+
+seq.listen = function () {
+	ipcMain.on('seq', async (evt, arg) => {
+		if (arg.action === 'stop' && proj.digital) {
+			display.end()
+		}
+	})
+}
 
 log.file = function () {
 	let logPath = path.join(os.homedir(), `/.config/mcopy/`)
@@ -675,6 +797,7 @@ var init = async function () {
 	proj.init()
 	cam.init()
 	dev.init()
+	seq.init()
 
 
 	//capture = require('capture')(SYSTEM); //redundant

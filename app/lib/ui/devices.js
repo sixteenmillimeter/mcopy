@@ -37,6 +37,7 @@ devices.listen = function () {
 	'use strict';
 	ipcRenderer.on('ready', devices.ready);
 	ipcRenderer.on('intval', devices.intvalCb);
+	ipcRenderer.on('digital', devices.digitalCb);
 };
 devices.ready = function (event, arg) {
 	'use strict';
@@ -104,44 +105,6 @@ devices.intval = function () {
 	}
 };
 
-devices.digitalSelect = function () {
-	const elem = $('#digital');
-	dialog.showOpenDialog({ 
-		properties: [
-			'openFile', 
-			'openDirectory'
-		],
-		filters: [
-			{ name: 'Movies', extensions: ['mkv', 'avi', 'mp4', 'mpeg', 'mov'] },
-			{ name: 'All Files', extensions: ['*'] }
-		]
-	});
-}
-
-devices.digital = function () {
-	'use strict';
-	const elem = $('#digital');
-	let proceed = false;
-	let obj = {
-		connect: true,
-		url : url
-	};
-	if ( url !== '' && typeof url !== 'undefined') {
-		proceed = confirm(`Are you sure you want to`);
-	} else {
-		alert('Cannot connect')
-	}
-	
-	if (proceed) {
-		//gui.overlay(true);
-		//gui.spinner(true, `Connecting to`);
-		ipcRenderer.send('video', obj)
-	} else {
-		$('#camera_type_arduino').prop('checked', 'checked');
-		$('#intval').removeClass('active');
-	}
-};
-
 devices.intvalCb = function (evt, args) {
 	'use strict';
 	let state;
@@ -160,6 +123,91 @@ devices.intvalCb = function (evt, args) {
 	} else {
 		$('#camera_type_arduino').prop('checked', 'checked');
 		$('#intval').removeClass('active');
+	}
+};
+
+devices.digitalSelect = function () {
+	'use strict';
+	const elem = $('#digital');
+	const extensions =  ['mpg', 'mpeg', 'mov', 'mkv', 'avi'];
+	dialog.showOpenDialog({
+		title : `Select video or image sequence`,
+        properties : [`openFile`], // openDirectory, multiSelection, openFile
+        defaultPath: 'c:/',
+        filters :
+            [
+                {
+                    name: 'Videos',
+                    extensions
+                },
+                {
+                    name: 'All Files',
+                    extensions: ['*']
+                },
+            ]
+        }, (files) => {
+        	let valid = false;
+        	console.dir(files)
+        	let path = files[0]
+			if (path && path !== '') {
+				for (let ext of extensions) {
+					if (path.toLowerCase().indexOf(`.${ext}`) !== -1) {
+						valid = true;
+					}
+				}
+				if (!valid) return false;
+				log.info(`Selected video ${path.split('/').pop()}`, 'DIGITAL', true);
+				elem.attr('data-file', path);
+				elem.val(path.split('/').pop());
+			}
+        })
+}
+
+devices.digital = function () {
+	'use strict';
+	const elem = $('#digital');
+	const path = elem.attr('data-file');
+	const fileName = elem.val();
+	let proceed = false;
+	let obj = {
+		path,
+		fileName
+	}
+
+	if (path && path !== '') {
+		proceed = confirm(`Are you sure you want to use ${fileName}?`);
+	}
+	
+	if (proceed) {
+		gui.overlay(true);
+		gui.spinner(true, `Getting info about ${fileName}`);
+		ipcRenderer.send('digital', obj)
+	} else {
+		$('#projector_type_digital').prop('checked', 'checked');
+		$('#digital').removeClass('active');
+	}
+};
+
+devices.digitalCb = function (evt, args) {
+	'use strict';
+	let state;
+	gui.spinner(false);
+	gui.overlay(false);
+	if (args.valid && args.valid === true) {
+		//success state
+		state = JSON.parse(args.state);
+		$('#digital').addClass('active');
+		$('#projector_type_digital').prop('checked', 'checked');
+		gui.notify('DEVICES', `Using video ${state.fileName}`);
+
+		mcopy.state.sequence.arr = ['PF', 'CF'];
+		gui.grid.state(0);
+		gui.grid.state(1);
+
+		gui.updateState();
+	} else {
+		$('#projector_type_digital').prop('checked', 'checked');
+		$('#digital').removeClass('active');
 	}
 };
 
