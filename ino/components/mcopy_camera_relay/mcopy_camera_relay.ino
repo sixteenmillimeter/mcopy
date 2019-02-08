@@ -90,8 +90,8 @@ void Frame () {
   digitalWrite(PIN_INDICATOR, HIGH);
   delay(200);
   digitalWrite(PIN_CAMERA, LOW);
-  digitalWrite(PIN_INDICATOR, LOW);
   delay(600);
+  digitalWrite(PIN_INDICATOR, LOW);
   running = false;
 
   Serial.println(cmd_camera);
