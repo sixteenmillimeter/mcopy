@@ -13,13 +13,14 @@ const uuid = require('uuid')
 const events = require('events')
 const async = require('async')
 const path = require('path')
-//const digital = require('./lib/digital')
-const ee = new events.EventEmitter()
-//const capture = require('./lib/capture')(ee)
-const settings = require('./lib/settings')
 
-const Server = require('./lib/server')
-const Intval = require('./lib/intval')
+const ee = new events.EventEmitter()
+//const digital = require('./lib/digital')
+//const capture = require('./lib/capture')(ee)
+const settings = require('settings')
+
+const Server = require('server')
+const Intval = require('intval')
 
 const mcopy = {}
 const log = {}
@@ -36,6 +37,12 @@ let projector
 let camera
 let server
 let menu
+
+let SYSTEM
+let capture
+let display
+let ffmpeg
+let ffprobe
 
 async function delay (ms) {
 	return new Promise(resolve => {
@@ -654,13 +661,26 @@ transfer.listen = function () {
 */
 var init = async function () {
 
+	try {
+		SYSTEM = await system();
+	} catch (err) {
+		console.error(err);
+	}
+
 	createWindow()
 	createMenu()
+
 	log.init()
 	light.init()
 	proj.init()
 	cam.init()
 	dev.init()
+
+
+	//capture = require('capture')(SYSTEM); //redundant
+	display = require('display')(SYSTEM);
+	ffmpeg = require('ffmpeg')(SYSTEM);
+	ffprobe = require('ffprobe')(SYSTEM);
 
 
 	//transfer.init()
