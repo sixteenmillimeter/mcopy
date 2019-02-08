@@ -157,7 +157,7 @@ void Stop () {
   running = false;
   micro_primed = false;
 
-  Serial.println(cmd_cam_backward);
+  Serial.println(cmd_camera);
   log("Frame completed");
 }
 
