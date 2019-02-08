@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+<head>
+	<title>display</title>
+	<style>
+	body{
+		background: #000;
+		padding: 0;
+		margin: 0;
+		max-width: 100%;
+		max-height: 100vh;
+	}
+	body.meter {
+		background: rgb(117, 117, 117);
+	}
+	#img {
+		position: absolute;
+	    /*background-image: url(".../img/background.jpg");*/
+	    background-repeat:no-repeat;
+	    background-size: contain;
+  		background-position: center;
+	    top: 0;
+	    left: 0;
+	    right: 0;
+	    bottom: 0;
+
+	}
+	#can{
+		margin: 0;
+		background: #fff;
+		display: none;
+		position: fixed;
+		left: 0;
+		top: 0;
+	}
+	#can.show{
+		display: block;
+	}
+	</style>
+</head>
+<body>
+	<div id="img">
+	</div>
+	<canvas id="can">
+	</canvas>
+	<script>
+		'use strict';
+		const { remote, ipcRenderer } = require('electron')
+		
+		async function setImage (src) {
+			return new Promise(async (resolve, reject) => {
+				//let img = new Image()
+				let img = document.getElementById('img')
+				let body = document.querySelector('body')
+				if (body.classList.contains('meter')) {
+					body.classList.remove('meter')
+				}
+
+				img.style.backgroundImage = `url('${src}')`;
+				//img.onload = () => {
+					//document.body.appendChild(img)
+					//return resolve(img)
+				//}
+				//img.onerror = reject
+				//img.src = src
+			})
+		}
+		async function setMeter () {
+			let body = document.querySelector('body')
+			if (!body.classList.contains('meter')) {
+				body.classList.add('meter')
+			}
+		}
+		async function setGrid () {
+			const can = document.getElementById('can')
+			const ctx = can.getContext('2d')
+			if (!can.classList.contains('show')) {
+				can.classList.add('show')
+			}
+			can.width = window.innerWidth
+            can.height = window.innerHeight
+            can.style.width = `${window.innerWidth}px`
+            can.style.height = `${window.innerHeight}px`
+            try{
+            	await drawGrid(can, ctx)
+            } catch (err) {
+            	alert(JSON.stringify(err))
+            }
+		}
+		async function drawGrid (can, ctx) {
+			const count = 20
+			const half = Math.round(count / 2)
+			const w = can.width
+			const h = can.height
+			const wsec = w / count
+			const hsec= h / count
+			ctx.moveTo(w / 2, 0)
+			ctx.lineTo(w / 2, h)
+			ctx.stroke()
+			ctx.moveTo(0, h / 2)
+			ctx.lineTo(w, h / 2)
+			ctx.stroke()
+			for (let i = 0; i < count; i++) {
+				ctx.moveTo(wsec * i, hsec * i)
+				ctx.lineTo(wsec * i, h - (hsec * i))
+				ctx.stroke()
+				ctx.moveTo(wsec * i, hsec * i)
+				ctx.lineTo(w - (wsec * i), hsec * i)
+				ctx.stroke()
+			}
+			ctx.font = '30px Arial'
+			for (let i = 0; i < half; i++) {
+				ctx.fillText(`${(half - i)}`, (wsec * i) + 15, (h / 2) - 15)
+				ctx.fillText(`${(half - i)}`, (w - (wsec * i)) - 25, (h / 2) - 15)
+				ctx.fillText(`${(half - i)}`, (w / 2) + 15, (hsec * i) + 25 )
+				ctx.fillText(`${(half - i)}`, (w / 2) + 15, (h - (hsec * i)) - 15)
+			}
+		}
+		async function onDigital (event, arg) {
+			console.log('called')
+			if (arg.src) {
+				try {
+					await setImage(arg.src)
+				} catch (err) {
+					console.error(err)
+				}
+			} else if (arg.meter) {
+				try {
+					await setMeter()
+				} catch (err) {
+					console.error(err)
+				}
+			} else if (arg.grid) {
+				try {
+					await setGrid()
+				} catch (err) {
+					console.error(err)
+				}
+			}
+			return event.returnValue = true
+		}
+		async function onEscape (evt) {
+			let isEscape = false
+			let win
+			evt = evt || window.event
+			
+			if ('key' in evt) {
+				isEscape = (evt.key == 'Escape' || evt.key == 'Esc')
+			} else {
+				isEscape = (evt.keyCode == 27)
+			}
+			if (isEscape) {
+				win = remote.getCurrentWindow()
+       			win.close()
+			}
+		}
+		ipcRenderer.on('display', onDigital)
+		document.onkeydown = onEscape
+	</script>
+</body>
+</html>

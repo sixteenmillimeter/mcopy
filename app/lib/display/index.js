@@ -112,7 +112,7 @@ async function start (frame) {
 
 module.exports = function (sys) {
 	system = sys;
-	TMPDIR = path.join(system.tmp, 'intval_go_node');
+	TMPDIR = path.join(system.tmp, 'mcopy_digital');
 
 	if (system.platform !== 'nix') {
 		wv = new WebView();
