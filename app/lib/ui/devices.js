@@ -82,22 +82,56 @@ devices.ready = function (event, arg) {
 
 devices.intval = function () {
 	'use strict';
-	const url = $('#intval').val()
-	let proceed = false
+	const url = $('#intval').val();
+	let proceed = false;
 	let obj = {
 		connect: true,
 		url : url
-	}
+	};
 	if ( url !== '' && typeof url !== 'undefined') {
-		proceed = confirm(`Are you sure you want to connect to INTVAL3 @ ${url}?`)
+		proceed = confirm(`Are you sure you want to connect to INTVAL3 @ ${url}?`);
 	} else {
-		alert('Cannot connect to INTVAL3 url as entered.')
+		alert('Cannot connect to INTVAL3 url as entered.');
 	}
 	
 	if (proceed) {
 		gui.overlay(true);
 		gui.spinner(true, `Connecting to INTVAL3 @ ${url}`);
-		ipcRenderer.send('intval', obj)
+		ipcRenderer.send('intval', obj);
+	} else {
+		$('#camera_type_arduino').prop('checked', 'checked');
+		$('#intval').removeClass('active');
+	}
+};
+
+devices.digitalSelect = function () {
+	const elem = $('#digital');
+	dialog.showOpenDialog({ 
+		properties: [
+			'openFile', 
+			'openDirectory'
+		] 
+	});
+}
+
+devices.digital = function () {
+	'use strict';
+	const elem = $('#digital');
+	let proceed = false;
+	let obj = {
+		connect: true,
+		url : url
+	};
+	if ( url !== '' && typeof url !== 'undefined') {
+		proceed = confirm(`Are you sure you want to`);
+	} else {
+		alert('Cannot connect')
+	}
+	
+	if (proceed) {
+		//gui.overlay(true);
+		//gui.spinner(true, `Connecting to`);
+		ipcRenderer.send('video', obj)
 	} else {
 		$('#camera_type_arduino').prop('checked', 'checked');
 		$('#intval').removeClass('active');

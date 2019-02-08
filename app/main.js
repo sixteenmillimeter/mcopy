@@ -18,7 +18,7 @@ const ee = new events.EventEmitter()
 //const digital = require('./lib/digital')
 //const capture = require('./lib/capture')(ee)
 const settings = require('settings')
-
+const system = require('system')
 const Server = require('server')
 const Intval = require('intval')
 

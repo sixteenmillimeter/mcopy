@@ -5,7 +5,7 @@ const electron = require('electron');
 
 const exec = require('exec');
 //const spawn = require('spawn');
-const exit = require('exit');
+//const exit = require('exit');
 
 async function dependencies (platform) {
 	let obj = {};
@@ -14,7 +14,8 @@ async function dependencies (platform) {
 		await exec('ffmpeg -h');
 		obj.ffmpeg = 'ffmpeg';
 	} catch (err) {
-		return exit('ffmpeg is not installed', 3);
+		//return exit('ffmpeg is not installed', 3);
+		return console.error('ffmpeg is not installed', err);
 	}
 	//if linux
 	if (platform === 'nix') {
@@ -22,7 +23,8 @@ async function dependencies (platform) {
 			await exec('eog -h');
 			obj.eog = 'eog';
 		} catch (err) {
-			return exit('eog is not installed', 4);
+			//return exit('eog is not installed', 4);
+			return console.error('eog is not installed', err);
 		}
 	}
 
