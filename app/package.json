@@ -40,6 +40,7 @@
   "dependencies": {
     "arduino": "file:lib/arduino",
     "async": "^2.6.1",
+    "capture": "file:lib/capture",
     "display": "file:lib/display",
     "ffmpeg": "file:lib/ffmpeg",
     "ffprobe": "file:lib/ffprobe",
