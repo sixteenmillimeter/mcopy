@@ -38,13 +38,22 @@
     "qunit": "^2.8.0"
   },
   "dependencies": {
+    "arduino": "file:lib/arduino",
     "async": "^2.6.1",
+    "display": "file:lib/display",
+    "ffmpeg": "file:lib/ffmpeg",
+    "ffprobe": "file:lib/ffprobe",
     "fs-extra": "^7.0.1",
     "humanize-duration": "^3.15.1",
+    "intval": "file:lib/intval",
     "moment": "^2.22.2",
     "node-notifier": "^5.3.0",
     "serialport": "^7.0.2",
+    "server": "file:lib/server",
+    "settings": "file:lib/settings",
+    "spawn": "file:lib/spawn",
     "sqlite3": "^4.0.4",
+    "system": "file:lib/system",
     "uuid": "^3.3.2",
     "winston": "^3.0.0"
   },
