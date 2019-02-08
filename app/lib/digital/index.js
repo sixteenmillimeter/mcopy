@@ -1,5 +1,7 @@
 'use strict'
 
+//Original idea for "display" module.
+
 const path = require('path')
 
 const delay = require('../delay')
