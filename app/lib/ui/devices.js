@@ -110,7 +110,11 @@ devices.digitalSelect = function () {
 		properties: [
 			'openFile', 
 			'openDirectory'
-		] 
+		],
+		filters: [
+			{ name: 'Movies', extensions: ['mkv', 'avi', 'mp4', 'mpeg', 'mov'] },
+			{ name: 'All Files', extensions: ['*'] }
+		]
 	});
 }
 
