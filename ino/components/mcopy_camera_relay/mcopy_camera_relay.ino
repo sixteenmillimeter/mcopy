@@ -78,7 +78,7 @@ void Pins_init () {
   pinMode(PIN_CAMERA, OUTPUT);
   pinMode(PIN_INDICATOR, OUTPUT);
 
-  digitalWrite(PIN_CAMERA, LOW);
+  digitalWrite(PIN_CAMERA, HIGH);
   digitalWrite(PIN_INDICATOR, LOW);
 }
 
@@ -86,10 +86,10 @@ void Frame () {
   frame_start = millis();
   running = true;
 
-  digitalWrite(PIN_CAMERA, HIGH);
+  digitalWrite(PIN_CAMERA, LOW);
   digitalWrite(PIN_INDICATOR, HIGH);
   delay(200);
-  digitalWrite(PIN_CAMERA, LOW);
+  digitalWrite(PIN_CAMERA, HIGH);
   delay(600);
   digitalWrite(PIN_INDICATOR, LOW);
   running = false;
