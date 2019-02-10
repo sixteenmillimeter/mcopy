@@ -554,23 +554,23 @@ dig.move = async function () {
 
 	if (last > 0) {
 		display.end()
-		//wipe last frame
-		try {
-			await ffmpeg.clear(last)
-		} catch (err) {
-			console.error(err)
-		}
 	}
 
 	try {
-		await ffmpeg.frame(dig.state.path, dig.state.frame)
+		await ffmpeg.clearAll()
+	} catch (err) {
+		console.error(err)
+	}
+	
+	try {
+		await ffmpeg.frame(dig.state)
 	} catch (err) {
 		console.error(err)
 	}
 
 	display.start(dig.state.frame)
 
-	await delay(100)
+	await delay(600)
 
 	return (+new Date()) - start
 }

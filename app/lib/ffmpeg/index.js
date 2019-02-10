@@ -20,20 +20,24 @@ function padded_frame (i) {
 	return str;
 }
 
-async function frame (video, frame, obj) {
-	let padded = padded_frame(frame);
-	let ext = 'tif';
-	let tmpoutput;
-	let cmd;
-	let output;
+async function frame (state) {
+	let frame = state.frame
+	let video = state.path
+	let w = state.info.width
+	let h = state.info.height
+	let padded = padded_frame(frame)
+	let ext = 'tif'
+	let tmpoutput
+	let cmd
+	let output
 
 	if (system.platform !== 'nix') {
-		ext = 'png';
+		ext = 'png'
 	}
 
 	tmpoutput = path.join(TMPDIR, `export-${padded}.${ext}`)
 
-	cmd = `ffmpeg -i "${video}" -vf select='gte(n\\,${frame})' -vframes 1 -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"`
+	cmd = `ffmpeg -i "${video}" -vf "select='gte(n\\,${frame})',scale=${w}:${h}" -vframes 1 -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"`
 
 	//ffmpeg -i "${video}" -ss 00:00:07.000 -vframes 1 "export-${time}.jpg"
 	//ffmpeg -i "${video}" -compression_algo raw -pix_fmt rgb24 "export-%05d.tiff"
