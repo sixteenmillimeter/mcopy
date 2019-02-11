@@ -20,20 +20,32 @@ function padded_frame (i) {
 	return str;
 }
 
-async function frame (video, frame, obj) {
-	let padded = padded_frame(frame);
-	let ext = 'tif';
-	let tmpoutput;
-	let cmd;
-	let output;
+async function frame (state, light) {
+	let frame = state.frame
+	let video = state.path
+	let w = state.info.width
+	let h = state.info.height
+	let padded = padded_frame(frame)
+	let ext = 'tif'
+	let rgb = light.on;
+	let tmpoutput
+	let cmd
+	let output
+	let cmd2
+	let output2
 
 	if (system.platform !== 'nix') {
-		ext = 'png';
+		ext = 'png'
 	}
 
-	tmpoutput = path.join(TMPDIR, `export-${padded}.${ext}`)
+	rgb = rgb.map(e => {
+		return parseInt(e);
+	});
 
-	cmd = `ffmpeg -i "${video}" -vf select='gte(n\\,${frame})' -vframes 1 -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"`
+	tmpoutput = path.join(TMPDIR, `export-${padded}.${ext}`);
+
+	cmd = `ffmpeg -i "${video}" -vf "select='gte(n\\,${frame})',scale=${w}:${h}" -vframes 1 -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"`;
+	cmd2 = `convert "${tmpoutput}" -resize ${w}x${h} -size ${w}x${h} xc:"rgb(${rgb[0]},${rgb[1]},${rgb[2]})" +swap -compose Darken -composite "${tmpoutput}"`;
 
 	//ffmpeg -i "${video}" -ss 00:00:07.000 -vframes 1 "export-${time}.jpg"
 	//ffmpeg -i "${video}" -compression_algo raw -pix_fmt rgb24 "export-%05d.tiff"
@@ -45,9 +57,18 @@ async function frame (video, frame, obj) {
 	} catch (err) {
 		console.error(err);
 	}
+	if (output && output.stdout) console.log(`"${output.stdout}"`);
 
-	if (output) console.log(`"${output}"`);
-
+	if (rgb[0] !== 255 || rgb[1] !== 255 || rgb[2] !== 255) {
+		try {
+			console.log(cmd2);
+			output2 = await exec(cmd2);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+	
+	if (output2 && output2.stdout) console.log(`"${output2.stdout}"`);
 }
 
 async function frames (video, obj) {

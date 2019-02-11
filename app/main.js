@@ -21,6 +21,7 @@ const settings = require('settings')
 const system = require('system')
 const Server = require('server')
 const Intval = require('intval')
+const delay = require('delay')
 
 const mcopy = {}
 const log = {}
@@ -43,12 +44,6 @@ let capture
 let display
 let ffmpeg
 let ffprobe
-
-async function delay (ms) {
-	return new Promise(resolve => {
-		return setTimeout(resolve, ms)
-	})
-}
 
 mcopy.cfg = require('./data/cfg.json')
 mcopy.settings = {}
@@ -367,13 +362,18 @@ var createWindow = function () {
 	})
 }
 
+light.state = {
+	color : [0, 0, 0],
+	on : [0, 0, 0]
+}
+
 light.init = function () {
 	light.listen()
 }
 light.listen = function () {
 	ipcMain.on('light', async (event, arg) => {
 		try {
-			await light.set(arg.rgb, arg.id)
+			await light.set(arg.rgb, arg.id, arg.on)
 		}catch (err) {
 			console.error(err)
 			return reject(err)
@@ -381,9 +381,12 @@ light.listen = function () {
 		event.returnValue = true
 	})
 }
-light.set = async function (rgb, id) {
+light.set = async function (rgb, id, on) {
 	const str = rgb.join(',');
 	let ms
+	light.state.color = rgb;
+	if (on) light.state.on = rgb;
+	console.dir(light.state)
 	try {
 		ms = arduino.send('light', mcopy.cfg.arduino.cmd.light)
 	} catch (err) {
@@ -518,7 +521,7 @@ proj.connectDigital = async function (evt, arg) {
 	dig.state.frames = frames;
 	dig.state.info = info;
 
-	console.dir(dig.state);
+	//console.dir(dig.state);
 
 	log.info(`Opened ${dig.state.fileName}`, 'DIGITAL', true, true);
 	log.info(`Frames : ${frames}`, 'DIGITAL', true, true);
@@ -554,23 +557,23 @@ dig.move = async function () {
 
 	if (last > 0) {
 		display.end()
-		//wipe last frame
-		try {
-			await ffmpeg.clear(last)
-		} catch (err) {
-			console.error(err)
-		}
 	}
 
 	try {
-		await ffmpeg.frame(dig.state.path, dig.state.frame)
+		await ffmpeg.clearAll()
+	} catch (err) {
+		console.error(err)
+	}
+	
+	try {
+		await ffmpeg.frame(dig.state, light.state)
 	} catch (err) {
 		console.error(err)
 	}
 
 	display.start(dig.state.frame)
 
-	await delay(100)
+	await delay(600)
 
 	return (+new Date()) - start
 }
@@ -659,7 +662,6 @@ cam.connectIntval = async function (event, arg) {
 			return resolve(false)
 		}
 	})
-
 }
 
 cam.listen = function () {
@@ -784,9 +786,9 @@ transfer.listen = function () {
 var init = async function () {
 
 	try {
-		SYSTEM = await system();
+		SYSTEM = await system()
 	} catch (err) {
-		console.error(err);
+		console.error(err)
 	}
 
 	createWindow()
@@ -799,25 +801,26 @@ var init = async function () {
 	dev.init()
 	seq.init()
 
-
-	//capture = require('capture')(SYSTEM); //redundant
-	display = require('display')(SYSTEM);
-	ffmpeg = require('ffmpeg')(SYSTEM);
-	ffprobe = require('ffprobe')(SYSTEM);
-
+	//capture = require('capture')(SYSTEM) //redundant
+	display = require('display')(SYSTEM)
+	ffmpeg = require('ffmpeg')(SYSTEM)
+	ffprobe = require('ffprobe')(SYSTEM)
 
 	//transfer.init()
 	//capture.init()
 
 	arduino = require('./lib/arduino')(mcopy.cfg, ee)
 	mscript = require('./lib/mscript')
-	
 
 	settings.restore()
 	mcopy.settings = settings.all()
 
 	await delay(2000)
-	await dev.enumerate()
+	try {
+		await dev.enumerate()
+	} catch (err) {
+		console.error(err)
+	}
 }
 
 app.on('ready', init)

@@ -191,6 +191,7 @@ devices.digital = function () {
 devices.digitalCb = function (evt, args) {
 	'use strict';
 	let state;
+	let color = [255,255,255];
 	gui.spinner(false);
 	gui.overlay(false);
 	if (args.valid && args.valid === true) {
@@ -201,8 +202,11 @@ devices.digitalCb = function (evt, args) {
 		gui.notify('DEVICES', `Using video ${state.fileName}`);
 
 		mcopy.state.sequence.arr = ['PF', 'CF'];
+		gui.grid.setLight(1, color);
 		gui.grid.state(0);
 		gui.grid.state(1);
+
+		$('#seq_loop').val(`${state.frames}`).trigger('change');
 
 		gui.updateState();
 	} else {

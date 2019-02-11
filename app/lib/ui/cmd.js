@@ -47,7 +47,7 @@ cmd.cam_forward = function (rgb, callback) {
 		gui.updateState();
 		setTimeout(function () {
 			light.display(off);
-			light.set(off, function () {
+			light.set(off, false, function () {
 				$('#cmd_cam_forward').removeClass('active');
 				if (callback) { callback(ms); }
 			});
@@ -58,7 +58,7 @@ cmd.cam_forward = function (rgb, callback) {
 		cam.set(true, function () {
 			setTimeout( function () {
 				light.display(rgb);
-				light.set(rgb, function () {
+				light.set(rgb, true, function () {
 					setTimeout( function () {
 						cam.move(res);
 					}, mcopy.cfg.arduino.serialDelay);
@@ -67,7 +67,7 @@ cmd.cam_forward = function (rgb, callback) {
 		});
 	} else {
 		light.display(rgb);
-		light.set(rgb, function () {
+		light.set(rgb, true, function () {
 			setTimeout(function () {
 				cam.move(res);
 			}, mcopy.cfg.arduino.serialDelay);
@@ -87,7 +87,7 @@ cmd.black_forward = function (callback) {
 		cam.set(true, function () {
 			setTimeout( function () {
 				light.display(off);
-				light.set(off, function () {
+				light.set(off, false, function () {
 					setTimeout( function () {
 						cam.move(res);
 					}, mcopy.cfg.arduino.serialDelay);
@@ -96,7 +96,7 @@ cmd.black_forward = function (callback) {
 		});
 	} else {
 		light.display(off);
-		light.set(off, function () {
+		light.set(off, false, function () {
 			setTimeout(function () {
 				cam.move(res);
 			}, mcopy.cfg.arduino.serialDelay);
@@ -109,7 +109,7 @@ cmd.cam_backward = function (rgb, callback) {
 	var res = function (ms) {
 		gui.updateState();
 		light.display(off);
-		light.set(off, function () {
+		light.set(off, false, function () {
 			$('#cmd_cam_backward').removeClass('active');
 			if (callback) { callback(ms); }
 		});	
@@ -119,7 +119,7 @@ cmd.cam_backward = function (rgb, callback) {
 		cam.set(false, function () {
 			setTimeout(function () {
 				light.display(rgb);
-				light.set(rgb, function () {
+				light.set(rgb, true, function () {
 					cam.move(res);
 				});
 			}, mcopy.cfg.arduino.serialDelay);
@@ -127,7 +127,7 @@ cmd.cam_backward = function (rgb, callback) {
 	} else {
 		setTimeout(function () {
 			light.display(rgb);
-			light.set(rgb, function () {
+			light.set(rgb, true, function () {
 				cam.move(res);
 			});
 		}, mcopy.cfg.arduino.serialDelay);
@@ -146,7 +146,7 @@ cmd.black_backward = function (callback) {
 		cam.set(false, function () {
 			setTimeout(function () {
 				light.display(off);
-				light.set(off, function () {
+				light.set(off, false, function () {
 					cam.move(res);
 				});
 			}, mcopy.cfg.arduino.serialDelay);
@@ -154,7 +154,7 @@ cmd.black_backward = function (callback) {
 	} else {
 		setTimeout(function () {
 			light.display(off);
-			light.set(off, function () {
+			light.set(off, false, function () {
 				cam.move(res);
 			});
 		}, mcopy.cfg.arduino.serialDelay);

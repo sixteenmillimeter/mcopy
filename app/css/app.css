@@ -381,16 +381,16 @@ button:focus {
   font-weight: 600;
   float: right;
 }
-#seq_loop {
+#seq_loop_wrap {
   width: 40%;
   float: left;
   padding: 0 0 0 56px;
 }
-#seq_loop h3 {
+#seq_loop_wrap h3 {
   font-size: 20px;
   margin: 12px 0 3px;
 }
-#seq_loop input {
+#seq_loop_wrap input {
   font-family: 'Menlo', monospace;
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
