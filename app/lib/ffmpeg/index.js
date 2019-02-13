@@ -27,7 +27,7 @@ async function frame (state, light) {
 	let h = state.info.height
 	let padded = padded_frame(frame)
 	let ext = 'tif'
-	let rgb = light.on;
+	let rgb = light.color;
 	let tmpoutput
 	let cmd
 	let output

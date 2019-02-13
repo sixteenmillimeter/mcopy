@@ -363,8 +363,7 @@ var createWindow = function () {
 }
 
 light.state = {
-	color : [0, 0, 0],
-	on : [0, 0, 0]
+	color : [0, 0, 0]
 }
 
 light.init = function () {
@@ -373,7 +372,7 @@ light.init = function () {
 light.listen = function () {
 	ipcMain.on('light', async (event, arg) => {
 		try {
-			await light.set(arg.rgb, arg.id, arg.on)
+			await light.set(arg.rgb, arg.id)
 		}catch (err) {
 			console.error(err)
 			return reject(err)
@@ -385,8 +384,6 @@ light.set = async function (rgb, id, on) {
 	const str = rgb.join(',');
 	let ms
 	light.state.color = rgb;
-	if (on) light.state.on = rgb;
-	console.dir(light.state)
 	try {
 		ms = arduino.send('light', mcopy.cfg.arduino.cmd.light)
 	} catch (err) {

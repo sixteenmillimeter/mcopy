@@ -111,7 +111,7 @@ light.colorPickers = function () {
 	light.kelvin.init();
 	//light.cmy.init();
 };
-light.set = function (rgb, on, callback) { //rgb = [0,0,0]
+light.set = function (rgb, callback) { //rgb = [0,0,0]
 	'use strict';
 	var obj;
 
@@ -122,8 +122,7 @@ light.set = function (rgb, on, callback) { //rgb = [0,0,0]
 
 	obj = {
 		rgb,
-		id : uuid.v4(),
-		on
+		id : uuid.v4()
 	};
 	ipcRenderer.sendSync('light', obj);
 
