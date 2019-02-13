@@ -554,11 +554,10 @@ dig.move = async function () {
 	if (dig.state.frame < 1) {
 		dig.state.frame = 1
 	}
+	return (+new Date()) - start
+}
 
-	if (last > 0) {
-		display.end()
-	}
-
+dig.start = async function () {
 	try {
 		await ffmpeg.clearAll()
 	} catch (err) {
@@ -572,10 +571,12 @@ dig.move = async function () {
 	}
 
 	display.start(dig.state.frame)
+	await delay(20)
+}
 
-	await delay(600)
-
-	return (+new Date()) - start
+dig.end = async function () {
+	await delay(20)
+	display.end()
 }
 
 cam.intval = null
@@ -614,11 +615,14 @@ cam.set = async function (dir, id) {
 cam.move = async function (frame, id) {
 	const cmd = mcopy.cfg.arduino.cmd.camera
 	let ms
+	if (proj.digital) {
+		await dig.start()
+	}
 	if (cam.intval) {
 		try {
 			ms = await cam.intval.move()
 		} catch (err) {
-			console.error(err);
+			console.error(err)
 		}
 	} else { 
 		try {
@@ -626,6 +630,9 @@ cam.move = async function (frame, id) {
 		} catch (err) {
 			console.error(err)
 		}
+	}
+	if (proj.digital) {
+		await dig.end()
 	}
 	log.info('Camera move time', { ms })
 	return cam.end(cmd, id, ms)
