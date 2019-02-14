@@ -27,6 +27,7 @@ The `mcopy` project is comprised of software and hardware for optical printers, 
 
 ## Downloads <a name="downloads"></a>
 
+* [1.2.0](https://github.com/sixteenmillimeter/mcopy/releases/tag/1.2.0) for macOS and Linux (.deb)
 * [1.0.3](https://github.com/sixteenmillimeter/mcopy/releases/tag/1.0.3) for macOS and Linux (.deb)
 
 For Windows, you can [install from source](https://github.com/sixteenmillimeter/mcopy/tree/master/app#mcopy-desktop-app) for now.
