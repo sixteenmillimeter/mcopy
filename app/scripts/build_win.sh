@@ -4,4 +4,4 @@
 
 mkdir ../dist/installers
 
-node ./build_win.js
+node ./scripts/build_win.js
