@@ -10,12 +10,27 @@ let eventEmitter
 
 const mcopy = {}
 
+/**
+ * Pause the process for X milliseconds in async/await functions
+ *
+ * @param  {integer}  ms 	milliseconds
+ *
+ * @returns {Promise} Resolves after wait
+ **/
 async function delay (ms) {
 	return new Promise(resolve => {
 		return setTimeout(resolve, ms)
 	})
 }
 
+/**
+ * Send a command to an Arduino using async/await
+ *
+ * @param  {string}  device 	Arduino identifier
+ * @param  {string}  cmd 		Single character command to send
+ *
+ * @returns {Promise} Resolves after sending
+ **/
 async function send (device, cmd) {
 	return new Promise ((resolve, reject) => {
 		mcopy.arduino.queue[cmd] = (ms) => {
@@ -31,6 +46,14 @@ async function send (device, cmd) {
 	})
 }
 
+/**
+ * Send a string to an Arduino using async/await
+ *
+ * @param  {string}  device 	Arduino identifier
+ * @param  {string}  str		String to send
+ *
+ * @returns {Promise} Resolves after sending
+ **/
 async function write (device, str) {
 	return new Promise ((resolve, reject) => {
 		mcopy.arduino.serial[device].write(str, function (err, results) {
@@ -43,6 +66,13 @@ async function write (device, str) {
 	})
 }
 
+/**
+ * Connect to an Arduino using async/await
+ *
+ * @param  {string}  device 	Arduino identifier
+ *
+ * @returns {Promise} Resolves after opening
+ **/
 async function open (device) {
 	return new Promise((resolve, reject) => {
 		return mcopy.arduino.serial[device].open(error => {
@@ -54,6 +84,13 @@ async function open (device) {
 	})
 }
 
+/**
+ * Close a connection to an Arduino using async/await
+ *
+ * @param  {string}  device 	Arduino identifier
+ *
+ * @returns {Promise} Resolves after closing
+ **/
 async function close (device) {
 	return new Promise((resolve, reject) => {
 		return mcopy.arduino.serial[device].close((err) => {

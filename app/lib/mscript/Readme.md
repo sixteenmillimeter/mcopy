@@ -24,6 +24,7 @@
         * [.light_to_arr()](#module_lib/mscript..Mscript+light_to_arr)
         * [.light_state()](#module_lib/mscript..Mscript+light_state)
         * [.fail()](#module_lib/mscript..Mscript+fail)
+    * [~startsWith()](#module_lib/mscript..startsWith)
 
 <a name="module_lib/mscript..Mscript"></a>
 
@@ -70,55 +71,55 @@ of steps to be fed into the mcopy.
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
 <a name="module_lib/mscript..Mscript+basic_cmd"></a>
 
-#### mscript.basic_cmd()
+#### mscript.basic\_cmd()
 Apply a basic two character command
 
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
 <a name="module_lib/mscript..Mscript+new_loop"></a>
 
-#### mscript.new_loop()
+#### mscript.new\_loop()
 Start a new loop
 
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
 <a name="module_lib/mscript..Mscript+end_loop"></a>
 
-#### mscript.end_loop()
+#### mscript.end\_loop()
 Close the most recent loop
 
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
 <a name="module_lib/mscript..Mscript+move_cam"></a>
 
-#### mscript.move_cam()
+#### mscript.move\_cam()
 Move camera to explicitly-defined frame
 
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
 <a name="module_lib/mscript..Mscript+move_proj"></a>
 
-#### mscript.move_proj()
+#### mscript.move\_proj()
 Move projector to explicitly-defined frame
 
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
 <a name="module_lib/mscript..Mscript+set_state"></a>
 
-#### mscript.set_state()
+#### mscript.set\_state()
 Set the state of either the cam or projector
 
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
 <a name="module_lib/mscript..Mscript+last_loop"></a>
 
-#### mscript.last_loop()
+#### mscript.last\_loop()
 Return the last loop
 
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
 <a name="module_lib/mscript..Mscript+parent_loop"></a>
 
-#### mscript.parent_loop()
+#### mscript.parent\_loop()
 Return the second-last loop
 
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
 <a name="module_lib/mscript..Mscript+loop_count"></a>
 
-#### mscript.loop_count()
+#### mscript.loop\_count()
 Extract the loop count integer from a LOOP cmd
 
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
@@ -130,19 +131,19 @@ Execute a fade of frame length, from color to another color
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
 <a name="module_lib/mscript..Mscript+fade_count"></a>
 
-#### mscript.fade_count()
+#### mscript.fade\_count()
 Extract the fade length integer from a FADE cmd
 
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
 <a name="module_lib/mscript..Mscript+fade_start"></a>
 
-#### mscript.fade_start()
+#### mscript.fade\_start()
 Extract the start color from a string
 
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
 <a name="module_lib/mscript..Mscript+fade_end"></a>
 
-#### mscript.fade_end()
+#### mscript.fade\_end()
 Extract the end color from a string
 
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
@@ -155,19 +156,19 @@ by the value defined in val
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
 <a name="module_lib/mscript..Mscript+str_to_arr"></a>
 
-#### mscript.str_to_arr()
+#### mscript.str\_to\_arr()
 Split string on command, extract any integers from string
 
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
 <a name="module_lib/mscript..Mscript+light_to_arr"></a>
 
-#### mscript.light_to_arr()
+#### mscript.light\_to\_arr()
 Split a string on a command to extract data for light array
 
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
 <a name="module_lib/mscript..Mscript+light_state"></a>
 
-#### mscript.light_state()
+#### mscript.light\_state()
 Split a string to extract an rgb color value
 
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
@@ -177,3 +178,9 @@ Split a string to extract an rgb color value
 Throw an error with specific message
 
 **Kind**: instance method of [<code>Mscript</code>](#module_lib/mscript..Mscript)  
+<a name="module_lib/mscript..startsWith"></a>
+
+### lib/mscript~startsWith()
+startswith function from lodash, do not want the entire lib for this
+
+**Kind**: inner method of [<code>lib/mscript</code>](#module_lib/mscript)  
