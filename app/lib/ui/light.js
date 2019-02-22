@@ -37,7 +37,7 @@ light.swatches = [
 	}
 ];
 
-/*
+light.help = `
 	Light Source		Kelvin	R G B Values Color
 	Candle 				1900 	255, 147, 41
 	40W Tungsten 		2600 	255, 197, 143
@@ -58,7 +58,7 @@ light.swatches = [
 	Sodium Vapor 				255, 209, 178
 	Metal Halide 				242, 252, 255
 	High Pressure Sodium 		255, 183, 76
-*/
+`;
 
 light.queue = {};
 light.lock = false;
