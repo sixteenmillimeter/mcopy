@@ -43,6 +43,7 @@
     "capture": "file:lib/capture",
     "delay": "file:lib/delay",
     "display": "file:lib/display",
+    "electron-updater": "^4.0.6",
     "exec": "file:lib/exec",
     "exit": "file:lib/exit",
     "ffmpeg": "file:lib/ffmpeg",

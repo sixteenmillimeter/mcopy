@@ -1,14 +1,14 @@
-
 var devices = {};
 
 devices.init = function () {
 	'use strict';
-	devices.listen();;
+	devices.listen();
 	devices.profiles();
 	gui.overlay(true);
 	gui.spinner(true, 'Checking for connected devices...');
 };
 devices.profiles = function () {
+	'use strict';
 	const keys = Object.keys(mcopy.cfg.profiles);
 	const elem = $('#profile')
 	let opt;
@@ -21,10 +21,10 @@ devices.profiles = function () {
 	}
 	elem.on('change', (t) => {
 		devices.profile($('#profile').val());
-	})
-	devices.profile(keys[0]);
+	});
 };
 devices.profile = function (profile) {
+	'use strict';
 	log.info(`Changed configuration profile to "${profile}"`, 'DEVICES', true, true);
 	const p = mcopy.cfg.profiles[profile];
 	const keys = Object.keys(p);

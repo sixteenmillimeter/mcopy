@@ -23,6 +23,7 @@ const Server = require('server')
 const Intval = require('intval')
 const delay = require('delay')
 
+//Objects
 const mcopy = {}
 const log = {}
 const proj = {}
@@ -47,6 +48,12 @@ let ffprobe
 
 mcopy.cfg = require('./data/cfg.json')
 mcopy.settings = {}
+
+/**
+ * 
+ *
+ *
+ **/
 
 dev.init = function () {
 	dev.listen()
@@ -798,6 +805,9 @@ var init = async function () {
 	createWindow()
 	createMenu()
 
+	await settings.restore()
+	mcopy.settings = await settings.all()
+
 	log.init()
 	light.init()
 	proj.init()
@@ -816,8 +826,7 @@ var init = async function () {
 	arduino = require('./lib/arduino')(mcopy.cfg, ee)
 	mscript = require('./lib/mscript')
 
-	settings.restore()
-	mcopy.settings = settings.all()
+
 
 	await delay(2000)
 	try {

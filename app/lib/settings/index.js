@@ -1,3 +1,5 @@
+'use strict'
+
 const os = require('os');
 const path = require('path');
 const fs = require('fs-extra');
@@ -17,7 +19,6 @@ settings.state = {
 }
 
 settings.checkDir = async function () {
-	'use strict';
 	const dir = path.join(os.homedir(), '.mcopy/');
 	const exists = await fs.exists(dir)
 	if (!exists) {
@@ -32,7 +33,6 @@ settings.checkDir = async function () {
 }
 
 settings.save = async function () {
-	'use strict';
 	const str = JSON.stringify(settings.state, null, '\t');
 	settings.checkDir();
 	try {
@@ -42,22 +42,18 @@ settings.save = async function () {
 	}
 }
 settings.update = function (key, val) {
-	'use strict';
 	settings.state[key] = val;
 }
 
 settings.get = function (key) {
-	'use strict';
 	return settings.state[key];
 }
 
 settings.all = function () {
-	'use strict';
 	return settings.state;
 }
 
 settings.restore = async function () {
-	'use strict';
 	let exists;
 	let str;
 
@@ -73,7 +69,6 @@ settings.restore = async function () {
 }
 
 settings.reset = async function () {
-	'use strict';
 	const exists = await fs.exists(settings.file);
 	if (exists) {
 		try {
