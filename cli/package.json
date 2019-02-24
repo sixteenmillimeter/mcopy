@@ -1,0 +1,34 @@
+{
+  "name": "mcopy-cli",
+  "version": "0.0.1",
+  "description": "CLI for controlling mcopy optical printer tools",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sixteenmillimeter/mcopy.git"
+  },
+  "author": "mmcwilliams",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sixteenmillimeter/mcopy/issues"
+  },
+  "homepage": "https://github.com/sixteenmillimeter/mcopy#readme",
+  "dependencies": {
+    "arduino": "file:../app/lib/arduino",
+    "commander": "^2.19.0",
+    "delay": "file:../app/lib/delay",
+    "device": "file:lib/device",
+    "fs-extra": "^7.0.1",
+    "humanize-duration": "^3.17.0",
+    "intval": "file:../app/lib/intval",
+    "log": "file:lib/log",
+    "moment": "^2.24.0",
+    "mscript": "file:../app/lib/mscript",
+    "serialport": "^7.0.2",
+    "uuid": "^3.3.2",
+    "winston": "^3.2.1"
+  }
+}
