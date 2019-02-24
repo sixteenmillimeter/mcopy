@@ -3,10 +3,15 @@
 const program = require('commander')
 const uuid = require('uuid')
 const moment = require('moment')
+const events = require('events')
+const ee = new events.EventEmitter()
+
+const cfg = require('../app/data/cfg.json')
+const pkg = require('./package.json')
 
 const delay = require('delay')
 const intval = require('intval')
-const arduino = require('arduino')
+const arduino = require('arduino')(cfg, ee)
 const Mscript = require('mscript')
 const mscript = new Mscript()
 
@@ -14,8 +19,6 @@ const dev = require('device')
 let log
 let readline
 
-const cfg = require('../app/data/cfg.json')
-const pkg = require('./package.json')
 
 async function command () {
 	return new Promise ((resolve, reject) => {
@@ -40,15 +43,38 @@ async function live () {
 		try {
 			await command()
 		} catch (err) {
-			log.error('Error executing command')
+			log.error('Error executing command', err)
 		}
 	}
 }
 
+function parsePattern () {
+
+}
+
 async function main (arg) {
 	log = require('log')(arg)
+
 	log.info('mcopy-cli')
-	await live()
+
+	try {
+		await arduino.enumerate()
+	} catch (err) {
+		log.error('Error enumerating devices')
+		log.error(err)
+	}
+
+	if (arg.pattern) {
+
+	}
+
+	if (arg.live) {
+		try {
+			await live()
+		} catch (err) {
+			log.error('Error running in live control mode', err)
+		}
+	}
 }
 
 program
