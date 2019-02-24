@@ -11,7 +11,6 @@ const winston = require('winston')
 const moment = require('moment')
 const uuid = require('uuid')
 const events = require('events')
-const async = require('async')
 const path = require('path')
 
 const ee = new events.EventEmitter()

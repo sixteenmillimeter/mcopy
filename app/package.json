@@ -8,7 +8,7 @@
     "dev": "./node_modules/.bin/gulp && ./node_modules/.bin/electron main.js -d",
     "install": "./node_modules/.bin/electron-rebuild",
     "test": "./node_modules/.bin/qunit test/index.js",
-    "docs" : "sh ./scripts/docs.sh"
+    "docs": "sh ./scripts/docs.sh"
   },
   "repository": {
     "type": "git",
@@ -40,7 +40,6 @@
   },
   "dependencies": {
     "arduino": "file:lib/arduino",
-    "async": "^2.6.1",
     "capture": "file:lib/capture",
     "delay": "file:lib/delay",
     "display": "file:lib/display",
