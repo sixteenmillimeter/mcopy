@@ -6,8 +6,9 @@ const moment = require('moment')
 
 const delay = require('delay')
 //const intval = require('intval')
-const arduino = require('arduino')
-const mscript = require('mscript')
+//const arduino = require('arduino')
+const Mscript = require('mscript')
+const mscript = new Mscript()
 
 const dev = require('device')
 let log
@@ -20,8 +21,10 @@ async function command () {
 	return new Promise ((resolve, reject) => {
 		return readline.question(`Input:`, (str) => {
 			log.info(str)
+			console.dir(mscript.interpret(str))
+
 			//interpret string
-			readline.close()
+			//readline.close()
 			return resolve(true)
 		})
 	})
@@ -45,6 +48,7 @@ async function live () {
 async function main (arg) {
 	log = require('log')(arg)
 	log.info('mcopy-cli')
+	await live()
 }
 
 program
