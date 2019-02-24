@@ -71,4 +71,13 @@ proj.listen = function () {
 	});
 };
 
+proj.setValue = function (val) {
+	'use strict';
+	var obj = {
+		val: val,
+		id : uuid.v4()
+	};
+	ipcRenderer.sendSync('proj', obj);
+}
+
 module.exports = proj;

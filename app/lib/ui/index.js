@@ -75,6 +75,7 @@ gui.updateProj = function (t) {
 		t.value = mcopy.state.projector.pos;
 		gui.counterFormat(t);
 	}
+	proj.setValue(t.value);
 };
 gui.updateState = function () {
 	'use strict';
