@@ -6,7 +6,8 @@ const mscript = new Mscript();
 QUnit.test(`Basic functions`, (assert) => {
 	const script1 = 'CF\nPF\nCB\nPB\nBF\nBB';
 	const script2 = `CF 3\nPF 3`
-	assert.expect( 5 );
+	const script3 = `CF\nPF`
+	assert.expect( 6 );
 
 	mscript.interpret(script1, (obj) => {
 		assert.ok(obj.success, `Simple script1 compiles`)
@@ -25,6 +26,10 @@ QUnit.test(`Basic functions`, (assert) => {
 		}
 		assert.ok(pass, `Simple script2 compiles`)
 	});
+
+	let obj = mscript.interpret(script3)
+	assert.ok(true, 'Simple script3 with implied counts compiles')
+	console.log(obj)
 });
 
 QUnit.test(`Commands with integers`, (assert) => {
