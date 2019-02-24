@@ -302,7 +302,7 @@ dev.all = async function (devices) {
 	if (mcopy.settings.camera.intval) {
 		c.intval = mcopy.settings.camera.intval
 		await delay(1000)
-		awaitcam.connectIntval(null, { connect : true,  url : c.intval })
+		await cam.connectIntval(null, { connect : true,  url : c.intval })
 	}
 
 	if (!dev.connected.light) {
@@ -427,7 +427,7 @@ proj.set = async function (dir, id) {
 		cmd = mcopy.cfg.arduino.cmd.proj_backward
 	}
 	proj.state.dir = dir
-	if (proj.digital) {
+	if (proj.state.digital) {
 		dig.set(dir)
 	} else {
 		try {
@@ -470,6 +470,8 @@ proj.listen = function () {
 			} catch (err) {
 				console.error(err)
 			}
+		} else if (typeof arg.val !== 'undefined') {
+			dig.state.frame = arg.val
 		}
 		event.returnValue = true
 	})
