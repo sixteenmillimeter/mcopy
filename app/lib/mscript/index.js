@@ -122,6 +122,8 @@ class Mscript {
 		if (typeof callback !== 'undefined') {
 			//should only be invoked by running mscript.tests()
 			callback(this.output);
+		} else {
+			return this.output;
 		}
 	}
 	variable (line) {
