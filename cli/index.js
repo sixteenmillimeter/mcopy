@@ -5,8 +5,8 @@ const uuid = require('uuid')
 const moment = require('moment')
 
 const delay = require('delay')
-//const intval = require('intval')
-//const arduino = require('arduino')
+const intval = require('intval')
+const arduino = require('arduino')
 const Mscript = require('mscript')
 const mscript = new Mscript()
 
