@@ -250,6 +250,15 @@ dev.connectDevice = async function (device, type) {
 			return false
 		}
 		log.info(`Connected to ${device} as PROJECTOR`, 'SERIAL', true, true)
+	} else if (type === 'projector_second') {
+		dev.connected.projector_second = device
+		arduino.alias('projector_second', device)
+		try {
+			connectSuccess = await arduino.connect('projector_second', device, false)
+		} catch (err) {
+			console.error(err)
+			return false
+		}
 	}
 	return connectSuccess
 }
@@ -266,7 +275,8 @@ dev.all = async function (devices) {
 	dev.connected = {
 		projector : false,
 		camera : false,
-		light : false
+		light : false,
+		projector_second : false
 	}
 
 	let checklist = []

@@ -79,6 +79,13 @@ module female_jk103 () {
     difference () {
         body();
         translate([0, 0, 25]) rotate([0, 180, 0]) jk_pins(0.5, 25);
+		translate([0, 0, -3]) rotate([0, 0, 180]) male_jk103_neg();
+        //bolt
+        translate([15, 0, 5]) rotate([0,90,0]) cylinder(r = 1, h = 20, center = true, $fn = 40);
     }
 }
+
+//rotate([180, 0, 0]) male_jk103();
+//male_jk103_back();
+female_jk103();
 

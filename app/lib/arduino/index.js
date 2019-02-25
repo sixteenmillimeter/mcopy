@@ -301,6 +301,8 @@ mcopy.arduino.distinguish = async function () {
 				type = 'projector,camera,light'
 			} else if (data === mcopy.cfg.arduino.cmd.proj_cam_identifier) {
 				type = 'projector,camera'
+			} else if (data === mcopy.cfg.ardino.cmd.proj_second_identifier) {
+				type = 'projector_second'
 			}
 			return resolve(type)
 		}
