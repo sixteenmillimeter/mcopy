@@ -270,6 +270,7 @@ dev.all = async function (devices) {
 	let l = {}
 	let type
 	let d
+	let s = {}
 
 
 	dev.connected = {
@@ -320,7 +321,11 @@ dev.all = async function (devices) {
 
 	l.arduino = dev.connected.light
 
-	return dev.ready(p, c, l)
+	if (dev.connected.projector_second) {
+		s = dev.connected.projector_second
+	}
+
+	return dev.ready(p, c, l, s)
 }
 
 dev.remember = function (which, device, type) {
