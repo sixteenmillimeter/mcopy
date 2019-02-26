@@ -62,6 +62,7 @@ light.help = `
 
 light.queue = {};
 light.lock = false;
+light.disabled = false;
 light.init = function () {
 	'use strict';
 
