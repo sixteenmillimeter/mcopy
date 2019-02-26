@@ -78,6 +78,9 @@ devices.ready = function (event, arg) {
 		$('#profile').val(arg.profile)
 		//devices.profile(arg.profile)
 	}
+	if (arg.projector_second) {
+		
+	}
 	return event.returnValue = true;
 };
 
