@@ -346,16 +346,24 @@ dev.remember = function (which, device, type) {
 	}
 };
 
-dev.ready = function (projector, camera, light) {
-	mainWindow.webContents.send('ready', { 
+dev.ready = function (projector, camera, light, projector_second) {
+	let args = { 
 		camera, 
 		projector, 
 		light, 
 		profile: mcopy.settings.profile 
-	})
+	}
+	if (projector_second && projector_second.arduino) {
+		args.projector_second = projector_second
+	}
+	mainWindow.webContents.send('ready', args)
 	settings.update('camera', camera)
 	settings.update('projector', projector)
 	settings.update('light', light)
+	if (projector_second && projector_second.arduino) {
+		settings.update('projector_second', projector_second)
+		mainWindow.setSize(800, 800)
+	}
 	settings.save()
 	return true
 };
