@@ -34,7 +34,8 @@
 			"black" : {
 				"before" : 0,
 				"after" : 0
-			}
+			},
+			"light" : false
 		},
 		"jk_original" : {
 			"label" : "JK45 profile",
@@ -60,6 +61,21 @@
 				"delay" : 50,
 				"momentary" : 0
 			}
+		},
+		"jk_mono" : {
+			"label" : "MONO's JK",
+			"cam" : {
+				"time" : 750,
+				"delay" : 50,
+				"momentary" : 300
+			},
+			"proj" : {
+				"time" : 1300,
+				"delay" : 50,
+				"momentary" : 300
+			},
+			"light" : false,
+			"projector_second" : true
 		}
 	},
 	"arduino" : {
