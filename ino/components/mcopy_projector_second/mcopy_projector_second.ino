@@ -4,7 +4,14 @@ boolean debug_state = false;
 //const int proj_time = {{proj.time}};
 //const int proj_delay = {{proj.delay}};
 
+const int proj_fwd_pin = 9;
+const int proj_bwd_pin = 10;
+const int proj_micro_pin = 8;
+
 boolean proj_dir = true; 
+boolean proj_running = false;
+
+volatile int proj_micro_raw = 0;
 
 const char cmd_projector = 'p';
 const char cmd_proj_forward = 'g';
