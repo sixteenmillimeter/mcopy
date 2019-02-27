@@ -195,6 +195,12 @@ gui.grid.init = function () {
 	gui.grid.events();
 };
 
+/**
+ * Set a specific grid pad to the state stored in the sequence
+ * array at that step
+ *
+ * @param {integer}  i 	Step in sequence
+ **/
 gui.grid.state = function (i) {
 	'use strict';
 	const elem = $(`input[x=${i}]`);
@@ -218,6 +224,11 @@ gui.grid.state = function (i) {
 			.prop('title', '');
 	}
 };
+/**
+ * Clears the UI of the grid and restores it to the 
+ * state of the sequence.
+ *
+ **/
 gui.grid.refresh = function () {
 	'use strict';
 	const cmds = ['cam_forward', 'proj_forward', 'cam_backward', 'proj_backward', 'light_set', 'numbers'];
@@ -244,6 +255,11 @@ gui.grid.refresh = function () {
 		}
 	}
 };
+/**
+ * Function bound to click on grid pad elements
+ *
+ * @param  {object} t This, passed from clicked element
+ **/
 gui.grid.click = function (t) {
 	'use strict';
 	const i = parseInt($(t).attr('x'));
@@ -263,6 +279,10 @@ gui.grid.click = function (t) {
 	gui.grid.state(i);
 	seq.stats();
 };
+/**
+ * Clears the state of the sequence and then refreshes
+ * the grid and then recalculates the stats on the sequence
+ **/
 gui.grid.clear = function () {
 	'use strict';
 	const doit = confirm('Are you sure you want to clear this sequence?');
@@ -273,23 +293,44 @@ gui.grid.clear = function () {
 		console.log('Sequencer cleared');
 	}
 };
+/**
+ * Function bound to the change event on the loop counter
+ * input element
+ *
+ * @param  {object} t This, passed from changed element
+ */
 gui.grid.loopChange = function (t) {
 	'use strict';
 	const count = parseInt(t.value);
 	mcopy.loop = count;
 	seq.stats();
 };
+/**
+ * Add 24 frames to the sequence in the GUI
+ **/
 gui.grid.plus_24 = function () {
 	'use strict';
 	mcopy.state.sequence.size += 24;
 	gui.grid.refresh();
 	console.log(`Sequencer expanded to ${mcopy.state.sequence.size} steps`);
 };
+/**
+ * Set the light value at a specific step and then update
+ * GUI grid via .state()
+ *
+ * @param {integer} x   Step in sequence
+ * @param {array}   rgb Light value in RGB
+ **/
 gui.grid.setLight = function (x, rgb) {
 	'use strict';
 	mcopy.state.sequence.light[x] = rgb.join(',');
 	gui.grid.state(x);
 };
+/**
+ * Set light value to black (0,0,0) when double clicked
+ *
+ * @param {object} t This, passed from clicked element
+ **/
 gui.grid.blackout = function (t) {
 	const elem = $(t);
 	const i = elem.attr('x');
@@ -302,6 +343,13 @@ gui.grid.blackout = function (t) {
 		gui.grid.setLight(i, [0, 0, 0]);
 	}	
 };
+
+/**
+ * Change all lights at all camera commands to a specific
+ * RGB value
+ *
+ * @param {array}  rgb  RGB value [255. 255, 255]
+ */
 gui.grid.changeAll = function (rgb) {
 	'use strict';
 	for (let [i, c] of mcopy.state.sequence.arr.entries()) {
@@ -310,6 +358,12 @@ gui.grid.changeAll = function (rgb) {
 		}
 	}
 };
+/**
+ * Display color swatch modal for selection of light
+ * color value at specific step
+ *
+ * @param {integer} x   Position in sequence to change value
+ **/
 gui.grid.swatches = function (x) {
 	'use strict';
 	const current = mcopy.state.sequence.light[x];
@@ -348,11 +402,22 @@ gui.grid.swatches = function (x) {
 		}
 	});
 };
+
+/**
+ * Scroll the grid to a specific step
+ *
+ * @param {integer} i Step to scroll to
+ **/
 gui.grid.scrollTo = function (i) {
 	'use strict';
 	var w = 35 + 3; //width of pad + margin
 	$('#seq_scroll').scrollLeft(i * w);
 };
+
+/**
+ * Bind all events to sequence. Re-evaluate this in search
+ * of memory leak issues with long sequences.
+ **/
 gui.grid.events = function () {
 	'use strict';
 	$(document.body).on('click', '#sequencer input[type=checkbox]', function () {
