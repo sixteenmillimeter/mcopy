@@ -16,7 +16,7 @@ const arduino = require('arduino')(cfg, ee)
 const Mscript = require('mscript')
 const mscript = new Mscript()
 
-const dev = require('device')
+const dev = require('device')(arduino)
 let log
 let readline
 
@@ -67,7 +67,8 @@ async function main (arg) {
 	}
 
 	if (!devices ||devices.length > 1) {
-		return exit('No devices found', 1)
+		//return exit('No devices found', 1)
+		devices = []
 	}
 
 	await dev.all(devices)
