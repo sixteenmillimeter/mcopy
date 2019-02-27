@@ -11,6 +11,7 @@ nav.init = function () {
 			{ type: 'radio',  id: 'controls',  group: '1', caption: 'Controls', icon: 'fa fa-tasks' },
 			{ type: 'radio',  id: 'light',  group: '1', caption: 'Light', icon: 'mcopy-light' },
 			{ type: 'radio',  id: 'script',  group: '1', caption: 'Script', icon: 'fa fa-code' },
+			{ type: 'radio',  id: 'video', group: '1', caption : 'Video', icon: 'fa fa-video'},
 			{ type: 'spacer' },
 			{ type: 'radio',  id: 'settings',  group: '1', caption: 'Settings', icon: 'fa fa-cogs' }
 		],
