@@ -8,7 +8,7 @@ const newlineRe = new RegExp('\n', 'g')
 const returnRe = new RegExp('\r', 'g')
 let eventEmitter
 
-const mcopy = {}
+let cfg
 
 /**
  * Pause the process for X milliseconds in async/await functions
@@ -33,10 +33,10 @@ async function delay (ms) {
  **/
 async function send (device, cmd) {
 	return new Promise ((resolve, reject) => {
-		mcopy.arduino.queue[cmd] = (ms) => {
+		arduino.queue[cmd] = (ms) => {
 			return resolve(ms)
 		}
-		return mcopy.arduino.serial[device].write(cmd, (err, results) => {
+		return arduino.serial[device].write(cmd, (err, results) => {
 			if (err) {
 				//console.error(err)
 				return reject(err)
@@ -56,7 +56,7 @@ async function send (device, cmd) {
  **/
 async function write (device, str) {
 	return new Promise ((resolve, reject) => {
-		mcopy.arduino.serial[device].write(str, function (err, results) {
+		arduino.serial[device].write(str, function (err, results) {
 			if (err) { 
 				return reject(err)
 			}
@@ -75,7 +75,7 @@ async function write (device, str) {
  **/
 async function open (device) {
 	return new Promise((resolve, reject) => {
-		return mcopy.arduino.serial[device].open(error => {
+		return arduino.serial[device].open(error => {
 			if (error) {
 				return reject(error)
 			}
@@ -93,7 +93,7 @@ async function open (device) {
  **/
 async function close (device) {
 	return new Promise((resolve, reject) => {
-		return mcopy.arduino.serial[device].close((err) => {
+		return arduino.serial[device].close((err) => {
 			if (err) {
 				return reject(err)
 			}
@@ -105,7 +105,7 @@ async function close (device) {
 /******
 	Arduino handlers
 *******/
-mcopy.arduino = {
+const arduino = {
 	path : {},
 	known: [
 		'/dev/tty.usbmodem1a161', 
@@ -129,10 +129,13 @@ mcopy.arduino = {
 	baud : 57600,
 	queue : {},
 	timer : 0,
-	lock : false
+	lock : false,
+	locks : {
+
+	}
 }
 
-mcopy.arduino.enumerate = async function () {
+arduino.enumerate = async function () {
 	return new Promise( (resolve, reject) => {
 		return SerialPort.list((err, ports) => {
 			let matches = []
@@ -140,7 +143,7 @@ mcopy.arduino.enumerate = async function () {
 				return reject(err)
 			}
 			ports.forEach(port => {
-				if (mcopy.arduino.known.indexOf(port.comName) !== -1) {
+				if (arduino.known.indexOf(port.comName) !== -1) {
 					matches.push(port.comName)
 				} else if ((port.manufacturer + '').toLowerCase().indexOf('arduino') !== -1) {
 					matches.push(port.comName)
@@ -156,32 +159,32 @@ mcopy.arduino.enumerate = async function () {
 }
 
 //commands which respond to a sent char
-mcopy.arduino.send = async function (serial, cmd, res) {
-	const device = mcopy.arduino.alias[serial]
+arduino.send = async function (serial, cmd, res) {
+	const device = arduino.alias[serial]
 	let results
-	if (mcopy.arduino.lock) {
+	if (arduino.locks[serial]) {
 		return false
 	}
-	mcopy.arduino.lock = true
-	await delay(mcopy.cfg.arduino.serialDelay)
+	arduino.locks[serial] = true
+	await delay(cfg.arduino.serialDelay)
 	try {
 		results = await send(device, cmd)
 	} catch (e) {
 		return console.error(e)
 	}
-	mcopy.arduino.lock = false
-	mcopy.arduino.timer = new Date().getTime()
+	arduino.locks[serial] = false
+	arduino.timer = new Date().getTime()
 	return await eventEmitter.emit('arduino_send', cmd)
 }
 
 //send strings, after char triggers firmware to accept
-mcopy.arduino.string = async function (serial, str) {
-	const device = mcopy.arduino.alias[serial]
+arduino.string = async function (serial, str) {
+	const device = arduino.alias[serial]
 	let writeSuccess
-	await delay(mcopy.cfg.arduino.serialDelay)
-	if (typeof mcopy.arduino.serial[device].fake !== 'undefined'
-		&& mcopy.arduino.serial[device].fake) {
-		return mcopy.arduino.serial[device].string(str)
+	await delay(cfg.arduino.serialDelay)
+	if (typeof arduino.serial[device].fake !== 'undefined'
+		&& arduino.serial[device].fake) {
+		return arduino.serial[device].string(str)
 	} else {
 		try {
 			writeSuccess = await write(device, str)
@@ -193,89 +196,90 @@ mcopy.arduino.string = async function (serial, str) {
 }
 
 //respond with same char over serial when done
-mcopy.arduino.end = async function (data) {
+arduino.end = async function (serial, data) {
 	const end = new Date().getTime()
-	const ms = end - mcopy.arduino.timer
+	const ms = end - arduino.timer
 	let complete
-	if (mcopy.arduino.queue[data] !== undefined) {
-		mcopy.arduino.lock = false;
+	if (arduino.queue[data] !== undefined) {
+		arduino.locks[serial] = false; 
 		//console.log('Command ' + data + ' took ' + ms + 'ms');
-		complete = mcopy.arduino.queue[data](ms) //execute callback
+		complete = arduino.queue[data](ms) //execute callback
 		eventEmitter.emit('arduino_end', data)
-		delete mcopy.arduino.queue[data]
+		delete arduino.queue[data]
 	} else {
 		//console.log('Received stray "' + data + '"'); //silent to user
 	}
 	return complete
 };
-mcopy.arduino.alias = function (serial, device) {
+arduino.alias = function (serial, device) {
 	console.log(`Making "${serial}" an alias of ${device}`)
-	mcopy.arduino.alias[serial] = device
+	arduino.alias[serial] = device
 }
-mcopy.arduino.connect = async function (serial, device, confirm) {
+arduino.connect = async function (serial, device, confirm) {
 	return new Promise(async (resolve, reject) => {
 		let connectSuccess
-		mcopy.arduino.path[serial] = device;
-		mcopy.arduino.alias[serial] = device;
-		mcopy.arduino.serial[device] = new SerialPort(mcopy.arduino.path[serial], {
+		arduino.path[serial] = device;
+		arduino.alias[serial] = device;
+		arduino.serial[device] = new SerialPort(arduino.path[serial], {
 			autoOpen : false,
-			baudRate: mcopy.cfg.arduino.baud,
+			baudRate: cfg.arduino.baud,
 			parser: parser
 		})
+		arduino.locks[device] = false
 		try {
 			connectSuccess = await open(device) 
 		} catch (e) {
 			console.error('failed to open: ' + e)
 			return reject(e)
 		}
-		console.log(`Opened connection with ${mcopy.arduino.path[serial]} as ${serial}`);
+		console.log(`Opened connection with ${arduino.path[serial]} as ${serial}`);
 		if (!confirm) {
-			mcopy.arduino.serial[device].on('data', async (data) => {
+			arduino.serial[device].on('data', async (data) => {
 				let d = data.toString('utf8')
 				d = d.replace(newlineRe, '').replace(returnRe, '')
-				return await mcopy.arduino.end(d)
+				return await arduino.end(serial, d)
 			})
 		} else {
-			mcopy.arduino.serial[device].on('data', async (data) => {
+			arduino.serial[device].on('data', async (data) => {
 				let d = data.toString('utf8')
 				d = d.replace(newlineRe, '').replace(returnRe, '')
-				return await mcopy.arduino.confirmEnd(d)
+				return await arduino.confirmEnd(d)
 			})
 		}
-		return resolve(mcopy.arduino.path[serial])
+		return resolve(arduino.path[serial])
 	})
 
 }
 
-mcopy.arduino.confirmExec = {};
-mcopy.arduino.confirmEnd = function (data) {
+arduino.confirmExec = {};
+arduino.confirmEnd = function (data) {
 	//console.dir(data)
-	if (data === mcopy.cfg.arduino.cmd.connect
-		|| data === mcopy.cfg.arduino.cmd.proj_identifier
-		|| data === mcopy.cfg.arduino.cmd.cam_identifier
-		|| data === mcopy.cfg.arduino.cmd.light_identifier
-		|| data === mcopy.cfg.arduino.cmd.proj_light_identifier
-		|| data === mcopy.cfg.arduino.cmd.proj_cam_light_identifier
-		|| data === mcopy.cfg.arduino.cmd.proj_cam_identifier ) {
-		mcopy.arduino.confirmExec(null, data);
-		mcopy.arduino.confirmExec = {};
+	if (data === cfg.arduino.cmd.connect
+		|| data === cfg.arduino.cmd.proj_identifier
+		|| data === cfg.arduino.cmd.cam_identifier
+		|| data === cfg.arduino.cmd.light_identifier
+		|| data === cfg.arduino.cmd.proj_light_identifier
+		|| data === cfg.arduino.cmd.proj_cam_light_identifier
+		|| data === cfg.arduino.cmd.proj_cam_identifier ) {
+		arduino.confirmExec(null, data);
+		arduino.confirmExec = {};
 	}
 }
 
-mcopy.arduino.verify = async function () {
+arduino.verify = async function () {
 	return new Promise(async (resolve, reject) => {
-		const device = mcopy.arduino.alias['connect']
+		const device = arduino.alias['connect']
 		let writeSuccess
-		mcopy.arduino.confirmExec = function (err, data) {
-			if (data === mcopy.cfg.arduino.cmd.connect) {
+		arduino.confirmExec = function (err, data) {
+			if (data === cfg.arduino.cmd.connect) {
 				return resolve(true)
 			} else {
 				return reject('Wrong data returned')
 			}
 		}
-		await delay(mcopy.cfg.arduino.serialDelay)
+		await delay(cfg.arduino.serialDelay)
 		try {
-			writeSuccess = await send(device, mcopy.cfg.arduino.cmd.connect)
+			writeSuccess = await send(device, cfg.arduino.cmd.connect)
 		} catch (e) {
 			return reject(e)
 		}
@@ -283,32 +287,32 @@ mcopy.arduino.verify = async function () {
 	})
 }
 
-mcopy.arduino.distinguish = async function () {
+arduino.distinguish = async function () {
 	return new Promise(async (resolve, reject) => {
-		const device = mcopy.arduino.alias['connect']
+		const device = arduino.alias['connect']
 		let writeSuccess
 		let type
-		mcopy.arduino.confirmExec = function (err, data) {
-			if (data === mcopy.cfg.arduino.cmd.proj_identifier) {
+		arduino.confirmExec = function (err, data) {
+			if (data === cfg.arduino.cmd.proj_identifier) {
 				type = 'projector'
-			} else if (data === mcopy.cfg.arduino.cmd.cam_identifier) {
+			} else if (data === cfg.arduino.cmd.cam_identifier) {
 				type = 'camera'
-			} else if (data === mcopy.cfg.arduino.cmd.light_identifier) {
+			} else if (data === cfg.arduino.cmd.light_identifier) {
 				type = 'light'
-			} else if (data === mcopy.cfg.arduino.cmd.proj_light_identifier) {
+			} else if (data === cfg.arduino.cmd.proj_light_identifier) {
 				type = 'projector,light'
-			} else if (data === mcopy.cfg.arduino.cmd.proj_cam_light_identifier) {
+			} else if (data === cfg.arduino.cmd.proj_cam_light_identifier) {
 				type = 'projector,camera,light'
-			} else if (data === mcopy.cfg.arduino.cmd.proj_cam_identifier) {
+			} else if (data === cfg.arduino.cmd.proj_cam_identifier) {
 				type = 'projector,camera'
-			} else if (data === mcopy.cfg.ardino.cmd.proj_second_identifier) {
+			} else if (data === cfg.ardino.cmd.proj_second_identifier) {
 				type = 'projector_second'
 			}
 			return resolve(type)
 		}
-		await delay(mcopy.cfg.arduino.serialDelay)
+		await delay(cfg.arduino.serialDelay)
 		try {
-			writeSuccess = await send(device, mcopy.cfg.arduino.cmd.mcopy_identifier)
+			writeSuccess = await send(device, cfg.arduino.cmd.mcopy_identifier)
 		} catch (e) {
 			console.error(e)
 			return reject(e)
@@ -316,8 +320,8 @@ mcopy.arduino.distinguish = async function () {
 	})
 }
 
-mcopy.arduino.close = async function (callback) {
-	const device = mcopy.arduino.alias['connect']
+arduino.close = async function (callback) {
+	const device = arduino.alias['connect']
 	let closeSuccess
 	try {
 		closeSuccess = await close(device)
@@ -327,22 +331,22 @@ mcopy.arduino.close = async function (callback) {
 	return closeSuccess
 };
 
-mcopy.arduino.fakeConnect = async function (serial) {
+arduino.fakeConnect = async function (serial) {
 	//console.log('Connecting to fake arduino...');
 	const device = '/dev/fake'
-	mcopy.arduino.alias[serial] = device
-	mcopy.arduino.serial[device] = {
+	arduino.alias[serial] = device
+	arduino.serial[device] = {
 		write : function (cmd, cb) {
 			const t = {
-				c : mcopy.cfg.arduino.cam.time + mcopy.cfg.arduino.cam.delay,
-				p : mcopy.cfg.arduino.proj.time + mcopy.cfg.arduino.proj.delay
+				c : cfg.arduino.cam.time + cfg.arduino.cam.delay,
+				p : cfg.arduino.proj.time + cfg.arduino.proj.delay
 			}
 			let timeout = t[cmd]
 			let end
 			if (typeof timeout === 'undefined') timeout = 10
-			mcopy.arduino.timer = +new Date()
+			arduino.timer = +new Date()
 			setTimeout(() => {
-				mcopy.arduino.end(cmd)
+				arduino.end(serial, cmd)
 				return cb()
 			}, timeout)
 
@@ -358,9 +362,9 @@ mcopy.arduino.fakeConnect = async function (serial) {
 }
 
 if (typeof module !== 'undefined' && module.parent) {
-	module.exports = function (cfg, ee) {
+	module.exports = function (c, ee) {
 		eventEmitter = ee
-		mcopy.cfg = cfg
-		return mcopy.arduino
+		cfg = c
+		return arduino
 	}
 }
