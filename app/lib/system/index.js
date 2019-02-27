@@ -7,6 +7,14 @@ const exec = require('exec');
 //const spawn = require('spawn');
 //const exit = require('exit');
 
+/**
+ * Evaluates system dependencies for digital
+ * projector features by executing processes with
+ * --help flag. If they do not exist, log to console
+ * 
+ * @param {string} platform  Operating system type
+ **/
+
 async function dependencies (platform) {
 	let obj = {};
 
@@ -31,6 +39,13 @@ async function dependencies (platform) {
 	return obj;
 }
 
+/**
+ * Profile the current system and return an object with
+ * data about the displays and dependencies for the digital
+ * projector feature.
+ *
+ * @returns {object} Object containing system information
+ */ 
 async function system () {
 	const obj = {};
 	let displays = electron.screen.getAllDisplays();

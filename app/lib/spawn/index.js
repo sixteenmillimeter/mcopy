@@ -2,6 +2,10 @@
 
 const spawnRaw = require('child_process').spawn;
 
+/**
+ * Wrapper function around spawn that prints to console
+ * after process closes. Not used.
+ **/
 function spawn (cmd, args) {
     const sp = spawnRaw(cmd, args);
     let output = '';
