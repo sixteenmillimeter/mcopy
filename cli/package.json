@@ -21,6 +21,7 @@
     "commander": "^2.19.0",
     "delay": "file:../app/lib/delay",
     "device": "file:lib/device",
+    "exit": "file:lib/exit",
     "fs-extra": "^7.0.1",
     "humanize-duration": "^3.17.0",
     "intval": "file:lib/intval",
