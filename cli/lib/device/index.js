@@ -1,5 +1,7 @@
 'use strict'
 
+let arduino
+const log = require('log')({quiet : false})
 const dev = {}
 
 dev.init = function () {
@@ -293,4 +295,7 @@ dev.ready = function (projector, camera, light) {
 	return true
 };
 
-module.exports = dev
+module.exports = function (a) {
+	arduino = a
+	return dev
+}
