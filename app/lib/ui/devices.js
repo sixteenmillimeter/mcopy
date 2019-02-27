@@ -63,7 +63,7 @@ devices.ready = function (event, arg) {
 		$(`#${i}_device`).append(opt);
 	}
 	if (notify !== 'Connected to ') {
-		gui.notify('DEVICES', notify)
+		gui.notify('DEVICES', notify);
 	}
 	if (devs.length > 0) {
 		$('#devices').empty();
@@ -76,10 +76,14 @@ devices.ready = function (event, arg) {
 	}
 	if (arg && arg.profile) {
 		$('#profile').val(arg.profile)
+		log.info(`Using configuration profile "${profile}"`, 'DEVICES', true, true);
 		//devices.profile(arg.profile)
 	}
 	if (arg.projector_second) {
-		
+		//add second row of projector pads to grid
+	}
+	if (arg.camera_second) {
+		//add second row of camera pads to grid
 	}
 	return event.returnValue = true;
 };
@@ -137,33 +141,35 @@ devices.digitalSelect = function () {
 		title : `Select video or image sequence`,
         properties : [`openFile`], // openDirectory, multiSelection, openFile
         defaultPath: 'c:/',
-        filters :
-            [
-                {
-                    name: 'Videos',
-                    extensions
-                },
-                {
-                    name: 'All Files',
-                    extensions: ['*']
-                },
-            ]
-        }, (files) => {
-        	let valid = false;
-        	console.dir(files)
-        	let path = files[0]
-			if (path && path !== '') {
-				for (let ext of extensions) {
-					if (path.toLowerCase().indexOf(`.${ext}`) !== -1) {
-						valid = true;
-					}
+        filters : [
+            {
+                name: 'Videos',
+                extensions
+            },
+            {
+                name: 'All Files',
+                extensions: ['*']
+            },
+        ]
+    }, (files) => {
+    	let valid = false;
+    	console.dir(files)
+    	let path = files[0];
+    	let displayName;
+		if (path && path !== '') {
+			for (let ext of extensions) {
+				if (path.toLowerCase().indexOf(`.${ext}`) !== -1) {
+					valid = true;
 				}
-				if (!valid) return false;
-				log.info(`Selected video ${path.split('/').pop()}`, 'DIGITAL', true);
-				elem.attr('data-file', path);
-				elem.val(path.split('/').pop());
 			}
-        })
+			if (!valid) return false;
+			log.info(`Selected video ${path.split('/').pop()}`, 'DIGITAL', true);
+			elem.attr('data-file', path);
+			displayName = path.split('/').pop()
+			elem.val(displayName);
+			$('#video_file').val(displayName);
+		}
+    })
 }
 
 devices.digital = function () {
