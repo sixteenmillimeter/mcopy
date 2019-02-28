@@ -1,9 +1,28 @@
+/**
+ * This is a specialized version of the mcopy firmware for
+ * controlling the projectors of the optical printer 
+ * at MONO NO AWARE. This uses a Sainsmart 8 Solid State Relay 
+ * board wired into the directional switches of a JK104-R projector 
+ * controller box, a secondary projector controller box and it 
+ * runs on an Arduino Uno compatible board.
+ * 
+ * Pins 
+ * 12 - CH1 - FWD
+ * 11 - CH2 - BWD (bridged to CH1)
+ *  - controls the directional relays of the secondary projector.
+ * 10 - CH3 - 4 pronged trigger cable
+ *  - triggers the secondary projector
+ */
+
+
 boolean debug_state = false;
 
 const int proj_fwd_pin = 12;
 const int proj_bwd_pin = 11;
 const int proj_pin = 10;
-const int proj_time = 1200;
+
+const int proj_momentary = 60;
+const int proj_time = 950; //secondary projector speed
 const int proj_delay = 42;
 
 boolean proj_dir = true; 
@@ -25,6 +44,13 @@ void setup() {
   Serial.begin(57600);
   Serial.flush();
   Serial.setTimeout(serialDelay);
+  pinMode(proj_fwd_pin, OUTPUT);
+  pinMode(proj_bwd_pin, OUTPUT);
+  pinMode(proj_pin, OUTPUT);
+
+  digitalWrite(proj_pin, LOW);
+  digitalWrite(proj_fwd_pin, HIGH);
+  digitalWrite(proj_bwd_pin, LOW);
 }
 
 void loop() {
@@ -46,7 +72,7 @@ void cmd (char val) {
   } else if (val == cmd_mcopy_identifier) {
     identify();
   } else if (val == cmd_projector) {
-    proj_start();
+    projector();
   } else if (val == cmd_proj_forward) {
     proj_direction(true);
   } else if (val == cmd_proj_backward) {
@@ -70,46 +96,33 @@ void identify () {
   log("identify()");  
 }
 
-void proj_start () {
-  if (proj_dir) {
-    digitalWrite(proj_fwd_pin, HIGH);
-    digitalWrite(proj_bwd_pin, LOW); 
-  } else {
-    digitalWrite(proj_bwd_pin, HIGH); 
-    digitalWrite(proj_fwd_pin, LOW); 
+void projector () {
+  if (!proj_running) {
+    proj_running = true;
+    digitalWrite(proj_pin, HIGH);
+    
+    delay(proj_momentary);
+    digitalWrite(proj_pin, LOW);
+  
+    delay(proj_time - proj_momentary + proj_delay);
+    
+    Serial.println(cmd_projector);
+    log("projector()");
+    proj_running = false;
+    
   }
-  proj_running = true;
-  delay(500); // Let bump pass out of microswitch
-
-  //delay(1300); //TEMPORARY DELAY FOR TESTING TIMING
-}
-
-void proj_reading () {
-   proj_micro_raw = digitalRead(proj_micro_pin);
-    if (proj_micro_raw == 1) {
-        //do nothing
-    } else if (proj_micro_raw == 0) {
-        proj_stop();
-    }
-    //delay(1); //needed?
-}
-
-void proj_stop () {
-  digitalWrite(proj_bwd_pin, LOW); 
-  digitalWrite(proj_fwd_pin, LOW);
-  
-  proj_running = false;
-  
-  Serial.println(cmd_projector);
-  log("projector()");
 }
 
 void proj_direction (boolean state) {
   proj_dir = state;
+  digitalWrite(proj_fwd_pin, LOW);
+  digitalWrite(proj_bwd_pin, LOW);
   if (state) {
+    digitalWrite(proj_fwd_pin, HIGH);
     Serial.println(cmd_proj_forward);
     log("proj_direction -> true");
   } else {
+    digitalWrite(proj_bwd_pin, HIGH);
     Serial.println(cmd_proj_backward);
     log("proj_direction -> false");
   }
