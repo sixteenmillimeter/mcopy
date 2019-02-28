@@ -136,16 +136,12 @@ devices.intvalCb = function (evt, args) {
 devices.digitalSelect = function () {
 	'use strict';
 	const elem = $('#digital');
-	const extensions =  ['mpg', 'mpeg', 'mov', 'mkv', 'avi'];
+	const extensions =  ['mpg', 'mpeg', 'mov', 'mkv', 'avi', 'mp4'];
 	dialog.showOpenDialog({
 		title : `Select video or image sequence`,
         properties : [`openFile`], // openDirectory, multiSelection, openFile
         defaultPath: 'c:/',
         filters : [
-            {
-                name: 'Videos',
-                extensions
-            },
             {
                 name: 'All Files',
                 extensions: ['*']
