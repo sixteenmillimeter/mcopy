@@ -147,6 +147,10 @@ arduino.enumerate = async function () {
 					matches.push(port.comName)
 				} else if ((port.manufacturer + '').toLowerCase().indexOf('arduino') !== -1) {
 					matches.push(port.comName)
+				} else if ((port.comName + '').toLowerCase().indexOf('usbserial') !== -1) {
+					matches.push(port.comName)
+				} else if ((port.comName + '').toLowerCase().indexOf('usbmodem') !== -1) {
+					matches.push(port.comName)
 				}
 			})
 			if (matches.length === 0) {
