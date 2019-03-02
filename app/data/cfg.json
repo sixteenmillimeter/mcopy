@@ -118,7 +118,12 @@
 			"proj_light_identifier" : "q",
 			"proj_cam_light_identifier" : "r",
 			"proj_cam_identifier" : "s",
-			"proj_second_identifier" : "t"
+			"proj_second_identifier" : "t",
+			"proj_dual_identifier" : "d",
+			"proj_second_forward" : "u",
+			"proj_second_backward" : "v",
+			"projector_second" : "w",
+			"projectors" : "x"
 		}
 	}
 }

@@ -1,6 +1,6 @@
 /**
  * This is a specialized version of the mcopy firmware for
- * controlling the camera of the optical printer 
+ * controlling the BBOptics Mitchel camera of the optical printer 
  * at MONO NO AWARE. This uses a Sainsmart 4 Relay Module
  * board wired into the directional switches and "indiv" trigger 
  * switch of a JK104-R camera controller box, and it runs on an 

@@ -1,5 +1,5 @@
 /**
- * TEMPORARY
+ * TEMPORARY PROOF OF CONCEPT
  * 
  * This is a specialized version of the mcopy firmware for
  * controlling the projectors of the optical printer 
