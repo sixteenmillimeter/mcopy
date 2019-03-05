@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 libs="./lib/*"
 for l in $libs
