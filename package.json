@@ -1,0 +1,28 @@
+{
+  "name": "mcopy",
+  "version": "0.1.0",
+  "description": "Small gauge film optical printer platform",
+  "main": "build.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "sh ./scripts/build.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sixteenmillimeter/mcopy.git"
+  },
+  "author": "mmcwilliams",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sixteenmillimeter/mcopy/issues"
+  },
+  "homepage": "https://github.com/sixteenmillimeter/mcopy#readme",
+  "devDependencies": {
+    "@types/node": "^11.10.4",
+    "typescript": "^3.3.3333"
+  }
+}
