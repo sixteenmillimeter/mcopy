@@ -1,7 +1,7 @@
 {
   "name": "mcopy-cli",
   "version": "0.0.1",
-  "description": "CLI for controlling mcopy optical printer tools",
+  "description": "CLI for controlling the mcopy optical printer platform",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
