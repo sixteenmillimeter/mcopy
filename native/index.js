@@ -11,7 +11,7 @@ import {
 } from 'proton-native';
 import { Provider } from 'react-redux';
 
-class Notepad extends Component {
+class Mcopy extends Component {
   state = { text: '' };
 
   save() {
@@ -35,8 +35,9 @@ class Notepad extends Component {
     else return true; // nextState is set from file
   }
 
-  render() {
+  render() { 
     return (
+
       <App onShouldQuit={() => console.log('Quitting')}>
         <Menu label="File">
           <Menu.Item type="Item" onClick={() => this.open()}>
@@ -49,8 +50,8 @@ class Notepad extends Component {
         </Menu>
         <Window
           onClose={() => console.log('Closing')}
-          title="Notes"
-          size={{ w: 500, h: 500 }}
+          title="mcopy-native"
+          size={{ w: 800, h: 600 }}
         >
           <Box>
             <TextInput
@@ -66,4 +67,4 @@ class Notepad extends Component {
   }
 }
 
-render(<Notepad />);
+render(<Mcopy />);
