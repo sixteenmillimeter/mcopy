@@ -55,7 +55,7 @@ function parsePattern () {
 }
 
 async function main (arg) {
-	log = require('log')(arg)
+	log = await require('log')(arg)
 
 	log.info('mcopy-cli')
 
