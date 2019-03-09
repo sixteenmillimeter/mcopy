@@ -774,13 +774,13 @@ log.transport = createLogger({
 		new (transports.Console)({
 			json : false,
             format : combine(
-		        //label({ label: 'mcopy-app' }),
-		        //timestamp(),
+		        label({ label: 'mcopy-app' }),
+		        timestamp(),
 		        //format.colorize({ all: true }),
 		        //format.splat(),
 		        //format.json(),
-		        //format.simple(),
-		        log.formatter
+		        format.simple(),
+		        //log.formatter
 		    )
         }),
 		new (transports.File)({ 
@@ -796,19 +796,17 @@ log.display = function (obj) {
 }
 log.listen = function () {
 	ipcMain.on('log', (event, arg) => {
-		arg.source = 'renderer'
-		log.transport.info(arg)
+		log.transport.info(`[renderer] action=${arg.action} service=${arg.service} status=${arg.status}`)
 		event.returnValue = true
 	})
 }
 log.info = function (action, service, status, display) {
 	var obj = {
-		source: 'main',
 		action : action,
 		service : service,
 		status : status
 	}
-	log.transport.info(obj)
+	log.transport.info(`[main] action=${action} service=${service} status=${status}`)
 	if (display) {
 		log.display(obj)
 	}
