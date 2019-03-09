@@ -76,7 +76,7 @@ devices.ready = function (event, arg) {
 	}
 	if (arg && arg.profile) {
 		$('#profile').val(arg.profile)
-		log.info(`Using configuration profile "${profile}"`, 'DEVICES', true, true);
+		log.info(`Using configuration profile "${arg.profile}"`, 'DEVICES', true, true);
 		//devices.profile(arg.profile)
 	}
 	if (arg.projector_second) {
