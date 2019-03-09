@@ -7,7 +7,8 @@ const electron = require('electron')
 const { Menu, MenuItem, ipcMain, BrowserWindow, app } = electron
 const fs = require('fs')
 const os = require('os')
-const winston = require('winston')
+const { createLogger, format, transports } = require('winston')
+const { combine, timestamp, label, printf, prettyPrint } = format
 const moment = require('moment')
 const uuid = require('uuid')
 const events = require('events')
@@ -216,7 +217,7 @@ dev.connectDevice = async function (device, type) {
 	} else if (type === 'projector,light') {
 		dev.connected.projector = device
 		dev.connected.light = device
-		arduino.alias('light', device)
+		arduino.aliasSerial('light', device)
 		try{
 			connectSuccess = await arduino.connect('projector', device, false)
 		} catch (err) {
@@ -229,8 +230,8 @@ dev.connectDevice = async function (device, type) {
 		dev.connected.projector = device
 		dev.connected.camera = device
 		dev.connected.light = device
-		arduino.alias('camera', device)
-		arduino.alias('light', device)
+		arduino.aliasSerial('camera', device)
+		arduino.aliasSerial('light', device)
 		try {
 			connectSuccess = await arduino.connect('projector', device, false)
 		} catch (err) {
@@ -242,7 +243,7 @@ dev.connectDevice = async function (device, type) {
 	} else if (type === 'projector,camera') {
 		dev.connected.projector = device
 		dev.connected.camera = device
-		arduino.alias('camera', device)
+		arduino.aliasSerial('camera', device)
 		try {
 			connectSuccess = await arduino.connect('projector', device, false)
 		} catch (err) {
@@ -252,7 +253,7 @@ dev.connectDevice = async function (device, type) {
 		log.info(`Connected to ${device} as PROJECTOR`, 'SERIAL', true, true)
 	} else if (type === 'projector_second') {
 		dev.connected.projector_second = device
-		arduino.alias('projector_second', device)
+		arduino.aliasSerial('projector_second', device)
 		try {
 			connectSuccess = await arduino.connect('projector_second', device, false)
 		} catch (err) {
@@ -763,10 +764,28 @@ log.file = function () {
 	return path.join(logPath, 'mcopy.log')
 }
 log.time = 'MM/DD/YY-HH:mm:ss'
-log.transport = winston.createLogger({
+log.formatter = (options) => {
+	console.dir(options)
+	return options.timestamp() +' ['+ options.level.toUpperCase() +'] '+ (undefined !== options.message ? options.message : '') +
+     (options.meta && Object.keys(options.meta).length ? '\n\t'+ JSON.stringify(options.meta) : '' );
+}
+log.transport = createLogger({
 	transports: [
-		new (winston.transports.Console)(),
-		new (winston.transports.File)({ filename: log.file() })
+		new (transports.Console)({
+			json : false,
+            format : combine(
+		        //label({ label: 'mcopy-app' }),
+		        //timestamp(),
+		        //format.colorize({ all: true }),
+		        //format.splat(),
+		        //format.json(),
+		        //format.simple(),
+		        log.formatter
+		    )
+        }),
+		new (transports.File)({ 
+			filename: log.file() 
+		})
 	]
 })
 log.init = function () {
@@ -777,18 +796,19 @@ log.display = function (obj) {
 }
 log.listen = function () {
 	ipcMain.on('log', (event, arg) => {
-		log.transport.info('renderer', arg)
+		arg.source = 'renderer'
+		log.transport.info(arg)
 		event.returnValue = true
 	})
 }
 log.info = function (action, service, status, display) {
 	var obj = {
-		time : moment().format(log.time),
+		source: 'main',
 		action : action,
 		service : service,
 		status : status
 	}
-	log.transport.info('main', obj)
+	log.transport.info(obj)
 	if (display) {
 		log.display(obj)
 	}
