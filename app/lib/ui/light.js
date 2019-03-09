@@ -88,6 +88,12 @@ light.init = function () {
 		}
 	});
 };
+light.disable = function () {
+	light.disabled = true;
+}
+light.enable = function () {
+	light.disabled = false;
+};
 light.colorPickers = function () {
 	'use strict';
 	$('#colors-tabs').w2tabs({
@@ -116,6 +122,14 @@ light.set = function (rgb, callback) { //rgb = [0,0,0]
 	'use strict';
 	var obj;
 
+	if (light.disabled){
+		if (callback) {
+			return callback();
+		} else {
+			return false;
+		}
+	}
+
 	if (light.lock) {
 		//potential for logging overlapping commands
 		return false;
@@ -130,7 +144,7 @@ light.set = function (rgb, callback) { //rgb = [0,0,0]
 	if (typeof callback !== 'undefined') {
 		obj.callback = callback;
 	}
-	light.queue[obj.id] = obj;
+	light.queue[obj.id] = obj;//
 	light.current = rgb;
 	light.lock = true;
 };
@@ -154,6 +168,11 @@ light.listen = function () {
 light.preview = function (rgb, name) { 
 	'use strict';
 	var rgbStr;
+
+	if (light.disabled) {
+		return false;
+	}
+
 	rgb = light.rgb.floor(rgb);
 	rgbStr = 'rgb(' + rgb.join(',') + ')';
 	light.color = rgb;
@@ -173,6 +192,11 @@ light.display = function (rgb) { //display light active state
 	'use strict';
 	var str,
 		i;
+
+	if (light.disabled) {
+		return false;
+	}
+
 	rgb = light.rgb.floor(rgb);
 	for (i = 0; i < 3; i++) {
 		$('#light-status form input').eq(i).val(rgb[i]);
