@@ -90,9 +90,13 @@ light.init = function () {
 };
 light.disable = function () {
 	light.disabled = true;
+	$('#tb_toolbar_item_light').hide();
+	$('#seq_labels .spacer').eq(1).hide();
 }
 light.enable = function () {
 	light.disabled = false;
+	$('#tb_toolbar_item_light').show();
+	$('#seq_labels .spacer').eq(1).show();
 };
 light.colorPickers = function () {
 	'use strict';
