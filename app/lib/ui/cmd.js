@@ -1,5 +1,10 @@
 const cmd = {};
 
+/**
+ * Move the projector one frame forward
+ *
+ * @param {function} callback  Function to call after projector moves one frame
+ **/
 cmd.proj_forward = function (callback) {
 	'use strict';
 	var res = function (ms) {
@@ -20,6 +25,11 @@ cmd.proj_forward = function (callback) {
 		}, mcopy.cfg.arduino.serialDelay);
 	}
 };
+/**
+ * Move the projector one frame backward
+ *
+ * @param {function} callback  Function to call after projector moves one frame
+ **/
 cmd.proj_backward = function (callback) {
 	'use strict';
 	var res = function (ms) {
@@ -40,6 +50,11 @@ cmd.proj_backward = function (callback) {
 		}, mcopy.cfg.arduino.serialDelay);
 	}
 };
+/**
+ * Move the camera one frame forward
+ *
+ * @param {function} callback  Function to call after camera moves one frame
+ **/
 cmd.cam_forward = function (rgb, callback) {
 	'use strict';
 	var off = [0, 0, 0];
