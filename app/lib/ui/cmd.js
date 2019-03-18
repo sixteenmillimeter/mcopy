@@ -53,6 +53,7 @@ cmd.proj_backward = function (callback) {
 /**
  * Move the camera one frame forward
  *
+ * @param {array} 	 rgb 	   Color to set light for frame
  * @param {function} callback  Function to call after camera moves one frame
  **/
 cmd.cam_forward = function (rgb, callback) {
@@ -89,6 +90,11 @@ cmd.cam_forward = function (rgb, callback) {
 		});
 	}
 };
+/**
+ * Move the camera one frame forward, light set to black or off
+ *
+ * @param {function} callback  Function to call after camera moves one frame
+ **/
 cmd.black_forward = function (callback) {
 	'use strict';
 	var off = [0, 0, 0];
@@ -118,6 +124,12 @@ cmd.black_forward = function (callback) {
 		});
 	}
 };
+/**
+ * Move the camera one frame backward
+ *
+ * @param {array} 	 rgb 	   Color to set light for frame
+ * @param {function} callback  Function to call after camera moves one frame
+ **/
 cmd.cam_backward = function (rgb, callback) {
 	'use strict';
 	var off = [0, 0, 0];
@@ -148,6 +160,11 @@ cmd.cam_backward = function (rgb, callback) {
 		}, mcopy.cfg.arduino.serialDelay);
 	}
 };
+/**
+ * Move the camera one frame forward, light set to black or off
+ *
+ * @param {function} callback  Function to call after camera moves one frame
+ **/
 cmd.black_backward = function (callback) {
 	'use strict';
 	var off = [0, 0, 0];
@@ -175,7 +192,6 @@ cmd.black_backward = function (callback) {
 		}, mcopy.cfg.arduino.serialDelay);
 	}
 };
-
 cmd.cam_to = function (t) {
 	const raw = $('#move_cam_to').val();
 	const val = parseInt(raw);
