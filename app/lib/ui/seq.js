@@ -241,10 +241,15 @@ seq.exec = function (arr) {
 	seq.queue = arr;
 	//console.dir(arr);
 	gui.overlay(true);
-	gui.spinner(true, `Running sequence of ${arr.length} frame${(arr.length === 1 ? '' : 's')}`, 0);
+	gui.spinner(true, `Running sequence of ${arr.length} frame${(arr.length === 1 ? '' : 's')}`, 0, true);
 	log.info(`Sequence started`, 'SEQUENCE', true);
 	seq.step();
 };
+
+seq.cancel = function () {
+	gui.spinner(true, `Cancelling sequence...`);
+	seq.running = false;
+}
 
 seq.execStop = function (msg) {
 	'use strict';
@@ -281,7 +286,7 @@ seq.step = function () {
 		if (typeof elem !== 'undefined') {
 			current = seq.state.len - seq.queue.length;
 			max = seq.state.len;
-			gui.spinner(true, `Sequence: step ${c} ${current}/${max}`, (current / max) * 100);
+			gui.spinner(true, `Sequence: step ${c} ${current}/${max}`, (current / max) * 100, true);
 			log.info(`Sequence: step ${c} ${current}/${max}`, 'SEQUENCE', true);
 			if (c === 'CF'){
 				cmd.cam_forward(rgb, seq.step);

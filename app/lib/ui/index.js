@@ -106,7 +106,7 @@ gui.spinnerCfg =  {
 	top: '50%', // Top position relative to parent
 	left: '50%' // Left position relative to parent
 };
-gui.spinner = function (state, msg, progress) {
+gui.spinner = function (state, msg, progress, cancel) {
 	'use strict';
 	let target;
 	let spinner;
@@ -127,6 +127,11 @@ gui.spinner = function (state, msg, progress) {
 	}
 	if (progress) {
 		gui.spinnerProgress(progress);
+	}
+	if (cancel) {
+		$('#spinnerCancel').show();
+	} else {
+		$('#spinnerCancel').hide();
 	}
 };
 gui.spinnerMsg = function (msg) {

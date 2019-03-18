@@ -192,6 +192,12 @@ cmd.black_backward = function (callback) {
 		}, mcopy.cfg.arduino.serialDelay);
 	}
 };
+/**
+ * Move the camera to a specific frame. Accepts the input with the "move_cam_to"
+ * value. Moves as black frames to prevent multiple exposure.
+ *
+ * @param {object} t  HTML input element with the move to val
+ **/
 cmd.cam_to = function (t) {
 	const raw = $('#move_cam_to').val();
 	const val = parseInt(raw);

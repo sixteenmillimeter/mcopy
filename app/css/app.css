@@ -829,6 +829,21 @@ button:focus {
   color: #fff;
   text-shadow: 1px 1px 2px #000;
 }
+#spinnerCancel {
+  display: none;
+  position: absolute;
+  z-index: 2000000000;
+  left: 50%;
+  top: 50%;
+  text-align: center;
+  margin-left: -40%;
+  margin-top: 120px;
+  width: 80%;
+}
+#spinnerCancel .btn {
+  margin: 0 auto;
+  background: rgba(80, 80, 80, 0.4);
+}
 .cp-app {
   position: relative !important;
   border-radius: 0px !important;
