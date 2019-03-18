@@ -9,21 +9,40 @@ const os = require('os')
 const logTime = 'MM/DD/YY-HH:mm:ss'
 let transport : any
 
+/**
+ * Determine the location of the log file based on the operating system
+ * and return as an absolute string from os.homedir()
+ *
+ * @returns {string} Path to log file
+ **/
 async function logFile () {
-	let exists : boolean
-	let logPath : string = path.join(os.homedir(), `/.config/mcopy-cli/`)
-	if (process.platform === 'darwin') {
-		logPath = path.join(os.homedir(), `/Library/Logs/mcopy-cli/`)
-	} else if (process.platform === 'win32') {
-		logPath = path.join(os.homedir(), `/AppData/Roaming/mcopy-cli/`)
-	}
-	exists = await fs.exists(logPath)
-	if (!exists) {
-		await fs.mkdir(logPath)
-	}
-	return path.join(logPath, 'mcopy-cli.log')
-}
+	
+	const homeDir : string = os.homedir();
+	const linuxDir : string = `/.config/mcopy-cli/`;
+	const macDir : string = `/Library/Logs/mcopy-cli/`;
+	const winDir : string = `/AppData/Roaming/mcopy-cli/`;
+	let logPath : string = path.join(homeDir, linuxDir);
+	let exists : boolean;
 
+	if (process.platform === 'darwin') {
+		logPath = path.join(homeDir, macDir);
+	} else if (process.platform === 'win32') {
+		logPath = path.join(homeDir, winDir);
+	}
+	exists = await fs.exists(logPath);
+	if (!exists) {
+		await fs.mkdir(logPath);
+	}
+	return path.join(logPath, 'mcopy-cli.log');
+}
+/**
+ * Create and return the logger transport based on settings determined in
+ * arguments object
+ *
+ * @param {object} arg  	Arguments from process
+ *
+ * @returns {object} Logger transport
+ **/
 module.exports = async function (arg : any) {
 	if (arg.quiet) {
 		transport = {
