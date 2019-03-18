@@ -667,9 +667,11 @@ cam.move = async function (frame, id) {
 	return cam.end(cmd, id, ms)
 }
 
+
+
 cam.exposure = function (exposure, id) {
 	let cmd = 'E'
-	cam.intval.setDir('camera', exposure, ms => {
+	cam.intval.setExposure('camera', exposure, ms => {
 		cam.end(cmd, id, ms)
 	})
 }
