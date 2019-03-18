@@ -13,6 +13,36 @@ mcopy.loopCount = 0;
 capture.active = false;
 capture.report = '';
 
+seq.cmds = {
+	cam_forward : 'CF',
+	cam_backward : 'CB',
+
+	proj_forward : 'PF',
+	proj_backward : 'PB',
+
+	black_forward : 'BF',
+	black_backward : 'BB',
+
+	//dual commands
+	cam2_forward : 'C2F',
+	cam2_backward : 'C2B',
+
+	cams_forward : 'CCF',
+	cams_forward : 'CCB',
+
+	cam_forward_cam2_backward : 'CFCB',
+	cam_backward_cam2_forward : 'CBCF',
+
+	proj2_forward : 'P2F',
+	proj2_backward : 'P2B',
+
+	projs_forward : 'PPF',
+	projs_backward : 'PPB',
+
+	proj_forward_proj2_backward : 'PFPB',
+	proj_backward_proj2_forward : 'PBPF'
+}
+
 seq.run = function () {
 	'use strict';
 	var c = mcopy.state.sequence.arr[seq.i],
