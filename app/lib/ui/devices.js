@@ -223,6 +223,10 @@ devices.digitalCb = function (evt, args) {
 		gui.grid.state(0);
 		gui.grid.state(1);
 
+		if (light.disabled) {
+			light.enable();
+		}
+
 		$('#seq_loop').val(`${state.frames}`).trigger('change');
 
 		gui.updateState();
