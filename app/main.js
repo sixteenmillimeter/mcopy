@@ -8,7 +8,7 @@ const { Menu, MenuItem, ipcMain, BrowserWindow, app } = electron
 const fs = require('fs')
 const os = require('os')
 const { createLogger, format, transports } = require('winston')
-const { combine, timestamp, label, printf, prettyPrint } = format
+const { combine, timestamp, label, printf, colorize, prettyPrint, simple } = format
 const moment = require('moment')
 const uuid = require('uuid')
 const events = require('events')
@@ -772,19 +772,16 @@ log.formatter = (options) => {
 log.transport = createLogger({
 	transports: [
 		new (transports.Console)({
+			level: 'info',
 			json : false,
             format : combine(
-		        label({ label: 'mcopy-app' }),
 		        timestamp(),
-		        //format.colorize({ all: true }),
-		        //format.splat(),
-		        //format.json(),
-		        format.simple(),
-		        //log.formatter
+				colorize(),
+				simple()
 		    )
         }),
 		new (transports.File)({ 
-			filename: log.file() 
+			filename: log.file()
 		})
 	]
 })
