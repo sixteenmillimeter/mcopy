@@ -219,13 +219,28 @@ class Arduino {
 
 	confirmEnd (data : string) {
 		//console.dir(data)
-		if (data === cfg.arduino.cmd.connect
+		if (   data === cfg.arduino.cmd.connect
 			|| data === cfg.arduino.cmd.proj_identifier
 			|| data === cfg.arduino.cmd.cam_identifier
 			|| data === cfg.arduino.cmd.light_identifier
 			|| data === cfg.arduino.cmd.proj_light_identifier
 			|| data === cfg.arduino.cmd.proj_cam_light_identifier
-			|| data === cfg.arduino.cmd.proj_cam_identifier ) {
+			|| data === cfg.arduino.cmd.proj_cam_identifier
+
+			|| data === cfg.arduino.cmd.proj_second_identifier
+			|| data === cfg.arduino.cmd.proj_dual_identifier
+			|| data === cfg.arduino.cmd.proj_second_forward
+			|| data === cfg.arduino.cmd.proj_second_backward
+			|| data === cfg.arduino.cmd.projector_second
+			|| data === cfg.arduino.cmd.projectors
+
+			|| data === cfg.arduino.cmd.cam_second_identifier
+			|| data === cfg.arduino.cmd.cam_dual_identifier
+			|| data === cfg.arduino.cmd.cam_second_forward
+			|| data === cfg.arduino.cmd.cam_second_backward
+			|| data === cfg.arduino.cmd.camera_second
+			|| data === cfg.arduino.cmd.cameras) {
+
 			this.confirmExec(null, data);
 			this.confirmExec = {};
 		}
@@ -274,7 +289,16 @@ class Arduino {
 					type = 'projector,camera'
 				} else if (data === cfg.ardino.cmd.proj_second_identifier) {
 					type = 'projector_second'
+				} else if (data === cfg.ardino.cmd.proj_dual_identifier) {
+					type = 'projectors'
+				} else if (data === cfg.ardino.cmd.cam_second_identifier) {
+					type = 'camera_second'
+				} else if (data === cfg.ardino.cmd.cam_dual_identifier) {
+					type = 'cameras'
 				}
+				//camera,projectors
+				//cameras,projector
+				//cameras,projectors
 				return resolve(type)
 			}
 			await delay(cfg.arduino.serialDelay)

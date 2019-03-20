@@ -118,12 +118,20 @@
 			"proj_light_identifier" : "q",
 			"proj_cam_light_identifier" : "r",
 			"proj_cam_identifier" : "s",
+
 			"proj_second_identifier" : "t",
 			"proj_dual_identifier" : "d",
 			"proj_second_forward" : "u",
 			"proj_second_backward" : "v",
 			"projector_second" : "w",
-			"projectors" : "x"
+			"projectors" : "x",
+
+			"cam_second_identifier" : "y",
+			"cam_dual_identifier" : "a",
+			"cam_second_forward" : "1",
+			"cam_second_backward" : "2",
+			"camera_second" : "3",
+			"cameras" : "4"
 		}
 	}
 }

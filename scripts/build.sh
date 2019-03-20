@@ -4,5 +4,5 @@
 
 #electron-build fails when local modules are in parent directory
 #copy them into lib directory
-cp -r ./lib/ ./app/lib
-cp -r ./lib/ ./cli/lib
+cp -r ./lib/* ./app/lib/
+cp -r ./lib/* ./cli/lib/
