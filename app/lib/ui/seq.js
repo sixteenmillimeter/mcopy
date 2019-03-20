@@ -1,5 +1,4 @@
-var seq = {},
-	capture = {};
+const seq = {};
 
 /******
 	Sequence Object
@@ -10,10 +9,8 @@ seq.stopState = false;
 
 mcopy.loop = 1;
 mcopy.loopCount = 0;
-capture.active = false;
-capture.report = '';
 
-seq.cmds = {
+seq.cmd = {
 	cam_forward : 'CF',
 	cam_backward : 'CB',
 
@@ -72,19 +69,19 @@ seq.run = function () {
 		$('#numbers div').removeClass('h');
 		$('.row input[x=' + seq.i + ']').addClass('h');
 		$('#numbers div[x=' + seq.i + ']').addClass('h');
-		if (c === 'CF'){
+		if (c === seq.cmd.cam_forward){
 			rgb = mcopy.state.sequence.light[seq.i].split(',');
 			cmd.cam_forward(rgb, action);
-		} else if (c === 'CB') {
+		} else if (c === seq.cmd.cam_backward) {
 			rgb = mcopy.state.sequence.light[seq.i].split(',');
 			cmd.cam_backward(rgb, action);
-		} else if (c === 'PF') {
+		} else if (c === seq.cmd.proj_forward) {
 			cmd.proj_forward(action);
-		} else if (c === 'PB') {
+		} else if (c === seq.cmd.proj_backward) {
 			cmd.proj_backward(action);
-		} else if (c === 'BF') {
+		} else if (c === seq.cmd.black_forward) {
 			cmd.black_forward(action);
-		} else if (c === 'BB') {
+		} else if (c === seq.cmd.black_backward) {
 			cmd.black_backward(action);
 		}
 	} else {
@@ -105,10 +102,6 @@ seq.run = function () {
 				log.info('Sequence completed in ' + humanizeDuration(timeEnd), 'SEQUENCE', true);
 			}
 			ipcRenderer.send('seq', { action : 'stop' });
-			//capture.report = ipcRenderer.sendSync('transfer', { action: 'end'});
-			//if (capture.active) {
-				//alert(capture.report);
-			//}
 			gui.notify('Sequence done!', (mcopy.state.sequence.arr.length * mcopy.loop) + ' actions completed in ' + humanizeDuration(timeEnd));
 			//clear gui
 			$('.row input').removeClass('h');
@@ -146,7 +139,6 @@ seq.init = function (start) {
 	seq.stop(false);
 	seq.i = start;
 
-	//ipcRenderer.sendSync('transfer', { action: 'start'});
 	ipcRenderer.send('seq', { action : 'start' });
 	seq.run();
 };
@@ -166,17 +158,17 @@ seq.stats = function () {
 	//timing
 	for (var i = 0; i < mcopy.state.sequence.arr.length; i++) {
 		c = mcopy.state.sequence.arr[i];
-		if (c === 'CF' || c === 'CB'){
+		if (c === seq.cmd.cam_forward || c === seq.cmd.cam_backward){
 			ms += mcopy.cfg.arduino.cam.time;
 			ms += mcopy.cfg.arduino.cam.delay;
 			ms += mcopy.cfg.arduino.serialDelay;
 		}
-		if (c === 'PF' || c === 'PB'){
+		if (c === seq.cmd.proj_forward || c === seq.cmd.proj_backward){
 			ms += mcopy.cfg.arduino.proj.time;
 			ms += mcopy.cfg.arduino.proj.delay;
 			ms += mcopy.cfg.arduino.serialDelay;
 		}
-		if (c === 'BF' || c === 'BB'){
+		if (c === seq.cmd.black_forward || c === seq.cmd.black_backward){
 			ms += mcopy.cfg.arduino.black.before;
 			ms += mcopy.cfg.arduino.black.after;
 			ms += mcopy.cfg.arduino.cam.time;
@@ -185,16 +177,16 @@ seq.stats = function () {
 		}
 		ms += mcopy.cfg.arduino.sequenceDelay;
 
-		if (c === 'CF' || c === 'BF') {
+		if (c === seq.cmd.cam_forward || c === seq.cmd.black_forward) {
 			cam_total++;
 		}
-		if (c === 'CB' || c === 'BB') {
+		if (c === seq.cmd.cam_backward || c === seq.cmd.black_backward) {
 			cam_total--;
 		}
-		if (c === 'PF') {
+		if (c === seq.cmd.proj_forward) {
 			proj_total++;
 		}
-		if (c === 'PB') {
+		if (c === seq.cmd.proj_backward) {
 			proj_total--;
 		}
 	}
@@ -288,17 +280,17 @@ seq.step = function () {
 			max = seq.state.len;
 			gui.spinner(true, `Sequence: step ${c} ${current}/${max}`, (current / max) * 100, true);
 			log.info(`Sequence: step ${c} ${current}/${max}`, 'SEQUENCE', true);
-			if (c === 'CF'){
+			if (c === seq.cmd.cam_forward){
 				cmd.cam_forward(rgb, seq.step);
-			} else if (c === 'CB') {
+			} else if (c === seq.cmd.cam_backward) {
 				cmd.cam_backward(rgb, seq.step);
-			} else if (c === 'PF') {
+			} else if (c === seq.cmd.proj_forward) {
 				cmd.proj_forward(seq.step);
-			} else if (c === 'PB') {
+			} else if (c === seq.cmd.proj_backward) {
 				cmd.proj_backward(seq.step);
-			} else if (c === 'BF') {
+			} else if (c === seq.cmd.black_forward) {
 				cmd.black_forward(seq.step);
-			} else if (c === 'BB') {
+			} else if (c === seq.cmd.black_backward) {
 				cmd.black_backward(seq.step);
 			}
 		}

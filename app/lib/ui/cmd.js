@@ -192,6 +192,27 @@ cmd.black_backward = function (callback) {
 		}, mcopy.cfg.arduino.serialDelay);
 	}
 };
+
+/*
+	cam2_forward : 'C2F',
+	cam2_backward : 'C2B',
+
+	cams_forward : 'CCF',
+	cams_forward : 'CCB',
+
+	cam_forward_cam2_backward : 'CFCB',
+	cam_backward_cam2_forward : 'CBCF',
+
+	proj2_forward : 'P2F',
+	proj2_backward : 'P2B',
+
+	projs_forward : 'PPF',
+	projs_backward : 'PPB',
+
+	proj_forward_proj2_backward : 'PFPB',
+	proj_backward_proj2_forward : 'PBPF'
+*/
+
 /**
  * Move the camera to a specific frame. Accepts the input with the "move_cam_to"
  * value. Moves as black frames to prevent multiple exposure.
@@ -226,6 +247,12 @@ cmd.cam_to = function (t) {
 		}
 	}
 };
+/**
+ * Move the projector to a specific frame. Accepts the input with the "move_proj_to"
+ * value.
+ *
+ * @param {object} t  HTML input element with the move to val
+ **/
 cmd.proj_to = function (t) {
 	const raw = $('#move_proj_to').val();
 	const val = parseInt(raw);
