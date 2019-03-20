@@ -195,13 +195,6 @@ seq.clear = function () {
     mcopy.state.sequence.size = 24;
     mcopy.state.sequence.arr = [];
 };
- */
-/**
- * Queue for exec function
- */
-/**
- * Execute an array of commands, locking up the UI during execution.
-
 seq.exec = function (arr) {
     'use strict';
     seq.running = true;
@@ -268,6 +261,10 @@ seq.step = function () {
         }
     }, mcopy.cfg.arduino.sequenceDelay);
 };
+
+// FROM SERVER SIDE
+
+
  */
 class Sequence {
     constructor(cfg, cmd) {
@@ -287,6 +284,15 @@ class Sequence {
      * Stop the sequence
      **/
     stop() {
+    }
+    exec() {
+    }
+    execStop() {
+    }
+    //private
+    run() {
+    }
+    step() {
     }
 }
 module.exports = function (cfg, cmd, l) {
