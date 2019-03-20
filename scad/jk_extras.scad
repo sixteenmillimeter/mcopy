@@ -14,4 +14,10 @@ module measurement_bar (X = 20 * IN, Y = 16.4, Z = 3, BOLT = 4, BOLT_OFFSET = (3
 	}
 }
 
-projection() measurement_bar();
+projection() {
+	difference () {
+		measurement_bar();
+		translate([-11 * IN, 0, 0]) cube([20 * IN, 16.5, 4], center = true);
+		translate([11 * IN, 0, 0]) cube([20 * IN, 16.5, 4], center = true);
+	}
+}

@@ -461,6 +461,26 @@ proj.set = async function (dir, id) {
 	}
 	return await proj.end(cmd, id, ms)
 }
+proj.set2 = async function (dir, id) {
+	let cmd
+	let ms
+	if (dir) {
+		cmd = mcopy.cfg.arduino.cmd.proj2_forward
+	} else {
+		cmd = mcopy.cfg.arduino.cmd.proj2_backward
+	}
+	proj.state.dir = dir
+	if (proj.state.digital) {
+		dig.set(dir)
+	} else {
+		try {
+			ms = await arduino.send('projector', cmd)
+		} catch (err) {
+			console.error(err)
+		}
+	}
+	return await proj.end(cmd, id, ms)
+}
 proj.move = async function (frame, id) {
 	const cmd = mcopy.cfg.arduino.cmd.projector
 	let ms
@@ -482,10 +502,18 @@ proj.move = async function (frame, id) {
 proj.listen = function () {
 	ipcMain.on('proj', async (event, arg) => {
 		if (typeof arg.dir !== 'undefined') {
-			try {
-				await proj.set(arg.dir, arg.id)
-			} catch (err) {
-				console.error(err)
+			if (typeof arg.second !== 'undefined') {
+				try {
+					await proj.set2(arg.dir, arg.id)
+				} catch (err) {
+					console.error(err)
+				}
+			} else {
+				try {
+					await proj.set(arg.dir, arg.id)
+				} catch (err) {
+					console.error(err)
+				}
 			}
 		} else if (typeof arg.frame !== 'undefined') {
 			try {
