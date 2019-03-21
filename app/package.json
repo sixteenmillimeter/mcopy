@@ -42,6 +42,7 @@
     "arduino": "file:lib/arduino",
     "cam": "file:lib/cam",
     "capture": "file:lib/capture",
+    "cmd": "file:lib/cmd",
     "delay": "file:lib/delay",
     "devices": "file:lib/devices",
     "digital": "file:lib/digital",
