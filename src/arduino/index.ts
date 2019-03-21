@@ -279,15 +279,15 @@ class Arduino {
 				} else if (data === cfg.ardino.cmd.proj_second_identifier) {
 					type = 'projector_second'
 				} else if (data === cfg.ardino.cmd.proj_dual_identifier) {
-					type = 'projectors'
+					type = 'projector,projector_second'
 				} else if (data === cfg.ardino.cmd.cam_second_identifier) {
 					type = 'camera_second'
 				} else if (data === cfg.ardino.cmd.cam_dual_identifier) {
-					type = 'cameras'
+					type = 'camera,camera_second'
 				}
-				//camera,projectors
-				//cameras,projector
-				//cameras,projectors
+                //camera,projector,projector_second
+                //camera,camera_second,projector
+                //camera,camera_second,projector,projector_second
 				return resolve(type)
 			}
 			await delay(cfg.arduino.serialDelay)
