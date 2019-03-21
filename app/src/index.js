@@ -43,7 +43,7 @@ mcopy.state = {
 	projector_second : {
 		pos : 0,
 		direction : true
-	}
+	},
 	sequence : {
 		size : 24,
 		arr : ['CF', 'PF'],
