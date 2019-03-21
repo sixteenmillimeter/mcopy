@@ -35,7 +35,9 @@ let display;
 let ffmpeg;
 let ffprobe;
 let cam;
+let cam2;
 let proj;
+let proj2;
 let light;
 let dig;
 let dev;
@@ -102,13 +104,7 @@ var init = async function () {
 	arduino = require('arduino')(cfg, ee)
 	mscript = require('mscript')
 
-	light = require('light')(arduino, cfg, mainWindow.webContents)
-	dig = require('digital')(display, ffmpeg, ffprobe, mainWindow.webContents, light)
-	cam = require('cam')(arduino, cfg, mainWindow.webContents, dig)
-	proj = require('proj')(arduino, cfg, mainWindow.webContents, dig)
 	dev = require('devices')(arduino, settings, mainWindow, cam)
-	//cmd
-	//seq
 
 	await delay(2000)
 
@@ -118,6 +114,16 @@ var init = async function () {
 		console.error(err)
 		log.error('Error enumerating connected devices', err)
 	}
+
+
+	light = require('light')(arduino, cfg, mainWindow.webContents)
+	dig = require('digital')(display, ffmpeg, ffprobe, mainWindow.webContents, light)
+	cam = require('cam')(arduino, cfg, mainWindow.webContents, dig)
+	proj = require('proj')(arduino, cfg, mainWindow.webContents, dig)
+
+	console.dir(dev.state)
+	//cmd
+	//seq
 }
 
 app.on('ready', init)
