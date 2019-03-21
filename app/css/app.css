@@ -674,11 +674,6 @@ button:focus {
   background: black;
   color: #fff;
 }
-#log {
-  position: fixed;
-  width: 100%;
-  height: 160px;
-}
 #screens {
   overflow-x: hidden;
 }

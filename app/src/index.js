@@ -1,7 +1,5 @@
-
 const mcopy = {};
 mcopy.cfg = require('./data/cfg.json');
-
 
 const { remote, ipcRenderer } = require('electron');
 const dialog 	= require('electron').remote.dialog;
@@ -10,6 +8,7 @@ const fs 		= require('fs');
 const uuid 		= require('uuid');
 const moment 	= require('moment');
 const humanizeDuration = require('humanize-duration');
+const cfg 		= require('./data/cfg.json');
 const gui 		= require('./lib/ui');
 const light 	= require('./lib/ui/light.js');
 const proj 		= require('./lib/ui/proj.js');
@@ -17,10 +16,10 @@ const cam 		= require('./lib/ui/cam.js');
 const nav 		= require('./lib/ui/nav.js');
 const seq 		= require('./lib/ui/seq.js');
 const cmd 		= require('./lib/ui/cmd.js');
-const log 		= require('./lib/ui/log.js');
 const devices 	= require('./lib/ui/devices.js');
 const mse 		= require('./lib/ui/mscript.js');
 const Mscript 	= require('./lib/mscript');
+let log;
 
 
 /******
@@ -57,18 +56,43 @@ mcopy.state = {
 			proj_backward : 'PB',
 			black_backward : 'BB',
 
-			light_set : 'L'
+			light_set : 'L'//,
+			/*
+
+			cam2_forward : 'C2F',
+			cam2_backward : 'C2B',
+
+			cams_forward : 'CCF',
+			cams_forward : 'CCB',
+
+			cam_forward_cam2_backward : 'CFCB',
+			cam_backward_cam2_forward : 'CBCF',
+
+			proj2_forward : 'P2F',
+			proj2_backward : 'P2B',
+
+			projs_forward : 'PPF',
+			projs_backward : 'PPB',
+
+			proj_forward_proj2_backward : 'PFPB',
+			proj_backward_proj2_forward : 'PBPF'
+
+			*/
 		}
 	}
 };
+//
 
-function init () {
+async function init () {
 	'use strict';
+
+	log = await require('log')({})
+
 	nav.init();
 	gui.grid.init();
 	mse.mscript.init();
 	mse.console.init();
-	log.init();	
+
 	devices.init();
 	light.init();
 	proj.init();
