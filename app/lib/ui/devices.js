@@ -1,4 +1,4 @@
-var devices = {};
+const devices = {};
 
 devices.init = function () {
 	'use strict';

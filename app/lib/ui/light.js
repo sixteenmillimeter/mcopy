@@ -1,4 +1,4 @@
-var light = {};
+const light = {};
 
 //LIGHT
 light.preview_state = false; //light is on/off for preview viewing

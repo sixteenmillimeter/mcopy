@@ -1,4 +1,4 @@
-var log = {};
+const log = {};
 
 log.time = 'MM/DD/YY-HH:mm:ss';
 log.count = 0;

@@ -1,4 +1,4 @@
-var nav = {};
+const nav = {};
 
 //NAV
 nav.active = 'sequencer';

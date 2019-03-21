@@ -1,4 +1,4 @@
-var proj = {};
+const proj = {};
 
 proj.queue = {};
 proj.lock = false;

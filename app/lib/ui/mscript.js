@@ -1,4 +1,4 @@
-var mse = {};
+const mse = {};
 
 /******
 	Mscript GUI
