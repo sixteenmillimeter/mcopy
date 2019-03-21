@@ -15,8 +15,6 @@ const events = require('events')
 const path = require('path')
 
 const ee = new events.EventEmitter()
-//const digital = require('./lib/digital')
-//const capture = require('./lib/capture')(ee)
 const settings = require('settings')
 const system = require('system')
 const Server = require('server')
@@ -26,25 +24,21 @@ const delay = require('delay')
 //Objects
 const mcopy = {}
 const log = {}
-const proj = {}
-const cam = {}
-const light = {}
 const dev = {}
 
-let mainWindow
-let mscript
-let arduino
-let intval
-let projector
-let camera
-let server
-let menu
-
-let SYSTEM
-let capture
-let display
-let ffmpeg
-let ffprobe
+let SYSTEM;
+let mainWindow;
+let mscript;
+let arduino;
+let server;
+let menu;
+let display;
+let ffmpeg;
+let ffprobe;
+let cam;
+let proj;
+let light;
+let dig;
 
 mcopy.cfg = require('./data/cfg.json')
 mcopy.settings = {}
@@ -392,354 +386,6 @@ var createWindow = function () {
 	})
 }
 
-light.state = {
-	color : [0, 0, 0]
-}
-
-light.init = function () {
-	light.listen()
-}
-light.listen = function () {
-	ipcMain.on('light', async (event, arg) => {
-		try {
-			await light.set(arg.rgb, arg.id)
-		}catch (err) {
-			console.error(err)
-			return reject(err)
-		}
-		event.returnValue = true
-	})
-}
-light.set = async function (rgb, id, on) {
-	const str = rgb.join(',');
-	let ms
-	light.state.color = rgb;
-	try {
-		ms = arduino.send('light', mcopy.cfg.arduino.cmd.light)
-	} catch (err) {
-		console.error(err)
-	}
-	await delay(1)
-	try {
-		arduino.string('light', str)
-	} catch (err) {
-		console.error(err)
-	}
-	await delay(1)
-	await ms
-	return await light.end(rgb, id, ms)
-}
-light.end = async function (rgb, id, ms) {
-	log.info('Light set to ' + rgb.join(','), 'LIGHT', true, true)
-	return await mainWindow.webContents.send('light', { rgb: rgb, id : id, ms: ms })
-}
-
-proj.state = {
-	dir : true, //default dir
-	digital : false
-}
-proj.init = function () {
-	proj.listen()
-}
-proj.set = async function (dir, id) {
-	let cmd
-	let ms
-	if (dir) {
-		cmd = mcopy.cfg.arduino.cmd.proj_forward
-	} else {
-		cmd = mcopy.cfg.arduino.cmd.proj_backward
-	}
-	proj.state.dir = dir
-	if (proj.state.digital) {
-		dig.set(dir)
-	} else {
-		try {
-			ms = await arduino.send('projector', cmd)
-		} catch (err) {
-			console.error(err)
-		}
-	}
-	return await proj.end(cmd, id, ms)
-}
-proj.move = async function (frame, id) {
-	const cmd = mcopy.cfg.arduino.cmd.projector
-	let ms
-	if (proj.digital) {
-		try {
-			ms = await dig.move()
-		} catch (err) {
-			console.error(err)
-		}
-	} else {
-		try {
-			ms = await arduino.send('projector', cmd)
-		} catch (err) {
-			console.error(err)
-		}
-	}
-	return await proj.end(mcopy.cfg.arduino.cmd.projector, id, ms)
-}
-proj.listen = function () {
-	ipcMain.on('proj', async (event, arg) => {
-		if (typeof arg.dir !== 'undefined') {
-			try {
-				await proj.set(arg.dir, arg.id)
-			} catch (err) {
-				console.error(err)
-			}
-		} else if (typeof arg.frame !== 'undefined') {
-			try {
-				await proj.move(arg.frame, arg.id)
-			} catch (err) {
-				console.error(err)
-			}
-		} else if (typeof arg.val !== 'undefined') {
-			dig.state.frame = arg.val
-		}
-		event.returnValue = true
-	})
-	ipcMain.on('digital', proj.connectDigital)
-}
-proj.end = async function (cmd, id, ms) {
-	let message = ''
-	if (cmd === mcopy.cfg.arduino.cmd.proj_forward) {
-		message = 'Projector set to FORWARD'
-	} else if (cmd === mcopy.cfg.arduino.cmd.proj_backward) {
-		message = 'Projector set to BACKWARD'
-	} else if (cmd === mcopy.cfg.arduino.cmd.projector) {
-		message = 'Projector '
-		if (proj.state.dir) {
-			message += 'ADVANCED'
-		} else {
-			message += 'REWOUND'
-		}
-		message += ' 1 frame'
-	}
-	log.info(message, 'PROJECTOR', true, true)
-	return await mainWindow.webContents.send('proj', {cmd: cmd, id : id, ms: ms})
-}
-
-/**
- * Use a file as the "digital" source on "projector"
- *
- **/
-proj.connectDigital = async function (evt, arg) {
-	let info;
-	let frames = 0;
-
-	try {
-		info = await ffprobe.info(arg.path);
-	} catch (err) {
-		log.error(err, 'DIGITAL', true, true);
-		proj.digital = false;
-		await mainWindow.webContents.send('digital', { valid : false });
-		return false;
-	}
-	try {
-		frames = await ffprobe.frames(arg.path);
-	} catch (err) {
-		log.error(err, 'DIGITAL', true, true);
-		proj.digital = false;
-		await mainWindow.webContents.send('digital', { valid : false });
-		return false;
-	}
-
-	dig.state.frame = 0;
-	dig.state.path = arg.path;
-	dig.state.fileName = arg.fileName;
-	dig.state.frames = frames;
-	dig.state.info = info;
-
-	//console.dir(dig.state);
-
-	log.info(`Opened ${dig.state.fileName}`, 'DIGITAL', true, true);
-	log.info(`Frames : ${frames}`, 'DIGITAL', true, true);
-	proj.digital = true;
-	return await mainWindow.webContents.send('digital', { valid : true, state : JSON.stringify(dig.state) });
-}
-
-const dig = {};
-dig.state = {
-	frame : 0,
-	frames : 0,
-	path : null,
-	fileName : null,
-	info : {},
-	dir : true
-};
-
-dig.set  = function (dir) {
-	dig.state.dir = dir;
-}
-
-dig.move = async function () {
-	let start = +new Date()
-	let last = dig.state.dir + 0;
-	if (dig.state.dir) {
-		dig.state.frame++
-	} else {
-		dig.state.frame--
-	}
-	if (dig.state.frame < 1) {
-		dig.state.frame = 1
-	}
-	return (+new Date()) - start
-}
-
-dig.start = async function () {
-	try {
-		await ffmpeg.clearAll()
-	} catch (err) {
-		console.error(err)
-	}
-	
-	try {
-		await ffmpeg.frame(dig.state, light.state)
-	} catch (err) {
-		console.error(err)
-	}
-
-	display.start(dig.state.frame)
-	await delay(20)
-}
-
-dig.end = async function () {
-	await delay(20)
-	display.end()
-}
-
-cam.intval = null
-cam.state = {
-	dir : true //default dir
-}
-cam.init = function () {
-	cam.listen()
-}
-cam.set = async function (dir, id) {
-	let cmd
-	let ms
-	if (dir) {
-		cmd = mcopy.cfg.arduino.cmd.cam_forward
-	} else {
-		cmd = mcopy.cfg.arduino.cmd.cam_backward
-	}
-	cam.state.dir = dir
-
-	if (cam.intval) {
-		try {
-			ms = await cam.intval.setDir(dir)
-		} catch (err) {
-			console.error(err)
-		}
-	} else {
-		try {
-			ms = await arduino.send('camera', cmd)
-		} catch (err) {
-			console.error(err)
-		}
-	}
-	return await cam.end(cmd, id, ms)
-}
-
-cam.move = async function (frame, id) {
-	const cmd = mcopy.cfg.arduino.cmd.camera
-	let ms
-	if (proj.digital) {
-		await dig.start()
-	}
-	if (cam.intval) {
-		try {
-			ms = await cam.intval.move()
-		} catch (err) {
-			console.error(err)
-		}
-	} else { 
-		try {
-			ms = await arduino.send('camera', cmd)
-		} catch (err) {
-			console.error(err)
-		}
-	}
-	if (proj.digital) {
-		await dig.end()
-	}
-	log.info('Camera move time', { ms })
-	return cam.end(cmd, id, ms)
-}
-
-
-
-cam.exposure = function (exposure, id) {
-	let cmd = 'E'
-	cam.intval.setExposure('camera', exposure, ms => {
-		cam.end(cmd, id, ms)
-	})
-}
-
-cam.connectIntval = async function (event, arg) {
-	return new Promise((resolve, reject) => {
-		if (arg.connect) {
-			cam.intval = new Intval(arg.url)
-			cam.intval.connect((err, ms, state) => {
-				if (err) {
-					mainWindow.webContents.send('intval', { connected : false })
-					log.info(`Cannot connect to ${arg.url}`, 'INTVAL', true, true)
-					cam.intval = null
-					delete cam.intval
-				} else {
-					mainWindow.webContents.send('intval', { connected : true, url : arg.url, state : state })
-					log.info(`Connected to INTVAL3 @ ${arg.url}`, 'INTVAL', true, true)
-					settings.update('camera', { intval : arg.url })
-					settings.save()
-					dev.remember('intval', arg.url, 'camera')
-				}
-				return resolve(true)
-			})
-		} else if (arg.disconnect) {
-			cam.intval = null
-			return resolve(false)
-		}
-	})
-}
-
-cam.listen = function () {
-	ipcMain.on('cam', async (event, arg) => {
-		if (typeof arg.dir !== 'undefined') {
-			try {
-				await cam.set(arg.dir, arg.id)
-			} catch (err) {
-				console.error(err)
-			}
-		} else if (typeof arg.frame !== 'undefined') {
-			try {
-				await cam.move(arg.frame, arg.id)
-			} catch (err) {
-				console.error(err)
-			}
-		}
-		event.returnValue = true
-	})
-	ipcMain.on('intval', cam.connectIntval)
-}
-cam.end = async function (cmd, id, ms) {
-	var message = ''
-	if (cmd === mcopy.cfg.arduino.cmd.cam_forward) {
-		message = 'Camera set to FORWARD'
-	} else if (cmd === mcopy.cfg.arduino.cmd.cam_backward) {
-		message = 'Camera set to BACKWARD'
-	} else if (cmd === mcopy.cfg.arduino.cmd.camera) {
-		message = 'Camera '
-		if (cam.state.dir) {
-			message += 'ADVANCED'
-		} else {
-			message += 'REWOUND'
-		}
-		message += ' 1 frame'
-	}
-	log.info(message, 'CAMERA', true, true)
-	mainWindow.webContents.send('cam', {cmd: cmd, id : id, ms: ms})
-};
-
 const seq = {};
 seq.init = function () {
 	seq.listen();
@@ -810,31 +456,7 @@ log.info = function (action, service, status, display) {
 		log.display(obj)
 	}
 }
-/*
-var transfer = {}
 
-transfer.init = function () {
-	transfer.listen()
-};
-transfer.listen = function () {
-	ipcMain.on('transfer', (event, arg) => {
-		let res = '';
-		//also turn on and off
-		if (arg.action === 'enable') {
-			capture.active = true
-			res = capture.active
-		} else if (arg.action === 'disable') {
-			capture.active = false
-			res = capture.active
-		} else if (arg.action === 'start') {
-			capture.start()
-		} else if (arg.action === 'end') {
-			res = capture.end()
-		}
-		event.returnValue = res
-	})
-}
-*/
 var init = async function () {
 
 	try {
@@ -850,24 +472,20 @@ var init = async function () {
 	mcopy.settings = await settings.all()
 
 	log.init()
-	light.init()
-	proj.init()
-	cam.init()
 	dev.init()
 	seq.init()
 
-	//capture = require('capture')(SYSTEM) //redundant
 	display = require('display')(SYSTEM)
 	ffmpeg = require('ffmpeg')(SYSTEM)
 	ffprobe = require('ffprobe')(SYSTEM)
 
-	//transfer.init()
-	//capture.init()
-
-	arduino = require('./lib/arduino')(mcopy.cfg, ee)
-	mscript = require('./lib/mscript')
-
-
+	arduino = require('arduino')(mcopy.cfg, ee)
+	mscript = require('mscript')
+	dig = require('digital')(display, ffmpeg, ffprobe)
+	
+	cam = require('cam')(arduino, mcopy.cfg, mainWindow.webContents, dig)
+	proj = require('proj')(arduino, mcopy.cfg, mainWindow.webContents, dig)
+	light = require('light')(arduino, mcopy.cfg, mainWindow.webContents)
 
 	await delay(2000)
 	try {
