@@ -4,6 +4,8 @@ const SerialPort = require('serialport')
 const Readline = SerialPort.parsers.Readline
 const exec = require('child_process').exec
 
+import delay = require('delay');
+
 const parser : any = new Readline('')
 const newlineRe : RegExp = new RegExp('\n', 'g')
 const returnRe : RegExp = new RegExp('\r', 'g')
@@ -24,34 +26,21 @@ const KNOWN : string[] = [
 ]
 
 /**
- * Pause the process for X milliseconds in async/await functions
- *
- * @param  {integer}  ms 	milliseconds
- *
- * @returns {Promise} Resolves after wait
- **/
-async function delay (ms : number) {
-	return new Promise(resolve => {
-		return setTimeout(resolve, ms)
-	})
-}
-
-/**
  * Class representing the arduino communication features
  **/ 
 
 class Arduino {
 
-	path : any = {}
-	known : string[] = KNOWN
-	alias : any = {}
-	serial : any = { connect : {}, projector : {}, camera : {}, light : {} }
-	baud : number = 57600
-	queue : any = {}
-	timer : number = 0
-	lock : boolean = false
-	locks : any = {}
-	confirmExec : any
+	private path : any = {}
+	private known : string[] = KNOWN
+	private alias : any = {}
+	private serial : any = { connect : {}, projector : {}, camera : {}, light : {} }
+	private baud : number = 57600
+	private queue : any = {}
+	private timer : number = 0
+	private lock : boolean = false
+	private locks : any = {}
+	private confirmExec : any
 
 	constructor () {
 		

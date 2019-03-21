@@ -1,7 +1,9 @@
 'use strict';
+Object.defineProperty(exports, "__esModule", { value: true });
 const SerialPort = require('serialport');
 const Readline = SerialPort.parsers.Readline;
 const exec = require('child_process').exec;
+const delay = require("delay");
 const parser = new Readline('');
 const newlineRe = new RegExp('\n', 'g');
 const returnRe = new RegExp('\r', 'g');
@@ -18,18 +20,6 @@ const KNOWN = [
     '/dev/ttyACM0',
     'COM3'
 ];
-/**
- * Pause the process for X milliseconds in async/await functions
- *
- * @param  {integer}  ms 	milliseconds
- *
- * @returns {Promise} Resolves after wait
- **/
-async function delay(ms) {
-    return new Promise(resolve => {
-        return setTimeout(resolve, ms);
-    });
-}
 /**
  * Class representing the arduino communication features
  **/
