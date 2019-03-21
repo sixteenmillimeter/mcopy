@@ -1,4 +1,4 @@
-var cam = {};
+const cam = {};
 
 cam.queue = {};
 cam.lock = false;
