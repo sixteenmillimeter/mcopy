@@ -1,7 +1,7 @@
 'use strict'
 
 const { createLogger, format, transports } = require('winston')
-const { combine, timestamp, label, colorize, simple } = format
+const { combine, timestamp, label, colorize, simple, json } = format
 const path = require('path')
 const fs = require('fs-extra')
 const os = require('os')
@@ -18,9 +18,9 @@ let transport : any
 async function logFile () {
 	
 	const homeDir : string = os.homedir();
-	const linuxDir : string = `/.config/mcopy-cli/`;
-	const macDir : string = `/Library/Logs/mcopy-cli/`;
-	const winDir : string = `/AppData/Roaming/mcopy-cli/`;
+	const linuxDir : string = `/.config/mcopy/`;
+	const macDir : string = `/Library/Logs/mcopy/`;
+	const winDir : string = `/AppData/Roaming/mcopy/`;
 	let logPath : string = path.join(homeDir, linuxDir);
 	let exists : boolean;
 
@@ -33,7 +33,7 @@ async function logFile () {
 	if (!exists) {
 		await fs.mkdir(logPath);
 	}
-	return path.join(logPath, 'mcopy-cli.log');
+	return path.join(logPath, 'mcopy.log');
 }
 /**
  * Create and return the logger transport based on settings determined in
@@ -55,13 +55,13 @@ module.exports = async function (arg : any) {
 		if (arg && arg.label) {
 			format = combine(
 				label({ label : arg.label }),
-				timestamp(),
+				//timestamp(),
 				colorize(),
 				simple()
 			);
 		} else {
 			format = combine(
-				timestamp(),
+				//timestamp(),
 				colorize(),
 				simple()
 			);
@@ -72,7 +72,12 @@ module.exports = async function (arg : any) {
 					format
 				}),
 				new (transports.File)({ 
-					filename: await logFile() 
+					filename: await logFile(),
+					format : combine(
+						label({ label : arg.label }),
+						//timestamp(),
+						json()
+					)
 				})
 			]
 		})
