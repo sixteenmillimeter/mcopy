@@ -137,7 +137,6 @@ class Arduino {
                 if (err) {
                     return reject(err);
                 }
-                //console.log('sent: ' + str)
                 return resolve(results);
             });
         });
@@ -148,7 +147,6 @@ class Arduino {
         let complete;
         if (this.queue[data] !== undefined) {
             this.locks[serial] = false;
-            //console.log('Command ' + data + ' took ' + ms + 'ms');
             complete = this.queue[data](ms); //execute callback
             eventEmitter.emit('arduino_end', data);
             delete this.queue[data];
@@ -159,7 +157,7 @@ class Arduino {
         return complete;
     }
     aliasSerial(serial, device) {
-        console.log(`Making "${serial}" an alias of ${device}`);
+        //console.log(`Making "${serial}" an alias of ${device}`)
         this.alias[serial] = device;
     }
     async connect(serial, device, confirm) {
@@ -180,7 +178,7 @@ class Arduino {
                 console.error('failed to open: ' + e);
                 return reject(e);
             }
-            console.log(`Opened connection with ${this.path[serial]} as ${serial}`);
+            //console.log(`Opened connection with ${this.path[serial]} as ${serial}`);
             if (!confirm) {
                 this.serial[device].on('data', async (data) => {
                     let d = data.toString('utf8');
@@ -291,7 +289,6 @@ class Arduino {
                 writeSuccess = await this.sendAsync(device, cfg.arduino.cmd.mcopy_identifier);
             }
             catch (e) {
-                console.error(e);
                 return reject(e);
             }
         });
@@ -303,13 +300,12 @@ class Arduino {
             closeSuccess = await this.closeArduino(device);
         }
         catch (e) {
-            return console.error(e);
+            throw e;
         }
         return closeSuccess;
     }
     ;
     async fakeConnect(serial) {
-        //console.log('Connecting to fake arduino...');
         const device = '/dev/fake';
         this.alias[serial] = device;
         this.serial[device] = {
