@@ -1,4 +1,5 @@
 'use strict';
+
 /**
  * Delay in an async/await function
  *
@@ -6,10 +7,11 @@
  *
  * @returns {Promise} Promise to resolve after timeout
  **/
-function delay(ms) {
-    return new Promise((resolve) => {
-        return setTimeout(resolve, ms);
-    });
+
+function delay (ms : number) {
+	return new Promise((resolve : any) => {
+		return setTimeout(resolve, ms);
+	});
 }
+
 module.exports = delay;
-//# sourceMappingURL=index.js.map
