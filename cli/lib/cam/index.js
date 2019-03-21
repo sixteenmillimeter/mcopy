@@ -8,9 +8,14 @@ class Camera {
      *
      **/
     constructor(arduino, cfg, ui, dig) {
-        this.state = { dir: true, digital: false };
+        this.state = {
+            pos: 0,
+            dir: true,
+            digital: false
+        };
         this.arduino = null;
         this.intval = null;
+        this.id = 'camera';
         this.arduino = arduino;
         this.cfg = cfg;
         this.ui = ui;
@@ -21,7 +26,7 @@ class Camera {
      *
      **/
     async init() {
-        this.log = await Log({ label: 'cam' });
+        this.log = await Log({ label: this.id });
         this.ipc = require('electron').ipcMain;
         this.listen();
     }
@@ -29,7 +34,7 @@ class Camera {
      *
      **/
     listen() {
-        this.ipc.on('cam', this.listener.bind(this));
+        this.ipc.on(this.id, this.listener.bind(this));
         this.ipc.on('intval', this.connectIntval.bind(this));
     }
     /**
@@ -55,7 +60,7 @@ class Camera {
         }
         else {
             try {
-                ms = await this.arduino.send('camera', cmd);
+                ms = await this.arduino.send(this.id, cmd);
             }
             catch (err) {
                 this.log.error(err);
@@ -82,7 +87,7 @@ class Camera {
         }
         else {
             try {
-                ms = await this.arduino.send('camera', cmd);
+                ms = await this.arduino.send(this.id, cmd);
             }
             catch (err) {
                 this.log.error(err);
@@ -99,7 +104,7 @@ class Camera {
      **/
     exposure(exposure, id) {
         let cmd = 'E';
-        this.intval.setExposure('camera', exposure, (ms) => {
+        this.intval.setExposure(this.id, exposure, (ms) => {
             this.end(cmd, id, ms);
         });
     }
@@ -138,7 +143,6 @@ class Camera {
                 await this.set(arg.dir, arg.id);
             }
             catch (err) {
-                console.trace();
                 this.log.error(err);
             }
         }
@@ -147,9 +151,11 @@ class Camera {
                 await this.move(arg.frame, arg.id);
             }
             catch (err) {
-                console.trace();
                 this.log.error(err);
             }
+        }
+        else if (typeof arg.val !== 'undefined') {
+            this.state.pos = arg.val;
         }
         event.returnValue = true;
     }
@@ -175,7 +181,7 @@ class Camera {
             message += ' 1 frame';
         }
         this.log.info(message, 'CAMERA', true, true);
-        this.ui.send('cam', { cmd: cmd, id: id, ms: ms });
+        this.ui.send(this.id, { cmd: cmd, id: id, ms: ms });
     }
 }
 module.exports = function (arduino, cfg, ui, dig) {

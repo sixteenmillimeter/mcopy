@@ -2,6 +2,7 @@ const cam = {};
 
 cam.queue = {};
 cam.lock = false;
+cam.id = 'camera';
 cam.init = function () {
 	'use strict';
 	cam.listen();
@@ -16,13 +17,22 @@ cam.set = function (dir, callback) {
 		dir : dir,
 		id : uuid.v4()
 	};
-	ipcRenderer.sendSync('cam', obj);
+	ipcRenderer.sendSync(cam.id, obj);
 
 	if (typeof callback !== 'undefined') {
 		obj.callback = callback;
 	}
 	cam.queue[obj.id] = obj;
 	cam.lock = true;
+};
+
+cam.setValue = function (val) {
+	'use strict';
+	var obj = {
+		val: val,
+		id : uuid.v4()
+	};
+	ipcRenderer.sendSync(cam.id, obj);
 };
 cam.move = function (callback) {
 	'use strict';
@@ -34,7 +44,7 @@ cam.move = function (callback) {
 		frame : true,
 		id : uuid.v4()
 	};
-	ipcRenderer.sendSync('cam', obj);
+	ipcRenderer.sendSync(cam.id, obj);
 
 	if (typeof callback !== 'undefined') {
 		obj.callback = callback;
@@ -65,7 +75,7 @@ cam.end = function (c, id, ms) {
 };
 cam.listen = function () {
 	'use strict';
-	ipcRenderer.on('cam', function (event, arg) {
+	ipcRenderer.on(cam.id, function (event, arg) {
 		cam.end(arg.cmd, arg.id, arg.ms);		
 		return event.returnValue = true;
 	});

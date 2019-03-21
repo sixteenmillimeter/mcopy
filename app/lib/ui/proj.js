@@ -3,6 +3,7 @@ const proj = {};
 proj.queue = {};
 proj.lock = false;
 proj.lock2 = false;
+proj.id = 'projector';
 proj.init = function () {
 	'use strict';
 	proj.listen();
@@ -17,7 +18,7 @@ proj.set = function (dir, callback) {
 		dir : dir,
 		id : uuid.v4()
 	};
-	ipcRenderer.sendSync('proj', obj);
+	ipcRenderer.sendSync(proj.id, obj);
 
 	if (typeof callback !== 'undefined') {
 		obj.callback = callback;
@@ -35,7 +36,7 @@ proj.move = function (callback) {
 		frame : true,
 		id : uuid.v4()
 	};
-	ipcRenderer.sendSync('proj', obj);
+	ipcRenderer.sendSync(proj.id, obj);
 
 	if (typeof callback !== 'undefined') {
 		obj.callback = callback;
@@ -54,7 +55,7 @@ proj.set2 = function (dir, callback) {
 		second : true,
 		id : uuid.v4()
 	};
-	ipcRenderer.sendSync('proj', obj);
+	ipcRenderer.sendSync(proj.id, obj);
 
 	if (typeof callback !== 'undefined') {
 		obj.callback = callback;
@@ -73,7 +74,7 @@ proj.move2 = function (callback) {
 		second : true,
 		id : uuid.v4()
 	};
-	ipcRenderer.sendSync('proj', obj);
+	ipcRenderer.sendSync(proj.id, obj);
 
 	if (typeof callback !== 'undefined') {
 		obj.callback = callback;
@@ -92,7 +93,7 @@ proj.both = function (callback) {
 		both : true,
 		id : uuid.v4()
 	};
-	ipcRenderer.sendSync('proj', obj);
+	ipcRenderer.sendSync(proj.id, obj);
 
 	if (typeof callback !== 'undefined') {
 		obj.callback = callback;
@@ -125,7 +126,7 @@ proj.end = function (c, id, ms) {
 };
 proj.listen = function () {
 	'use strict';
-	ipcRenderer.on('proj', function (event, arg) {
+	ipcRenderer.on(proj.id, function (event, arg) {
 		proj.end(arg.cmd, arg.id, arg.ms);		
 		return event.returnValue = true;
 	});
@@ -137,7 +138,7 @@ proj.setValue = function (val) {
 		val: val,
 		id : uuid.v4()
 	};
-	ipcRenderer.sendSync('proj', obj);
+	ipcRenderer.sendSync(proj.id, obj);
 };
 
 proj.setValue2 = function (val) {
@@ -147,7 +148,7 @@ proj.setValue2 = function (val) {
 		second : true,
 		id : uuid.v4()
 	};
-	ipcRenderer.sendSync('proj', obj);
+	ipcRenderer.sendSync(proj.id, obj);
 };
 
 module.exports = proj;

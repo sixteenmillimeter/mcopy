@@ -7,7 +7,11 @@ import delay = require('delay');
 /** class representing camera functions **/
 
 class Camera {
-	private state : any = { dir : true, digital : false };
+	private state : any = { 
+		pos : 0,
+		dir : true, 
+		digital : false 
+	};
 	private arduino : Arduino = null;
 	private intval : any = null;
 	private log : any;
@@ -15,6 +19,7 @@ class Camera {
 	private dig : any;
 	private ui : any;
 	private ipc : any;
+	private id : string = 'camera';
 	/**
 	 *
 	 **/
@@ -30,7 +35,7 @@ class Camera {
 	 *
 	 **/
 	private async init () {
-		this.log = await Log({ label : 'cam' });
+		this.log = await Log({ label : this.id });
 		this.ipc = require('electron').ipcMain;
 		this.listen();
 	}
@@ -39,7 +44,7 @@ class Camera {
 	 *
 	 **/
 	private listen () {
-		this.ipc.on('cam', this.listener.bind(this));
+		this.ipc.on(this.id, this.listener.bind(this));
 		this.ipc.on('intval', this.connectIntval.bind(this));
 	}
 
@@ -65,7 +70,7 @@ class Camera {
 			}
 		} else {
 			try {
-				ms = await this.arduino.send('camera', cmd);
+				ms = await this.arduino.send(this.id, cmd);
 			} catch (err) {
 				this.log.error(err);
 			}
@@ -90,7 +95,7 @@ class Camera {
 			}
 		} else { 
 			try {
-				ms = await this.arduino.send('camera', cmd);
+				ms = await this.arduino.send(this.id, cmd);
 			} catch (err) {
 				this.log.error(err);
 			}
@@ -107,7 +112,7 @@ class Camera {
 	 **/
 	public exposure (exposure : number, id : string) {
 		let cmd : string = 'E';
-		this.intval.setExposure('camera', exposure, (ms : number) => {
+		this.intval.setExposure(this.id, exposure, (ms : number) => {
 			this.end(cmd, id, ms);
 		});
 	}
@@ -143,42 +148,42 @@ class Camera {
 	private async listener (event : any, arg : any) {
 		if (typeof arg.dir !== 'undefined') {
 			try {
-				await this.set(arg.dir, arg.id)
+				await this.set(arg.dir, arg.id);
 			} catch (err) {
-				console.trace()
-				this.log.error(err)
+				this.log.error(err);
 			}
 		} else if (typeof arg.frame !== 'undefined') {
 			try {
-				await this.move(arg.frame, arg.id)
+				await this.move(arg.frame, arg.id);
 			} catch (err) {
-				console.trace()
-				this.log.error(err)
+				this.log.error(err);
 			}
+		} else if (typeof arg.val !== 'undefined') {
+			this.state.pos = arg.val;
 		}
-		event.returnValue = true
+		event.returnValue = true;
 	}
 
 	/**
 	 *
 	 **/
 	private async end (cmd : string, id : string, ms : number) {
-		let message = ''
+		let message = '';
 		if (cmd === this.cfg.arduino.cmd.cam_forward) {
-			message = 'Camera set to FORWARD'
+			message = 'Camera set to FORWARD';
 		} else if (cmd === this.cfg.arduino.cmd.cam_backward) {
-			message = 'Camera set to BACKWARD'
+			message = 'Camera set to BACKWARD';
 		} else if (cmd === this.cfg.arduino.cmd.camera) {
-			message = 'Camera '
+			message = 'Camera ';
 			if (this.state.dir) {
-				message += 'ADVANCED'
+				message += 'ADVANCED';
 			} else {
-				message += 'REWOUND'
+				message += 'REWOUND';
 			}
-			message += ' 1 frame'
+			message += ' 1 frame';
 		}
 		this.log.info(message, 'CAMERA', true, true)
-		this.ui.send('cam', {cmd: cmd, id : id, ms: ms})
+		this.ui.send(this.id, {cmd: cmd, id : id, ms: ms})
 	}
 }
 

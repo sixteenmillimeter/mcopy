@@ -3,14 +3,19 @@
 import Log = require('log');
 
 class Projector {
-	private state : any = { dir : true, digital : false };
+	private state : any = { 
+		pos : 0,
+		dir : true, 
+		digital : false 
+	};
 	private arduino : Arduino = null;
-	//private dig : Digital = null;
 	private log : any;
 	private cfg : any;
 	private ui : any;
 	private ipc : any;
 	private dig : any;
+
+	private id : string = 'projector';
 
 	/**
 	 *
@@ -26,7 +31,7 @@ class Projector {
 	/**
 	 *
 	 **/
-	async init () {
+	private async init () {
 		this.log = await Log({ label : 'proj' })
 		this.ipc = require('electron').ipcMain;
 		this.listen();
@@ -36,13 +41,13 @@ class Projector {
 	 *
 	 **/
 	private listen () {
-		this.ipc.on('proj', this.listener.bind(this));
+		this.ipc.on(this.id, this.listener.bind(this));
 	}
 
 	/**
 	 *
 	 **/
-	async set (dir : boolean, id : string) {
+	public async set (dir : boolean, id : string) {
 		let cmd : string;
 		let ms : number;
 		if (dir) {
@@ -55,7 +60,7 @@ class Projector {
 			this.dig.set(dir)
 		} else {
 			try {
-				ms = await this.arduino.send('projector', cmd)
+				ms = await this.arduino.send(this.id, cmd)
 			} catch (err) {
 				this.log.error('Error setting projector direction', err)
 			}
@@ -66,7 +71,7 @@ class Projector {
 	/**
 	 *
 	 **/
-	async move (frame : any, id : string) {
+	public async move (frame : any, id : string) {
 		const cmd : string = this.cfg.arduino.cmd.projector;
 		let ms : number;
 		if (this.dig.state.enabled) {
@@ -77,7 +82,7 @@ class Projector {
 			}
 		} else {
 			try {
-				ms = await this.arduino.send('projector', cmd)
+				ms = await this.arduino.send(this.id, cmd)
 			} catch (err) {
 				this.log.error('Error moving projector', err)
 			}
@@ -103,6 +108,7 @@ class Projector {
 				this.log.error(err)
 			}
 		} else if (typeof arg.val !== 'undefined') {
+			this.state.pos = arg.val;
 			this.dig.state.frame = arg.val
 		}
 		event.returnValue = true
@@ -127,7 +133,7 @@ class Projector {
 			message += ' 1 frame'
 		}
 		this.log.info(message, 'PROJECTOR')
-		return await this.ui.send('proj', {cmd: cmd, id : id, ms: ms})
+		return await this.ui.send(this.id, {cmd: cmd, id : id, ms: ms})
 	}
 }
 

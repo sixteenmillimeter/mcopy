@@ -7,8 +7,13 @@ class Projector {
      *
      **/
     constructor(arduino, cfg, ui, dig) {
-        this.state = { dir: true, digital: false };
+        this.state = {
+            pos: 0,
+            dir: true,
+            digital: false
+        };
         this.arduino = null;
+        this.id = 'projector';
         this.arduino = arduino;
         this.cfg = cfg;
         this.ui = ui;
@@ -27,7 +32,7 @@ class Projector {
      *
      **/
     listen() {
-        this.ipc.on('proj', this.listener.bind(this));
+        this.ipc.on(this.id, this.listener.bind(this));
     }
     /**
      *
@@ -47,7 +52,7 @@ class Projector {
         }
         else {
             try {
-                ms = await this.arduino.send('projector', cmd);
+                ms = await this.arduino.send(this.id, cmd);
             }
             catch (err) {
                 this.log.error('Error setting projector direction', err);
@@ -71,7 +76,7 @@ class Projector {
         }
         else {
             try {
-                ms = await this.arduino.send('projector', cmd);
+                ms = await this.arduino.send(this.id, cmd);
             }
             catch (err) {
                 this.log.error('Error moving projector', err);
@@ -101,6 +106,7 @@ class Projector {
             }
         }
         else if (typeof arg.val !== 'undefined') {
+            this.state.pos = arg.val;
             this.dig.state.frame = arg.val;
         }
         event.returnValue = true;
@@ -127,7 +133,7 @@ class Projector {
             message += ' 1 frame';
         }
         this.log.info(message, 'PROJECTOR');
-        return await this.ui.send('proj', { cmd: cmd, id: id, ms: ms });
+        return await this.ui.send(this.id, { cmd: cmd, id: id, ms: ms });
     }
 }
 module.exports = function (arduino, cfg, ui, dig) {
