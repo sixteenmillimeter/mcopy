@@ -36,16 +36,18 @@ mcopy.state = {
 		pos : 0,
 		direction: true
 	},
+	camera_second : {
+		pos : 0,
+		direction : true
+	},
+	projector_second : {
+		pos : 0,
+		direction : true
+	}
 	sequence : {
 		size : 24,
 		arr : ['CF', 'PF'],
 		light : ['255,255,255', ''],
-		cmd : {
-			camera: mcopy.cfg.arduino.cmd.camera,
-			projector: mcopy.cfg.arduino.cmd.projector,
-			cam_direction: mcopy.cfg.arduino.cmd.cam_direction,
-			cam_direction: mcopy.cfg.arduino.cmd.proj_direction
-		},
 		pads: {
 			cam_forward: 'CF',
 			proj_forward : 'PF',

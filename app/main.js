@@ -472,20 +472,23 @@ var init = async function () {
 	mcopy.settings = await settings.all()
 
 	log.init()
+
 	dev.init()
 	seq.init()
 
 	display = require('display')(SYSTEM)
 	ffmpeg = require('ffmpeg')(SYSTEM)
 	ffprobe = require('ffprobe')(SYSTEM)
-
 	arduino = require('arduino')(mcopy.cfg, ee)
 	mscript = require('mscript')
+
 	dig = require('digital')(display, ffmpeg, ffprobe)
-	
 	cam = require('cam')(arduino, mcopy.cfg, mainWindow.webContents, dig)
 	proj = require('proj')(arduino, mcopy.cfg, mainWindow.webContents, dig)
 	light = require('light')(arduino, mcopy.cfg, mainWindow.webContents)
+	//dev
+	//cmd
+	//seq
 
 	await delay(2000)
 	try {

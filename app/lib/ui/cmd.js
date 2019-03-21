@@ -202,16 +202,39 @@ cmd.black_backward = function (callback) {
 
 	cam_forward_cam2_backward : 'CFCB',
 	cam_backward_cam2_forward : 'CBCF',
-
-	proj2_forward : 'P2F',
-	proj2_backward : 'P2B',
-
-	projs_forward : 'PPF',
-	projs_backward : 'PPB',
-
-	proj_forward_proj2_backward : 'PFPB',
-	proj_backward_proj2_forward : 'PBPF'
 */
+/**
+ * Move the secondary projector forward one frame
+ *
+ * @param {function} callback  Function to call after action
+ **/
+cmd.proj2_forward = function (callback) {
+	'use strict';
+	var res = function (ms) {
+		$('#cmd_proj2_forward').removeClass('active');
+		gui.updateState();
+		if (callback) { callback(ms); }
+	};
+	$('#cmd_proj2_forward').addClass('active');
+	if (!mcopy.state.projector2.direction) {
+		proj.set2(true, function (ms) {				
+			setTimeout(function () {
+				proj.move2(res);
+			}, mcopy.cfg.arduino.serialDelay);
+		});
+	} else {
+		setTimeout(function () {
+			proj.move2(res);
+		}, mcopy.cfg.arduino.serialDelay);
+	}
+};
+cmd.proj2_backward = function (callback) {};
+
+cmd.projs_forward = function (callback) {};
+cmd.projs_backward = function (callback) {};
+
+cmd.proj_forward_proj2_backward = function (callback) {};
+cmd.proj_backward_proj2_forward = function (callback) {};
 
 /**
  * Move the camera to a specific frame. Accepts the input with the "move_cam_to"
