@@ -23,9 +23,9 @@ const delay = require('delay')
 
 //Objects
 const mcopy = {}
-const log = {}
 const dev = {}
 
+let log;
 let SYSTEM;
 let mainWindow;
 let mscript;
@@ -49,7 +49,7 @@ mcopy.settings = {}
  *
  **/
 
-dev.init = function () {
+ dev.init = function () {
 	dev.listen()
 }
 
@@ -399,65 +399,9 @@ seq.listen = function () {
 	})
 }
 
-log.file = function () {
-	let logPath = path.join(os.homedir(), `/.config/mcopy/`)
-	if (process.platform === 'darwin') {
-		logPath = path.join(os.homedir(), `/Library/Logs/mcopy/`)
-	} else if (process.platform === 'win32') {
-		logPath = path.join(os.homedir(), `/AppData/Roaming/mcopy/`)
-	}
-	if (!fs.existsSync(logPath)) {
-		fs.mkdirSync(logPath)
-	}
-	return path.join(logPath, 'mcopy.log')
-}
-log.time = 'MM/DD/YY-HH:mm:ss'
-log.formatter = (options) => {
-	console.dir(options)
-	return options.timestamp() +' ['+ options.level.toUpperCase() +'] '+ (undefined !== options.message ? options.message : '') +
-     (options.meta && Object.keys(options.meta).length ? '\n\t'+ JSON.stringify(options.meta) : '' );
-}
-log.transport = createLogger({
-	transports: [
-		new (transports.Console)({
-			level: 'info',
-			json : false,
-            format : combine(
-		        timestamp(),
-				colorize(),
-				simple()
-		    )
-        }),
-		new (transports.File)({ 
-			filename: log.file()
-		})
-	]
-})
-log.init = function () {
-	log.listen()
-}
-log.display = function (obj) {
-	mainWindow.webContents.send('log', obj)
-}
-log.listen = function () {
-	ipcMain.on('log', (event, arg) => {
-		log.transport.info(`[renderer] action=${arg.action} service=${arg.service} status=${arg.status}`)
-		event.returnValue = true
-	})
-}
-log.info = function (action, service, status, display) {
-	var obj = {
-		action : action,
-		service : service,
-		status : status
-	}
-	log.transport.info(`[main] action=${action} service=${service} status=${status}`)
-	if (display) {
-		log.display(obj)
-	}
-}
-
 var init = async function () {
+
+	log = await require('log')({})
 
 	try {
 		SYSTEM = await system()
@@ -470,8 +414,6 @@ var init = async function () {
 
 	await settings.restore()
 	mcopy.settings = await settings.all()
-
-	log.init()
 
 	dev.init()
 	seq.init()
