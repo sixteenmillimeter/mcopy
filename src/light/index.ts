@@ -25,7 +25,7 @@ class Light {
 	 *
 	 **/
 	private async init () {
-		this.log = await require('log')({});
+		this.log = await require('log')({ label : 'light' });
 		this.ipc = require('electron').ipcMain;
 		this.listen();
 	}
