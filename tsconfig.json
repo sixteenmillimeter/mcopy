@@ -7,8 +7,12 @@
         "moduleResolution": "node",
         "sourceMap": true,
         "removeComments" : false,
+        "baseUrl" : "lib",
         "outDir": "./lib/",
-        "rootDir" : "./src/"
+        "rootDir" : "./src/",
+        "paths" : {
+            "log" : ["./lib/log"]
+        }
     },
     "exclude" : []
 }
