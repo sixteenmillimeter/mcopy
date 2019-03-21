@@ -1,6 +1,6 @@
 'use strict';
 const { createLogger, format, transports } = require('winston');
-const { combine, timestamp, label, printf } = format;
+const { combine, timestamp, label, colorize, simple } = format;
 const path = require('path');
 const fs = require('fs-extra');
 const os = require('os');
@@ -40,7 +40,8 @@ async function logFile() {
  * @returns {object} Logger transport
  **/
 module.exports = async function (arg) {
-    if (arg.quiet) {
+    let format;
+    if (arg && arg.quiet) {
         transport = {
             info: function () { },
             warn: function () { },
@@ -48,10 +49,16 @@ module.exports = async function (arg) {
         };
     }
     else {
+        if (arg && arg.label) {
+            format = combine(label({ label: arg.label }), timestamp(), colorize(), simple());
+        }
+        else {
+            format = combine(timestamp(), colorize(), simple());
+        }
         transport = createLogger({
             transports: [
                 new (transports.Console)({
-                    format: combine(format.colorize(), format.simple())
+                    format
                 }),
                 new (transports.File)({
                     filename: await logFile()
