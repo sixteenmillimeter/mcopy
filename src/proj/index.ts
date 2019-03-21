@@ -1,5 +1,7 @@
 /** class representing the Projector features **/
 
+import Log = require('log');
+
 class Projector {
 	private state : any = { dir : true, digital : false };
 	private arduino : Arduino = null;
@@ -25,7 +27,7 @@ class Projector {
 	 *
 	 **/
 	async init () {
-		this.log = await require('log')({ label : 'proj' })
+		this.log = await Log({ label : 'proj' })
 		this.ipc = require('electron').ipcMain;
 		this.listen();
 	}
@@ -35,7 +37,6 @@ class Projector {
 	 **/
 	private listen () {
 		this.ipc.on('proj', this.listener.bind(this));
-		this.ipc.on('digital', this.connectDigital.bind(this));
 	}
 
 	/**
@@ -50,8 +51,8 @@ class Projector {
 			cmd = this.cfg.arduino.cmd.proj_backward
 		}
 		this.state.dir = dir
-		if (this.state.digital) {
-			//this.dig.set(dir)
+		if (this.dig.state.enabled) {
+			this.dig.set(dir)
 		} else {
 			try {
 				ms = await this.arduino.send('projector', cmd)
@@ -68,9 +69,9 @@ class Projector {
 	async move (frame : any, id : string) {
 		const cmd : string = this.cfg.arduino.cmd.projector;
 		let ms : number;
-		if (this.state.digital) {
+		if (this.dig.state.enabled) {
 			try {
-				//ms = await this.dig.move()
+				ms = await this.dig.move()
 			} catch (err) {
 				this.log.error(err)
 			}
@@ -127,43 +128,6 @@ class Projector {
 		}
 		this.log.info(message, 'PROJECTOR')
 		return await this.ui.send('proj', {cmd: cmd, id : id, ms: ms})
-	}
-
-	/**
-	 * Use a file as the "digital" source on "projector"
-	 *
-	 **/
-	async connectDigital (evt : any, arg : any) {
-		let info;
-		let frames = 0;
-
-		try {
-			info = await this.dig.ffprobe.info(arg.path);
-		} catch (err) {
-			this.log.error(err, 'DIGITAL', true, true);
-			this.state.digital = false;
-			await this.ui.send('digital', { valid : false });
-			return false;
-		}
-		try {
-			frames = await this.dig.ffprobe.frames(arg.path);
-		} catch (err) {
-			this.log.error(err, 'DIGITAL', true, true);
-			this.state.digital = false;
-			await this.ui.send('digital', { valid : false });
-			return false;
-		}
-
-		this.dig.state.frame = 0;
-		this.dig.state.path = arg.path;
-		this.dig.state.fileName = arg.fileName;
-		this.dig.state.frames = frames;
-		this.dig.state.info = info;
-
-		this.log.info(`Opened ${this.dig.state.fileName}`, 'DIGITAL', true, true);
-		this.log.info(`Frames : ${frames}`, 'DIGITAL', true, true);
-		this.state.digital = true;
-		return await this.ui.send('digital', { valid : true, state : JSON.stringify(this.dig.state) });
 	}
 }
 

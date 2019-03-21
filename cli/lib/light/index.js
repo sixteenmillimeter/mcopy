@@ -1,6 +1,7 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const delay = require("delay");
+const Log = require("log");
 class Light {
     /**
      *
@@ -16,7 +17,7 @@ class Light {
      *
      **/
     async init() {
-        this.log = await require('log')({ label: 'light' });
+        this.log = await Log({ label: 'light' });
         this.ipc = require('electron').ipcMain;
         this.listen();
     }

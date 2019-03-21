@@ -1,25 +1,27 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const Intval = require("intval");
+const Log = require("log");
 /** class representing camera functions **/
 class Camera {
     /**
      *
      **/
-    constructor(arduino, cfg, ui) {
+    constructor(arduino, cfg, ui, dig) {
         this.state = { dir: true, digital: false };
         this.arduino = null;
         this.intval = null;
         this.arduino = arduino;
         this.cfg = cfg;
         this.ui = ui;
+        this.dig = dig;
         this.init();
     }
     /**
      *
      **/
     async init() {
-        this.log = await require('log')({ label: 'cam' });
+        this.log = await Log({ label: 'cam' });
         this.ipc = require('electron').ipcMain;
         this.listen();
     }
@@ -67,9 +69,9 @@ class Camera {
     async move(frame, id) {
         const cmd = this.cfg.arduino.cmd.camera;
         let ms;
-        //if (this.state.digital) {
-        //await this.dig.start()
-        //}
+        if (this.dig.state.enabled) {
+            await this.dig.start();
+        }
         if (this.intval) {
             try {
                 ms = await this.intval.move();
@@ -86,9 +88,9 @@ class Camera {
                 this.log.error(err);
             }
         }
-        //if (this.state.digital) {
-        //	await this.dig.end()
-        //}
+        if (this.dig.state.enabled) {
+            await this.dig.end();
+        }
         this.log.info('Camera move time', { ms });
         return this.end(cmd, id, ms);
     }
@@ -175,9 +177,8 @@ class Camera {
         this.log.info(message, 'CAMERA', true, true);
         this.ui.send('cam', { cmd: cmd, id: id, ms: ms });
     }
-    ;
 }
-module.exports = function (arduino, cfg, ui) {
-    return new Camera(arduino, cfg, ui);
+module.exports = function (arduino, cfg, ui, dig) {
+    return new Camera(arduino, cfg, ui, dig);
 };
 //# sourceMappingURL=index.js.map

@@ -1,9 +1,10 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+//import Log = require('log');
+const delay = require("delay");
 const SerialPort = require('serialport');
 const Readline = SerialPort.parsers.Readline;
 const exec = require('child_process').exec;
-const delay = require("delay");
 const parser = new Readline('');
 const newlineRe = new RegExp('\n', 'g');
 const returnRe = new RegExp('\r', 'g');

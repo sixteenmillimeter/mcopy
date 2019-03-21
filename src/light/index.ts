@@ -1,6 +1,7 @@
 'use strict';
 
 import delay = require('delay');
+import Log = require('log');
 
 class Light {
 	public state : any = { color : [0, 0, 0] }
@@ -25,7 +26,7 @@ class Light {
 	 *
 	 **/
 	private async init () {
-		this.log = await require('log')({ label : 'light' });
+		this.log = await Log({ label : 'light' });
 		this.ipc = require('electron').ipcMain;
 		this.listen();
 	}

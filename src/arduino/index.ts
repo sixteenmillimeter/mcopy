@@ -1,10 +1,11 @@
 'use strict'
 
+//import Log = require('log');
+import delay = require('delay');
+
 const SerialPort = require('serialport')
 const Readline = SerialPort.parsers.Readline
 const exec = require('child_process').exec
-
-import delay = require('delay');
 
 const parser : any = new Readline('')
 const newlineRe : RegExp = new RegExp('\n', 'g')
