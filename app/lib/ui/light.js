@@ -1,6 +1,7 @@
 const light = {};
 
 //LIGHT
+light.id = 'light';
 light.preview_state = false; //light is on/off for preview viewing
 light.color = [255, 255, 255]; //default color
 light.current = [0, 0, 0]; //last sent
@@ -145,7 +146,7 @@ light.set = function (rgb, callback) { //rgb = [0,0,0]
 		rgb,
 		id : uuid.v4()
 	};
-	ipcRenderer.sendSync('light', obj);
+	ipcRenderer.sendSync(light.id, obj);
 
 	if (typeof callback !== 'undefined') {
 		obj.callback = callback;
@@ -166,7 +167,7 @@ light.end = function (id) {
 }
 light.listen = function () {
 	'use strict';
-	ipcRenderer.on('light', function (event, arg) {
+	ipcRenderer.on(light.id, function (event, arg) {
 		light.end(arg.id);
 		return event.returnValue = true;
 	});

@@ -32,7 +32,7 @@ class Projector {
 	 *
 	 **/
 	private async init () {
-		this.log = await Log({ label : 'proj' })
+		this.log = await Log({ label : this.id })
 		this.ipc = require('electron').ipcMain;
 		this.listen();
 	}
@@ -72,7 +72,7 @@ class Projector {
 	 *
 	 **/
 	public async move (frame : any, id : string) {
-		const cmd : string = this.cfg.arduino.cmd.projector;
+		const cmd : string = this.cfg.arduino.cmd[this.id];
 		let ms : number;
 		if (this.dig.state.enabled) {
 			try {
@@ -88,7 +88,7 @@ class Projector {
 			}
 		}
 		this.log.info('Projector move time', { ms });
-		return await this.end(this.cfg.arduino.cmd.projector, id, ms)
+		return await this.end(cmd, id, ms)
 	}
 
 	/**

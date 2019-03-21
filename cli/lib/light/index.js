@@ -8,6 +8,7 @@ class Light {
      **/
     constructor(arduino, cfg, ui) {
         this.state = { color: [0, 0, 0] };
+        this.id = 'light';
         this.arduino = arduino;
         this.cfg = cfg;
         this.ui = ui;
@@ -17,7 +18,7 @@ class Light {
      *
      **/
     async init() {
-        this.log = await Log({ label: 'light' });
+        this.log = await Log({ label: this.id });
         this.ipc = require('electron').ipcMain;
         this.listen();
     }
@@ -25,7 +26,7 @@ class Light {
      *
      **/
     listen() {
-        this.ipc.on('light', this.listener.bind(this));
+        this.ipc.on(this.id, this.listener.bind(this));
     }
     /**
      *
@@ -47,14 +48,14 @@ class Light {
         let ms;
         this.state.color = rgb;
         try {
-            ms = this.arduino.send('light', this.cfg.arduino.cmd.light);
+            ms = this.arduino.send(this.id, this.cfg.arduino.cmd.light);
         }
         catch (err) {
             this.log.error('Error sending light command', err);
         }
         await delay(1);
         try {
-            this.arduino.string('light', str);
+            this.arduino.string(this.id, str);
         }
         catch (err) {
             this.log.error('Error sending light string', err);
@@ -68,7 +69,7 @@ class Light {
      **/
     async end(rgb, id, ms) {
         this.log.info(`Light set to ${rgb.join(',')}`, 'LIGHT', true, true);
-        return await this.ui.send('light', { rgb: rgb, id: id, ms: ms });
+        return await this.ui.send(this.id, { rgb: rgb, id: id, ms: ms });
     }
 }
 module.exports = function (arduino, cfg, ui) {

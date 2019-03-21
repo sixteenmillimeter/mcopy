@@ -72,7 +72,7 @@ class Camera {
      *
      **/
     async move(frame, id) {
-        const cmd = this.cfg.arduino.cmd.camera;
+        const cmd = this.cfg.arduino.cmd[this.id];
         let ms;
         if (this.dig.state.enabled) {
             await this.dig.start();
