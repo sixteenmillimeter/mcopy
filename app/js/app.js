@@ -2482,6 +2482,7 @@ const fs 		= require('fs');
 const uuid 		= require('uuid');
 const moment 	= require('moment');
 const humanizeDuration = require('humanize-duration');
+const PACKAGE 	= require('./package.json');
 const cfg 		= require('./data/cfg.json');
 const gui 		= require('./lib/ui');
 const grid		= require('./lib/ui/grid.js');
@@ -2501,7 +2502,7 @@ let log;
 	State shared by ALL interfaces
 *******/
 mcopy.state = {
-	version : '2.0.0', //use for file compatibility check
+	version : PACKAGE.version, //use for file compatibility check
 	camera : {
 		pos : 0,
 		direction: true
