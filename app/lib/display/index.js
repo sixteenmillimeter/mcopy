@@ -10,6 +10,7 @@ let system = {};
 let TMPDIR;
 class WebView {
     constructor() {
+        this.opened = false;
         this.showing = false;
         this.digitalWindow = new BrowserWindow({
             webPreferences: {
@@ -47,8 +48,6 @@ class WebView {
         await this.digitalWindow.maximize();
     }
     setImage(src) {
-        console.log(src);
-        //console.dir(digitalWindow)
         try {
             this.digitalWindow.webContents.send('display', { src });
         }
