@@ -78,6 +78,34 @@
 			"projector_second" : true
 		}
 	},
+	"cmd" : {
+		"camera_forward" : "CF",
+		"camera_backward" : "CB",
+
+		"projector_forward" : "PF",
+		"projector_backward" : "PB",
+
+		"black_forward" : "BF",
+		"black_backward" : "BB",
+
+		"camera_second_forward" : "C2F",
+		"camera_second_backward" : "C2B",
+
+		"cameras_forward" : "CCF",
+		"cameras_forward" : "CCB",
+
+		"camera_forward_camera_second_backward" : "CFCB",
+		"camera_backward_camera_second_forward" : "CBCF",
+
+		"projector_second_forward" : "P2F",
+		"projector_second_backward" : "P2B",
+
+		"projectors_forward" : "PPF",
+		"projectors_backward" : "PPB",
+
+		"projector_forward_projector_second_backward" : "PFPB",
+		"projector_backward_projector_second_forward" : "PBPF"
+	},
 	"arduino" : {
 		"baud" : 57600,
 		"board" : "uno",
