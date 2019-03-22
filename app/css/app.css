@@ -524,6 +524,9 @@ button:focus {
   text-align: center;
   color: #DAE035;
 }
+#seq_pause {
+  display: none;
+}
 #buttons > div {
   width: 50%;
   float: left;
