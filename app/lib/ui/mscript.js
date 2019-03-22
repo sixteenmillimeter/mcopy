@@ -48,12 +48,12 @@ mse.mscript.fromSequence = function () {
 		return `${line.cmd} ${line.num}`
 	})
 	
-	if (mcopy.loop > 1) {
+	if (seq.loop > 1) {
 		tmp.map(line => {
 			return `	${line}`;
 		})
 		tmp.reverse();
-		tmp.push(`LOOP ${mcopy.loop}`);
+		tmp.push(`LOOP ${seq.loop}`);
 		tmp.reverse();
 		tmp.push('END');
 	}

@@ -9,14 +9,14 @@ devices.init = function () {
 };
 devices.profiles = function () {
 	'use strict';
-	const keys = Object.keys(mcopy.cfg.profiles);
+	const keys = Object.keys(cfg.profiles);
 	const elem = $('#profile')
 	let opt;
 	elem.empty();
 	for (let key of keys) {
 		opt = $('<option>');
 		opt.val(key);
-		opt.text(mcopy.cfg.profiles[key].label);
+		opt.text(cfg.profiles[key].label);
 		elem.append(opt);
 	}
 	elem.on('change', (t) => {
@@ -26,10 +26,10 @@ devices.profiles = function () {
 devices.profile = function (profile) {
 	'use strict';
 	log.info(`Changed configuration profile to "${profile}"`, 'DEVICES', true, true);
-	const p = mcopy.cfg.profiles[profile];
+	const p = cfg.profiles[profile];
 	const keys = Object.keys(p);
 	for (let key of keys) {
-		mcopy.cfg[key] = keys[key]
+		cfg[key] = keys[key]
 	}
 	if (typeof p.light !== 'undefined' && p.light === false) {
 		light.disable();
@@ -83,7 +83,7 @@ devices.ready = function (event, arg) {
 	if (arg && arg.profile) {
 		$('#profile').val(arg.profile)
 		log.info(`Using configuration profile "${arg.profile}"`, 'DEVICES', true, true);
-		p = mcopy.cfg.profiles[arg.profile];
+		p = cfg.profiles[arg.profile];
 		if (typeof p.light !== 'undefined' && p.light === false) {
 			light.disable();
 		} else {

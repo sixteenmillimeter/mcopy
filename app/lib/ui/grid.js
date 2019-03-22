@@ -49,13 +49,13 @@ grid.refresh = function () {
 	const cmds = ['cam_forward', 'proj_forward', 'cam_backward', 'proj_backward', 'light_set', 'numbers'];
 	const check = '<input type="checkbox" x="xxxx" />';
 	const div = '<div x="xxxx"></div>';
-	const width = 970 - 34 + ((940 / 24) * Math.abs(24 - mcopy.state.sequence.size));
+	const width = 970 - 34 + ((940 / 24) * Math.abs(24 - seq.size));
 	let elem;
 	
 	$('#sequence').width(`${width}px`);
 	for (let i = 0; i < cmds.length; i++) {
 		$('#' + cmds[i]).empty();
-		for (let x = 0; x < mcopy.state.sequence.size; x++) {
+		for (let x = 0; x < seq.size; x++) {
 			if (i === cmds.length - 1) {
 				elem = div.replace('xxxx', x);
 				$('#' + cmds[i]).append($(elem).text(x));
@@ -110,25 +110,13 @@ grid.clear = function () {
 	}
 };
 /**
- * Function bound to the change event on the loop counter
- * input element
- *
- * @param  {object} t This, passed from changed element
- */
-grid.loopChange = function (t) {
-	'use strict';
-	const count = parseInt(t.value);
-	mcopy.loop = count;
-	seq.stats();
-};
-/**
  * Add 24 frames to the sequence in the GUI
  **/
 grid.plus_24 = function () {
 	'use strict';
-	mcopy.state.sequence.size += 24;
+	seq.size += 24;
 	grid.refresh();
-	console.log(`Sequencer expanded to ${mcopy.state.sequence.size} steps`);
+	console.log(`Sequencer expanded to ${seq.size} steps`);
 };
 /**
  * Set the light value at a specific step and then update

@@ -17,12 +17,12 @@ cmd.projector_forward = function (callback) {
 		proj.set(true, function (ms) {				
 			setTimeout(function () {
 				proj.move(res);
-			}, mcopy.cfg.arduino.serialDelay);
+			}, cfg.arduino.serialDelay);
 		});
 	} else {
 		setTimeout(function () {
 			proj.move(res);
-		}, mcopy.cfg.arduino.serialDelay);
+		}, cfg.arduino.serialDelay);
 	}
 };
 /**
@@ -42,12 +42,12 @@ cmd.projector_backward = function (callback) {
 		proj.set(false, function (ms) {
 			setTimeout(function () {
 				proj.move(res);
-			}, mcopy.cfg.arduino.serialDelay);
+			}, cfg.arduino.serialDelay);
 		});
 	} else {
 		setTimeout(function () {
 			proj.move(res);
-		}, mcopy.cfg.arduino.serialDelay);
+		}, cfg.arduino.serialDelay);
 	}
 };
 /**
@@ -67,7 +67,7 @@ cmd.camera_forward = function (rgb, callback) {
 				$('#cmd_cam_forward').removeClass('active');
 				if (callback) { callback(ms); }
 			});
-		}, mcopy.cfg.arduino.serialDelay);	
+		}, cfg.arduino.serialDelay);	
 	};
 	$('#cmd_cam_forward').addClass('active');
 	if (!mcopy.state.camera.direction) {
@@ -77,16 +77,16 @@ cmd.camera_forward = function (rgb, callback) {
 				light.set(rgb, function () {
 					setTimeout( function () {
 						cam.move(res);
-					}, mcopy.cfg.arduino.serialDelay);
+					}, cfg.arduino.serialDelay);
 				});
-			}, mcopy.cfg.arduino.serialDelay);
+			}, cfg.arduino.serialDelay);
 		});
 	} else {
 		light.display(rgb);
 		light.set(rgb, function () {
 			setTimeout(function () {
 				cam.move(res);
-			}, mcopy.cfg.arduino.serialDelay);
+			}, cfg.arduino.serialDelay);
 		});
 	}
 };
@@ -111,16 +111,16 @@ cmd.black_forward = function (callback) {
 				light.set(off, function () {
 					setTimeout( function () {
 						cam.move(res);
-					}, mcopy.cfg.arduino.serialDelay);
+					}, cfg.arduino.serialDelay);
 				});
-			}, mcopy.cfg.arduino.serialDelay);
+			}, cfg.arduino.serialDelay);
 		});
 	} else {
 		light.display(off);
 		light.set(off, function () {
 			setTimeout(function () {
 				cam.move(res);
-			}, mcopy.cfg.arduino.serialDelay);
+			}, cfg.arduino.serialDelay);
 		});
 	}
 };
@@ -149,7 +149,7 @@ cmd.camera_backward = function (rgb, callback) {
 				light.set(rgb, function () {
 					cam.move(res);
 				});
-			}, mcopy.cfg.arduino.serialDelay);
+			}, cfg.arduino.serialDelay);
 		});
 	} else {
 		setTimeout(function () {
@@ -157,7 +157,7 @@ cmd.camera_backward = function (rgb, callback) {
 			light.set(rgb, function () {
 				cam.move(res);
 			});
-		}, mcopy.cfg.arduino.serialDelay);
+		}, cfg.arduino.serialDelay);
 	}
 };
 /**
@@ -181,7 +181,7 @@ cmd.black_backward = function (callback) {
 				light.set(off, function () {
 					cam.move(res);
 				});
-			}, mcopy.cfg.arduino.serialDelay);
+			}, cfg.arduino.serialDelay);
 		});
 	} else {
 		setTimeout(function () {
@@ -189,7 +189,7 @@ cmd.black_backward = function (callback) {
 			light.set(off, function () {
 				cam.move(res);
 			});
-		}, mcopy.cfg.arduino.serialDelay);
+		}, cfg.arduino.serialDelay);
 	}
 };
 

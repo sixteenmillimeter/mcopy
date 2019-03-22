@@ -1,5 +1,4 @@
 const mcopy = {};
-mcopy.cfg = require('./data/cfg.json');
 
 const { remote, ipcRenderer } = require('electron');
 const dialog 	= require('electron').remote.dialog;

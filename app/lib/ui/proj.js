@@ -47,11 +47,11 @@ proj.move = function (callback) {
 };
 proj.end = function (c, id, ms) {
 	'use strict';
-	if (c === mcopy.cfg.arduino.cmd.projector_forward) {
+	if (c === cfg.arduino.cmd.projector_forward) {
 		mcopy.state.projector.direction = true;
-	} else if (c === mcopy.cfg.arduino.cmd.projector_backward) {
+	} else if (c === cfg.arduino.cmd.projector_backward) {
 		mcopy.state.projector.direction = false;
-	} else if (c === mcopy.cfg.arduino.cmd.projector) {
+	} else if (c === cfg.arduino.cmd.projector) {
 		if (mcopy.state.projector.direction) {
 			mcopy.state.projector.pos += 1;
 		} else {

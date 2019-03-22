@@ -42,6 +42,7 @@ let light;
 let dig;
 let dev;
 let cmd;
+let seq;
 
 const cfg = require('./data/cfg.json')
 
@@ -68,7 +69,7 @@ var createWindow = function () {
 	})
 }
 
-const seq = {};
+/*const seq = {};
 seq.init = function () {
 	seq.listen();
 }
@@ -81,7 +82,7 @@ seq.listen = function () {
 			display.open()
 		}
 	})
-}
+}*/
 
 var init = async function () {
 
@@ -98,9 +99,6 @@ var init = async function () {
 
 	await settings.restore()
 
-	//dev.init()
-	seq.init()
-
 	display = require('display')(SYSTEM)
 	ffmpeg = require('ffmpeg')(SYSTEM)
 	ffprobe = require('ffprobe')(SYSTEM)
@@ -109,6 +107,7 @@ var init = async function () {
 
 	dev = require('devices')(arduino, settings, mainWindow, cam)
 
+	//why is delay happening still?
 	await delay(2000)
 
 	try {
@@ -125,11 +124,7 @@ var init = async function () {
 	proj = require('proj')(arduino, cfg, mainWindow.webContents, dig)
 
 	cmd = require('cmd')(cfg, proj, cam, light);
-
-
-	//console.dir(dev.state)
-	//cmd
-	//seq
+	seq = require('sequencer')(cfg, cmd);
 }
 
 app.on('ready', init)

@@ -2,9 +2,9 @@
 
 import Log = require('log');
 
-let seq : Sequence;
+let seq : Sequencer;
 
-class Sequence {
+class Sequencer {
 	private time : number;
 	private running : boolean;
 
@@ -16,6 +16,7 @@ class Sequence {
 	private CMDS : any = {};
 	private ipc : any;
 	private log : any;
+	private id : string = 'sequence';
 
 	constructor (cfg : any, cmd : any) {
 		this.cfg = cfg;
@@ -34,26 +35,27 @@ class Sequence {
 
 	//currently called by ui
 	private async init () {
-		this.log = Log({ label : 'sequence' })
+		this.log = Log({ label : this.id })
 		this.ipc = require('electron').ipcMain;
 		this.listen();
 	}
 
 	private listen () {
-		this.ipc.on('sequence', this.listener.bind(this));
+		this.ipc.on(this.id, this.listener.bind(this));
 	}
 
 	private async listener (event : any, arg : any) {
-		if (arg && arg.diff) {
-			this.diff(arg.diff);
+		console.dir(arg)
+		if (arg && arg.set) {
+			this.setSteps(arg.set);
 		} else if (arg && arg.loops) {
 			this.loops = arg.loops;
 		}
 		event.returnValue = true;
 	}
 
-	private diff (steps : any[]) {
-		
+	public setSteps (steps : any) {
+		console.dir(steps)
 	}
 	//new
 	public async start (arg : any) {
@@ -102,5 +104,5 @@ class Sequence {
 }
 
 module.exports = function (cfg : any, cmd : any) {
-	seq = new Sequence(cfg, cmd);
+	return new Sequencer(cfg, cmd);
 }

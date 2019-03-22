@@ -60,7 +60,7 @@
         </div>
         <div id="seq_loop_wrap">
           <h3>LOOPS</h3>
-          <input type="number" min="1" id="seq_loop" value="00001" onchange="this.value = gui.fmtZero(this.value, 6); grid.loopChange(this);"/>
+          <input type="number" min="1" id="seq_loop" value="00001" onchange="this.value = gui.fmtZero(this.value, 6); seq.setLoops(parseInt(this.value));"/>
           <div id="loop_current"></div>
         </div>
       </div>

@@ -174,12 +174,12 @@ class Commands {
 			proj.set2(true, function (ms) {				
 				setTimeout(function () {
 					proj.move2(res);
-				}, mcopy.cfg.arduino.serialDelay);
+				}, this.cfg.arduino.serialDelay);
 			});
 		} else {
 			setTimeout(function () {
 				proj.move2(res);
-			}, mcopy.cfg.arduino.serialDelay);
+			}, this.cfg.arduino.serialDelay);
 		}
 	};
 	cmd.projector_second_backward = function (callback) {};

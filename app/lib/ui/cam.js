@@ -55,11 +55,11 @@ cam.move = function (callback) {
 };
 cam.end = function (c, id, ms) {
 	'use strict';
-	if (c === mcopy.cfg.arduino.cmd.camera_forward) {
+	if (c === cfg.arduino.cmd.camera_forward) {
 		mcopy.state.camera.direction = true;
-	} else if (c === mcopy.cfg.arduino.cmd.camera_backward) {
+	} else if (c === cfg.arduino.cmd.camera_backward) {
 		mcopy.state.camera.direction = false;
-	} else if (c === mcopy.cfg.arduino.cmd.camera) {
+	} else if (c === cfg.arduino.cmd.camera) {
 		if (mcopy.state.camera.direction) {
 			mcopy.state.camera.pos += 1;
 		} else {

@@ -1,44 +1,12 @@
 const seq = {};
+seq.id = 'sequence';
+seq.arr = [];
+seq.loops = 1;
+seq.size = 24;
 
 /******
 	Sequence Object
 *******/
-seq.i = 0;
-seq.time = 0;
-seq.stopState = false;
-
-mcopy.loop = 1;
-mcopy.loopCount = 0;
-
-seq.cmd = {
-	camera_forward : 'CF',
-	camera_backward : 'CB',
-
-	projector_forward : 'PF',
-	projector_backward : 'PB',
-
-	black_forward : 'BF',
-	black_backward : 'BB',
-
-	//dual commands
-	camera_second_forward : 'C2F',
-	camera_second_backward : 'C2B',
-
-	cameras_forward : 'CCF',
-	cameras_forward : 'CCB',
-
-	camera_forward_camera_second_backward : 'CFCB',
-	camera_backward_camera_second_forward : 'CBCF',
-
-	projector_second_forward : 'P2F',
-	projector_second_backward : 'P2B',
-
-	projectors_forward : 'PPF',
-	projectors_backward : 'PPB',
-
-	projector_forward_projector_second_backward : 'PFPB',
-	projector_backward_projector_second_forward : 'PBPF'
-}
 
 /*seq.run = function () {
 	'use strict';
@@ -49,7 +17,7 @@ seq.cmd = {
 		setTimeout(function () {
 			seq.i++;
 			seq.run();
-		}, mcopy.cfg.arduino.sequenceDelay);
+		}, cfg.arduino.sequenceDelay);
 	}
 	if (seq.i == 0) {
 		$('#loop_current').text(gui.fmtZero(mcopy.loopCount + 1, 6));
@@ -69,19 +37,19 @@ seq.cmd = {
 		$('#numbers div').removeClass('h');
 		$('.row input[x=' + seq.i + ']').addClass('h');
 		$('#numbers div[x=' + seq.i + ']').addClass('h');
-		if (c === seq.cmd.camera_forward){
+		if (c === cfg.cmd.camera_forward){
 			rgb = mcopy.state.sequence.light[seq.i].split(',');
 			cmd.camera_forward(rgb, action);
-		} else if (c === seq.cmd.camera_backward) {
+		} else if (c === cfg.cmd.camera_backward) {
 			rgb = mcopy.state.sequence.light[seq.i].split(',');
 			cmd.camera_backward(rgb, action);
-		} else if (c === seq.cmd.projector_forward) {
+		} else if (c === cfg.cmd.projector_forward) {
 			cmd.projector_forward(action);
-		} else if (c === seq.cmd.projector_backward) {
+		} else if (c === cfg.cmd.projector_backward) {
 			cmd.projector_backward(action);
-		} else if (c === seq.cmd.black_forward) {
+		} else if (c === cfg.cmd.black_forward) {
 			cmd.black_forward(action);
-		} else if (c === seq.cmd.black_backward) {
+		} else if (c === cfg.cmd.black_backward) {
 			cmd.black_backward(action);
 		}
 	} else {
@@ -144,57 +112,93 @@ seq.init = function (start) {
 	ipcRenderer.send('seq', { action : 'start' });
 	//seq.run();
 };
+
+seq.set = function (x, cmd) {
+	let increase = 0;
+	if (x >= seq.arr.length + 1) {
+		increase =  x - seq.arr.length;
+		for (let i = 0; i < increase; i++) {
+			seq.arr.push({});
+		}
+	}
+	if (!seq.arr[x]) seq.arr[x] = {};
+	seq.arr[x].x = x;
+	seq.arr[x].cmd = cmd;
+	if (cmd.indexOf('C') !== -1) {
+		seq.arr[x].light = light.color;
+	} else {
+		if (seq.arr[x].light) {
+			delete seq.arr[x].light;
+		}
+	}
+	//set
+	ipcRenderer.send(seq.id, { set : [ seq.arr[x] ] });
+	//update grid?
+}
+
+/**
+ * Function bound to the change event on the loop counter
+ * input element
+ *
+ * @param  {integer}  count 	Integer to set loops to
+ */
+seq.setLoops = function (count) {
+	'use strict';
+	seq.loops = count;
+	seq.stats();
+	ipcRenderer.send(seq.id, { loops : seq.count })
+};
+
 seq.stats = function () {
 	'use strict';
-	var ms = 0,
-		c = '',
-		cam_total = 0,
-		proj_total = 0,
-		real_total = mcopy.state.sequence.arr.filter(function (elem) {
-			if (elem === undefined) {
-				return false;
-			}
-			return true;
-		});
+	let ms = 0;
+	let c = '';
+	let cam_total = 0;
+	let proj_total = 0;
+	let real_total = mcopy.state.sequence.arr.filter(function (elem) {
+		if (elem === undefined) {
+			return false;
+		}
+		return true;
+	});
 
 	//timing
-	for (var i = 0; i < mcopy.state.sequence.arr.length; i++) {
-		c = mcopy.state.sequence.arr[i];
-		if (c === seq.cmd.camera_forward || c === seq.cmd.camera_backward){
-			ms += mcopy.cfg.arduino.cam.time;
-			ms += mcopy.cfg.arduino.cam.delay;
-			ms += mcopy.cfg.arduino.serialDelay;
+	for (let c of mcopy.state.sequence.arr) {
+		if (c === cfg.cmd.camera_forward || c === cfg.cmd.camera_backward){
+			ms += cfg.arduino.cam.time;
+			ms += cfg.arduino.cam.delay;
+			ms += cfg.arduino.serialDelay;
 		}
-		if (c === seq.cmd.projector_forward || c === seq.cmd.projector_backward){
-			ms += mcopy.cfg.arduino.proj.time;
-			ms += mcopy.cfg.arduino.proj.delay;
-			ms += mcopy.cfg.arduino.serialDelay;
+		if (c === cfg.cmd.projector_forward || c === cfg.cmd.projector_backward){
+			ms += cfg.arduino.proj.time;
+			ms += cfg.arduino.proj.delay;
+			ms += cfg.arduino.serialDelay;
 		}
-		if (c === seq.cmd.black_forward || c === seq.cmd.black_backward){
-			ms += mcopy.cfg.arduino.black.before;
-			ms += mcopy.cfg.arduino.black.after;
-			ms += mcopy.cfg.arduino.cam.time;
-			ms += mcopy.cfg.arduino.cam.delay;
-			ms += mcopy.cfg.arduino.serialDelay;
+		if (c === cfg.cmd.black_forward || c === cfg.cmd.black_backward){
+			ms += cfg.arduino.black.before;
+			ms += cfg.arduino.black.after;
+			ms += cfg.arduino.cam.time;
+			ms += cfg.arduino.cam.delay;
+			ms += cfg.arduino.serialDelay;
 		}
-		ms += mcopy.cfg.arduino.sequenceDelay;
+		ms += cfg.arduino.sequenceDelay;
 
-		if (c === seq.cmd.camera_forward || c === seq.cmd.black_forward) {
+		if (c === cfg.cmd.camera_forward || c === cfg.cmd.black_forward) {
 			cam_total++;
 		}
-		if (c === seq.cmd.camera_backward || c === seq.cmd.black_backward) {
+		if (c === cfg.cmd.camera_backward || c === cfg.cmd.black_backward) {
 			cam_total--;
 		}
-		if (c === seq.cmd.projector_forward) {
+		if (c === cfg.cmd.projector_forward) {
 			proj_total++;
 		}
-		if (c === seq.cmd.projector_backward) {
+		if (c === cfg.cmd.projector_backward) {
 			proj_total--;
 		}
 	}
 
 	//timing
-	ms = ms * mcopy.loop;
+	ms = ms * seq.loops;
 	if (ms < 2000) {
 		$('#seq_stats .timing span').text(ms + 'ms');
 	} else {
@@ -202,20 +206,20 @@ seq.stats = function () {
 	}
 
 	//ending frames
-	cam_total = cam_total * mcopy.loop;
-	proj_total = proj_total * mcopy.loop;
+	cam_total = cam_total * seq.loops;
+	proj_total = proj_total * seq.loops;
 
 	$('#seq_stats .cam_end span').text(gui.fmtZero(mcopy.state.camera.pos + cam_total, 6));
 	$('#seq_stats .proj_end span').text(gui.fmtZero(mcopy.state.projector.pos + proj_total, 6));
 
 	//count
-	$('#seq_stats .seq_count span').text(real_total.length * mcopy.loop);
+	$('#seq_stats .seq_count span').text(real_total.length * seq.loops);
 	return ms;
 };
 seq.clear = function () {
 	'use strict';
-	mcopy.state.sequence.size = 24;
-	mcopy.state.sequence.arr = [];
+	seq.size = 24;
+	seq.arr = [];
 };
 
 /**
@@ -283,21 +287,21 @@ seq.step = function () {
 			max = seq.state.len;
 			gui.spinner(true, `Sequence: step ${c} ${current}/${max}`, (current / max) * 100, true);
 			log.info(`Sequence: step ${c} ${current}/${max}`, 'SEQUENCE', true);
-			if (c === seq.cmd.camera_forward){
+			if (c === cfg.cmd.camera_forward){
 				cmd.camera_forward(rgb, seq.step);
-			} else if (c === seq.cmd.camera_backward) {
+			} else if (c === cfg.cmd.camera_backward) {
 				cmd.camera_backward(rgb, seq.step);
-			} else if (c === seq.cmd.projector_forward) {
+			} else if (c === cfg.cmd.projector_forward) {
 				cmd.projector_forward(seq.step);
-			} else if (c === seq.cmd.projector_backward) {
+			} else if (c === cfg.cmd.projector_backward) {
 				cmd.projector_backward(seq.step);
-			} else if (c === seq.cmd.black_forward) {
+			} else if (c === cfg.cmd.black_forward) {
 				cmd.black_forward(seq.step);
-			} else if (c === seq.cmd.black_backward) {
+			} else if (c === cfg.cmd.black_backward) {
 				cmd.black_backward(seq.step);
 			}
 		}
-	}, mcopy.cfg.arduino.sequenceDelay);
+	}, cfg.arduino.sequenceDelay);
 };
 
 module.exports = seq;
