@@ -5,7 +5,7 @@ const cmd = {};
  *
  * @param {function} callback  Function to call after projector moves one frame
  **/
-cmd.proj_forward = function (callback) {
+cmd.projector_forward = function (callback) {
 	'use strict';
 	var res = function (ms) {
 		$('#cmd_proj_forward').removeClass('active');
@@ -30,7 +30,7 @@ cmd.proj_forward = function (callback) {
  *
  * @param {function} callback  Function to call after projector moves one frame
  **/
-cmd.proj_backward = function (callback) {
+cmd.projector_backward = function (callback) {
 	'use strict';
 	var res = function (ms) {
 		$('#cmd_proj_backward').removeClass('active');
@@ -56,7 +56,7 @@ cmd.proj_backward = function (callback) {
  * @param {array} 	 rgb 	   Color to set light for frame
  * @param {function} callback  Function to call after camera moves one frame
  **/
-cmd.cam_forward = function (rgb, callback) {
+cmd.camera_forward = function (rgb, callback) {
 	'use strict';
 	var off = [0, 0, 0];
 	var res = function (ms) {
@@ -130,7 +130,7 @@ cmd.black_forward = function (callback) {
  * @param {array} 	 rgb 	   Color to set light for frame
  * @param {function} callback  Function to call after camera moves one frame
  **/
-cmd.cam_backward = function (rgb, callback) {
+cmd.camera_backward = function (rgb, callback) {
 	'use strict';
 	var off = [0, 0, 0];
 	var res = function (ms) {
@@ -208,33 +208,14 @@ cmd.black_backward = function (callback) {
  *
  * @param {function} callback  Function to call after action
  **/
-cmd.proj2_forward = function (callback) {
-	'use strict';
-	var res = function (ms) {
-		$('#cmd_proj2_forward').removeClass('active');
-		gui.updateState();
-		if (callback) { callback(ms); }
-	};
-	$('#cmd_proj2_forward').addClass('active');
-	if (!mcopy.state.projector2.direction) {
-		proj.set2(true, function (ms) {				
-			setTimeout(function () {
-				proj.move2(res);
-			}, mcopy.cfg.arduino.serialDelay);
-		});
-	} else {
-		setTimeout(function () {
-			proj.move2(res);
-		}, mcopy.cfg.arduino.serialDelay);
-	}
-};
-cmd.proj2_backward = function (callback) {};
+cmd.projector_second_forward = function (callback) {};
+cmd.projector_second_backward = function (callback) {};
 
-cmd.projs_forward = function (callback) {};
-cmd.projs_backward = function (callback) {};
+cmd.projectors_forward = function (callback) {};
+cmd.projectors_backward = function (callback) {};
 
-cmd.proj_forward_proj2_backward = function (callback) {};
-cmd.proj_backward_proj2_forward = function (callback) {};
+cmd.projector_forward_projector_second_backward = function (callback) {};
+cmd.projector_backward_projector_second_forward = function (callback) {};
 
 /**
  * Move the camera to a specific frame. Accepts the input with the "move_cam_to"
@@ -242,7 +223,7 @@ cmd.proj_backward_proj2_forward = function (callback) {};
  *
  * @param {object} t  HTML input element with the move to val
  **/
-cmd.cam_to = function (t) {
+cmd.camera_to = function (t) {
 	const raw = $('#move_cam_to').val();
 	const val = parseInt(raw);
 	let proceed = false;
@@ -276,7 +257,7 @@ cmd.cam_to = function (t) {
  *
  * @param {object} t  HTML input element with the move to val
  **/
-cmd.proj_to = function (t) {
+cmd.projector_to = function (t) {
 	const raw = $('#move_proj_to').val();
 	const val = parseInt(raw);
 	let proceed = false;

@@ -23,11 +23,12 @@ class Camera {
 	/**
 	 *
 	 **/
-	constructor (arduino : Arduino, cfg : any, ui : any, dig : any) {
+	constructor (arduino : Arduino, cfg : any, ui : any, dig : any, second : boolean = false) {
 		this.arduino = arduino;
 		this.cfg = cfg;	
 		this.ui = ui;
 		this.dig = dig;
+		if (second) this.id += '_second';
 		this.init();
 	}
 
@@ -56,9 +57,9 @@ class Camera {
 		let ms : number;
 
 		if (dir) {
-			cmd = this.cfg.arduino.cmd.cam_forward;
+			cmd = this.cfg.arduino.cmd[`${this.id}_forward`];
 		} else {
-			cmd = this.cfg.arduino.cmd.cam_backward;
+			cmd = this.cfg.arduino.cmd[`${this.id}_backward`];
 		}
 		this.state.dir = dir;
 
@@ -169,10 +170,14 @@ class Camera {
 	 **/
 	private async end (cmd : string, id : string, ms : number) {
 		let message = '';
-		if (cmd === this.cfg.arduino.cmd.cam_forward) {
+		if (cmd === this.cfg.arduino.cmd.camera_forward) {
 			message = 'Camera set to FORWARD';
-		} else if (cmd === this.cfg.arduino.cmd.cam_backward) {
+		} else if (cmd === this.cfg.arduino.cmd.camera_backward) {
 			message = 'Camera set to BACKWARD';
+		} else if (cmd === this.cfg.arduino.cmd.camera_second_forward) {
+			message = 'Camera second set to FORWARD';
+		} else if (cmd === this.cfg.arduino.cmd.camera_second_backward) {
+			message = 'Camera second set to BACKWARD';
 		} else if (cmd === this.cfg.arduino.cmd.camera) {
 			message = 'Camera ';
 			if (this.state.dir) {
@@ -181,9 +186,17 @@ class Camera {
 				message += 'REWOUND';
 			}
 			message += ' 1 frame';
+		} else if (cmd === this.cfg.arduino.cmd.camera_second) {
+			message = 'Camera second ';
+			if (this.state.dir) {
+				message += 'ADVANCED';
+			} else {
+				message += 'REWOUND';
+			}
+			message += ' 1 frame';
 		}
-		this.log.info(message, 'CAMERA', true, true)
-		this.ui.send(this.id, {cmd: cmd, id : id, ms: ms})
+		this.log.info(message);
+		this.ui.send(this.id, {cmd: cmd, id : id, ms: ms});
 	}
 }
 

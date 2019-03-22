@@ -2484,6 +2484,7 @@ const moment 	= require('moment');
 const humanizeDuration = require('humanize-duration');
 const cfg 		= require('./data/cfg.json');
 const gui 		= require('./lib/ui');
+const grid		= require('./lib/ui/grid.js');
 const light 	= require('./lib/ui/light.js');
 const proj 		= require('./lib/ui/proj.js');
 const cam 		= require('./lib/ui/cam.js');
@@ -2563,7 +2564,7 @@ async function init () {
 	log = await require('log')({})
 
 	nav.init();
-	gui.grid.init();
+	grid.init();
 	mse.mscript.init();
 	mse.console.init();
 

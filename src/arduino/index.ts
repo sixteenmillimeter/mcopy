@@ -46,6 +46,11 @@ class Arduino {
 	constructor () {
 		
 	}
+	/**
+	 * Enumerate all connected devices that might be Arduinos
+	 *
+	 * @returns {Promise} Resolves after enumerating
+	 **/
 	async enumerate () {
 		return new Promise( (resolve, reject) => {
 			return SerialPort.list((err : any, ports : any[]) => {
@@ -208,24 +213,24 @@ class Arduino {
 	confirmEnd (data : string) {
 		//console.dir(data)
 		if (   data === cfg.arduino.cmd.connect
-			|| data === cfg.arduino.cmd.proj_identifier
-			|| data === cfg.arduino.cmd.cam_identifier
+			|| data === cfg.arduino.cmd.projector_identifier
+			|| data === cfg.arduino.cmd.camera_identifier
 			|| data === cfg.arduino.cmd.light_identifier
-			|| data === cfg.arduino.cmd.proj_light_identifier
-			|| data === cfg.arduino.cmd.proj_cam_light_identifier
-			|| data === cfg.arduino.cmd.proj_cam_identifier
+			|| data === cfg.arduino.cmd.projector_light_identifier
+			|| data === cfg.arduino.cmd.projector_camera_light_identifier
+			|| data === cfg.arduino.cmd.projector_camera_identifier
 
-			|| data === cfg.arduino.cmd.proj_second_identifier
-			|| data === cfg.arduino.cmd.proj_dual_identifier
-			|| data === cfg.arduino.cmd.proj_second_forward
-			|| data === cfg.arduino.cmd.proj_second_backward
+			|| data === cfg.arduino.cmd.projector_second_identifier
+			|| data === cfg.arduino.cmd.projectors_identifier
+			|| data === cfg.arduino.cmd.projector_second_forward
+			|| data === cfg.arduino.cmd.projector_second_backward
 			|| data === cfg.arduino.cmd.projector_second
 			|| data === cfg.arduino.cmd.projectors
 
-			|| data === cfg.arduino.cmd.cam_second_identifier
-			|| data === cfg.arduino.cmd.cam_dual_identifier
-			|| data === cfg.arduino.cmd.cam_second_forward
-			|| data === cfg.arduino.cmd.cam_second_backward
+			|| data === cfg.arduino.cmd.camera_second_identifier
+			|| data === cfg.arduino.cmd.cameras_identifier
+			|| data === cfg.arduino.cmd.camera_second_forward
+			|| data === cfg.arduino.cmd.camera_second_backward
 			|| data === cfg.arduino.cmd.camera_second
 			|| data === cfg.arduino.cmd.cameras) {
 
@@ -263,25 +268,25 @@ class Arduino {
 			let writeSuccess : any
 			let type : string
 			this.confirmExec = function (err : any, data : string) {
-				if (data === cfg.arduino.cmd.proj_identifier) {
+				if (data === cfg.arduino.cmd.projector_identifier) {
 					type = 'projector'
-				} else if (data === cfg.arduino.cmd.cam_identifier) {
+				} else if (data === cfg.arduino.cmd.camera_identifier) {
 					type = 'camera'
 				} else if (data === cfg.arduino.cmd.light_identifier) {
 					type = 'light'
-				} else if (data === cfg.arduino.cmd.proj_light_identifier) {
+				} else if (data === cfg.arduino.cmd.projector_light_identifier) {
 					type = 'projector,light'
-				} else if (data === cfg.arduino.cmd.proj_cam_light_identifier) {
+				} else if (data === cfg.arduino.cmd.projector_camera_light_identifier) {
 					type = 'projector,camera,light'
-				} else if (data === cfg.arduino.cmd.proj_cam_identifier) {
+				} else if (data === cfg.arduino.cmd.projector_camera_identifier) {
 					type = 'projector,camera'
-				} else if (data === cfg.ardino.cmd.proj_second_identifier) {
+				} else if (data === cfg.ardino.cmd.projector_second_identifier) {
 					type = 'projector_second'
-				} else if (data === cfg.ardino.cmd.proj_dual_identifier) {
+				} else if (data === cfg.ardino.cmd.projectors_identifier) {
 					type = 'projector,projector_second'
-				} else if (data === cfg.ardino.cmd.cam_second_identifier) {
+				} else if (data === cfg.ardino.cmd.camera_second_identifier) {
 					type = 'camera_second'
-				} else if (data === cfg.ardino.cmd.cam_dual_identifier) {
+				} else if (data === cfg.ardino.cmd.cameras_identifier) {
 					type = 'camera,camera_second'
 				}
                 //camera,projector,projector_second

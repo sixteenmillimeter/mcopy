@@ -22,7 +22,7 @@ class Commands {
 	/**
 	 * Move the projector one frame forward
 	 **/
-	public async proj_forward () {
+	public async projector_forward () {
 		let ms : number;
 		try {
 			if (!this.proj.state.dir) {
@@ -39,7 +39,7 @@ class Commands {
 	/**
 	 * Move the projector one frame backward
 	 **/
-	public async proj_backward () {
+	public async projector_backward () {
 		let ms : number;
 		try {
 			if (this.proj.state.dir) {
@@ -58,7 +58,7 @@ class Commands {
 	 *
 	 * @param {array} 	 rgb 	   Color to set light for frame
 	 **/
-	public async cam_forward (rgb : number[] = [255, 255, 255]) {
+	public async camera_forward (rgb : number[] = [255, 255, 255]) {
 		const off : number[] = [0, 0, 0];
 		let ms : number;
 		try {
@@ -104,7 +104,7 @@ class Commands {
 	 *
 	 * @param {array} 	 rgb 	   Color to set light for frame
 	 **/
-	public async cam_backward (rgb : number[] = [255, 255, 255]) {
+	public async camera_backward (rgb : number[] = [255, 255, 255]) {
 		const off : number[] = [0, 0, 0];
 		let ms : number;
 		try {
@@ -148,21 +148,21 @@ class Commands {
 	}
 
 	/*
-		cam2_forward : 'C2F',
-		cam2_backward : 'C2B',
+		camera_second_forward : 'C2F',
+		camera_second_backward : 'C2B',
 
-		cams_forward : 'CCF',
-		cams_forward : 'CCB',
+		cameras_forward : 'CCF',
+		cameras_forward : 'CCB',
 
-		cam_forward_cam2_backward : 'CFCB',
-		cam_backward_cam2_forward : 'CBCF',
+		camera_forward_camera_second_backward : 'CFCB',
+		camera_backward_camera_second_forward : 'CBCF',
 	*/
 	/**
 	 * Move the secondary projector forward one frame
 	 *
 	 * @param {function} callback  Function to call after action
 	 **/
-	/*cmd.proj2_forward = function (callback) {
+	/*cmd.projector_second_forward = function (callback) {
 		'use strict';
 		var res = function (ms) {
 			$('#cmd_proj2_forward').removeClass('active');
@@ -182,13 +182,13 @@ class Commands {
 			}, mcopy.cfg.arduino.serialDelay);
 		}
 	};
-	cmd.proj2_backward = function (callback) {};
+	cmd.projector_second_backward = function (callback) {};
 
-	cmd.projs_forward = function (callback) {};
-	cmd.projs_backward = function (callback) {};
+	cmd.projectors_forward = function (callback) {};
+	cmd.projectors_backward = function (callback) {};
 
-	cmd.proj_forward_proj2_backward = function (callback) {};
-	cmd.proj_backward_proj2_forward = function (callback) {};
+	cmd.projector_forward_projector_second_backward = function (callback) {};
+	cmd.projector_backward_projector_second_forward = function (callback) {};
 	*/
 
 
@@ -197,7 +197,7 @@ class Commands {
 	 * value. Moves as black frames to prevent multiple exposure.
 	 *
 	 **/
-	public async cam_to () {
+	public async camera_to () {
 		/*const raw = $('#move_cam_to').val();
 		const val = parseInt(raw);
 		let proceed = false;
@@ -231,7 +231,7 @@ class Commands {
 	 * value.
 	 *
 	 **/
-	public async proj_to () {
+	public async projector_to () {
 		/*const raw = $('#move_proj_to').val();
 		const val = parseInt(raw);
 		let proceed = false;

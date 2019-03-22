@@ -33,14 +33,14 @@ seq.run = function () {
         $('#numbers div[x=' + seq.i + ']').addClass('h');
         if (c === 'CF'){
             rgb = mcopy.state.sequence.light[seq.i].split(',');
-            cmd.cam_forward(rgb, action);
+            cmd.camera_forward(rgb, action);
         } else if (c === 'CB') {
             rgb = mcopy.state.sequence.light[seq.i].split(',');
-            cmd.cam_backward(rgb, action);
+            cmd.camera_backward(rgb, action);
         } else if (c === 'PF') {
-            cmd.proj_forward(action);
+            cmd.projector_forward(action);
         } else if (c === 'PB') {
-            cmd.proj_backward(action);
+            cmd.projector_backward(action);
         } else if (c === 'BF') {
             cmd.black_forward(action);
         } else if (c === 'BB') {
@@ -229,13 +229,13 @@ seq.step = function () {
             gui.spinner(true, `Sequence: step ${c} ${current}/${max}`, (current / max) * 100);
             log.info(`Sequence: step ${c} ${current}/${max}`, 'SEQUENCE', true);
             if (c === 'CF'){
-                cmd.cam_forward(rgb, seq.step);
+                cmd.camera_forward(rgb, seq.step);
             } else if (c === 'CB') {
-                cmd.cam_backward(rgb, seq.step);
+                cmd.camera_backward(rgb, seq.step);
             } else if (c === 'PF') {
-                cmd.proj_forward(seq.step);
+                cmd.projector_forward(seq.step);
             } else if (c === 'PB') {
-                cmd.proj_backward(seq.step);
+                cmd.projector_backward(seq.step);
             } else if (c === 'BF') {
                 cmd.black_forward(seq.step);
             } else if (c === 'BB') {
@@ -257,9 +257,9 @@ proj.set = async function (dir, id) {
     let cmd
     let ms
     if (dir) {
-        cmd = mcopy.cfg.arduino.cmd.proj_forward
+        cmd = mcopy.cfg.arduino.cmd.projector_forward
     } else {
-        cmd = mcopy.cfg.arduino.cmd.proj_backward
+        cmd = mcopy.cfg.arduino.cmd.projector_backward
     }
     proj.state.dir = dir
     if (proj.state.digital) {
@@ -314,9 +314,9 @@ proj.listen = function () {
 }
 proj.end = async function (cmd, id, ms) {
     let message = ''
-    if (cmd === mcopy.cfg.arduino.cmd.proj_forward) {
+    if (cmd === mcopy.cfg.arduino.cmd.projector_forward) {
         message = 'Projector set to FORWARD'
-    } else if (cmd === mcopy.cfg.arduino.cmd.proj_backward) {
+    } else if (cmd === mcopy.cfg.arduino.cmd.projector_backward) {
         message = 'Projector set to BACKWARD'
     } else if (cmd === mcopy.cfg.arduino.cmd.projector) {
         message = 'Projector '
@@ -426,9 +426,9 @@ cam.set = async function (dir, id) {
     let cmd
     let ms
     if (dir) {
-        cmd = mcopy.cfg.arduino.cmd.cam_forward
+        cmd = mcopy.cfg.arduino.cmd.camera_forward
     } else {
-        cmd = mcopy.cfg.arduino.cmd.cam_backward
+        cmd = mcopy.cfg.arduino.cmd.camera_backward
     }
     cam.state.dir = dir
 
@@ -528,9 +528,9 @@ cam.listen = function () {
 }
 cam.end = async function (cmd, id, ms) {
     var message = ''
-    if (cmd === mcopy.cfg.arduino.cmd.cam_forward) {
+    if (cmd === mcopy.cfg.arduino.cmd.camera_forward) {
         message = 'Camera set to FORWARD'
-    } else if (cmd === mcopy.cfg.arduino.cmd.cam_backward) {
+    } else if (cmd === mcopy.cfg.arduino.cmd.camera_backward) {
         message = 'Camera set to BACKWARD'
     } else if (cmd === mcopy.cfg.arduino.cmd.camera) {
         message = 'Camera '

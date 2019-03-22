@@ -82,7 +82,7 @@ mse.mscript.toGUI = function () {
 		} else {
 			mcopy.state.sequence.light[i] = '';
 		}
-		gui.grid.state(i);
+		grid.state(i);
 	}
 };
 mse.mscript.toSequence = function () {
@@ -96,7 +96,7 @@ mse.mscript.toSequence = function () {
 				mse.console.print(`Sending compiled script to GUI sequencer...`);
 				seq.clear();
 				mse.mscript.toGUI();
-				gui.grid.refresh();
+				grid.refresh();
 				seq.stats();
 				return nav.change('sequencer');
 			})
@@ -105,7 +105,7 @@ mse.mscript.toSequence = function () {
 	mse.console.print(`Sending compiled script to GUI sequencer...`);
 	seq.clear();
 	mse.mscript.toGUI();
-	gui.grid.refresh();
+	grid.refresh();
 	seq.stats();
 	return nav.change('sequencer');
 }
@@ -196,9 +196,9 @@ mse.console.exec = function () {
 	mse.console.newLine();
 	if (mscript.cmd.indexOf(command) !== -1) {
 		if (command === 'CF') {
-			cmd.cam_forward(light.color);
+			cmd.camera_forward(light.color);
 		} else if (cmd === 'CB') {
-			cmd.cam_backward(light.color);
+			cmd.camera_backward(light.color);
 		}
 	}
 

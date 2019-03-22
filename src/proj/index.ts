@@ -20,11 +20,12 @@ class Projector {
 	/**
 	 *
 	 **/
-	constructor (arduino : Arduino, cfg : any, ui : any, dig : any) {
+	constructor (arduino : Arduino, cfg : any, ui : any, dig : any, second : boolean = false) {
 		this.arduino = arduino;
 		this.cfg = cfg;
 		this.ui = ui;
 		this.dig = dig;
+		if (second) this.id += '_second';
 		this.init();
 	}
 
@@ -51,9 +52,9 @@ class Projector {
 		let cmd : string;
 		let ms : number;
 		if (dir) {
-			cmd = this.cfg.arduino.cmd.proj_forward
+			cmd = this.cfg.arduino.cmd[`${this.id}_forward`]
 		} else {
-			cmd = this.cfg.arduino.cmd.proj_backward
+			cmd = this.cfg.arduino.cmd[`${this.id}_backward`]
 		}
 		this.state.dir = dir
 		if (this.dig.state.enabled) {
@@ -62,7 +63,7 @@ class Projector {
 			try {
 				ms = await this.arduino.send(this.id, cmd)
 			} catch (err) {
-				this.log.error('Error setting projector direction', err)
+				this.log.error(`Error setting ${this.id} direction`, err)
 			}
 		}
 		return await this.end(cmd, id, ms)
@@ -84,7 +85,7 @@ class Projector {
 			try {
 				ms = await this.arduino.send(this.id, cmd)
 			} catch (err) {
-				this.log.error('Error moving projector', err)
+				this.log.error(`Error moving ${this.id}`, err)
 			}
 		}
 		this.log.info('Projector move time', { ms });
@@ -119,12 +120,24 @@ class Projector {
 	 **/
 	async end (cmd : string, id : string, ms : number) {
 		let message : string = '';
-		if (cmd === this.cfg.arduino.cmd.proj_forward) {
+		if (cmd === this.cfg.arduino.cmd.projector_forward) {
 			message = 'Projector set to FORWARD'
-		} else if (cmd === this.cfg.arduino.cmd.proj_backward) {
+		} else if (cmd === this.cfg.arduino.cmd.projector_backward) {
 			message = 'Projector set to BACKWARD'
+		} else if (cmd === this.cfg.arduino.cmd.projector_second_forward) {
+			message = 'Projector second set to FORWARD'
+		} else if (cmd === this.cfg.arduino.cmd.projector_second_backward) {
+			message = 'Projector second set to BACKWARD'
 		} else if (cmd === this.cfg.arduino.cmd.projector) {
 			message = 'Projector '
+			if (this.state.dir) {
+				message += 'ADVANCED'
+			} else {
+				message += 'REWOUND'
+			}
+			message += ' 1 frame'
+		} else if (cmd === this.cfg.arduino.cmd.projector_second) {
+			message = 'Projector second'
 			if (this.state.dir) {
 				message += 'ADVANCED'
 			} else {

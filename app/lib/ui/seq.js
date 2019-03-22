@@ -11,11 +11,11 @@ mcopy.loop = 1;
 mcopy.loopCount = 0;
 
 seq.cmd = {
-	cam_forward : 'CF',
-	cam_backward : 'CB',
+	camera_forward : 'CF',
+	camera_backward : 'CB',
 
-	proj_forward : 'PF',
-	proj_backward : 'PB',
+	projector_forward : 'PF',
+	projector_backward : 'PB',
 
 	black_forward : 'BF',
 	black_backward : 'BB',
@@ -24,20 +24,20 @@ seq.cmd = {
 	cam2_forward : 'C2F',
 	cam2_backward : 'C2B',
 
-	cams_forward : 'CCF',
-	cams_forward : 'CCB',
+	cameras_forward : 'CCF',
+	cameras_forward : 'CCB',
 
-	cam_forward_cam2_backward : 'CFCB',
-	cam_backward_cam2_forward : 'CBCF',
+	camera_forward_cam2_backward : 'CFCB',
+	camera_backward_cam2_forward : 'CBCF',
 
 	proj2_forward : 'P2F',
 	proj2_backward : 'P2B',
 
-	projs_forward : 'PPF',
-	projs_backward : 'PPB',
+	projectors_forward : 'PPF',
+	projectors_backward : 'PPB',
 
-	proj_forward_proj2_backward : 'PFPB',
-	proj_backward_proj2_forward : 'PBPF'
+	projector_forward_proj2_backward : 'PFPB',
+	projector_backward_proj2_forward : 'PBPF'
 }
 
 seq.run = function () {
@@ -69,16 +69,16 @@ seq.run = function () {
 		$('#numbers div').removeClass('h');
 		$('.row input[x=' + seq.i + ']').addClass('h');
 		$('#numbers div[x=' + seq.i + ']').addClass('h');
-		if (c === seq.cmd.cam_forward){
+		if (c === seq.cmd.camera_forward){
 			rgb = mcopy.state.sequence.light[seq.i].split(',');
-			cmd.cam_forward(rgb, action);
-		} else if (c === seq.cmd.cam_backward) {
+			cmd.camera_forward(rgb, action);
+		} else if (c === seq.cmd.camera_backward) {
 			rgb = mcopy.state.sequence.light[seq.i].split(',');
-			cmd.cam_backward(rgb, action);
-		} else if (c === seq.cmd.proj_forward) {
-			cmd.proj_forward(action);
-		} else if (c === seq.cmd.proj_backward) {
-			cmd.proj_backward(action);
+			cmd.camera_backward(rgb, action);
+		} else if (c === seq.cmd.projector_forward) {
+			cmd.projector_forward(action);
+		} else if (c === seq.cmd.projector_backward) {
+			cmd.projector_backward(action);
 		} else if (c === seq.cmd.black_forward) {
 			cmd.black_forward(action);
 		} else if (c === seq.cmd.black_backward) {
@@ -158,12 +158,12 @@ seq.stats = function () {
 	//timing
 	for (var i = 0; i < mcopy.state.sequence.arr.length; i++) {
 		c = mcopy.state.sequence.arr[i];
-		if (c === seq.cmd.cam_forward || c === seq.cmd.cam_backward){
+		if (c === seq.cmd.camera_forward || c === seq.cmd.camera_backward){
 			ms += mcopy.cfg.arduino.cam.time;
 			ms += mcopy.cfg.arduino.cam.delay;
 			ms += mcopy.cfg.arduino.serialDelay;
 		}
-		if (c === seq.cmd.proj_forward || c === seq.cmd.proj_backward){
+		if (c === seq.cmd.projector_forward || c === seq.cmd.projector_backward){
 			ms += mcopy.cfg.arduino.proj.time;
 			ms += mcopy.cfg.arduino.proj.delay;
 			ms += mcopy.cfg.arduino.serialDelay;
@@ -177,16 +177,16 @@ seq.stats = function () {
 		}
 		ms += mcopy.cfg.arduino.sequenceDelay;
 
-		if (c === seq.cmd.cam_forward || c === seq.cmd.black_forward) {
+		if (c === seq.cmd.camera_forward || c === seq.cmd.black_forward) {
 			cam_total++;
 		}
-		if (c === seq.cmd.cam_backward || c === seq.cmd.black_backward) {
+		if (c === seq.cmd.camera_backward || c === seq.cmd.black_backward) {
 			cam_total--;
 		}
-		if (c === seq.cmd.proj_forward) {
+		if (c === seq.cmd.projector_forward) {
 			proj_total++;
 		}
-		if (c === seq.cmd.proj_backward) {
+		if (c === seq.cmd.projector_backward) {
 			proj_total--;
 		}
 	}
@@ -280,14 +280,14 @@ seq.step = function () {
 			max = seq.state.len;
 			gui.spinner(true, `Sequence: step ${c} ${current}/${max}`, (current / max) * 100, true);
 			log.info(`Sequence: step ${c} ${current}/${max}`, 'SEQUENCE', true);
-			if (c === seq.cmd.cam_forward){
-				cmd.cam_forward(rgb, seq.step);
-			} else if (c === seq.cmd.cam_backward) {
-				cmd.cam_backward(rgb, seq.step);
-			} else if (c === seq.cmd.proj_forward) {
-				cmd.proj_forward(seq.step);
-			} else if (c === seq.cmd.proj_backward) {
-				cmd.proj_backward(seq.step);
+			if (c === seq.cmd.camera_forward){
+				cmd.camera_forward(rgb, seq.step);
+			} else if (c === seq.cmd.camera_backward) {
+				cmd.camera_backward(rgb, seq.step);
+			} else if (c === seq.cmd.projector_forward) {
+				cmd.projector_forward(seq.step);
+			} else if (c === seq.cmd.projector_backward) {
+				cmd.projector_backward(seq.step);
 			} else if (c === seq.cmd.black_forward) {
 				cmd.black_forward(seq.step);
 			} else if (c === seq.cmd.black_backward) {

@@ -219,9 +219,9 @@ devices.digitalCb = function (evt, args) {
 		gui.notify('DEVICES', `Using video ${state.fileName}`);
 
 		mcopy.state.sequence.arr = ['PF', 'CF'];
-		gui.grid.setLight(1, color);
-		gui.grid.state(0);
-		gui.grid.state(1);
+		grid.setLight(1, color);
+		grid.state(0);
+		grid.state(1);
 
 		if (light.disabled) {
 			light.enable();

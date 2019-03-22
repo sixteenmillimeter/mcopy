@@ -47,8 +47,8 @@
         <div id="actions">
           <button id="seq_run" onclick="seq.init();">RUN</button>
           <button id="seq_stop" onclick="seq.stop(true);">STOP</button>
-          <button id="seq_clear" onclick="gui.grid.clear();">CLEAR</button>
-          <button id="seq_plus24" onclick="gui.grid.plus_24();">+ 24</button>
+          <button id="seq_clear" onclick="grid.clear();">CLEAR</button>
+          <button id="seq_plus24" onclick="grid.plus_24();">+ 24</button>
           <button id="seq_mscript" onclick="mse.mscript.fromSequence();">TO SCRIPT</button>
           <input id="seq_scroll_state" type="number" min="0" value="00000" />
         </div>
@@ -60,7 +60,7 @@
         </div>
         <div id="seq_loop_wrap">
           <h3>LOOPS</h3>
-          <input type="number" min="1" id="seq_loop" value="00001" onchange="this.value = gui.fmtZero(this.value, 6); gui.grid.loopChange(this);"/>
+          <input type="number" min="1" id="seq_loop" value="00001" onchange="this.value = gui.fmtZero(this.value, 6); grid.loopChange(this);"/>
           <div id="loop_current"></div>
         </div>
       </div>
@@ -91,28 +91,28 @@
             <!--<label>MOVE TO</label>-->
             <div>
               <input type="number" id="move_cam_to" class="count" value="00000" onchange="gui.counterFormat(this, this.value);" />
-              <button id="move_cam_to_go" onclick="return cmd.cam_to();">GO TO</button>
+              <button id="move_cam_to_go" onclick="return cmd.camera_to();">GO TO</button>
             </div>
           </div>
           <div class="proj">
             <!--<label>MOVE TO</label>-->
             <div>
               <input type="number" id="move_proj_to" class="count" value="00000" onchange="gui.counterFormat(this, this.value);"/>
-              <button id="move_proj_to_go" onclick="return cmd.proj_to();">GO TO</button>
+              <button id="move_proj_to_go" onclick="return cmd.projector_to();">GO TO</button>
             </div>
           </div>
         </div>
         <div id="buttons" class="clearfix">
           <div>
             <div>
-              <button id="cmd_cam_forward" onclick="cmd.cam_forward(light.color);" class="cmd fwd">
+              <button id="cmd_cam_forward" onclick="cmd.camera_forward(light.color);" class="cmd fwd">
                 <i class="fa fa-video-camera"></i> 
                 CAMERA +1
                 <i class="fa fa-step-forward"></i>
               </button>
             </div>
             <div>
-              <button id="cmd_cam_backward" onclick="cmd.cam_backward(light.color);" class="cmd bwd">
+              <button id="cmd_cam_backward" onclick="cmd.camera_backward(light.color);" class="cmd bwd">
                 <i class="fa fa-video-camera"></i> 
                 CAMERA -1
                 <i class="fa fa-step-backward"></i>
@@ -135,14 +135,14 @@
           </div>
           <div>
             <div>
-              <button id="cmd_proj_forward" onclick="cmd.proj_forward();" class="cmd fwd">
+              <button id="cmd_proj_forward" onclick="cmd.projector_forward();" class="cmd fwd">
                 <i class="fa fa-film"></i>
                 PROJECTOR +1
                 <i class="fa fa-step-forward"></i>
               </button>
             </div>
             <div>
-              <button id="cmd_proj_backward" onclick="cmd.proj_backward();" class="cmd bwd">
+              <button id="cmd_proj_backward" onclick="cmd.projector_backward();" class="cmd bwd">
                 <i class="fa fa-film"></i>
                 PROJECTOR -1
                 <i class="fa fa-step-backward"></i>

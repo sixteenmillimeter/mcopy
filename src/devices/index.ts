@@ -293,6 +293,10 @@ class Devices {
 				return false
 			}*/
 		}
+
+        //camera,projector,projector_second
+        //camera,camera_second,projector
+        //camera,camera_second,projector,projector_second
 		return connectSuccess
 	}
 	 /**
@@ -388,7 +392,7 @@ class Devices {
 			camera, 
 			projector, 
 			light, 
-			profile: this.settings.profile 
+			profile: this.settings.state.profile 
 		}
 		if (projector_second && projector_second.arduino) {
 			args.projector_second = projector_second

@@ -3,6 +3,7 @@ const cam = {};
 cam.queue = {};
 cam.lock = false;
 cam.id = 'camera';
+
 cam.init = function () {
 	'use strict';
 	cam.listen();
@@ -54,9 +55,9 @@ cam.move = function (callback) {
 };
 cam.end = function (c, id, ms) {
 	'use strict';
-	if (c === mcopy.cfg.arduino.cmd.cam_forward) {
+	if (c === mcopy.cfg.arduino.cmd.camera_forward) {
 		mcopy.state.camera.direction = true;
-	} else if (c === mcopy.cfg.arduino.cmd.cam_backward) {
+	} else if (c === mcopy.cfg.arduino.cmd.camera_backward) {
 		mcopy.state.camera.direction = false;
 	} else if (c === mcopy.cfg.arduino.cmd.camera) {
 		if (mcopy.state.camera.direction) {

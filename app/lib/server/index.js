@@ -46,13 +46,13 @@ class Server {
 				mcopy.log('Receiving command from mobile: ' + req.params.cmd);
 				cmd = req.params.cmd;
 				if (cmd === 'CF'){
-					mcopy.cmd.cam_forward(success);
+					mcopy.cmd.camera_forward(success);
 				} else if (cmd === 'CB') {
-					mcopy.cmd.cam_backward(success);
+					mcopy.cmd.camera_backward(success);
 				} else if (cmd === 'PF') {
-					mcopy.cmd.proj_forward(success);			
+					mcopy.cmd.projector_forward(success);			
 				} else if (cmd === 'PB') {
-					mcopy.cmd.proj_backward(success);			
+					mcopy.cmd.projector_backward(success);			
 				} else {
 					mcopy.mobile.fail(res, 'Command ' + cmd + ' not found');
 				}
