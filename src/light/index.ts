@@ -11,6 +11,7 @@ class Light {
 	private ui : any;
 	private log : any;
 	private ipc : any;
+	private enabled : boolean = true;
 
 	private id : string = 'light';
 
@@ -44,11 +45,17 @@ class Light {
 	 *
 	 **/
 	private async listener (event : any, arg : any) {
-		try {
-			await this.set(arg.rgb, arg.id, true);
-		} catch (err) {
-			this.log.error('Error setting light', err);
-			
+		if (typeof arg.rgb !== 'undefined') {
+			try {
+				await this.set(arg.rgb, arg.id, true);
+			} catch (err) {
+				this.log.error('Error setting light', err);
+				
+			}
+		} else if (typeof arg.enable !== 'undefined') {
+			this.enabled = true;
+		} else if (typeof arg.disable !== 'undefined') {
+			this.enabled = false;
 		}
 		event.returnValue = true
 	}

@@ -90,16 +90,28 @@ light.init = function () {
 	});
 };
 light.disable = function () {
+	const obj = {
+		disable : true,
+		id : uuid.v4()
+	};
 	light.disabled = true;
 	$('#tb_toolbar_item_light').hide();
 	$('#seq_labels .spacer').eq(1).hide();
 	$('#light_set').hide();
+
+	ipcRenderer.sendSync(light.id, obj);
 }
 light.enable = function () {
+	const obj = {
+		enable : true,
+		id : uuid.v4()
+	};
 	light.disabled = false;
 	$('#tb_toolbar_item_light').show();
 	$('#seq_labels .spacer').eq(1).show();
 	$('#light_set').show();
+
+	ipcRenderer.sendSync(light.id, obj);
 };
 light.colorPickers = function () {
 	'use strict';

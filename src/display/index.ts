@@ -15,7 +15,7 @@ let TMPDIR : any;
 
 class WebView {
 	private digitalWindow : any;
-	public opened : boolean : false;
+	public opened : boolean = false;
 	public showing : boolean = false;
 	constructor() {
 		this.digitalWindow = new BrowserWindow({

@@ -8,6 +8,7 @@ class Light {
      **/
     constructor(arduino, cfg, ui) {
         this.state = { color: [0, 0, 0] };
+        this.enabled = true;
         this.id = 'light';
         this.arduino = arduino;
         this.cfg = cfg;
@@ -32,11 +33,19 @@ class Light {
      *
      **/
     async listener(event, arg) {
-        try {
-            await this.set(arg.rgb, arg.id, true);
+        if (typeof arg.rgb !== 'undefined') {
+            try {
+                await this.set(arg.rgb, arg.id, true);
+            }
+            catch (err) {
+                this.log.error('Error setting light', err);
+            }
         }
-        catch (err) {
-            this.log.error('Error setting light', err);
+        else if (typeof arg.enable !== 'undefined') {
+            this.enabled = true;
+        }
+        else if (typeof arg.disable !== 'undefined') {
+            this.enabled = false;
         }
         event.returnValue = true;
     }
