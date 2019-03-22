@@ -75,7 +75,9 @@ seq.init = function () {
 seq.listen = function () {
 	ipcMain.on('seq', async (evt, arg) => {
 		if (arg.action === 'stop' && proj.digital) {
-			display.end()
+			display.close()
+		} else if (arg.action === 'start' && proj.digital) {
+			display.open()
 		}
 	})
 }

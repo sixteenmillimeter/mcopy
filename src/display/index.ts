@@ -10,16 +10,15 @@ const { BrowserWindow } = require('electron');
 let wv : any;
 let cp : any;
 let system : any = {};
-let digitalWindow : any;
 
 let TMPDIR : any;
 
 class WebView {
+	private digitalWindow : any;
+	public opened : boolean : false;
+	public showing : boolean = false;
 	constructor() {
-
-	}
-	async open () {
-		digitalWindow = new BrowserWindow({
+		this.digitalWindow = new BrowserWindow({
 			webPreferences: {
       			nodeIntegration: true,
       			allowRunningInsecureContent: false,
@@ -31,30 +30,56 @@ class WebView {
 			minHeight : 600//,
 			//icon: path.join(__dirname, '../../assets/icons/icon.png')
 		});
-		digitalWindow.loadURL('file://' + __dirname + '../../../display.html');
+		this.digitalWindow.loadURL('file://' + __dirname + '../../../display.html');
 		if (process.argv.indexOf('-d') !== -1 || process.argv.indexOf('--dev') !== -1) {
-			digitalWindow.webContents.openDevTools();
+			this.digitalWindow.webContents.openDevTools();
 		}
-		digitalWindow.on('closed', () => {
-			digitalWindow = null
+		this.digitalWindow.on('closed', () => {
+			this.digitalWindow = null
 		});
+		this.digitalWindow.hide();
+	}
+	async open () {
+		this.digitalWindow.show();
+		this.showing = true;
+		this.opened = true;
+	}
+	async start () {
+		await this.open();
+		await this.fullScreen();
+		await delay(300);
 	}
 	async fullScreen () {
-		return digitalWindow.setFullScreen(true);
+		//this.digitalWindow.setFullScreen(true);
+		await this.digitalWindow.maximize();
 	}
-	async setImage (src : string) {
-		return digitalWindow.webContents.send('display', { src });
-	}
-	async setMeter () {
-		return digitalWindow.webContents.send('display', { meter : true });
-	}
-	async setGrid () {
-		return digitalWindow.webContents.send('display', { grid : true });
-	}
-	async close () {
-		if (digitalWindow) {
-			digitalWindow.close();
+	setImage (src : string) {
+		try {
+			this.digitalWindow.webContents.send('display', { src });
+		} catch (err) {
+			console.error(err)
 		}
+	}
+	setMeter () {
+		this.digitalWindow.webContents.send('display', { meter : true });
+	}
+	setGrid () {
+		this.digitalWindow.webContents.send('display', { grid : true });
+	}
+	hide () {
+		if (this.digitalWindow) {
+			this.digitalWindow.hide();
+		}
+		this.showing = false;
+	}
+	close () {
+		if (this.digitalWindow) {
+			this.digitalWindow.close();
+			this.digitalWindow = null;
+			
+		}
+		this.showing = false;
+		this.opened = false;
 		return true
 	}
 	async move () {
@@ -74,28 +99,26 @@ function padded_frame (i : number) {
 async function display_eog (src :  string) {
 	//timeout 3 eog --fullscreen ${src}
 	cp = spawn('eog', ['--fullscreen', src]);
+	await delay(200)
 }
 
 
-async function display_wv (src : string) {
-	await wv.open();
-	await wv.fullScreen();
-	await delay(200);
-	await wv.setImage(src);
+function display_wv (src : string) {
+	wv.setImage(src);
 }
 
-async function end () {
+async function hide () {
 	if (system.platform !== 'nix') {
-		await wv.close();
+		//wv.hide();
 	} else {
 		if (cp) cp.kill();
 	}
 }
 
-async function start (frame : number) {
-	let padded = padded_frame(frame);
-	let ext = 'tif';
-	let tmppath;
+async function show (frame : number) {
+	let padded : string = padded_frame(frame);
+	let ext : string = 'tif';
+	let tmppath : string;
 
 	if (system.platform !== 'nix') {
 		ext = 'png';
@@ -104,24 +127,40 @@ async function start (frame : number) {
 	tmppath = path.join(TMPDIR, `export-${padded}.${ext}`);
 
 	if (system.platform !== 'nix') {
+		await open()
 		display_wv(tmppath);
 	} else {
-		display_eog(tmppath);
+		await display_eog(tmppath);
+	}
+}
+
+async function open () {
+	if (system.platform !== 'nix') {
+		if (!wv || !wv.opened) {
+        	wv = new WebView();
+        	await wv.start()
+    	}
+	} else {
+		//
+	}
+}
+
+async function close () {
+	if (system.platform !== 'nix') {
+		wv.close()
+	} else {
+		if (cp) cp.kill();
 	}
 }
 
 module.exports = function (sys : any) {
 	system = sys;
 	TMPDIR = path.join(system.tmp, 'mcopy_digital');
-
-	if (system.platform !== 'nix') {
-		wv = new WebView();
-	} else {
-		//child process
-	}
 	
 	return {
-		start,
-		end
+		open,
+		show,
+		hide,
+		close
 	}
 }

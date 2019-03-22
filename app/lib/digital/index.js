@@ -77,7 +77,7 @@ class Digital {
             console.error(err);
             throw err;
         }
-        this.display.start(this.state.frame);
+        await this.display.show(this.state.frame);
         await delay(20);
     }
     /**
@@ -85,7 +85,7 @@ class Digital {
     **/
     async end() {
         await delay(20);
-        this.display.end();
+        this.display.hide();
     }
     /**
      * Use a file as the "digital" source on "projector"

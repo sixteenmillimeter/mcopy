@@ -235,6 +235,7 @@ seq.exec = function (arr) {
 	gui.overlay(true);
 	gui.spinner(true, `Running sequence of ${arr.length} frame${(arr.length === 1 ? '' : 's')}`, 0, true);
 	log.info(`Sequence started`, 'SEQUENCE', true);
+	ipcRenderer.send('seq', { action : 'start' });
 	seq.step();
 };
 

@@ -96,6 +96,7 @@ class Camera {
             }
         }
         if (this.dig.state.enabled) {
+            //await delay(100 * 1000);
             await this.dig.end();
         }
         this.log.info('Camera move time', { ms });
