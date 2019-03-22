@@ -2,11 +2,8 @@
 
 const os = require('os');
 const electron = require('electron');
-
+//private
 const exec = require('exec');
-//const spawn = require('spawn');
-//const exit = require('exit');
-
 /**
  * Evaluates system dependencies for digital
  * projector features by executing processes with
@@ -39,6 +36,19 @@ async function dependencies (platform) {
 	return obj;
 }
 
+function getDisplays () {
+	let displays = electron.screen.getAllDisplays();
+	return displays.map(obj => {
+		return {
+			width : obj.workArea.width,
+			height : obj.workArea.height,
+			x : obj.bounds.x,
+			y : obj.bounds.y
+		}
+	});
+
+}
+
 /**
  * Profile the current system and return an object with
  * data about the displays and dependencies for the digital
@@ -48,7 +58,6 @@ async function dependencies (platform) {
  */ 
 async function system () {
 	const obj = {};
-	let displays = electron.screen.getAllDisplays();
 	let platform;
 
 	try {
@@ -67,15 +76,7 @@ async function system () {
 		obj.platform = 'nix';
 	}
 
-	obj.displays = displays.map(obj => {
-		return {
-			width : obj.workArea.width,
-			height : obj.workArea.height,
-			x : obj.bounds.x,
-			y : obj.bounds.y
-		}
-	});
-
+	obj.displays = getDisplays()
 	obj.deps = await dependencies(obj.platform);
 
 	return obj;
