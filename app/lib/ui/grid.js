@@ -14,19 +14,20 @@ grid.init = function () {
  * Set a specific grid pad to the state stored in the sequence
  * array at that step
  *
- * @param {integer}  i 	Step in sequence
+ * @param {integer}  x 	Step in sequence
  **/
-grid.state = function (i) {
+grid.state = function (x) {
 	'use strict';
-	const elem = $(`input[x=${i}]`);
-	const lightElem = $(`.L[x=${i}]`);
-	if (typeof mcopy.state.sequence.arr[i] !== 'undefined') {
+	const elem = $(`input[x=${x}]`);
+	const lightElem = $(`.L[x=${x}]`);
+	const step = seq.arr[x];
+	if (typeof step !== 'undefined') {
 		elem.prop('checked', false);
-		$(`.${mcopy.state.sequence.arr[i]}[x=${i}]`).prop('checked', true);
-		if (mcopy.state.sequence.arr[i] === 'CF' || mcopy.state.sequence.arr[i] === 'CB') {
-			lightElem.css('background', `rgb(${mcopy.state.sequence.light[i]})`)
+		$(`.${step.cmd}[x=${x}]`).prop('checked', true);
+		if (step.cmd === 'CF' || step.cmd === 'CB') {
+			lightElem.css('background', `rgb(${step.light})`)
 				.addClass('a')
-				.prop('title', `rgb(${mcopy.state.sequence.light[i]})`);
+				.prop('title', `rgb(${seq.light})`);
 
 		} else {
 			lightElem.css('background', 'transparent')
@@ -46,7 +47,14 @@ grid.state = function (i) {
  **/
 grid.refresh = function () {
 	'use strict';
-	const cmds = ['cam_forward', 'proj_forward', 'cam_backward', 'proj_backward', 'light_set', 'numbers'];
+	const cmds = [
+		'cam_forward', 
+		'proj_forward', 
+		'cam_backward', 
+		'proj_backward', 
+		'light_set', 
+		'numbers'
+	];
 	const check = '<input type="checkbox" x="xxxx" />';
 	const div = '<div x="xxxx"></div>';
 	const width = 970 - 34 + ((940 / 24) * Math.abs(24 - seq.size));
@@ -77,22 +85,17 @@ grid.refresh = function () {
  **/
 grid.click = function (t) {
 	'use strict';
-	const i = parseInt($(t).attr('x'));
+	const x = parseInt($(t).attr('x'));
 	let c;
-	//TODO: ADD OTHER STATES
 	if ($(t).prop('checked')) {
+
 		c = $(t).attr('class').replace('.', '');
-		mcopy.state.sequence.arr[i] = c;
-		if (c === 'CF' || c === 'CB') {
-			mcopy.state.sequence.light[i] = light.color.join(',');
-		} else {
-			mcopy.state.sequence.light[i] = '';
-		}
+		seq.set(x, c);
 	} else {
-		mcopy.state.sequence.arr[i] = undefined;
-		delete mcopy.state.sequence.arr[i];
+		//seq.arr[i] = undefined;
+		//delete seq.arr[i]; 
 	}
-	grid.state(i);
+	grid.state(x);
 	seq.stats();
 };
 /**
@@ -106,7 +109,7 @@ grid.clear = function () {
 		seq.clear();
 		grid.refresh();
 		seq.stats();
-		console.log('Sequencer cleared');
+		log.info('Sequencer cleared');
 	}
 };
 /**
@@ -116,19 +119,7 @@ grid.plus_24 = function () {
 	'use strict';
 	seq.size += 24;
 	grid.refresh();
-	console.log(`Sequencer expanded to ${seq.size} steps`);
-};
-/**
- * Set the light value at a specific step and then update
- * GUI grid via .state()
- *
- * @param {integer} x   Step in sequence
- * @param {array}   rgb Light value in RGB
- **/
-grid.setLight = function (x, rgb) {
-	'use strict';
-	mcopy.state.sequence.light[x] = rgb.join(',');
-	grid.state(x);
+	log.info(`Sequencer expanded to ${seq.size} steps`);
 };
 /**
  * Set light value to black (0,0,0) when double clicked
@@ -137,14 +128,14 @@ grid.setLight = function (x, rgb) {
  **/
 grid.blackout = function (t) {
 	const elem = $(t);
-	const i = elem.attr('x');
-	if (typeof mcopy.state.sequence.light[i] === 'undefined') {
+	const x = elem.attr('x');
+	if (typeof seq.arr[x].light === 'undefined') {
 		return false;
 	}
-	if (mcopy.state.sequence.light[i] === '0,0,0') {
-		grid.setLight(i, light.color);
+	if (seq.arr[x].light === '0,0,0') {
+		seq.setLight(i, light.color);
 	} else {
-		grid.setLight(i, [0, 0, 0]);
+		seq.setLight(i, [0, 0, 0]);
 	}	
 };
 
@@ -156,7 +147,9 @@ grid.blackout = function (t) {
  */
 grid.changeAll = function (rgb) {
 	'use strict';
-	for (let [i, c] of mcopy.state.sequence.arr.entries()) {
+	let c;
+	for (let step of seq.arr) {
+		c = step.cmd;
 		if (c === 'CF' || c === 'CB') {
 			grid.setLight(i, rgb);
 		}
@@ -170,7 +163,7 @@ grid.changeAll = function (rgb) {
  **/
 grid.swatches = function (x) {
 	'use strict';
-	const current = mcopy.state.sequence.light[x];
+	const current = seq.arr[x].light;
 	grid.swatchesElem = w2popup.open({
 		title   : 'Select Color',
 		body    : $('#light-swatches').html(),
@@ -229,7 +222,7 @@ grid.events = function () {
 	});
 	//$(document.body).on('click', '.L', function () {
 		//alert('click');
-		//console.log('please dont happen');
+		//log.warn('please dont happen');
 	//});
 	$(document.body).on('dblclick', '.L', function () {
 		grid.blackout(this);

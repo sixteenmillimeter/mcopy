@@ -3,117 +3,27 @@ seq.id = 'sequence';
 seq.arr = [];
 seq.loops = 1;
 seq.size = 24;
+seq.time = 0;
+seq.running = false;
 
 /******
 	Sequence Object
 *******/
 
-/*seq.run = function () {
+seq.stop = function (s) {
 	'use strict';
-	var c = mcopy.state.sequence.arr[seq.i],
-		timeEnd = 0,
-		rgb,
-	action = function () {
-		setTimeout(function () {
-			seq.i++;
-			seq.run();
-		}, cfg.arduino.sequenceDelay);
-	}
-	if (seq.i == 0) {
-		$('#loop_current').text(gui.fmtZero(mcopy.loopCount + 1, 6));
-		ipcRenderer.send('seq', { action : 'loop' });
-	}
-	if (seq.stop()) {
-		$('.row input').removeClass('h');
-		$('#numbers div').removeClass('h');
-		//console.log('Sequence stepped');
-		log.info('Sequence stopped', 'SERIAL', true);
-		return false;
-	}
-	if (seq.i <= mcopy.state.sequence.arr.length && c !== undefined) {
-		log.info('Step ' + seq.i + ' command ' + c, 'SEQUENCE', true);
-		//gui action
-		$('.row input').removeClass('h');
-		$('#numbers div').removeClass('h');
-		$('.row input[x=' + seq.i + ']').addClass('h');
-		$('#numbers div[x=' + seq.i + ']').addClass('h');
-		if (c === cfg.cmd.camera_forward){
-			rgb = mcopy.state.sequence.light[seq.i].split(',');
-			cmd.camera_forward(rgb, action);
-		} else if (c === cfg.cmd.camera_backward) {
-			rgb = mcopy.state.sequence.light[seq.i].split(',');
-			cmd.camera_backward(rgb, action);
-		} else if (c === cfg.cmd.projector_forward) {
-			cmd.projector_forward(action);
-		} else if (c === cfg.cmd.projector_backward) {
-			cmd.projector_backward(action);
-		} else if (c === cfg.cmd.black_forward) {
-			cmd.black_forward(action);
-		} else if (c === cfg.cmd.black_backward) {
-			cmd.black_backward(action);
-		}
-	} else {
-		mcopy.loopCount++;
-		$('#loop_current').text(gui.fmtZero(mcopy.loopCount + 1, 6));
-		if (mcopy.loopCount < mcopy.loop) {
-			log.info('Loop ' + mcopy.loopCount + ' completed', 'SEQUENCE', true);
-			$('.row input').removeClass('h');
-			$('#numbers div').removeClass('h');
-			seq.i = 0;
-			seq.run();
-		} else {
-			timeEnd = +new Date();
-			timeEnd = timeEnd - seq.time;
-			if (timeEnd < 2000) {
-				log.info('Sequence completed in ' + timeEnd + 'ms', 'SEQUENCE', true);
-			} else {
-				log.info('Sequence completed in ' + humanizeDuration(timeEnd), 'SEQUENCE', true);
-			}
-			ipcRenderer.send('seq', { action : 'stop' });
-			gui.notify('Sequence done!', (mcopy.state.sequence.arr.length * mcopy.loop) + ' actions completed in ' + humanizeDuration(timeEnd));
-			//clear gui
-			$('.row input').removeClass('h');
-			$('#numbers div').removeClass('h');
-			$('#loop_current').text('');
-			seq.stats();
-		}
-	}
-};*/
-seq.stop = function (state) {
-	'use strict';
-	ipcRenderer.send('seq', { action : 'stop' });
-	/*
-	if (typeof state === 'undefined') {
-		if (seq.stopState === true) {
-			ipcRenderer.send('seq', { action : 'stop' });
-		}
-		return seq.stopState;
-	} else {
-		seq.stopState = state;
-	}
-	if (state === false) {
-		mcopy.loopCount = 0
-		$('#loop_current').text('');
-	} else {
-		ipcRenderer.send('seq', { action : 'stop' });
-	}*/
-	return state
+	ipcRenderer.send(seq.id, { stop : true });
+	$('#loop_current').text('');
 };
-seq.init = function (start) {
+seq.start = function (start) {
 	'use strict';
-	/*if (typeof start === 'undefined') {
-		start = 0;
-		mcopy.loopCount = 0;
-		seq.time = +new Date();
-	}*/
-	//seq.stop(false);
-	//seq.i = start;
+	seq.time = +new Date();
 
-	ipcRenderer.send('seq', { action : 'start' });
-	//seq.run();
+	ipcRenderer.send(seq.id, { start : true });
 };
 
 seq.set = function (x, cmd) {
+	'use strict';
 	let increase = 0;
 	if (x >= seq.arr.length + 1) {
 		increase =  x - seq.arr.length;
@@ -136,6 +46,26 @@ seq.set = function (x, cmd) {
 	//update grid?
 }
 
+seq.unset = function (x) {
+	'use strict';
+	seq.arr[x] = undefined
+	ipcRenderer.send(seq.id, { unset : [ x ]});
+}
+
+/**
+ * Set the light value at a specific step and then update
+ * GUI grid via .state()
+ *
+ * @param {integer} x   Step in sequence
+ * @param {array}   rgb Light value in RGB
+ **/
+seq.setLight = function (x, rgb) {
+	'use strict';
+	let color = rgb.join(',');
+	seq.arr[x].light = color;
+	ipcRenderer.send(seq.id, { x, cmd : seq.arr[x].cmd, light : color });
+};
+
 /**
  * Function bound to the change event on the loop counter
  * input element
@@ -155,7 +85,7 @@ seq.stats = function () {
 	let c = '';
 	let cam_total = 0;
 	let proj_total = 0;
-	let real_total = mcopy.state.sequence.arr.filter(function (elem) {
+	let real_total = seq.arr.filter(function (elem) {
 		if (elem === undefined) {
 			return false;
 		}
@@ -163,7 +93,8 @@ seq.stats = function () {
 	});
 
 	//timing
-	for (let c of mcopy.state.sequence.arr) {
+	for (let step of seq.arr) {
+		c = seq.cmd;
 		if (c === cfg.cmd.camera_forward || c === cfg.cmd.camera_backward){
 			ms += cfg.arduino.cam.time;
 			ms += cfg.arduino.cam.delay;
@@ -216,92 +147,18 @@ seq.stats = function () {
 	$('#seq_stats .seq_count span').text(real_total.length * seq.loops);
 	return ms;
 };
+
 seq.clear = function () {
 	'use strict';
 	seq.size = 24;
 	seq.arr = [];
 };
 
-/**
- * Queue for exec function
- */
-seq.queue = [];
-seq.running = false;
-seq.state = {};
-/**
- * Execute an array of commands, locking up the UI during execution.
- */
-seq.exec = function (arr) {
-	'use strict';
-	seq.running = true;
-	seq.state.len = arr.length;
-	//setup queue
-	seq.queue = arr;
-	//console.dir(arr);
-	gui.overlay(true);
-	gui.spinner(true, `Running sequence of ${arr.length} frame${(arr.length === 1 ? '' : 's')}`, 0, true);
-	log.info(`Sequence started`, 'SEQUENCE', true);
-	ipcRenderer.send('seq', { action : 'start' });
-	//seq.step();
-};
-
 seq.cancel = function () {
 	gui.spinner(true, `Cancelling sequence...`);
 	seq.running = false;
+	seq.stop();
 }
 
-seq.execStop = function (msg) {
-	'use strict';
-	gui.overlay(false);
-	gui.spinner(false);
-	log.info(`Sequence ${msg}`, 'SEQUENCE', true);
-	return false;
-};
-
-seq.step = function () {
-	'use strict';
-	let elem;
-	let c;
-	let rgb;
-	let current;
-	let max;
-
-	if (!seq.running) {
-		return seq.execStop('stopped');
-	}
-
-	return setTimeout(() => {
-		elem = seq.queue.shift();
-		if (typeof elem !== 'undefined') {
-			c = elem.cmd;
-			if (typeof elem.light !== 'undefined') {
-				rgb = elem.light.split(',');
-			} else {
-				rgb = light.color;
-			}
-		} else {
-			return seq.execStop('completed');
-		}
-		if (typeof elem !== 'undefined') {
-			current = seq.state.len - seq.queue.length;
-			max = seq.state.len;
-			gui.spinner(true, `Sequence: step ${c} ${current}/${max}`, (current / max) * 100, true);
-			log.info(`Sequence: step ${c} ${current}/${max}`, 'SEQUENCE', true);
-			if (c === cfg.cmd.camera_forward){
-				cmd.camera_forward(rgb, seq.step);
-			} else if (c === cfg.cmd.camera_backward) {
-				cmd.camera_backward(rgb, seq.step);
-			} else if (c === cfg.cmd.projector_forward) {
-				cmd.projector_forward(seq.step);
-			} else if (c === cfg.cmd.projector_backward) {
-				cmd.projector_backward(seq.step);
-			} else if (c === cfg.cmd.black_forward) {
-				cmd.black_forward(seq.step);
-			} else if (c === cfg.cmd.black_backward) {
-				cmd.black_backward(seq.step);
-			}
-		}
-	}, cfg.arduino.sequenceDelay);
-};
 
 module.exports = seq;

@@ -117,22 +117,19 @@ var init = async function () {
 		log.error('Error enumerating connected devices', err)
 	}
 
-
 	light = require('light')(arduino, cfg, mainWindow.webContents)
 	dig = require('digital')(display, ffmpeg, ffprobe, mainWindow.webContents, light)
 	cam = require('cam')(arduino, cfg, mainWindow.webContents, dig)
 	proj = require('proj')(arduino, cfg, mainWindow.webContents, dig)
 
-	cmd = require('cmd')(cfg, proj, cam, light);
-	seq = require('sequencer')(cfg, cmd);
+	cmd = require('cmd')(cfg, proj, cam, light)
+	seq = require('sequencer')(cfg, cmd)
 }
 
 app.on('ready', init)
 
 app.on('window-all-closed', () => {
-	//if (process.platform !== 'darwin') {
-		app.quit();
-	//}
+	app.quit();
 });
 
 app.on('activate', () => {

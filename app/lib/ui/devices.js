@@ -218,9 +218,11 @@ devices.digitalCb = function (evt, args) {
 		$('#projector_type_digital').prop('checked', 'checked');
 		gui.notify('DEVICES', `Using video ${state.fileName}`);
 
-		mcopy.state.sequence.arr = ['PF', 'CF'];
-		grid.setLight(1, color);
+		seq.set(0, 'PF');
 		grid.state(0);
+		
+		seq.set(1, 'CF');
+		seq.setLight(1, color);
 		grid.state(1);
 
 		if (light.disabled) {

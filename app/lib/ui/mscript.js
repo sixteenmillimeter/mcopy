@@ -35,9 +35,11 @@ mse.mscript.fromSequence = function () {
 	let str;
 	let tmp = [];
 	let cont;
-	//str = mcopy.state.sequence.arr.join('\n'); //quick hack
-	console.dir(mcopy.state.sequence);
-	for (let cmd of mcopy.state.sequence.arr) {
+	let cmd;
+	//str = seq.arr.map(step => { return step.cmd }).join('\n'); //quick hack
+	console.dir(seq.arr);
+	for (let step of seq.arr) {
+		cmd = step.cmd;
 		if (tmp.length > 0 && tmp[tmp.length - 1].cmd === cmd) {
 			tmp[tmp.length - 1].num++;
 			continue;
@@ -69,18 +71,19 @@ mse.mscript.fromSequence = function () {
 mse.mscript.toGUI = function () {
 	'use strict';
 	let c;
-	for (let i = 0; i < mse.mscript.data.arr.length; i++) {
-		c = mse.mscript.data.arr[i];
-		mcopy.state.sequence.arr[i] = c;
+	let step;
+	for (let x = 0; x < mse.mscript.data.arr.length; x++) {
+		c = mse.mscript.data.arr[x];
+		seq.set(x, c);
 		console.dir(mse.mscript.data);
 		if (c === 'CF' || c === 'CB') {
-			if (typeof mse.mscript.data.light[i] !== 'undefined' && mse.mscript.data.light[i] !== '') {
-				mcopy.state.sequence.light[i] = mse.mscript.data.light[i];
+			if (typeof mse.mscript.data.light[x] !== 'undefined' && mse.mscript.data.light[x] !== '') {
+				seq.setLight(x, mse.mscript.data.light[x]);
 			} else {
-				mcopy.state.sequence.light[i] = light.color.join(',');
+				seq.setLight(x, light.color.join(','));
 			}
 		} else {
-			mcopy.state.sequence.light[i] = '';
+			//unset light?
 		}
 		grid.state(i);
 	}

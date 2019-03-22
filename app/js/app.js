@@ -2519,10 +2519,8 @@ mcopy.state = {
 		direction : true
 	},
 	sequence : {
-		size : 24,
-		arr : ['CF', 'PF'],
-		light : ['255,255,255', ''],
 		pads: {
+			//gaaaaaaaaah
 			cam_forward: 'CF',
 			proj_forward : 'PF',
 			black_forward : 'BF',
@@ -2531,8 +2529,7 @@ mcopy.state = {
 			proj_backward : 'PB',
 			black_backward : 'BB',
 
-			light_set : 'L'//,
-			/*
+			light_set : 'L',
 
 			cam2_forward : 'C2F',
 			cam2_backward : 'C2B',
@@ -2552,7 +2549,6 @@ mcopy.state = {
 			proj_forward_proj2_backward : 'PFPB',
 			proj_backward_proj2_forward : 'PBPF'
 
-			*/
 		}
 	}
 };

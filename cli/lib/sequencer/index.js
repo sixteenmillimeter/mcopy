@@ -4,6 +4,8 @@ const Log = require("log");
 let seq;
 class Sequencer {
     constructor(cfg, cmd) {
+        this.running = false;
+        this.paused = false;
         this.arr = [];
         this.loops = 1;
         this.CMDS = {};
@@ -31,8 +33,20 @@ class Sequencer {
     }
     async listener(event, arg) {
         console.dir(arg);
-        if (arg && arg.set) {
+        if (arg && arg.start) {
+            this.start(arg);
+        }
+        else if (arg && arg.stop) {
+            this.stop();
+        }
+        else if (arg && arg.pause) {
+            this.pause();
+        }
+        else if (arg && arg.set) {
             this.setSteps(arg.set);
+        }
+        else if (arg && arg.unset) {
+            this.unsetSteps(arg.unset);
         }
         else if (arg && arg.loops) {
             this.loops = arg.loops;
@@ -42,24 +56,36 @@ class Sequencer {
     setSteps(steps) {
         console.dir(steps);
     }
-    //new
+    unsetSteps(steps) {
+    }
+    //new, replaces exec and init
     async start(arg) {
         if (arg && arg.arr) {
-            this.arr = arg.arr;
+            this.arr = arg.arr; //overwrite sequence
         }
         if (arg && arg.loops) {
-            this.loops = arg.loops;
+            this.loops = arg.loops; //overwrite loops
         }
+        this.running = true;
+        this.paused = false;
         for (let x = 0; x < this.loops; x++) {
+            //start loop
             for (let y = 0; y < this.arr.length; y++) {
+                //start step
                 if (this.running) {
+                    while (this.paused) {
+                        await delay(42);
+                    }
                     await this.step(y);
                 }
+                //end step
             }
+            //end loop
         }
     }
     //new
     pause() {
+        this.paused = true;
     }
     /**
      * Stop the sequence
