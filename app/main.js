@@ -41,6 +41,7 @@ let proj2;
 let light;
 let dig;
 let dev;
+let cmd;
 
 const cfg = require('./data/cfg.json')
 
@@ -123,7 +124,10 @@ var init = async function () {
 	cam = require('cam')(arduino, cfg, mainWindow.webContents, dig)
 	proj = require('proj')(arduino, cfg, mainWindow.webContents, dig)
 
-	console.dir(dev.state)
+	cmd = require('cmd')(cfg, proj, cam, light);
+
+
+	//console.dir(dev.state)
 	//cmd
 	//seq
 }
