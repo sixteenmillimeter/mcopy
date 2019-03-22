@@ -79,6 +79,7 @@ grid.click = function (t) {
 	'use strict';
 	const i = parseInt($(t).attr('x'));
 	let c;
+	//TODO: ADD OTHER STATES
 	if ($(t).prop('checked')) {
 		c = $(t).attr('class').replace('.', '');
 		mcopy.state.sequence.arr[i] = c;
