@@ -21,26 +21,26 @@ seq.cmd = {
 	black_backward : 'BB',
 
 	//dual commands
-	cam2_forward : 'C2F',
-	cam2_backward : 'C2B',
+	camera_second_forward : 'C2F',
+	camera_second_backward : 'C2B',
 
 	cameras_forward : 'CCF',
 	cameras_forward : 'CCB',
 
-	camera_forward_cam2_backward : 'CFCB',
-	camera_backward_cam2_forward : 'CBCF',
+	camera_forward_camera_second_backward : 'CFCB',
+	camera_backward_camera_second_forward : 'CBCF',
 
-	proj2_forward : 'P2F',
-	proj2_backward : 'P2B',
+	projector_second_forward : 'P2F',
+	projector_second_backward : 'P2B',
 
 	projectors_forward : 'PPF',
 	projectors_backward : 'PPB',
 
-	projector_forward_proj2_backward : 'PFPB',
-	projector_backward_proj2_forward : 'PBPF'
+	projector_forward_projector_second_backward : 'PFPB',
+	projector_backward_projector_second_forward : 'PBPF'
 }
 
-seq.run = function () {
+/*seq.run = function () {
 	'use strict';
 	var c = mcopy.state.sequence.arr[seq.i],
 		timeEnd = 0,
@@ -110,9 +110,11 @@ seq.run = function () {
 			seq.stats();
 		}
 	}
-};
+};*/
 seq.stop = function (state) {
 	'use strict';
+	ipcRenderer.send('seq', { action : 'stop' });
+	/*
 	if (typeof state === 'undefined') {
 		if (seq.stopState === true) {
 			ipcRenderer.send('seq', { action : 'stop' });
@@ -126,21 +128,21 @@ seq.stop = function (state) {
 		$('#loop_current').text('');
 	} else {
 		ipcRenderer.send('seq', { action : 'stop' });
-	}
+	}*/
 	return state
 };
 seq.init = function (start) {
 	'use strict';
-	if (typeof start === 'undefined') {
+	/*if (typeof start === 'undefined') {
 		start = 0;
 		mcopy.loopCount = 0;
 		seq.time = +new Date();
-	}
-	seq.stop(false);
-	seq.i = start;
+	}*/
+	//seq.stop(false);
+	//seq.i = start;
 
 	ipcRenderer.send('seq', { action : 'start' });
-	seq.run();
+	//seq.run();
 };
 seq.stats = function () {
 	'use strict';
@@ -236,7 +238,7 @@ seq.exec = function (arr) {
 	gui.spinner(true, `Running sequence of ${arr.length} frame${(arr.length === 1 ? '' : 's')}`, 0, true);
 	log.info(`Sequence started`, 'SEQUENCE', true);
 	ipcRenderer.send('seq', { action : 'start' });
-	seq.step();
+	//seq.step();
 };
 
 seq.cancel = function () {
