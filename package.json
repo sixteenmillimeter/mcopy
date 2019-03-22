@@ -1,6 +1,6 @@
 {
   "name": "mcopy",
-  "version": "1.3.0",
+  "version": "1.3.2",
   "description": "Small gauge film optical printer platform",
   "main": "build.js",
   "directories": {
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/sixteenmillimeter/mcopy#readme",
   "devDependencies": {
+    "@types/electron": "^1.6.10",
     "@types/node": "^11.10.4",
     "typescript": "^3.3.3333"
   }
