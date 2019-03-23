@@ -3,6 +3,7 @@ declare module 'log';
 declare module 'intval';
 declare module 'electron';
 declare module 'fs-extra';
+declare module 'uuid';
 declare module 'exec';
 declare module 'spawn';
 declare module 'systeminformation';
