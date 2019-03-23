@@ -5,6 +5,7 @@ declare module 'electron';
 declare module 'fs-extra';
 declare module 'exec';
 declare module 'spawn';
+declare module 'systeminformation';
 
 interface Device {
 	arduino : string;
