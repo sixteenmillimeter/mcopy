@@ -27,7 +27,7 @@ seq.listener = function (event, arg) {
 	} else if (typeof arg.step !== 'undefined' && arg.start) {
 		seq.activeStep(arg.step);
 		log.info(`Step ${arg.step} active`, 'SERIAL', true);
-	} else if (arg.step && arg.stop) {
+	} else if (typeof arg.step !== 'undefined' && arg.stop) {
 		seq.inactiveAll();
 	} else if (arg.stop) {
 		log.info('Sequence stopped', 'SERIAL', true);
