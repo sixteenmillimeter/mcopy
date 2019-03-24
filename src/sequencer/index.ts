@@ -1,5 +1,6 @@
 'use strict';
 
+import uuid from 'uuid/v4';
 import Log = require('log');
 
 let seq : Sequencer;
@@ -16,27 +17,28 @@ class Sequencer {
 	private cmd : any;
 	private CMDS : any = {};
 	private ipc : any;
+	private ui : any;
 	private log : any;
 	private id : string = 'sequence';
 
-	constructor (cfg : any, cmd : any) {
+	constructor (cfg : any, cmd : any, ui : any) {
 		this.cfg = cfg;
 		this.cmd = cmd;
+		this.ui = ui;
 		this.cmds(cfg.cmd);
 		this.init();
 	}
 
 	private cmds (obj : any) {
 		let keys : string[] = Object.keys(obj);
-		let key : string;
-		for (key in keys) {
-			this.CMDS[keys[key]] = key;
+		for (let key of keys) {
+			this.CMDS[obj[key]] = key;
 		}
 	}
 
 	//currently called by ui
 	private async init () {
-		this.log = Log({ label : this.id })
+		this.log = await Log({ label : this.id })
 		this.ipc = require('electron').ipcMain;
 		this.listen();
 	}
@@ -46,7 +48,6 @@ class Sequencer {
 	}
 
 	private async listener (event : any, arg : any) {
-		console.dir(arg)
 		if (arg && arg.start) {
 			this.start(arg);
 		} else if (arg && arg.stop) {
@@ -58,17 +59,28 @@ class Sequencer {
 		} else if (arg && arg.unset) {
 			this.unsetSteps(arg.unset);
 		} else if (arg && arg.loops) {
-			this.loops = arg.loops;
+			this.setLoops(arg.loops);
 		}
 		event.returnValue = true;
 	}
 
-	public setSteps (steps : any) {
-		console.dir(steps)
+	public setLoops (count : number) {
+		this.loops = count;
+		this.log.info(`Set loop count to ${count}`);
 	}
-	public unsetSteps (steps : number[]) {
 
+	public setSteps (steps : any[]) {
+		for (let step of steps) {
+			this.arr[step.x] = step;
+		}
 	}
+
+	public unsetSteps (steps : number[]) {
+		for (let x of steps) {
+			this.arr[x] = undefined;
+		}
+	}
+
 	//new, replaces exec and init
 	public async start (arg : any) {
 		if (arg && arg.arr) {
@@ -81,25 +93,44 @@ class Sequencer {
 		this.running = true;
 		this.paused = false;
 
+		//start sequence
+		this.log.info(`Starting sequence...`)
+
 		for (let x = 0; x < this.loops; x++) {
 			//start loop
+			this.log.info(`Starting loop ${x + 1}`)
+			this.ui.send(this.id, { loop : x, start : true });
+
 			for (let y = 0; y < this.arr.length; y++) {
 				//start step
+				this.log.info(`Starting step ${y + 1} of loop ${x + 1}`)
+				this.ui.send(this.id, { step : y, start : true });
+
 				if (this.running) {
 					while (this.paused) {
 						await delay(42);
 					}
 					await this.step(y);
+				} else {
+					break
 				}
 				//end step
+				this.log.info(`Ended step ${y + 1} of loop ${x + 1}`)
+				this.ui.send(this.id, { step : y, stop : true });
 			}
 			//end loop
+			this.log.info(`Ended loop ${x + 1}`)
+			this.ui.send(this.id, { loop : x, stop : true });
 		}
+		//end sequence
+		this.log.info(`Ended sequence`)
 	}
+
 	//new
 	public pause () {
 		this.paused = true;
 	}
+
 	/**
 	 * Stop the sequence
 	 **/
@@ -109,22 +140,23 @@ class Sequencer {
 
 	}
 
-	private async step (index : number) {
+	private async step (x: number) {
 		try {
-			await this.cmdMap(index)
+			await this.cmdMap(x)
 		} catch (err) {
 			throw err;
 		}
-		
 	}
 
-	private async cmdMap (index : number) {
-		const cmdOriginal : string = this.arr[index].cmd;
+	private async cmdMap (x : number) {
+		const cmdOriginal : string = this.arr[x].cmd;
 		const cmd : string = this.CMDS[cmdOriginal];
-		return await this.cmd[cmd];
+		this.log.info(`CMD: '${cmdOriginal}' -> ${cmd}`);
+		//I wrote this when I was very tired and delirious
+		return await this.cmd[cmd]();
 	}
 }
 
-module.exports = function (cfg : any, cmd : any) {
-	return new Sequencer(cfg, cmd);
+module.exports = function (cfg : any, cmd : any, ui : any) {
+	return new Sequencer(cfg, cmd, ui);
 }

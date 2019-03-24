@@ -123,7 +123,7 @@ var init = async function () {
 	proj = require('proj')(arduino, cfg, mainWindow.webContents, dig)
 
 	cmd = require('cmd')(cfg, proj, cam, light)
-	seq = require('sequencer')(cfg, cmd)
+	seq = require('sequencer')(cfg, cmd, mainWindow.webContents)
 }
 
 app.on('ready', init)

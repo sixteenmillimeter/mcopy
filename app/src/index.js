@@ -94,4 +94,5 @@ async function init () {
 	light.init();
 	proj.init();
 	cam.init();
+	seq.init();
 };

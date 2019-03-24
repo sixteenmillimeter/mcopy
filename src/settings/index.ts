@@ -82,7 +82,7 @@ class Settings {
 		if (exists) {
 			str = await fs.readFile(this.file, 'utf8');
 			this.state = JSON.parse(str);
-			console.dir(this.state)
+			//console.dir(this.state)
 		} else {
 			this.save();
 		}

@@ -91,6 +91,12 @@ devices.ready = function (event, arg) {
 		}
 		//devices.profile(arg.profile)
 	}
+
+	seq.set(0, cfg.cmd.camera_forward);
+	seq.set(1, cfg.cmd.projector_forward);
+	grid.state(0);
+	grid.state(1);
+	
 	if (arg.projector_second) {
 		//add second row of projector pads to grid
 	}
@@ -220,7 +226,7 @@ devices.digitalCb = function (evt, args) {
 
 		seq.set(0, 'PF');
 		grid.state(0);
-		
+
 		seq.set(1, 'CF');
 		seq.setLight(1, color);
 		grid.state(1);

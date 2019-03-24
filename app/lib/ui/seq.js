@@ -10,6 +10,45 @@ seq.running = false;
 	Sequence Object
 *******/
 
+seq.init = function () {
+	seq.listen();
+}
+
+seq.listen = function () {
+	ipcRenderer.on(seq.id, seq.listener);
+}
+
+seq.listener = function (event, arg) {
+	console.log(JSON.stringify(arg))
+	if (typeof arg.loop !== 'undefined' && arg.start) {
+		$('#loop_current').text(gui.fmtZero(arg.loop + 1, 6));
+	} else if (typeof arg.loop !== 'undefined' && arg.stop) {
+		$('#loop_current').text('');
+	} else if (typeof arg.step !== 'undefined' && arg.start) {
+		seq.activeStep(arg.step);
+		log.info(`Step ${arg.step} active`, 'SERIAL', true);
+	} else if (arg.step && arg.stop) {
+		seq.inactiveAll();
+	} else if (arg.stop) {
+		log.info('Sequence stopped', 'SERIAL', true);
+	} else if (arg.start) {
+		//
+	}
+	return event.returnValue = true;
+}
+
+seq.activeStep = function (x) {
+	seq.inactiveAll();
+	console.log(`.row input[x=${x + ''}]`)
+	$(`.row input[x=${x + ''}]`).addClass('h');
+	$(`#numbers div[x=${x + ''}]`).addClass('h');
+}
+
+seq.inactiveAll = function () {
+	$('.row input').removeClass('h');
+	$('#numbers div').removeClass('h');
+}
+
 seq.stop = function (s) {
 	'use strict';
 	ipcRenderer.send(seq.id, { stop : true });
@@ -18,7 +57,6 @@ seq.stop = function (s) {
 seq.start = function (start) {
 	'use strict';
 	seq.time = +new Date();
-
 	ipcRenderer.send(seq.id, { start : true });
 };
 
@@ -76,7 +114,7 @@ seq.setLoops = function (count) {
 	'use strict';
 	seq.loops = count;
 	seq.stats();
-	ipcRenderer.send(seq.id, { loops : seq.count })
+	ipcRenderer.send(seq.id, { loops : seq.loops })
 };
 
 seq.stats = function () {
