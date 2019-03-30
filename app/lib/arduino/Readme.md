@@ -1,41 +1,30 @@
-## Functions
+<a name="Arduino"></a>
 
-<dl>
-<dt><a href="#delay">delay(ms)</a> ⇒ <code>Promise</code></dt>
-<dd><p>Pause the process for X milliseconds in async/await functions</p>
-</dd>
-<dt><a href="#send">send(device, cmd)</a> ⇒ <code>Promise</code></dt>
-<dd><p>Send a command to an Arduino using async/await</p>
-</dd>
-<dt><a href="#write">write(device, str)</a> ⇒ <code>Promise</code></dt>
-<dd><p>Send a string to an Arduino using async/await</p>
-</dd>
-<dt><a href="#open">open(device)</a> ⇒ <code>Promise</code></dt>
-<dd><p>Connect to an Arduino using async/await</p>
-</dd>
-<dt><a href="#close">close(device)</a> ⇒ <code>Promise</code></dt>
-<dd><p>Close a connection to an Arduino using async/await</p>
-</dd>
-</dl>
+## Arduino
+Class representing the arduino communication features
 
-<a name="delay"></a>
+**Kind**: global class  
 
-## delay(ms) ⇒ <code>Promise</code>
-Pause the process for X milliseconds in async/await functions
+* [Arduino](#Arduino)
+    * [.enumerate()](#Arduino+enumerate) ⇒ <code>Promise</code>
+    * [.sendAsync(device, cmd)](#Arduino+sendAsync) ⇒ <code>Promise</code>
+    * [.writeAsync(device, str)](#Arduino+writeAsync) ⇒ <code>Promise</code>
+    * [.openArduino(device)](#Arduino+openArduino) ⇒ <code>Promise</code>
+    * [.closeArduino(device)](#Arduino+closeArduino) ⇒ <code>Promise</code>
 
-**Kind**: global function  
-**Returns**: <code>Promise</code> - Resolves after wait  
+<a name="Arduino+enumerate"></a>
 
-| Param | Type | Description |
-| --- | --- | --- |
-| ms | <code>integer</code> | milliseconds |
+### arduino.enumerate() ⇒ <code>Promise</code>
+Enumerate all connected devices that might be Arduinos
 
-<a name="send"></a>
+**Kind**: instance method of [<code>Arduino</code>](#Arduino)  
+**Returns**: <code>Promise</code> - Resolves after enumerating  
+<a name="Arduino+sendAsync"></a>
 
-## send(device, cmd) ⇒ <code>Promise</code>
+### arduino.sendAsync(device, cmd) ⇒ <code>Promise</code>
 Send a command to an Arduino using async/await
 
-**Kind**: global function  
+**Kind**: instance method of [<code>Arduino</code>](#Arduino)  
 **Returns**: <code>Promise</code> - Resolves after sending  
 
 | Param | Type | Description |
@@ -43,12 +32,12 @@ Send a command to an Arduino using async/await
 | device | <code>string</code> | Arduino identifier |
 | cmd | <code>string</code> | Single character command to send |
 
-<a name="write"></a>
+<a name="Arduino+writeAsync"></a>
 
-## write(device, str) ⇒ <code>Promise</code>
+### arduino.writeAsync(device, str) ⇒ <code>Promise</code>
 Send a string to an Arduino using async/await
 
-**Kind**: global function  
+**Kind**: instance method of [<code>Arduino</code>](#Arduino)  
 **Returns**: <code>Promise</code> - Resolves after sending  
 
 | Param | Type | Description |
@@ -56,24 +45,24 @@ Send a string to an Arduino using async/await
 | device | <code>string</code> | Arduino identifier |
 | str | <code>string</code> | String to send |
 
-<a name="open"></a>
+<a name="Arduino+openArduino"></a>
 
-## open(device) ⇒ <code>Promise</code>
+### arduino.openArduino(device) ⇒ <code>Promise</code>
 Connect to an Arduino using async/await
 
-**Kind**: global function  
+**Kind**: instance method of [<code>Arduino</code>](#Arduino)  
 **Returns**: <code>Promise</code> - Resolves after opening  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | device | <code>string</code> | Arduino identifier |
 
-<a name="close"></a>
+<a name="Arduino+closeArduino"></a>
 
-## close(device) ⇒ <code>Promise</code>
+### arduino.closeArduino(device) ⇒ <code>Promise</code>
 Close a connection to an Arduino using async/await
 
-**Kind**: global function  
+**Kind**: instance method of [<code>Arduino</code>](#Arduino)  
 **Returns**: <code>Promise</code> - Resolves after closing  
 
 | Param | Type | Description |

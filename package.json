@@ -8,7 +8,8 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test" : "echo \"Error: no test specified\" && exit 1",
+    "docs" : "sh ./scripts/docs.sh",
     "build": "sh ./scripts/build.sh",
     "patch": "sh ./scripts/version.sh patch",
     "minor": "sh ./scripts/version.sh minor"
@@ -27,6 +28,7 @@
     "@types/electron": "^1.6.10",
     "@types/node": "^11.10.4",
     "@types/uuid": "^3.4.4",
+    "jsdoc-to-markdown": "^4.0.1",
     "typescript": "^3.3.3333"
   }
 }

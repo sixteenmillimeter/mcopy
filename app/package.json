@@ -7,8 +7,7 @@
     "start": "./node_modules/.bin/electron main.js",
     "dev": "./node_modules/.bin/gulp && ./node_modules/.bin/electron main.js -d",
     "install": "./node_modules/.bin/electron-rebuild",
-    "test": "./node_modules/.bin/qunit test/index.js",
-    "docs": "sh ./scripts/docs.sh"
+    "test": "./node_modules/.bin/qunit test/index.js"
   },
   "repository": {
     "type": "git",
@@ -35,7 +34,6 @@
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
     "gulp-less": "^4.0.1",
-    "jsdoc-to-markdown": "^4.0.1",
     "qunit": "^2.8.0"
   },
   "dependencies": {
