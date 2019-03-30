@@ -10,7 +10,10 @@ class Sequencer {
 	private running : boolean = false;
 	private paused : boolean = false;
 
-	private arr : any[] = [];
+	private grid : any[] = [];
+	private gridLoops : number = 1;
+
+	private arr : any[] = []; //store sequence from gui
 	private loops : number = 1;
 
 	private cfg : any;
@@ -65,19 +68,19 @@ class Sequencer {
 	}
 
 	public setLoops (count : number) {
-		this.loops = count;
+		this.gridLoops = count;
 		this.log.info(`Set loop count to ${count}`);
 	}
 
 	public setSteps (steps : any[]) {
 		for (let step of steps) {
-			this.arr[step.x] = step;
+			this.grid[step.x] = step;
 		}
 	}
 
 	public unsetSteps (steps : number[]) {
 		for (let x of steps) {
-			this.arr[x] = undefined;
+			this.grid[x] = undefined;
 		}
 	}
 
@@ -85,9 +88,14 @@ class Sequencer {
 	public async start (arg : any) {
 		if (arg && arg.arr) {
 			this.arr = arg.arr; //overwrite sequence
+		} else {
+			this.arr = this.grid;
 		}
+		
 		if (arg && arg.loops) {
 			this.loops = arg.loops; //overwrite loops
+		} else {
+			this.loops = this.gridLoops;
 		}
 		
 		this.running = true;

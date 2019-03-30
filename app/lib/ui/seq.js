@@ -19,7 +19,7 @@ seq.listen = function () {
 }
 
 seq.listener = function (event, arg) {
-	console.log(JSON.stringify(arg))
+	//console.log(JSON.stringify(arg))
 	if (typeof arg.loop !== 'undefined' && arg.start) {
 		$('#loop_current').text(gui.fmtZero(arg.loop + 1, 6));
 	} else if (typeof arg.loop !== 'undefined' && arg.stop) {
@@ -39,7 +39,7 @@ seq.listener = function (event, arg) {
 
 seq.activeStep = function (x) {
 	seq.inactiveAll();
-	console.log(`.row input[x=${x + ''}]`)
+	//console.log(`.row input[x=${x + ''}]`)
 	$(`.row input[x=${x + ''}]`).addClass('h');
 	$(`#numbers div[x=${x + ''}]`).addClass('h');
 }
@@ -54,10 +54,17 @@ seq.stop = function (s) {
 	ipcRenderer.send(seq.id, { stop : true });
 	$('#loop_current').text('');
 };
-seq.start = function (start) {
+seq.start = function () {
 	'use strict';
 	seq.time = +new Date();
 	ipcRenderer.send(seq.id, { start : true });
+};
+
+//start a pre-set sequence, not using the gui
+seq.exec = function (arr, loops) {
+	'use strict';
+	seq.time = +new Date();
+	ipcRenderer.send(seq.id, { start : true, arr, loops });
 };
 
 seq.set = function (x, cmd) {

@@ -156,13 +156,13 @@ mse.mscript.run = function () {
 			return mse.mscript.compile(() => {
 				mse.console.print(`Started running compiled sequence...`);
 				arr = mse.mscript.prepare();
-				return seq.exec(arr);
+				return seq.exec(arr, 1);
 			})
 		}
 	}
 	mse.console.print(`Started running compiled sequence...`);
 	arr = mse.mscript.prepare();
-	return seq.exec(arr);
+	return seq.exec(arr, 1);
 };
 
 /*******
