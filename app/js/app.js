@@ -2502,22 +2502,6 @@ let log;
 *******/
 mcopy.state = {
 	version : PACKAGE.version, //use for file compatibility check
-	camera : {
-		pos : 0,
-		direction: true
-	}, 
-	projector : {
-		pos : 0,
-		direction: true
-	},
-	camera_second : {
-		pos : 0,
-		direction : true
-	},
-	projector_second : {
-		pos : 0,
-		direction : true
-	},
 	sequence : {
 		pads: {
 			//gaaaaaaaaah
