@@ -20,7 +20,7 @@ grid.state = function (x) {
 	'use strict';
 	const elem = $(`input[x=${x}]`);
 	const lightElem = $(`.L[x=${x}]`);
-	const step = seq.arr[x];
+	const step = seq.grid[x];
 	if (typeof step !== 'undefined') {
 		elem.prop('checked', false);
 		$(`.${step.cmd}[x=${x}]`).prop('checked', true);
@@ -92,8 +92,8 @@ grid.click = function (t) {
 		c = $(t).attr('class').replace('.', '');
 		seq.set(x, c);
 	} else {
-		//seq.arr[i] = undefined;
-		//delete seq.arr[i]; 
+		//seq.grid[i] = undefined;
+		//delete seq.grid[i]; 
 	}
 	grid.state(x);
 	seq.stats();
@@ -129,10 +129,10 @@ grid.plus_24 = function () {
 grid.blackout = function (t) {
 	const elem = $(t);
 	const x = elem.attr('x');
-	if (typeof seq.arr[x].light === 'undefined') {
+	if (typeof seq.grid[x].light === 'undefined') {
 		return false;
 	}
-	if (seq.arr[x].light === '0,0,0') {
+	if (seq.grid[x].light === '0,0,0') {
 		seq.setLight(i, light.color);
 	} else {
 		seq.setLight(i, [0, 0, 0]);
@@ -148,7 +148,7 @@ grid.blackout = function (t) {
 grid.changeAll = function (rgb) {
 	'use strict';
 	let c;
-	for (let step of seq.arr) {
+	for (let step of seq.grid) {
 		c = step.cmd;
 		if (c === 'CF' || c === 'CB') {
 			grid.setLight(i, rgb);
@@ -163,7 +163,7 @@ grid.changeAll = function (rgb) {
  **/
 grid.swatches = function (x) {
 	'use strict';
-	const current = seq.arr[x].light;
+	const current = seq.grid[x].light;
 	grid.swatchesElem = w2popup.open({
 		title   : 'Select Color',
 		body    : $('#light-swatches').html(),

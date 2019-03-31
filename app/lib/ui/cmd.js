@@ -13,7 +13,7 @@ cmd.projector_forward = function (callback) {
 		if (callback) { callback(ms); }
 	};
 	$('#cmd_proj_forward').addClass('active');
-	if (!mcopy.state.projector.direction) {
+	if (!proj.dir) {
 		proj.set(true, function (ms) {				
 			setTimeout(function () {
 				proj.move(res);
@@ -38,7 +38,7 @@ cmd.projector_backward = function (callback) {
 		if (callback) { callback(ms); }
 	};
 	$('#cmd_proj_backward').addClass('active');
-	if (mcopy.state.projector.direction) {
+	if (proj.dir) {
 		proj.set(false, function (ms) {
 			setTimeout(function () {
 				proj.move(res);
@@ -70,7 +70,7 @@ cmd.camera_forward = function (rgb, callback) {
 		}, cfg.arduino.serialDelay);	
 	};
 	$('#cmd_cam_forward').addClass('active');
-	if (!mcopy.state.camera.direction) {
+	if (!cam.dir) {
 		cam.set(true, function () {
 			setTimeout( function () {
 				light.display(rgb);
@@ -104,7 +104,7 @@ cmd.black_forward = function (callback) {
 		if (callback) { callback(ms); }	
 	};
 	$('#cmd_black_forward').addClass('active');
-	if (!mcopy.state.camera.direction) {
+	if (!cam.dir) {
 		cam.set(true, function () {
 			setTimeout( function () {
 				light.display(off);
@@ -142,7 +142,7 @@ cmd.camera_backward = function (rgb, callback) {
 		});	
 	};
 	$('#cmd_cam_backward').addClass('active');
-	if (mcopy.state.camera.direction) {
+	if (cam.dir) {
 		cam.set(false, function () {
 			setTimeout(function () {
 				light.display(rgb);
@@ -174,7 +174,7 @@ cmd.black_backward = function (callback) {
 		if (callback) { callback(ms); }
 	};
 	$('#cmd_black_backward').addClass('active');
-	if (mcopy.state.camera.direction) {
+	if (cam.dir) {
 		cam.set(false, function () {
 			setTimeout(function () {
 				light.display(off);
@@ -231,23 +231,23 @@ cmd.camera_to = function (t) {
 	let steps = [];
 	let c;
 	let cont;
-	if (val !== mcopy.state.camera.pos) {
-		if (val < mcopy.state.camera.pos) {
-			total = -(mcopy.state.camera.pos - val)
-		} else if (val > mcopy.state.camera.pos) {
-			total = val - mcopy.state.camera.pos
+	if (val !== cam.pos) {
+		if (val < cam.pos) {
+			total = -(cam.pos - val)
+		} else if (val > cam.pos) {
+			total = val - cam.pos
 		}
 		if (total > 0) {
-			c = 'BF';
+			c = cfg.cmd.black_forward;
 		} else if (total < 0) {
-			c = 'BB';
+			c = cfg.cmd.black_backward;
 		}
-		for (let i = 0; i < Math.abs(total); i++) {
-			steps.push({ cmd : c })
-		}
+		steps = [{ cmd : c, light : [0, 0, 0] }]
 		cont = confirm(`Do you want to ${(total > 0 ? 'advance' : 'rewind')} the camera ${total} frame${(total === 1 ? '' : 's')} to frame ${val}?`)
 		if (cont) {
-			seq.exec(steps);
+			gui.overlay(true);
+			gui.spinner(true, `Camera ${(total > 0 ? 'advancing' : 'rewinding')} ${total} frame${(total === 1 ? '' : 's')} `, true, true);
+			seq.exec(steps, Math.abs(total));
 		}
 	}
 };
@@ -265,23 +265,25 @@ cmd.projector_to = function (t) {
 	let steps = [];
 	let c;
 	let cont
-	if (val !== mcopy.state.projector.pos) {
-		if (val < mcopy.state.projector.pos) {
-			total = -(mcopy.state.projector.pos - val)
-		} else if (val > mcopy.state.projector.pos) {
-			total = val - mcopy.state.projector.pos
+	if (val !== proj.pos) {
+		if (val < proj.pos) {
+			total = -(proj.pos - val)
+		} else if (val > proj.pos) {
+			total = val - proj.pos
 		}
 		if (total > 0) {
-			c = 'PF';
+			c = cfg.cmd.projector_forward;
 		} else if (total < 0) {
-			c = 'PB';
+			c = cfg.cmd.projector_backward;
+		} else {
+			return false;
 		}
-		for (let i = 0; i < Math.abs(total); i++) {
-			steps.push({ cmd : c })
-		}
+		steps = [ { cmd : c }];
 		cont = confirm(`Do you want to ${(total > 0 ? 'advance' : 'rewind')} the projector ${total} frame${(total === 1 ? '' : 's')} to frame ${val}?`)
 		if (cont) {
-			seq.exec(steps);
+			gui.overlay(true);
+			gui.spinner(true, `Projector ${(total > 0 ? 'advancing' : 'rewinding')} ${total} frame${(total === 1 ? '' : 's')} `, true, true);
+			seq.exec(steps, Math.abs(total));
 		}
 	}
 }

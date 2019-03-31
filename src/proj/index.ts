@@ -14,7 +14,6 @@ class Projector {
 	private ui : any;
 	private ipc : any;
 	private dig : any;
-
 	private id : string = 'projector';
 
 	/**

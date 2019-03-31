@@ -1,5 +1,7 @@
 const seq = {};
 seq.id = 'sequence';
+seq.grid = [];
+seq.gridLoops = 1;
 seq.arr = [];
 seq.loops = 1;
 seq.size = 24;
@@ -20,21 +22,49 @@ seq.listen = function () {
 
 seq.listener = function (event, arg) {
 	//console.log(JSON.stringify(arg))
-	if (typeof arg.loop !== 'undefined' && arg.start) {
-		$('#loop_current').text(gui.fmtZero(arg.loop + 1, 6));
-	} else if (typeof arg.loop !== 'undefined' && arg.stop) {
-		$('#loop_current').text('');
-	} else if (typeof arg.step !== 'undefined' && arg.start) {
-		seq.activeStep(arg.step);
-		log.info(`Step ${arg.step} active`, 'SERIAL', true);
-	} else if (typeof arg.step !== 'undefined' && arg.stop) {
-		seq.inactiveAll();
+	if (arg.start) {
+		if (typeof arg.loop !== 'undefined' && typeof arg.step !== 'undefined') {
+			seq.activeStep(arg.step);
+			log.info(`Step ${arg.step} running of ${arg.loop}`, 'SERIAL', true);
+		} else if (typeof arg.loop !== 'undefined') {
+			$('#loop_current').text(gui.fmtZero(arg.loop + 1, 6));
+		} else {
+			//
+		}
 	} else if (arg.stop) {
-		log.info('Sequence stopped', 'SERIAL', true);
-	} else if (arg.start) {
-		//
+		if (typeof arg.loop !== 'undefined' && typeof arg.step !== 'undefined') {
+			//console.log(JSON.stringify(arg))
+			seq.progress(arg.step, arg.loop);
+			seq.inactiveAll();
+		} else if (typeof arg.loop !== 'undefined') {
+			$('#loop_current').text('');
+		} else {
+			gui.overlay(false);
+			gui.spinner(false);
+			seq.progress(0, 0);
+			log.info('Sequence stopped', 'SERIAL', true);
+		}
 	}
 	return event.returnValue = true;
+}
+
+seq.progress = function (step, loop) {
+	const len = seq.arr.length;
+	const total = len * seq.loops;
+	const pos = (loop * len) + step;
+	const elem = $('.progress-bar');
+	let progress;
+
+	console.dir(`${len} * ${seq.loops} = ${total}`)
+	console.dir(`(${len} * ${loop}) + ${step} = ${pos}`)
+	console.dir(`${pos} / ${total} = ${(pos / total) * 100}`)
+	if (pos === 0) {
+		progress = 0;
+	} else {
+		progress = (pos / total) * 100;
+	}
+	elem.attr('aria-valuenow', progress);
+	elem.css('width', `${progress}%`);
 }
 
 seq.activeStep = function (x) {
@@ -54,9 +84,12 @@ seq.stop = function (s) {
 	ipcRenderer.send(seq.id, { stop : true });
 	$('#loop_current').text('');
 };
+//start the sequencer from the grid
 seq.start = function () {
 	'use strict';
 	seq.time = +new Date();
+	seq.arr = seq.grid;
+	seq.loops = seq.gridLoops;
 	ipcRenderer.send(seq.id, { start : true });
 };
 
@@ -64,36 +97,38 @@ seq.start = function () {
 seq.exec = function (arr, loops) {
 	'use strict';
 	seq.time = +new Date();
+	seq.arr = arr;
+	seq.loops = loops;
 	ipcRenderer.send(seq.id, { start : true, arr, loops });
 };
 
 seq.set = function (x, cmd) {
 	'use strict';
 	let increase = 0;
-	if (x >= seq.arr.length + 1) {
-		increase =  x - seq.arr.length;
+	if (x >= seq.grid.length + 1) {
+		increase =  x - seq.grid.length;
 		for (let i = 0; i < increase; i++) {
-			seq.arr.push({});
+			seq.grid.push({});
 		}
 	}
-	if (!seq.arr[x]) seq.arr[x] = {};
-	seq.arr[x].x = x;
-	seq.arr[x].cmd = cmd;
+	if (!seq.grid[x]) seq.grid[x] = {};
+	seq.grid[x].x = x;
+	seq.grid[x].cmd = cmd;
 	if (cmd.indexOf('C') !== -1) {
-		seq.arr[x].light = light.color;
+		seq.grid[x].light = light.color;
 	} else {
-		if (seq.arr[x].light) {
-			delete seq.arr[x].light;
+		if (seq.grid[x].light) {
+			delete seq.grid[x].light;
 		}
 	}
 	//set
-	ipcRenderer.send(seq.id, { set : [ seq.arr[x] ] });
+	ipcRenderer.send(seq.id, { set : [ seq.grid[x] ] });
 	//update grid?
 }
 
 seq.unset = function (x) {
 	'use strict';
-	seq.arr[x] = undefined
+	seq.grid[x] = undefined
 	ipcRenderer.send(seq.id, { unset : [ x ]});
 }
 
@@ -107,8 +142,8 @@ seq.unset = function (x) {
 seq.setLight = function (x, rgb) {
 	'use strict';
 	let color = rgb.join(',');
-	seq.arr[x].light = color;
-	ipcRenderer.send(seq.id, { x, cmd : seq.arr[x].cmd, light : color });
+	seq.grid[x].light = color;
+	ipcRenderer.send(seq.id, { x, cmd : seq.grid[x].cmd, light : color });
 };
 
 /**
@@ -119,9 +154,9 @@ seq.setLight = function (x, rgb) {
  */
 seq.setLoops = function (count) {
 	'use strict';
-	seq.loops = count;
+	seq.gridLoops = count;
 	seq.stats();
-	ipcRenderer.send(seq.id, { loops : seq.loops })
+	ipcRenderer.send(seq.id, { loops : seq.gridLoops })
 };
 
 seq.stats = function () {
@@ -130,7 +165,7 @@ seq.stats = function () {
 	let c = '';
 	let cam_total = 0;
 	let proj_total = 0;
-	let real_total = seq.arr.filter(function (elem) {
+	let real_total = seq.grid.filter(function (elem) {
 		if (elem === undefined) {
 			return false;
 		}
@@ -138,7 +173,7 @@ seq.stats = function () {
 	});
 
 	//timing
-	for (let step of seq.arr) {
+	for (let step of seq.grid) {
 		c = seq.cmd;
 		if (c === cfg.cmd.camera_forward || c === cfg.cmd.camera_backward){
 			ms += cfg.arduino.cam.time;
@@ -174,7 +209,7 @@ seq.stats = function () {
 	}
 
 	//timing
-	ms = ms * seq.loops;
+	ms = ms * seq.gridLoops;
 	if (ms < 2000) {
 		$('#seq_stats .timing span').text(ms + 'ms');
 	} else {
@@ -182,21 +217,21 @@ seq.stats = function () {
 	}
 
 	//ending frames
-	cam_total = cam_total * seq.loops;
-	proj_total = proj_total * seq.loops;
+	cam_total = cam_total * seq.gridLoops;
+	proj_total = proj_total * seq.gridLoops;
 
-	$('#seq_stats .cam_end span').text(gui.fmtZero(mcopy.state.camera.pos + cam_total, 6));
-	$('#seq_stats .proj_end span').text(gui.fmtZero(mcopy.state.projector.pos + proj_total, 6));
+	$('#seq_stats .cam_end span').text(gui.fmtZero(cam.pos + cam_total, 6));
+	$('#seq_stats .proj_end span').text(gui.fmtZero(proj.pos + proj_total, 6));
 
 	//count
-	$('#seq_stats .seq_count span').text(real_total.length * seq.loops);
+	$('#seq_stats .seq_count span').text(real_total.length * seq.gridLoops);
 	return ms;
 };
 
 seq.clear = function () {
 	'use strict';
 	seq.size = 24;
-	seq.arr = [];
+	seq.grid = [];
 };
 
 seq.cancel = function () {

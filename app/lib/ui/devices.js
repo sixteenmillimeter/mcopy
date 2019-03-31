@@ -138,8 +138,8 @@ devices.intvalCb = function (evt, args) {
 	if (args.connected && args.connected === true) {
 		//success state
 		state = JSON.parse(args.state);
-		mcopy.state.camera.pos = state.counter;
-		mcopy.state.camera.direction = state.frame.dir;
+		cam.pos = state.counter;
+		cam.dir = state.frame.dir;
 		$('#intval').val(args.url);
 		$('#intval').addClass('active');
 		$('#camera_type_intval').prop('checked', 'checked');

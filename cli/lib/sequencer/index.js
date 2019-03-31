@@ -86,6 +86,7 @@ class Sequencer {
         this.paused = false;
         //start sequence
         this.log.info(`Starting sequence...`);
+        this.ui.send(this.id, { start: true });
         for (let x = 0; x < this.loops; x++) {
             //start loop
             this.log.info(`Starting loop ${x + 1}`);
@@ -99,11 +100,11 @@ class Sequencer {
                     await delay(42);
                 }
                 this.log.info(`Starting step ${y + 1} of loop ${x + 1}`);
-                this.ui.send(this.id, { step: y, start: true });
+                this.ui.send(this.id, { step: y, loop: x, start: true });
                 await this.step(y);
                 //end step
                 this.log.info(`Ended step ${y + 1} of loop ${x + 1}`);
-                this.ui.send(this.id, { step: y, stop: true });
+                this.ui.send(this.id, { step: y, loop: x, stop: true });
             }
             if (!this.running) {
                 break;
@@ -114,6 +115,7 @@ class Sequencer {
         }
         //end sequence
         this.log.info(`Ended sequence`);
+        this.ui.send(this.id, { stop: true });
     }
     //new
     pause() {

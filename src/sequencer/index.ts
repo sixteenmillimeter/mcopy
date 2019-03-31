@@ -91,7 +91,7 @@ class Sequencer {
 		} else {
 			this.arr = this.grid;
 		}
-		
+
 		if (arg && arg.loops) {
 			this.loops = arg.loops; //overwrite loops
 		} else {
@@ -103,6 +103,7 @@ class Sequencer {
 
 		//start sequence
 		this.log.info(`Starting sequence...`)
+		this.ui.send(this.id, { start : true })
 
 		for (let x = 0; x < this.loops; x++) {
 			//start loop
@@ -120,13 +121,13 @@ class Sequencer {
 				}
 
 				this.log.info(`Starting step ${y + 1} of loop ${x + 1}`)
-				this.ui.send(this.id, { step : y, start : true });
+				this.ui.send(this.id, { step : y, loop : x, start : true });
 					
 				await this.step(y);
 
 				//end step
 				this.log.info(`Ended step ${y + 1} of loop ${x + 1}`)
-				this.ui.send(this.id, { step : y, stop : true });
+				this.ui.send(this.id, { step : y,  loop : x, stop : true });
 			}
 			if (!this.running) {
 				break
@@ -137,6 +138,7 @@ class Sequencer {
 		}
 		//end sequence
 		this.log.info(`Ended sequence`)
+		this.ui.send(this.id, { stop : true })
 	}
 
 	//new

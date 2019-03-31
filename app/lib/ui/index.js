@@ -30,6 +30,11 @@ gui.counterFormat = function (t, normal, prevent) {
 		$(t).removeClass('changed');
 	}
 };
+gui.counterUpdate = function (which, raw) {
+	'use strict';
+	const formattedVal = gui.fmtZero(raw, 6)
+	$(`.${which} .count`).val(formattedVal);
+};
 gui.notify = function (title, message) {
 	'use strict';
 	notifier.notify({
@@ -47,16 +52,16 @@ gui.updateCam = function (t) {
 	const val = t.value;
 	let change;
 
-	if (parseInt(val) === mcopy.state.camera.pos) { 
+	if (parseInt(val) === cam.pos) { 
 		return false; 
 	}
 	change = confirm(`Are you sure you want to set camera counter to ${val}?`);
 
 	if (change) {
-		mcopy.state.camera.pos = parseInt(val);
+		cam.pos = parseInt(val);
 		gui.updateState();
 	} else {
-		t.value = mcopy.state.camera.pos;
+		t.value = cam.pos;
 		gui.counterFormat(t);
 	}
 };
@@ -64,23 +69,23 @@ gui.updateProj = function (t) {
 	'use strict';
 	const val = t.value;
 	let change;
-	if (parseInt(val) === mcopy.state.projector.pos) { 
+	if (parseInt(val) === cam.pos) { 
 		return false; 
 	}
 	change = confirm(`Are you sure you want to set projector counter to ${val}?`);
 	if (change) {
-		mcopy.state.projector.pos = parseInt(val);
+		proj.pos = parseInt(val);
 		gui.updateState();
 	} else {
-		t.value = mcopy.state.projector.pos;
+		t.value = proj.pos;
 		gui.counterFormat(t);
 	}
 	proj.setValue(t.value);
 };
 gui.updateState = function () {
 	'use strict';
-	const cpos = mcopy.state.camera.pos;
-	const ppos = mcopy.state.projector.pos;
+	const cpos = cam.pos;
+	const ppos = proj.pos;
 
 	$('#seq_cam_count').val(cpos).change();
 	$('#seq_proj_count').val(ppos).change();
@@ -123,10 +128,11 @@ gui.spinner = function (state, msg, progress, cancel) {
 	} else if (!state) {
 		$('#spinner').hide();
 		gui.spinnerMsg('');
-		$('#spinnerProgress').hide();
 	}
 	if (progress) {
-		gui.spinnerProgress(progress);
+		$('#spinnerProgress').show();
+	} else {
+		$('#spinnerProgress').hide();
 	}
 	if (cancel) {
 		$('#spinnerCancel').show();
@@ -137,13 +143,6 @@ gui.spinner = function (state, msg, progress, cancel) {
 gui.spinnerMsg = function (msg) {
 	'use strict';
 	$('#spinnerMsg').text(msg);
-};
-gui.spinnerProgress = function (progress) {
-	'use strict';
-	let elem = $('#spinnerProgress .progress-bar');
-	$('#spinnerProgress').show();
-	elem.attr('aria-valuenow', progress);
-	elem.css('width', `${progress}%`);
 };
 gui.overlay = function (state) {
 	'use strict';

@@ -4,6 +4,8 @@ proj.queue = {};
 proj.lock = false;
 proj.lock2 = false;
 proj.id = 'projector';
+proj.dir = true;
+proj.pos = 0;
 
 proj.init = function () {
 	'use strict';
@@ -48,17 +50,17 @@ proj.move = function (callback) {
 proj.end = function (c, id, ms) {
 	'use strict';
 	if (c === cfg.arduino.cmd.projector_forward) {
-		mcopy.state.projector.direction = true;
+		proj.dir = true;
 	} else if (c === cfg.arduino.cmd.projector_backward) {
-		mcopy.state.projector.direction = false;
+		proj.dir = false;
 	} else if (c === cfg.arduino.cmd.projector) {
-		if (mcopy.state.projector.direction) {
-			mcopy.state.projector.pos += 1;
+		if (proj.dir) {
+			proj.pos += 1;
 		} else {
-			mcopy.state.projector.pos -= 1;
+			proj.pos -= 1;
 		}
 	}
-	//
+	gui.counterUpdate('proj', proj.pos)
 	if (typeof proj.queue[id] !== 'undefined') {
 		if (typeof proj.queue[id].callback !== 'undefined') {
 			proj.queue[id].callback(ms);

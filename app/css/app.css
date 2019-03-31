@@ -519,13 +519,23 @@ button:focus {
   margin-right: 5px;
 }
 #loop_current {
-  margin-top: 54px;
-  width: 121px;
+  margin-top: 21px;
+  margin-right: 50px;
+  width: 93px;
   text-align: center;
+  position: relative;
+  float: right;
   color: #DAE035;
 }
 #seq_pause {
   display: none;
+}
+#seq_progress {
+  width: 100%;
+  height: 15px;
+  position: fixed;
+  left: 0;
+  bottom: 0;
 }
 #buttons > div {
   width: 50%;

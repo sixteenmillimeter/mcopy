@@ -18,11 +18,11 @@
         <div id="counters">
           <div class="cam">
             <label>CAMERA</label>
-            <input type="number" id="seq_cam_count" class="count" value="00000" onchange="gui.counterFormat(this, mcopy.state.camera.pos);" onblur="gui.updateCam(this);" />
+            <input type="number" id="seq_cam_count" class="count" value="00000" onchange="gui.counterFormat(this, cam.pos);" onblur="gui.updateCam(this);" />
           </div>
           <div class="proj">
             <label>PROJECTOR</label>
-            <input type="number" id="seq_proj_count" class="count" value="00000" onchange="gui.counterFormat(this, mcopy.state.projector.pos);" onblur="gui.updateProj(this);" />
+            <input type="number" id="seq_proj_count" class="count" value="00000" onchange="gui.counterFormat(this, proj.pos);" onblur="gui.updateProj(this);" />
           </div>
         </div>
         <div id="seq_scroll">
@@ -64,6 +64,12 @@
           <input type="number" min="1" id="seq_loop" value="00001" onchange="this.value = gui.fmtZero(this.value, 6); seq.setLoops(parseInt(this.value));"/>
           <div id="loop_current"></div>
         </div>
+        <div id="seq_progress">
+          <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+          <span class="sr-only">0% Complete</span>
+        </div>
+
+      </div>
       </div>
       <div id="script" class="screen">
         <textarea id="editor"></textarea>
@@ -80,11 +86,11 @@
         <div id="counters_2">
           <div class="cam">
             <label>CAMERA</label>
-            <input type="number" id="seq_cam_count_2" class="count" value="00000" onchange="gui.counterFormat(this, mcopy.state.camera.pos);" onblur="gui.updateCam(this);" />
+            <input type="number" id="seq_cam_count_2" class="count" value="00000" onchange="gui.counterFormat(this, cam.pos);" onblur="gui.updateCam(this);" />
           </div>
           <div class="proj">
             <label>PROJECTOR</label>
-            <input type="number" id="seq_proj_count_2" class="count" value="00000" onchange="gui.counterFormat(this, mcopy.state.projector.pos);" onblur="gui.updateProj(this);" />
+            <input type="number" id="seq_proj_count_2" class="count" value="00000" onchange="gui.counterFormat(this, proj.pos);" onblur="gui.updateProj(this);" />
           </div>
         </div>
         <div id="move_to">

@@ -37,8 +37,14 @@ class Server {
 					var obj = {
 						success: true, 
 						cmd : cmd,
-						cam : mcopy.state.camera,
-						proj : mcopy.state.projector
+						cam: {
+							dir : cam.dir,
+							pos : cam.pos
+						},
+						proj: {
+							dir : proj.dir,
+							pos : proj.pos
+						}
 					}
 					res.json(obj);
 				};
@@ -62,8 +68,14 @@ class Server {
 		});
 		app.get('/state', function (req, res) {
 			res.json({
-				cam: mcopy.state.camera,
-				proj: mcopy.state.projector
+				cam: {
+					dir : cam.dir,
+					pos : cam.pos
+				},
+				proj: {
+					dir : proj.dir,
+					pos : proj.pos
+				}
 			});
 		});*/
 

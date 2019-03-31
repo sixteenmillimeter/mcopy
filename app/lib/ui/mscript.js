@@ -36,9 +36,9 @@ mse.mscript.fromSequence = function () {
 	let tmp = [];
 	let cont;
 	let cmd;
-	//str = seq.arr.map(step => { return step.cmd }).join('\n'); //quick hack
-	console.dir(seq.arr);
-	for (let step of seq.arr) {
+	//str = seq.grid.map(step => { return step.cmd }).join('\n'); //quick hack
+	console.dir(seq.grid);
+	for (let step of seq.grid) {
 		cmd = step.cmd;
 		if (tmp.length > 0 && tmp[tmp.length - 1].cmd === cmd) {
 			tmp[tmp.length - 1].num++;
@@ -156,12 +156,18 @@ mse.mscript.run = function () {
 			return mse.mscript.compile(() => {
 				mse.console.print(`Started running compiled sequence...`);
 				arr = mse.mscript.prepare();
+				gui.overlay(true);
+				gui.spinner(true, `Running mscript sequence...`, true, true);
 				return seq.exec(arr, 1);
 			})
 		}
 	}
-	mse.console.print(`Started running compiled sequence...`);
 	arr = mse.mscript.prepare();
+
+	mse.console.print(`Started running compiled sequence...`);
+	gui.overlay(true);
+	gui.spinner(true, `Running mscript sequence...`, true, true);
+
 	return seq.exec(arr, 1);
 };
 
