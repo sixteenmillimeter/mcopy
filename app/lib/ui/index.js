@@ -162,17 +162,6 @@ gui.info = function (title, message) {
 		message : message
 	};
 	dialog.showMessageBox(config);
-	/*
-	type String - Can be "none", "info", "error", "question" or "warning". On Windows, "question" displays the same icon as "info", unless you set an icon using the "icon" option.
-	buttons Array - Array of texts for buttons.
-	defaultId Integer - Index of the button in the buttons array which will be selected by default when the message box opens.
-	title String - Title of the message box, some platforms will not show it.
-	message String - Content of the message box.
-	detail String - Extra information of the message.
-	icon NativeImage
-	cancelId Integer - The value will be returned when user cancels the dialog instead of clicking the buttons of the dialog. By default it is the index of the buttons that have "cancel" or "no" as label, or 0 if there is no such buttons. On OS X and Windows the index of "Cancel" button will always be used as cancelId, not matter whether it is already specified.
-	noLink Boolean - On Windows Electron will try to figure out which one of the buttons are common buttons (like "Cancel" or "Yes"), and show the others as command links in the dialog. This can make the dialog appear in the style of modern Windows apps. If you don't like this behavior, you can set noLink to true.
-	*/
 };
 gui.confirm = function () {};
 gui.warn = function (title, message) {
