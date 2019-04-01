@@ -30,7 +30,6 @@ mcopy.state = {
 	version : PACKAGE.version, //use for file compatibility check
 	sequence : {
 		pads: {
-			//gaaaaaaaaah
 			cam_forward: 'CF',
 			proj_forward : 'PF',
 			black_forward : 'BF',
