@@ -9,3 +9,4 @@ cp -r ./lib/* ./cli/lib/
 
 cp ./data/cfg.json ./app/data/
 cp ./data/cfg.json ./cli/data/
+cp ./data/cfg.json ./processing/mcopy/
