@@ -69,10 +69,10 @@ grid.refresh = function () {
 				$('#' + cmds[i]).append($(elem).text(x));
 			} else if (i === cmds.length - 2) {
 				elem = div.replace('xxxx', x);
-				$('#' + cmds[i]).append($(elem).addClass(mcopy.state.sequence.pads[cmds[i]]));
+				$('#' + cmds[i]).append($(elem).addClass(cfg.cmd[cmds[i]]));
 			} else {
 				elem = check.replace('xxxx', x);
-				$('#' + cmds[i]).append($(elem).addClass(mcopy.state.sequence.pads[cmds[i]]));
+				$('#' + cmds[i]).append($(elem).addClass(cfg.cmd[cmds[i]]));
 			}
 			grid.state(x);
 		}

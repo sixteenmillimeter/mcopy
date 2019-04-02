@@ -2501,40 +2501,7 @@ let log;
 	State shared by ALL interfaces
 *******/
 mcopy.state = {
-	version : PACKAGE.version, //use for file compatibility check
-	sequence : {
-		pads: {
-			//gaaaaaaaaah
-			cam_forward: 'CF',
-			proj_forward : 'PF',
-			black_forward : 'BF',
-
-			cam_backward: 'CB',
-			proj_backward : 'PB',
-			black_backward : 'BB',
-
-			light_set : 'L',
-
-			cam2_forward : 'C2F',
-			cam2_backward : 'C2B',
-
-			cams_forward : 'CCF',
-			cams_forward : 'CCB',
-
-			cam_forward_cam2_backward : 'CFCB',
-			cam_backward_cam2_forward : 'CBCF',
-
-			proj2_forward : 'P2F',
-			proj2_backward : 'P2B',
-
-			projs_forward : 'PPF',
-			projs_backward : 'PPB',
-
-			proj_forward_proj2_backward : 'PFPB',
-			proj_backward_proj2_forward : 'PBPF'
-
-		}
-	}
+	version : PACKAGE.version //use for file compatibility check
 };
 //
 

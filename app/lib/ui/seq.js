@@ -25,7 +25,8 @@ seq.listener = function (event, arg) {
 	if (arg.start) {
 		if (typeof arg.loop !== 'undefined' && typeof arg.step !== 'undefined') {
 			seq.activeStep(arg.step);
-			log.info(`Step ${arg.step} running of ${arg.loop}`, 'SERIAL', true);
+			log.info(`Step ${arg.step + 1} running of ${seq.arr.length}`, 'SERIAL', true);
+			log.info(`Loop ${arg.loop + 1} of ${seq.loops}`, 'SERIAL', true);
 		} else if (typeof arg.loop !== 'undefined') {
 			$('#loop_current').text(gui.fmtZero(arg.loop + 1, 6));
 		} else {
@@ -41,7 +42,7 @@ seq.listener = function (event, arg) {
 		} else {
 			gui.overlay(false);
 			gui.spinner(false);
-			seq.progress(0, 0);
+			//seq.progress(0, 0);
 			log.info('Sequence stopped', 'SERIAL', true);
 		}
 	}
@@ -49,15 +50,12 @@ seq.listener = function (event, arg) {
 }
 
 seq.progress = function (step, loop) {
+	const elem = $('.progress-bar');
 	const len = seq.arr.length;
 	const total = len * seq.loops;
-	const pos = (loop * len) + step;
-	const elem = $('.progress-bar');
+	let pos = (loop * len) + step;
 	let progress;
 
-	console.dir(`${len} * ${seq.loops} = ${total}`)
-	console.dir(`(${len} * ${loop}) + ${step} = ${pos}`)
-	console.dir(`${pos} / ${total} = ${(pos / total) * 100}`)
 	if (pos === 0) {
 		progress = 0;
 	} else {
