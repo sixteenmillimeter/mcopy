@@ -60,6 +60,7 @@
     "mscript": "file:lib/mscript",
     "node-notifier": "^5.4.0",
     "proj": "file:lib/proj",
+    "request": "^2.88.0",
     "sequencer": "file:lib/sequencer",
     "serialport": "^7.1.4",
     "server": "file:lib/server",

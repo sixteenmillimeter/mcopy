@@ -8,8 +8,8 @@
     "lib": "lib"
   },
   "scripts": {
-    "test" : "echo \"Error: no test specified\" && exit 1",
-    "docs" : "sh ./scripts/docs.sh",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "sh ./scripts/docs.sh",
     "build": "sh ./scripts/build.sh",
     "patch": "sh ./scripts/version.sh patch",
     "minor": "sh ./scripts/version.sh minor"
