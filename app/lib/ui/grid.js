@@ -48,31 +48,35 @@ grid.state = function (x) {
 grid.refresh = function () {
 	'use strict';
 	const cmds = [
-		'cam_forward', 
-		'proj_forward', 
-		'cam_backward', 
-		'proj_backward', 
+		'camera_forward',
+		'camera_second_forward', 
+		'projector_forward',
+		'projector_second_forward',  
+		'camera_backward', 
+		'camera_second_backward', 
+		'projector_backward',
+		'projector_second_backward',  
 		'light_set', 
 		'numbers'
 	];
-	const check = '<input type="checkbox" x="xxxx" />';
-	const div = '<div x="xxxx"></div>';
 	const width = 970 - 34 + ((940 / 24) * Math.abs(24 - seq.size));
 	let elem;
+	let cmd;
 	
 	$('#sequence').width(`${width}px`);
 	for (let i = 0; i < cmds.length; i++) {
-		$('#' + cmds[i]).empty();
+		cmd = `#${cmds[i]}`;
+		$(cmd).empty();
 		for (let x = 0; x < seq.size; x++) {
-			if (i === cmds.length - 1) {
-				elem = div.replace('xxxx', x);
-				$('#' + cmds[i]).append($(elem).text(x));
-			} else if (i === cmds.length - 2) {
-				elem = div.replace('xxxx', x);
-				$('#' + cmds[i]).append($(elem).addClass(cfg.cmd[cmds[i]]));
+			if (cmds[i] === 'numbers') {
+				elem = `<div x="${x}">${x}</div>`
+				$(cmd).append($(elem));
+			} else if (cmds[i] === 'light_set') {
+				elem = `<div x="${x}" class="L"></div>`
+				$(cmd).append($(elem));
 			} else {
-				elem = check.replace('xxxx', x);
-				$('#' + cmds[i]).append($(elem).addClass(cfg.cmd[cmds[i]]));
+				elem = `<input type="checkbox" x="${x}" />`;
+				$(cmd).append($(elem).addClass(cfg.cmd[cmds[i]]));
 			}
 			grid.state(x);
 		}
@@ -87,13 +91,14 @@ grid.click = function (t) {
 	'use strict';
 	const x = parseInt($(t).attr('x'));
 	let c;
-	if ($(t).prop('checked')) {
 
+	if ($(t).prop('checked')) {
 		c = $(t).attr('class').replace('.', '');
 		seq.set(x, c);
 	} else {
-		//seq.grid[i] = undefined;
-		//delete seq.grid[i]; 
+		seq.grid[i] = undefined;
+		delete seq.grid[i]; 
+		seq.unset(x);
 	}
 	grid.state(x);
 	seq.stats();

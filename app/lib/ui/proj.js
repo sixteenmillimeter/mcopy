@@ -2,7 +2,6 @@ const proj = {};
 
 proj.queue = {};
 proj.lock = false;
-proj.lock2 = false;
 proj.id = 'projector';
 proj.dir = true;
 proj.pos = 0;
@@ -86,14 +85,11 @@ proj.setValue = function (val) {
 	ipcRenderer.sendSync(proj.id, obj);
 };
 
-proj.setValue2 = function (val) {
-	'use strict';
-	var obj = {
-		val: val,
-		second : true,
-		id : uuid.v4()
-	};
-	ipcRenderer.sendSync(proj.id, obj);
-};
+proj.second = {};
+proj.second.queue = {};
+proj.second.lock = false;
+proj.second.id = 'projector_second';
+proj.second.dir = true;
+proj.second.pos = 0;
 
 module.exports = proj;

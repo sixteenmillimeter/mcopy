@@ -68,34 +68,64 @@
 	width: 970px;
 	padding-bottom: 21px;
 	padding-left: 70px;
-	#cam_forward,
-	#proj_forward,
+	#camera_forward,
+	#camera_second_forward,
+	#projector_forward,
+	#projector_second_forward,
 	#black_forward{
 		clear: both;
 		input[type=checkbox]{
 			border: 2px solid @FORWARD;
 			&:checked{
 				background: @FORWARD;
-				//background: radial-gradient(circle at 25px 25px, #00C4A0, #343434);
 			}
 		}
 		>div{
 			color: @FORWARD;
 		}
 	}
-	#cam_backward,
-	#proj_backward,
+	#camera_backward,
+	#camera_second_backward,
+	#projector_backward,
+	#projector_second_backward,
 	#black_backward{
 		clear: both;
 		input[type=checkbox]{
 			border: 2px solid @BACKWARD;
 			&:checked{
 				background: @BACKWARD;
-				//background: radial-gradient(circle at 25px 25px, #AB1A25, #343434);
 			}
 		}
 		>div{
 			color: @BACKWARD;
+		}
+	}
+
+	#camera_second_forward,
+	#projector_second_forward {
+		display: none;
+		input[type=checkbox]{
+			border: 2px solid @FORWARD + @SECOND;
+			&:checked{
+				background: @FORWARD + @SECOND;
+			}
+		}
+		>div{
+			color: @FORWARD + @SECOND;
+		}
+
+	}
+	#camera_second_backward,
+	#projector_second_backward{
+		display: none;
+		input[type=checkbox]{
+			border: 2px solid @BACKWARD + @SECOND;
+			&:checked{
+				background: @BACKWARD + @SECOND;
+			}
+		}
+		>div{
+			color: @BACKWARD + @SECOND;
 		}
 	}
 	input[type=checkbox]{

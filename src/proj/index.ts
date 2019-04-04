@@ -87,7 +87,20 @@ class Projector {
 				this.log.error(`Error moving ${this.id}`, err)
 			}
 		}
-		this.log.info('Projector move time', { ms });
+		//this.log.info('Projector move time', { ms });
+		return await this.end(cmd, id, ms)
+	}
+
+	public async both (frame : any, id : string) {
+		id = 'projectors';
+		const cmd : string = this.cfg.arduino.cmd[id];
+		let ms : number;
+		try {
+			ms = await this.arduino.send(this.id, cmd)
+		} catch (err) {
+			this.log.error(`Error moving ${this.id}`, err)
+		}
+		//this.log.info('Projectors move time', { ms });
 		return await this.end(cmd, id, ms)
 	}
 
@@ -136,19 +149,22 @@ class Projector {
 			}
 			message += ' 1 frame'
 		} else if (cmd === this.cfg.arduino.cmd.projector_second) {
-			message = 'Projector second'
+			message = 'Projector second '
 			if (this.state.dir) {
 				message += 'ADVANCED'
 			} else {
 				message += 'REWOUND'
 			}
 			message += ' 1 frame'
+		} else if (cmd === this.cfg.arduino.cmd.projectors) {
+			message += 'Projectors both MOVED 1 frame each';
 		}
+		message += ` ${ms}ms`
 		this.log.info(message, 'PROJECTOR')
 		return await this.ui.send(this.id, {cmd: cmd, id : id, ms: ms})
 	}
 }
 
-module.exports = function (arduino : Arduino, cfg : any, ui : any, dig : any) {
-	return new Projector(arduino, cfg, ui, dig);
+module.exports = function (arduino : Arduino, cfg : any, ui : any, dig : any, second : boolean) {
+	return new Projector(arduino, cfg, ui, dig, second);
 }

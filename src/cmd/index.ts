@@ -7,14 +7,20 @@ class Commands {
 	private cam : any;
 	private light : any;
 
+	private cam2 : any;
+	private proj2 : any;
+
 	private cfg : any;
 	private ipc : any;
 
-	constructor (cfg : any, proj : any, cam : any, light : any) {
+	constructor (cfg : any, proj : any, cam : any, light : any, cam2 : any = null, proj2 : any = null) {
 		this.cfg = cfg;
 		this.proj = proj;
 		this.cam = cam;
 		this.light = light;
+
+		if (cam2) this.cam2 = cam2;
+		if (proj2) this.proj2 = proj2;
 
 		this.ipc = require('electron').ipcMain;
 	}
@@ -147,52 +153,348 @@ class Commands {
 		return ms;
 	}
 
-	/*
-		camera_second_forward : 'C2F',
-		camera_second_backward : 'C2B',
+	/**
+	 * Move the second camera one frame forward
+	 *
+	 * @param {array} 	 rgb 	   Color to set light for frame
+	 **/
+	public async camera_second_forward (rgb : number[] = [255, 255, 255]) {
+		const off : number[] = [0, 0, 0];
+		let ms : number;
+		try {
+			if (!this.cam2.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.cam2.set(true);
+			}
+			await delay(this.cfg.arduino.serialDelay);
+			await this.light.set(rgb);
+			await delay(this.cfg.arduino.serialDelay);
+			ms = await this.cam2.move();
+			await delay(this.cfg.arduino.serialDelay);
+			await this.light.set(off);
+		} catch (err) {
+			throw err;
+		}
+		return ms;
+	}
 
-		cameras_forward : 'CCF',
-		cameras_forward : 'CCB',
+	/**
+	 * Move the second camera one frame backward
+	 *
+	 * @param {array} 	 rgb 	   Color to set light for frame
+	 **/
+	public async camera_second_backward (rgb : number[] = [255, 255, 255]) {
+		const off : number[] = [0, 0, 0];
+		let ms : number;
+		try {
+			if (this.cam2.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.cam2.set(false);
+			}
+			await delay(this.cfg.arduino.serialDelay);
+			await this.light.set(rgb);
+			await delay(this.cfg.arduino.serialDelay);
+			ms = await this.cam2.move();
+			await delay(this.cfg.arduino.serialDelay);
+			await this.light.set(off);
+		} catch (err) {
+			throw err;
+		}
+		return ms;
+	}
 
-		camera_forward_camera_second_backward : 'CFCB',
-		camera_backward_camera_second_forward : 'CBCF',
-	*/
+
+	/**
+	 * Move the both cameras one frame forward
+	 *
+	 * @param {array} 	 rgb 	   Color to set light for frame
+	 **/
+	public async cameras_forward (rgb : number[] = [255, 255, 255]) {
+		const off : number[] = [0, 0, 0];
+		let both : number[];
+		let ms : number;
+		try {
+			if (!this.cam.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.cam.set(true);
+			}
+			if (!this.cam2.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.cam2.set(true);
+			}
+			await delay(this.cfg.arduino.serialDelay);
+			await this.light.set(rgb);
+			await delay(this.cfg.arduino.serialDelay);
+
+			if (this.cam && this.cam2 && this.cam.arduino.alias.camera === this.cam.arduino.alias.camera_second) {
+				ms = await this.cam.both();
+			} else {
+				this.cam.move();
+				this.cam.move();
+				both = [await this.cam.move, await this.proj2.move];
+				ms = Math.max(...both);
+			}
+
+			await delay(this.cfg.arduino.serialDelay);
+			await this.light.set(off);
+		} catch (err) {
+			throw err;
+		}
+		return ms;
+	}
+	/**
+	 * Move the both cameras one frame backward
+	 *
+	 * @param {array} 	 rgb 	   Color to set light for frame
+	 **/
+	public async cameras_backward (rgb : number[] = [255, 255, 255]) {
+		const off : number[] = [0, 0, 0];
+		let both : number[];
+		let ms : number;
+		try {
+			if (this.cam.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.cam.set(false);
+			}
+			if (this.cam2.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.cam2.set(false);
+			}
+			await delay(this.cfg.arduino.serialDelay);
+			await this.light.set(rgb);
+			await delay(this.cfg.arduino.serialDelay);
+
+			if (this.cam && this.cam2 && this.cam.arduino.alias.camera === this.cam.arduino.alias.camera_second) {
+				ms = await this.cam.both();
+			} else {
+				this.cam.move();
+				this.cam.move();
+				both = [await this.cam.move, await this.proj2.move];
+				ms = Math.max(...both);
+			}
+
+			await delay(this.cfg.arduino.serialDelay);
+			await this.light.set(off);
+		} catch (err) {
+			throw err;
+		}
+		return ms;
+	}
+
+	public async camera_forward_camera_second_backward (rgb : number[] = [255, 255, 255]) {
+		const off : number[] = [0, 0, 0];
+		let both : number[];
+		let ms : number;
+		try {
+			if (!this.cam.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.cam.set(true);
+			}
+			if (this.cam2.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.cam2.set(false);
+			}
+			await delay(this.cfg.arduino.serialDelay);
+			await this.light.set(rgb);
+			await delay(this.cfg.arduino.serialDelay);
+
+			if (this.cam && this.cam2 && this.cam.arduino.alias.camera === this.cam.arduino.alias.camera_second) {
+				ms = await this.cam.both();
+			} else {
+				this.cam.move();
+				this.cam.move();
+				both = [await this.cam.move, await this.proj2.move];
+				ms = Math.max(...both);
+			}
+
+			await delay(this.cfg.arduino.serialDelay);
+			await this.light.set(off);
+		} catch (err) {
+			throw err;
+		}
+		return ms;
+	}
+
+	public async camera_backward_camera_second_forward (rgb : number[] = [255, 255, 255]) {
+		const off : number[] = [0, 0, 0];
+		let both : number[];
+		let ms : number;
+		try {
+			if (this.cam.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.cam.set(false);
+			}
+			if (!this.cam2.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.cam2.set(true);
+			}
+			await delay(this.cfg.arduino.serialDelay);
+			await this.light.set(rgb);
+			await delay(this.cfg.arduino.serialDelay);
+
+			if (this.cam && this.cam2 && this.cam.arduino.alias.camera === this.cam.arduino.alias.camera_second) {
+				ms = await this.cam.both();
+			} else {
+				this.cam.move();
+				this.cam.move();
+				both = [await this.cam.move, await this.proj2.move];
+				ms = Math.max(...both);
+			}
+
+			await delay(this.cfg.arduino.serialDelay);
+			await this.light.set(off);
+		} catch (err) {
+			throw err;
+		}
+		return ms;
+	}
+
+
 	/**
 	 * Move the secondary projector forward one frame
 	 *
-	 * @param {function} callback  Function to call after action
 	 **/
-	/*cmd.projector_second_forward = function (callback) {
-		'use strict';
-		var res = function (ms) {
-			$('#cmd_proj2_forward').removeClass('active');
-			gui.updateState();
-			if (callback) { callback(ms); }
-		};
-		$('#cmd_proj2_forward').addClass('active');
-		if (!mcopy.state.projector2.direction) {
-			proj.set2(true, function (ms) {				
-				setTimeout(function () {
-					proj.move2(res);
-				}, this.cfg.arduino.serialDelay);
-			});
-		} else {
-			setTimeout(function () {
-				proj.move2(res);
-			}, this.cfg.arduino.serialDelay);
+	public async projector_second_forward () {
+		let ms : number;
+		try {
+			if (!this.proj2.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.proj2.set(true);
+			}
+			await delay(this.cfg.arduino.serialDelay);
+			ms = await this.proj2.move();
+		} catch (err) {
+			throw err;
 		}
-	};
-	cmd.projector_second_backward = function (callback) {};
+		return ms;
+	}
+	public async projector_second_backward () {
+		let ms : number;
+		try {
+			if (this.proj2.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.proj2.set(false);
+			}
+			await delay(this.cfg.arduino.serialDelay);
+			ms = await this.proj2.move();
+		} catch (err) {
+			throw err;
+		}
+		return ms;
+	}
 
-	cmd.projectors_forward = function (callback) {};
-	cmd.projectors_backward = function (callback) {};
+	public async projectors_forward () {
+		let both : number[];
+		let ms : number;
+		try {
+			if (!this.proj.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.proj.set(true);
+			}
+			if (!this.proj2.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.proj2.set(true);
+			}
+			await delay(this.cfg.arduino.serialDelay);
+			if (this.proj && this.proj2 && this.proj.arduino.alias.projector === this.proj.arduino.alias.projector_second) {
+				ms = await this.proj.both();
+			} else {
+				this.proj.move();
+				this.proj2.move();
+				both = [await this.proj.move, await this.proj2.move];
+				ms = Math.max(...both);
+			}
+		} catch (err) {
+			throw err;
+		}
+		return ms;
+	}
 
-	cmd.projector_forward_projector_second_backward = function (callback) {};
-	cmd.projector_backward_projector_second_forward = function (callback) {};
-	*/
+	public async projectors_backward () {
+		let both : number[];
+		let ms : number;
+		try {
+			if (this.proj.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.proj.set(false);
+			}
+			if (this.proj2.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.proj2.set(false);
+			}
+			await delay(this.cfg.arduino.serialDelay);
+			//run one projector without await?
+			if (this.proj && this.proj2 && this.proj.arduino.alias.projector === this.proj.arduino.alias.projector_second) {
+				ms = await this.proj.both();
+			} else {
+				this.proj.move();
+				this.proj2.move();
+				both = [await this.proj.move, await this.proj2.move];
+				ms = Math.max(...both);
+			}
+		} catch (err) {
+			throw err;
+		}
+		return ms;
+	}
 
+	public async projector_forward_projector_second_backward () {
+		let both : number[];
+		let ms : number;
+		try {
+			if (!this.proj.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.proj.set(true);
+			}
+			if (this.proj2.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.proj2.set(false);
+			}
+			await delay(this.cfg.arduino.serialDelay);
+			//run one projector without await?
+			if (this.proj && this.proj2 && this.proj.arduino.alias.projector === this.proj.arduino.alias.projector_second) {
+				ms = await this.proj.both();
+			} else {
+				this.proj.move();
+				this.proj2.move();
+				both = [await this.proj.move, await this.proj2.move];
+				ms = Math.max(...both);
+			}
+		} catch (err) {
+			throw err;
+		}
+		return ms;
+	}
+
+	public async projector_backward_projector_second_forward () {
+		let both : number[];
+		let ms : number;
+		try {
+			if (this.proj.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.proj.set(false);
+			}
+			if (!this.proj2.state.dir) {
+				await delay(this.cfg.arduino.serialDelay);
+				await this.proj2.set(true);
+			}
+			await delay(this.cfg.arduino.serialDelay);
+			//run one projector without await?
+			if (this.proj && this.proj2 && this.proj.arduino.alias.projector === this.proj.arduino.alias.projector_second) {
+				ms = await this.proj.both();
+			} else {
+				this.proj.move();
+				this.proj2.move();
+				both = [await this.proj.move, await this.proj2.move];
+				ms = Math.max(...both);
+			}
+		} catch (err) {
+			throw err;
+		}
+		return ms;
+	}
 }
 
-module.exports = function (cfg : any, proj : any, cam : any, light : any) {
-	return new Commands(cfg, proj, cam, light);
+module.exports = function (cfg : any, proj : any, cam : any, light : any, cam2 : any, proj2 : any) {
+	return new Commands(cfg, proj, cam, light, cam2, proj2);
 }

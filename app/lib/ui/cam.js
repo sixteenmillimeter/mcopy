@@ -85,4 +85,11 @@ cam.listen = function () {
 	});
 };
 
+cam.second = {};
+cam.second.queue = {};
+cam.second.lock = false;
+cam.second.id = 'camera_second';
+cam.second.pos = 0;
+cam.second.dir = true;
+
 module.exports = cam;

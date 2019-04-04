@@ -120,6 +120,10 @@ class Sequencer {
 					await delay(42);
 				}
 
+				if (typeof this.arr[y] === 'undefined') {
+					continue
+				}
+
 				this.log.info(`Starting step ${y + 1} of loop ${x + 1}`)
 				this.ui.send(this.id, { step : y, loop : x, start : true });
 					

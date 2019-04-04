@@ -404,45 +404,93 @@ button:focus {
   padding-bottom: 21px;
   padding-left: 70px;
 }
-#sequence #cam_forward,
-#sequence #proj_forward,
+#sequence #camera_forward,
+#sequence #camera_second_forward,
+#sequence #projector_forward,
+#sequence #projector_second_forward,
 #sequence #black_forward {
   clear: both;
 }
-#sequence #cam_forward input[type=checkbox],
-#sequence #proj_forward input[type=checkbox],
+#sequence #camera_forward input[type=checkbox],
+#sequence #camera_second_forward input[type=checkbox],
+#sequence #projector_forward input[type=checkbox],
+#sequence #projector_second_forward input[type=checkbox],
 #sequence #black_forward input[type=checkbox] {
   border: 2px solid #00C4A0;
 }
-#sequence #cam_forward input[type=checkbox]:checked,
-#sequence #proj_forward input[type=checkbox]:checked,
+#sequence #camera_forward input[type=checkbox]:checked,
+#sequence #camera_second_forward input[type=checkbox]:checked,
+#sequence #projector_forward input[type=checkbox]:checked,
+#sequence #projector_second_forward input[type=checkbox]:checked,
 #sequence #black_forward input[type=checkbox]:checked {
   background: #00C4A0;
 }
-#sequence #cam_forward > div,
-#sequence #proj_forward > div,
+#sequence #camera_forward > div,
+#sequence #camera_second_forward > div,
+#sequence #projector_forward > div,
+#sequence #projector_second_forward > div,
 #sequence #black_forward > div {
   color: #00C4A0;
 }
-#sequence #cam_backward,
-#sequence #proj_backward,
+#sequence #camera_backward,
+#sequence #camera_second_backward,
+#sequence #projector_backward,
+#sequence #projector_second_backward,
 #sequence #black_backward {
   clear: both;
 }
-#sequence #cam_backward input[type=checkbox],
-#sequence #proj_backward input[type=checkbox],
+#sequence #camera_backward input[type=checkbox],
+#sequence #camera_second_backward input[type=checkbox],
+#sequence #projector_backward input[type=checkbox],
+#sequence #projector_second_backward input[type=checkbox],
 #sequence #black_backward input[type=checkbox] {
   border: 2px solid #AB1A25;
 }
-#sequence #cam_backward input[type=checkbox]:checked,
-#sequence #proj_backward input[type=checkbox]:checked,
+#sequence #camera_backward input[type=checkbox]:checked,
+#sequence #camera_second_backward input[type=checkbox]:checked,
+#sequence #projector_backward input[type=checkbox]:checked,
+#sequence #projector_second_backward input[type=checkbox]:checked,
 #sequence #black_backward input[type=checkbox]:checked {
   background: #AB1A25;
 }
-#sequence #cam_backward > div,
-#sequence #proj_backward > div,
+#sequence #camera_backward > div,
+#sequence #camera_second_backward > div,
+#sequence #projector_backward > div,
+#sequence #projector_second_backward > div,
 #sequence #black_backward > div {
   color: #AB1A25;
+}
+#sequence #camera_second_forward,
+#sequence #projector_second_forward {
+  display: none;
+}
+#sequence #camera_second_forward input[type=checkbox],
+#sequence #projector_second_forward input[type=checkbox] {
+  border: 2px solid #14d8b4;
+}
+#sequence #camera_second_forward input[type=checkbox]:checked,
+#sequence #projector_second_forward input[type=checkbox]:checked {
+  background: #14d8b4;
+}
+#sequence #camera_second_forward > div,
+#sequence #projector_second_forward > div {
+  color: #14d8b4;
+}
+#sequence #camera_second_backward,
+#sequence #projector_second_backward {
+  display: none;
+}
+#sequence #camera_second_backward input[type=checkbox],
+#sequence #projector_second_backward input[type=checkbox] {
+  border: 2px solid #bf2e39;
+}
+#sequence #camera_second_backward input[type=checkbox]:checked,
+#sequence #projector_second_backward input[type=checkbox]:checked {
+  background: #bf2e39;
+}
+#sequence #camera_second_backward > div,
+#sequence #projector_second_backward > div {
+  color: #bf2e39;
 }
 #sequence input[type=checkbox] {
   -webkit-appearance: none;

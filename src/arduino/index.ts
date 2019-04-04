@@ -107,6 +107,7 @@ class Arduino {
 		if (this.locks[serial]) {
 			return false
 		}
+		this.timer = new Date().getTime()
 		this.locks[serial] = true
 		await delay(cfg.arduino.serialDelay)
 		try {
@@ -115,8 +116,9 @@ class Arduino {
 			return console.error(e)
 		}
 		this.locks[serial] = false
-		this.timer = new Date().getTime()
-		return await eventEmitter.emit('arduino_send', cmd)
+		
+		await eventEmitter.emit('arduino_send', cmd)
+		return results
 	}
 
 	async string (serial : string, str : string) {
@@ -156,23 +158,23 @@ class Arduino {
 	}
 
 	end (serial : string, data : string) {
-		const end = new Date().getTime()
-		const ms = end - this.timer
-		let complete
+		const end = new Date().getTime();
+		const ms = end - this.timer;
+		let complete;
 		if (this.queue[data] !== undefined) {
 			this.locks[serial] = false; 
-			complete = this.queue[data](ms) //execute callback
-			eventEmitter.emit('arduino_end', data)
-			delete this.queue[data]
+			complete = this.queue[data](ms); //execute callback
+			eventEmitter.emit('arduino_end', data);
+			delete this.queue[data];
 		} else {
 			//console.log('Received stray "' + data + '"'); //silent to user
 		}
-		return complete
+		return ms;
 	}
 
 	aliasSerial (serial : string, device : string) {
-		//console.log(`Making "${serial}" an alias of ${device}`)
-		this.alias[serial] = device
+		//this.log.info(`Making "${serial}" an alias of ${device}`);
+		this.alias[serial] = device;
 	}
 
 	async connect (serial : string, device : string, confirm : any) {
@@ -280,18 +282,21 @@ class Arduino {
 					type = 'projector,camera,light'
 				} else if (data === cfg.arduino.cmd.projector_camera_identifier) {
 					type = 'projector,camera'
-				} else if (data === cfg.ardino.cmd.projector_second_identifier) {
+				} else if (data === cfg.arduino.cmd.projector_second_identifier) {
 					type = 'projector_second'
-				} else if (data === cfg.ardino.cmd.projectors_identifier) {
+				} else if (data === cfg.arduino.cmd.projectors_identifier) {
 					type = 'projector,projector_second'
-				} else if (data === cfg.ardino.cmd.camera_second_identifier) {
+				} else if (data === cfg.arduino.cmd.camera_second_identifier) {
 					type = 'camera_second'
-				} else if (data === cfg.ardino.cmd.cameras_identifier) {
+				} else if (data === cfg.arduino.cmd.cameras_identifier) {
 					type = 'camera,camera_second'
+				} else if (data === cfg.arduino.cmd.camera_projectors_identifier) {
+					type = 'camera,projector,projector_second'
+				} else if (data === cfg.arduino.cmd.cameras_projector_identifier) {
+					type = 'camera,camera_second,projector'
+				} else if (data === cfg.arduino.cmd.cameras_projectors_identifier) {
+					type = 'camera,camera_second,projector,projector_second'
 				}
-                //camera,projector,projector_second
-                //camera,camera_second,projector
-                //camera,camera_second,projector,projector_second
 				return resolve(type)
 			}
 			await delay(cfg.arduino.serialDelay)

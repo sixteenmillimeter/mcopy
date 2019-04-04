@@ -122,8 +122,19 @@ var init = async function () {
 	cam = require('cam')(arduino, cfg, mainWindow.webContents, dig)
 	proj = require('proj')(arduino, cfg, mainWindow.webContents, dig)
 
-	cmd = require('cmd')(cfg, proj, cam, light)
+	if (dev && dev.connected && dev.connected.camera_second) {
+		cam2 = require('cam')(arduino, cfg, mainWindow.webContents, dig, true)
+	}
+
+	if (dev && dev.connected && dev.connected.projector_second) {
+		proj2 = require('proj')(arduino, cfg, mainWindow.webContents, dig, true)
+	}
+
+	cmd = require('cmd')(cfg, proj, cam, light, cam2, proj2)
 	seq = require('sequencer')(cfg, cmd, mainWindow.webContents)
+
+	await delay(5000)
+	await cmd.projectors_forward();
 }
 
 app.on('ready', init)

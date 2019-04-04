@@ -25,24 +25,22 @@ seq.listener = function (event, arg) {
 	if (arg.start) {
 		if (typeof arg.loop !== 'undefined' && typeof arg.step !== 'undefined') {
 			seq.activeStep(arg.step);
-			log.info(`Step ${arg.step + 1} running of ${seq.arr.length}`, 'SERIAL', true);
-			log.info(`Loop ${arg.loop + 1} of ${seq.loops}`, 'SERIAL', true);
+			log.info(`Step ${arg.step + 1}/${seq.arr.length}, Loop ${arg.loop + 1}/${seq.loops}`, 'SERIAL', true);
 		} else if (typeof arg.loop !== 'undefined') {
 			$('#loop_current').text(gui.fmtZero(arg.loop + 1, 6));
 		} else {
-			//
+			seq.progress(0, 0);
 		}
 	} else if (arg.stop) {
 		if (typeof arg.loop !== 'undefined' && typeof arg.step !== 'undefined') {
 			//console.log(JSON.stringify(arg))
-			seq.progress(arg.step, arg.loop);
+			seq.progress(arg.step + 1, arg.loop);
 			seq.inactiveAll();
 		} else if (typeof arg.loop !== 'undefined') {
 			$('#loop_current').text('');
 		} else {
 			gui.overlay(false);
 			gui.spinner(false);
-			//seq.progress(0, 0);
 			log.info('Sequence stopped', 'SERIAL', true);
 		}
 	}
@@ -54,13 +52,14 @@ seq.progress = function (step, loop) {
 	const len = seq.arr.length;
 	const total = len * seq.loops;
 	let pos = (loop * len) + step;
-	let progress;
+	let progress = 0;
 
-	if (pos === 0) {
-		progress = 0;
-	} else {
+	if (pos > 0 && total > 0) {
 		progress = (pos / total) * 100;
 	}
+
+	//console.log(`${progress}%`)
+	
 	elem.attr('aria-valuenow', progress);
 	elem.css('width', `${progress}%`);
 }
@@ -122,6 +121,18 @@ seq.set = function (x, cmd) {
 	//set
 	ipcRenderer.send(seq.id, { set : [ seq.grid[x] ] });
 	//update grid?
+}
+
+seq.unsetAll = function () {
+	const len = seq.grid.length;
+	const steps = [];
+	for (let i = 0; i < len; i++) {
+		if (typeof seq.grid[i] !== 'undefined') {
+			steps.push(i);
+		}
+	}
+	ipcRenderer.send(seq.id, { unset : steps });
+	seq.grid = [];
 }
 
 seq.unset = function (x) {
@@ -229,7 +240,8 @@ seq.stats = function () {
 seq.clear = function () {
 	'use strict';
 	seq.size = 24;
-	seq.grid = [];
+	seq.unsetAll();
+	seq.progress(0, 0);
 };
 
 seq.cancel = function () {

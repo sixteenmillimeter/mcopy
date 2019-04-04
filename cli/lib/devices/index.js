@@ -256,7 +256,6 @@ class Devices {
         }
         else if (type === 'projector_second') {
             this.connected.projector_second = device;
-            this.arduino.aliasSerial('projector_second', device);
             try {
                 connectSuccess = await this.arduino.connect('projector_second', device, false);
             }
@@ -267,38 +266,83 @@ class Devices {
             this.log.info(`Connected to ${device} as PROJECTOR_SECOND`, 'SERIAL', true, true);
         }
         else if (type === 'projector,projector_second') {
-            /*this.connected.projector_second = device
-            this.arduino.aliasSerial('projector_second', device)
+            this.connected.projector = device;
+            this.connected.projector_second = device;
+            this.arduino.aliasSerial('projector_second', device);
             try {
-                connectSuccess = await this.arduino.connect('projector_second', device, false)
-            } catch (err) {
-                console.error(err)
-                return false
-            }*/
+                connectSuccess = await this.arduino.connect('projector', device, false);
+            }
+            catch (err) {
+                this.log.error('Error connecting to projector and secondary projector', err);
+                return false;
+            }
         }
         else if (type === 'camera_second') {
-            /*this.connected.projector_second = device
-            this.arduino.aliasSerial('projector_second', device)
+            this.connected.camera_second = device;
             try {
-                connectSuccess = await this.arduino.connect('projector_second', device, false)
-            } catch (err) {
-                console.error(err)
-                return false
-            }*/
+                connectSuccess = await this.arduino.connect('camera_second', device, false);
+            }
+            catch (err) {
+                console.error(err);
+                return false;
+            }
         }
         else if (type === 'camera,camera_second') {
-            /*this.connected.projector_second = device
-            this.arduino.aliasSerial('projector_second', device)
+            this.connected.camera = device;
+            this.connected.camera_second = device;
+            this.arduino.aliasSerial('camera_second', device);
             try {
-                connectSuccess = await this.arduino.connect('projector_second', device, false)
-            } catch (err) {
-                console.error(err)
-                return false
-            }*/
+                connectSuccess = await this.arduino.connect('camera', device, false);
+            }
+            catch (err) {
+                this.log.error('Error connecting to camera, camera_secondary and projector', err);
+                return false;
+            }
         }
-        //camera,projector,projector_second
-        //camera,camera_second,projector
-        //camera,camera_second,projector,projector_second
+        else if ('camera,projector,projector_second') {
+            this.connected.camera = device;
+            this.connected.projector = device;
+            this.connected.projector_second = device;
+            this.arduino.aliasSerial('projector', device);
+            this.arduino.aliasSerial('projector_second', device);
+            try {
+                connectSuccess = await this.arduino.connect('camera', device, false);
+            }
+            catch (err) {
+                this.log.error('Error connecting to camera, projector and projector_second', err);
+                return false;
+            }
+        }
+        else if ('camera,camera_second,projector') {
+            this.connected.camera = device;
+            this.connected.camera_second = device;
+            this.connected.projector = device;
+            this.arduino.aliasSerial('camera_second', device);
+            this.arduino.aliasSerial('projector', device);
+            try {
+                connectSuccess = await this.arduino.connect('camera', device, false);
+            }
+            catch (err) {
+                this.log.error('Error connecting to camera, camera_second and projector', err);
+                return false;
+            }
+        }
+        else if ('camera,camera_second,projector,projector_second') {
+            this.connected.camera = device;
+            this.connected.camera_second = device;
+            this.connected.projector = device;
+            this.connected.projector_second = device;
+            this.arduino.aliasSerial('camera_second', device);
+            this.arduino.aliasSerial('projector', device);
+            this.arduino.aliasSerial('projector_second', device);
+            try {
+                connectSuccess = await this.arduino.connect('camera', device, false);
+            }
+            catch (err) {
+                this.log.error('Error connecting to camera, camera_second, projector and projector_second', err);
+                return false;
+            }
+        }
         return connectSuccess;
     }
     /**
@@ -311,7 +355,8 @@ class Devices {
         let l = {};
         let type;
         let d;
-        let s = {};
+        let cs = {};
+        let ps = {};
         let checklist = [];
         this.connected = {
             projector: false,
@@ -353,10 +398,13 @@ class Devices {
             await this.fakeLight();
         }
         l.arduino = this.connected.light;
-        if (this.connected.projector_second) {
-            s = this.connected.projector_second;
+        if (this.connected.camera_second) {
+            cs = { arduino: this.connected.camera_second };
         }
-        return this.ready(p, c, l, s);
+        if (this.connected.projector_second) {
+            ps = { arduino: this.connected.projector_second };
+        }
+        return this.ready(p, c, l, cs, ps);
     }
     /**
     *
@@ -382,25 +430,33 @@ class Devices {
     /**
     *
     **/
-    ready(projector, camera, light, projector_second) {
+    ready(projector, camera, light, camera_second, projector_second) {
         let args = {
             camera,
             projector,
             light,
             profile: this.settings.state.profile
         };
-        if (projector_second && projector_second.arduino) {
+        if (projector_second) {
             args.projector_second = projector_second;
-        }
-        this.ui.send('ready', args);
-        this.settings.update('camera', camera);
-        this.settings.update('projector', projector);
-        this.settings.update('light', light);
-        if (projector_second && projector_second.arduino) {
             this.settings.update('projector_second', projector_second);
             this.mainWindow.setSize(800, 800);
         }
+        if (camera_second) {
+            args.camera_second = camera_second;
+            this.settings.update('camera_second', camera_second);
+            if (projector_second) {
+                this.mainWindow.setSize(900, 800);
+            }
+            else {
+                this.mainWindow.setSize(800, 800);
+            }
+        }
+        this.settings.update('camera', camera);
+        this.settings.update('projector', projector);
+        this.settings.update('light', light);
         this.settings.save();
+        this.ui.send('ready', args);
         return true;
     }
     ;

@@ -30,15 +30,15 @@ const int proj_delay = 42;
 boolean proj_dir = true; 
 boolean proj_running = false;
 
-const char cmd_projector = 'p';
-const char cmd_proj_forward = 'g';
-const char cmd_proj_backward = 'h';
+const char cmd_projector = 'w'; //_second
+const char cmd_proj_forward = 'u';
+const char cmd_proj_backward = 'v';
 
 const char cmd_debug = 'd';
 const char cmd_connect = 'i';
 volatile char cmd_char = 'z';
 const char cmd_mcopy_identifier = 'm';
-const char cmd_proj_identifier = 'j';
+const char cmd_proj_identifier = 't'; //_second
 
 const int serialDelay = 5;
 
