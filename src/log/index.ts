@@ -47,9 +47,9 @@ module.exports = async function (arg : any) {
 	let format;
 	if (arg && arg.quiet) {
 		transport = {
-			info : function () {},
-			warn : function () {},
-			error : function () {}
+			info : function () { return false },
+			warn : function () { return false },
+			error : function () { return false }
 		}
 	} else {
 		if (arg && arg.label) {
