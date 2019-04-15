@@ -389,11 +389,6 @@ class Devices {
             await this.fakeCamera();
         }
         c.arduino = this.connected.camera;
-        if (this.settings.state.camera && this.settings.state.camera.intval) {
-            c.intval = this.settings.camera.intval;
-            await delay(1000);
-            await this.cam.connectIntval(null, { connect: true, url: c.intval });
-        }
         if (!this.connected.light) {
             await this.fakeLight();
         }
@@ -403,6 +398,9 @@ class Devices {
         }
         if (this.connected.projector_second) {
             ps = { arduino: this.connected.projector_second };
+        }
+        if (this.settings.state.camera && this.settings.state.camera.intval) {
+            c.intval = this.settings.state.camera.intval;
         }
         return this.ready(p, c, l, cs, ps);
     }
@@ -437,15 +435,15 @@ class Devices {
             light,
             profile: this.settings.state.profile
         };
-        if (projector_second) {
+        if (projector_second && projector_second.arduino) {
             args.projector_second = projector_second;
             this.settings.update('projector_second', projector_second);
             this.mainWindow.setSize(800, 800);
         }
-        if (camera_second) {
+        if (camera_second && camera_second.arduino) {
             args.camera_second = camera_second;
             this.settings.update('camera_second', camera_second);
-            if (projector_second) {
+            if (projector_second && projector_second.arduino) {
                 this.mainWindow.setSize(900, 800);
             }
             else {
