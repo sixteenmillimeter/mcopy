@@ -86,10 +86,20 @@ proj.setValue = function (val) {
 };
 
 proj.second = {};
+proj.second.enabled = false;
 proj.second.queue = {};
 proj.second.lock = false;
 proj.second.id = 'projector_second';
 proj.second.dir = true;
 proj.second.pos = 0;
+
+
+proj.second.enable = function () {
+	proj.second.enabled = true;
+}
+
+proj.second.disable = function () {
+	proj.second.disabled = true;
+}
 
 module.exports = proj;

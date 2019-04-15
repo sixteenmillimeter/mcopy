@@ -1,4 +1,6 @@
 *.DS_Store
-dist/
+.AppleDouble
 *.Parent
+
 node_modules
+dist

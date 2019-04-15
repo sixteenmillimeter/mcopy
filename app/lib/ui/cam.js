@@ -86,10 +86,19 @@ cam.listen = function () {
 };
 
 cam.second = {};
+cam.second.enabled = false;
 cam.second.queue = {};
 cam.second.lock = false;
 cam.second.id = 'camera_second';
 cam.second.pos = 0;
 cam.second.dir = true;
+
+cam.second.enable = function () {
+	cam.second.enabled = true;
+}
+
+cam.second.disable = function () {
+	cam.second.enabled = false;
+}
 
 module.exports = cam;
