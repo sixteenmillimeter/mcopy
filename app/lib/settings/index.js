@@ -9,7 +9,7 @@ class Settings {
      **/
     constructor() {
         this.file = path.join(os.homedir(), `/.mcopy/settings.json`);
-        this.state = {
+        this.defaultState = {
             server: {
                 port: 1111,
                 enabled: true
@@ -20,6 +20,10 @@ class Settings {
             projector: {},
             light: {}
         };
+        this.state = this.freshState();
+    }
+    freshState() {
+        return JSON.parse(JSON.stringify(this.defaultState));
     }
     /**
      *
@@ -100,6 +104,7 @@ class Settings {
                 console.error(err);
             }
         }
+        this.state = this.freshState();
         this.restore();
     }
     ;

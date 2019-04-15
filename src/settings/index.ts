@@ -6,7 +6,7 @@ import fs = require('fs-extra');
 
 class Settings {
 	private file : string= path.join(os.homedir(), `/.mcopy/settings.json`);
-	public state : any = {
+	private defaultState : any = {
 		server : {
 			port : 1111,
 			enabled : true
@@ -17,11 +17,16 @@ class Settings {
 		projector : {},
 		light : {}
 	}
+	public state : any;
 	/**
 	 *
 	 **/
 	constructor () {
+		this.state = this.freshState();
+	}
 
+	private freshState () {
+		return JSON.parse(JSON.stringify(this.defaultState));
 	}
 	/**
 	 *
@@ -99,6 +104,7 @@ class Settings {
 				console.error(err);
 			}
 		}
+		this.state = this.freshState();
 		this.restore();
 	};
 }
