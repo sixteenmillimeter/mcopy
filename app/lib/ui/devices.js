@@ -99,9 +99,11 @@ devices.ready = function (event, arg) {
 	
 	if (arg.projector_second) {
 		//add second row of projector pads to grid
+		proj.second.enable();
 	}
 	if (arg.camera_second) {
 		//add second row of camera pads to grid
+		cam.second.enable();
 	}
 	return event.returnValue = true;
 };

@@ -69,21 +69,6 @@ var createWindow = function () {
 	})
 }
 
-/*const seq = {};
-seq.init = function () {
-	seq.listen();
-}
-
-seq.listen = function () {
-	ipcMain.on('seq', async (evt, arg) => {
-		if (arg.action === 'stop' && proj.digital) {
-			display.close()
-		} else if (arg.action === 'start' && proj.digital) {
-			display.open()
-		}
-	})
-}*/
-
 var init = async function () {
 
 	log = await require('log')({})
@@ -105,7 +90,7 @@ var init = async function () {
 	arduino = require('arduino')(cfg, ee)
 	mscript = require('mscript')
 
-	dev = require('devices')(arduino, settings, mainWindow, cam)
+	dev = require('devices')(arduino, settings, mainWindow)
 
 	//why is delay happening still?
 	await delay(2000)
@@ -132,9 +117,6 @@ var init = async function () {
 
 	cmd = require('cmd')(cfg, proj, cam, light, cam2, proj2)
 	seq = require('sequencer')(cfg, cmd, mainWindow.webContents)
-
-	await delay(5000)
-	await cmd.projectors_forward();
 }
 
 app.on('ready', init)

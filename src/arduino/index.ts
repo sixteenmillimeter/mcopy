@@ -67,6 +67,8 @@ class Arduino {
 						matches.push(port.comName)
 					} else if ((port.comName + '').toLowerCase().indexOf('usbmodem') !== -1) {
 						matches.push(port.comName)
+					} else if ((port.comName + '').toLowerCase().indexOf('ttyusb') !== -1) {
+						matches.push(port.comName)
 					}
 				})
 				if (matches.length === 0) {

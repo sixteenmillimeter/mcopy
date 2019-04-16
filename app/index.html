@@ -20,32 +20,45 @@
             <label>CAMERA</label>
             <input type="number" id="seq_cam_count" class="count" value="00000" onchange="gui.counterFormat(this, cam.pos);" onblur="gui.updateCam(this);" />
           </div>
+          <div class="cam2">
+            <label>CAMERA</label>
+            <input type="number" id="seq_cam_count_2" class="count" value="00000" onchange="gui.counterFormat(this, cam.pos);" onblur="gui.updateCam(this);" />
+          </div>
+          <div class="proj2">
+            <label>PROJECTOR 2</label>
+            <input type="number" id="seq_proj_count_2" class="count" value="00000" onchange="gui.counterFormat(this, proj.pos);" onblur="gui.updateProj(this);" />
+          </div>
           <div class="proj">
             <label>PROJECTOR</label>
             <input type="number" id="seq_proj_count" class="count" value="00000" onchange="gui.counterFormat(this, proj.pos);" onblur="gui.updateProj(this);" />
           </div>
+
         </div>
         <div id="seq_scroll">
           <div id="sequence">
             <div id="camera_forward" class="row" y="0"></div>
-            <div id="camera_second_forward" class="row" y="2"></div>
+            <div id="camera_second_forward" class="row cam2" y="2"></div>
             <div id="projector_forward" class="row" y="1"></div>
-            <div id="projector_second_forward" class="row" y="3"></div>
+            <div id="projector_second_forward" class="row proj2" y="3"></div>
 
             <div id="camera_backward" class="row spacer" y="0"></div>
-            <div id="camera_second_backward" class="row" y="2"></div>
+            <div id="camera_second_backward" class="row cam2" y="2"></div>
             <div id="projector_backward" class="row" y="1"></div>
-            <div id="projector_second_backward" class="row" y="3"></div>
+            <div id="projector_second_backward" class="row proj2" y="3"></div>
             
             <div id="light_set" class="row spacer"></div>
             <div id="numbers" class="row"></div>
           </div>
           <div id="seq_labels">
             <div><span>CAM </span><i class="fa fa-plus"></i></div>
-            <div><span>PRO </span><i class="fa fa-plus"></i></div>
+            <div class="cam2"><span>CAM2 </span><i class="fa fa-plus"></i></div>
+            <div><span>PROJ </span><i class="fa fa-plus"></i></div>
+            <div class="proj2"><span>PROJ2 </span><i class="fa fa-plus"></i></div>
 
             <div class="spacer"><span>CAM </span><i class="fa fa-minus"></i></div>
-            <div><span>PRO </span><i class="fa fa-minus"></i></div>
+            <div class="cam2"><span>CAM2 </span><i class="fa fa-minus"></i></div>
+            <div><span>PROJ </span><i class="fa fa-minus"></i></div>
+            <div class="proj2"><span>PROJ2 </span><i class="fa fa-minus"></i></div>
 
             <div class="spacer"><span>LIGHT</span></div>
           </div>
@@ -89,7 +102,7 @@
         </footer>
       </div>
       <div id="controls" class="screen">
-        <div id="counters_2">
+        <div id="counters_2" class="clearfix">
           <div class="cam">
             <label>CAMERA</label>
             <input type="number" id="seq_cam_count_2" class="count" value="00000" onchange="gui.counterFormat(this, cam.pos);" onblur="gui.updateCam(this);" />
@@ -99,7 +112,7 @@
             <input type="number" id="seq_proj_count_2" class="count" value="00000" onchange="gui.counterFormat(this, proj.pos);" onblur="gui.updateProj(this);" />
           </div>
         </div>
-        <div id="move_to">
+        <div id="move_to" class="clearfix">
           <div class="cam">
             <!--<label>MOVE TO</label>-->
             <div>
@@ -158,6 +171,80 @@
               <button id="cmd_proj_backward" onclick="cmd.projector_backward();" class="cmd bwd">
                 <i class="fa fa-film"></i>
                 PROJECTOR -1
+                <i class="fa fa-step-backward"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="counters_3" class="clearfix">
+          <div class="cam2">
+            <label>CAMERA 2</label>
+            <input type="number" id="seq_cam_count_3" class="count" value="00000" onchange="gui.counterFormat(this, cam.pos);" onblur="gui.updateCam(this);" />
+          </div>
+          <div class="proj2">
+            <label>PROJECTOR 2</label>
+            <input type="number" id="seq_proj_count_3" class="count" value="00000" onchange="gui.counterFormat(this, proj.pos);" onblur="gui.updateProj(this);" />
+          </div>
+        </div>
+        <div id="move_to_2" class="clearfix">
+          <div class="cam2">
+            <!--<label>MOVE TO</label>-->
+            <div>
+              <input type="number" id="move_cam_to_2" class="count" value="00000" onchange="gui.counterFormat(this, this.value);" />
+              <button id="move_cam_to_go_2" onclick="return cmd.camera_to();">GO TO</button>
+            </div>
+          </div>
+          <div class="proj proj2">
+            <!--<label>MOVE TO</label>-->
+            <div>
+              <input type="number" id="move_proj_to_2" class="count" value="00000" onchange="gui.counterFormat(this, this.value);"/>
+              <button id="move_proj_to_go_2" onclick="return cmd.projector_to();">GO TO</button>
+            </div>
+          </div>
+        </div>
+        <div id="buttons_2" class="clearfix">
+          <div class="cam2">
+            <div>
+              <button id="cmd_cam_forward" onclick="cmd.camera_second_forward(light.color);" class="cmd fwd">
+                <i class="fa fa-video-camera"></i> 
+                CAMERA 2 +1
+                <i class="fa fa-step-forward"></i>
+              </button>
+            </div>
+            <div>
+              <button id="cmd_cam_backward" onclick="cmd.camera_backward(light.color);" class="cmd bwd">
+                <i class="fa fa-video-camera"></i> 
+                CAMERA 2 -1
+                <i class="fa fa-step-backward"></i>
+              </button>
+            </div>
+            <div>
+              <button id="cmd_black_forward" onclick="cmd.black_forward();" class="cmd fwd">
+                <i class="fa fa-times-circle"></i> 
+                BLANK +1
+                <i class="fa fa-step-forward"></i>
+              </button>
+            </div>
+            <div>
+              <button id="cmd_black_backward" onclick="cmd.black_backward();" class="cmd bwd">
+                <i class="fa fa-times-circle"></i> 
+                BLANK -1
+                <i class="fa fa-step-backward"></i>
+              </button>
+            </div>
+          </div>
+          <div class="proj2">
+            <div>
+              <button id="cmd_proj_forward" onclick="cmd.projector_forward();" class="cmd fwd">
+                <i class="fa fa-film"></i>
+                PROJECTOR 2 +1
+                <i class="fa fa-step-forward"></i>
+              </button>
+            </div>
+            <div>
+              <button id="cmd_proj_backward" onclick="cmd.projector_backward();" class="cmd bwd">
+                <i class="fa fa-film"></i>
+                PROJECTOR 2 -1
                 <i class="fa fa-step-backward"></i>
               </button>
             </div>

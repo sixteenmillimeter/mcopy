@@ -95,10 +95,16 @@ cam.second.dir = true;
 
 cam.second.enable = function () {
 	cam.second.enabled = true;
+	//ui actions
+	$('.cam2').addClass('on');
+	$('#counters').addClass('cameras');
 }
 
 cam.second.disable = function () {
 	cam.second.enabled = false;
+	//ui actions
+	$('.cam2').removeClass('on');
+	$('#counters').removeClass('cameras');
 }
 
 module.exports = cam;

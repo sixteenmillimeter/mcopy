@@ -72,9 +72,13 @@
 
 #counters, 
 #counters_2, 
-#move_to{
+#counters_3,
+#move_to,
+#move_to_2{
 	.cam,
-	.proj{
+	.cam2,
+	.proj,
+	.proj2{
 		width: 50%;
 		padding-bottom: 10px;
 		label{
@@ -96,18 +100,52 @@
 			}
 		}
 	}
-	.cam{
+	.cam,
+	.cam2{
 		float: left;
 	}
-	.proj{
+	.proj,
+	.proj2{
 		float: right;
 	}
 }
 
-#move_to{
+#counters{
+	&.projectors{
+		.proj,
+		.proj2{
+			width: 25%;
+			label{
+				line-height: 34px;
+				font-size: 18px;
+			}
+			input{
+				width: 90%;
+			}
+		}
+	}
+	&.cameras{
+		.cam,
+		.cam2{
+			width: 25%;
+			label{
+				line-height: 34px;
+				font-size: 18px;
+			}
+			input{
+				width: 90%;
+			}
+		}
+	}
+}
+
+#move_to,
+#move_to_2{
 	margin-top: 20px;
 	.cam,
-	.proj{
+	.cam2,
+	.proj,
+	.proj2{
 		> div {
 			width: 294px;
     		margin: 0 auto;
@@ -124,6 +162,24 @@
     		float: right;
 		}
 	}
+	> .proj2{
+		float: right;
+	}
+}
+
+.cam2,
+.proj2{
+	display : none;
+	> * {
+		visibility: hidden;
+	}
+	&.on {
+		display: block;
+		> * {
+			visibility: visible;
+		}
+	}
+
 }
 
 #overlay{

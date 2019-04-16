@@ -67,7 +67,7 @@
 #sequence{
 	width: 970px;
 	padding-bottom: 21px;
-	padding-left: 70px;
+	padding-left: 92px;
 	#camera_forward,
 	#camera_second_forward,
 	#projector_forward,
@@ -103,7 +103,6 @@
 
 	#camera_second_forward,
 	#projector_second_forward {
-		display: none;
 		input[type=checkbox]{
 			border: 2px solid @FORWARD + @SECOND;
 			&:checked{
@@ -117,7 +116,6 @@
 	}
 	#camera_second_backward,
 	#projector_second_backward{
-		display: none;
 		input[type=checkbox]{
 			border: 2px solid @BACKWARD + @SECOND;
 			&:checked{
@@ -191,10 +189,10 @@
 	.monospace();
 	background-color: #272b30;
 	position: absolute;
-	top: 115px;
+	top: 113px;
 	padding-top: 2px;
 	padding-bottom: 15px;
-	width: 54px;
+	width: 75px;
 	div{
 		height: 43px;
 		line-height: 35px;
@@ -203,6 +201,11 @@
 		text-indent: 7px;
     	display: inline-block;
     	margin-right: 5px;
+	}
+	i.fa{
+		right: 3px;
+	    position: absolute;
+	    margin-top: 10px;
 	}
 }
 

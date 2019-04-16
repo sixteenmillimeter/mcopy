@@ -402,7 +402,7 @@ button:focus {
 #sequence {
   width: 970px;
   padding-bottom: 21px;
-  padding-left: 70px;
+  padding-left: 92px;
 }
 #sequence #camera_forward,
 #sequence #camera_second_forward,
@@ -460,10 +460,6 @@ button:focus {
 #sequence #black_backward > div {
   color: #AB1A25;
 }
-#sequence #camera_second_forward,
-#sequence #projector_second_forward {
-  display: none;
-}
 #sequence #camera_second_forward input[type=checkbox],
 #sequence #projector_second_forward input[type=checkbox] {
   border: 2px solid #14d8b4;
@@ -475,10 +471,6 @@ button:focus {
 #sequence #camera_second_forward > div,
 #sequence #projector_second_forward > div {
   color: #14d8b4;
-}
-#sequence #camera_second_backward,
-#sequence #projector_second_backward {
-  display: none;
 }
 #sequence #camera_second_backward input[type=checkbox],
 #sequence #projector_second_backward input[type=checkbox] {
@@ -552,10 +544,10 @@ button:focus {
   font-family: 'Menlo', monospace;
   background-color: #272b30;
   position: absolute;
-  top: 115px;
+  top: 113px;
   padding-top: 2px;
   padding-bottom: 15px;
-  width: 54px;
+  width: 75px;
 }
 #seq_labels div {
   height: 43px;
@@ -565,6 +557,11 @@ button:focus {
   text-indent: 7px;
   display: inline-block;
   margin-right: 5px;
+}
+#seq_labels i.fa {
+  right: 3px;
+  position: absolute;
+  margin-top: 10px;
 }
 #loop_current {
   margin-top: 21px;
@@ -585,9 +582,14 @@ button:focus {
   left: 0;
   bottom: 0;
 }
-#buttons > div {
+#buttons > div,
+#buttons_2 > div {
   width: 50%;
   float: left;
+}
+#buttons .proj2,
+#buttons_2 .proj2 {
+  float: right !important;
 }
 .cmd {
   width: 240px;
@@ -789,29 +791,71 @@ button:focus {
 }
 #counters .cam,
 #counters_2 .cam,
+#counters_3 .cam,
 #move_to .cam,
+#move_to_2 .cam,
+#counters .cam2,
+#counters_2 .cam2,
+#counters_3 .cam2,
+#move_to .cam2,
+#move_to_2 .cam2,
 #counters .proj,
 #counters_2 .proj,
-#move_to .proj {
+#counters_3 .proj,
+#move_to .proj,
+#move_to_2 .proj,
+#counters .proj2,
+#counters_2 .proj2,
+#counters_3 .proj2,
+#move_to .proj2,
+#move_to_2 .proj2 {
   width: 50%;
   padding-bottom: 10px;
 }
 #counters .cam label,
 #counters_2 .cam label,
+#counters_3 .cam label,
 #move_to .cam label,
+#move_to_2 .cam label,
+#counters .cam2 label,
+#counters_2 .cam2 label,
+#counters_3 .cam2 label,
+#move_to .cam2 label,
+#move_to_2 .cam2 label,
 #counters .proj label,
 #counters_2 .proj label,
-#move_to .proj label {
+#counters_3 .proj label,
+#move_to .proj label,
+#move_to_2 .proj label,
+#counters .proj2 label,
+#counters_2 .proj2 label,
+#counters_3 .proj2 label,
+#move_to .proj2 label,
+#move_to_2 .proj2 label {
   text-align: center;
   font-size: 24px;
   display: block;
 }
 #counters .cam input,
 #counters_2 .cam input,
+#counters_3 .cam input,
 #move_to .cam input,
+#move_to_2 .cam input,
+#counters .cam2 input,
+#counters_2 .cam2 input,
+#counters_3 .cam2 input,
+#move_to .cam2 input,
+#move_to_2 .cam2 input,
 #counters .proj input,
 #counters_2 .proj input,
-#move_to .proj input {
+#counters_3 .proj input,
+#move_to .proj input,
+#move_to_2 .proj input,
+#counters .proj2 input,
+#counters_2 .proj2 input,
+#counters_3 .proj2 input,
+#move_to .proj2 input,
+#move_to_2 .proj2 input {
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
   padding: 6px 12px;
@@ -823,43 +867,142 @@ button:focus {
 }
 #counters .cam input.changed,
 #counters_2 .cam input.changed,
+#counters_3 .cam input.changed,
 #move_to .cam input.changed,
+#move_to_2 .cam input.changed,
+#counters .cam2 input.changed,
+#counters_2 .cam2 input.changed,
+#counters_3 .cam2 input.changed,
+#move_to .cam2 input.changed,
+#move_to_2 .cam2 input.changed,
 #counters .proj input.changed,
 #counters_2 .proj input.changed,
-#move_to .proj input.changed {
+#counters_3 .proj input.changed,
+#move_to .proj input.changed,
+#move_to_2 .proj input.changed,
+#counters .proj2 input.changed,
+#counters_2 .proj2 input.changed,
+#counters_3 .proj2 input.changed,
+#move_to .proj2 input.changed,
+#move_to_2 .proj2 input.changed {
   color: #DAE035;
 }
 #counters .cam,
 #counters_2 .cam,
-#move_to .cam {
+#counters_3 .cam,
+#move_to .cam,
+#move_to_2 .cam,
+#counters .cam2,
+#counters_2 .cam2,
+#counters_3 .cam2,
+#move_to .cam2,
+#move_to_2 .cam2 {
   float: left;
 }
 #counters .proj,
 #counters_2 .proj,
-#move_to .proj {
+#counters_3 .proj,
+#move_to .proj,
+#move_to_2 .proj,
+#counters .proj2,
+#counters_2 .proj2,
+#counters_3 .proj2,
+#move_to .proj2,
+#move_to_2 .proj2 {
   float: right;
 }
-#move_to {
+#counters.projectors .proj,
+#counters.projectors .proj2 {
+  width: 25%;
+}
+#counters.projectors .proj label,
+#counters.projectors .proj2 label {
+  line-height: 34px;
+  font-size: 18px;
+}
+#counters.projectors .proj input,
+#counters.projectors .proj2 input {
+  width: 90%;
+}
+#counters.cameras .cam,
+#counters.cameras .cam2 {
+  width: 25%;
+}
+#counters.cameras .cam label,
+#counters.cameras .cam2 label {
+  line-height: 34px;
+  font-size: 18px;
+}
+#counters.cameras .cam input,
+#counters.cameras .cam2 input {
+  width: 90%;
+}
+#move_to,
+#move_to_2 {
   margin-top: 20px;
 }
 #move_to .cam > div,
-#move_to .proj > div {
+#move_to_2 .cam > div,
+#move_to .cam2 > div,
+#move_to_2 .cam2 > div,
+#move_to .proj > div,
+#move_to_2 .proj > div,
+#move_to .proj2 > div,
+#move_to_2 .proj2 > div {
   width: 294px;
   margin: 0 auto;
 }
 #move_to .cam label,
-#move_to .proj label {
+#move_to_2 .cam label,
+#move_to .cam2 label,
+#move_to_2 .cam2 label,
+#move_to .proj label,
+#move_to_2 .proj label,
+#move_to .proj2 label,
+#move_to_2 .proj2 label {
   font-size: 18px;
 }
 #move_to .cam input,
-#move_to .proj input {
+#move_to_2 .cam input,
+#move_to .cam2 input,
+#move_to_2 .cam2 input,
+#move_to .proj input,
+#move_to_2 .proj input,
+#move_to .proj2 input,
+#move_to_2 .proj2 input {
   display: inline-block;
   width: 206px;
 }
 #move_to .cam button,
-#move_to .proj button {
+#move_to_2 .cam button,
+#move_to .cam2 button,
+#move_to_2 .cam2 button,
+#move_to .proj button,
+#move_to_2 .proj button,
+#move_to .proj2 button,
+#move_to_2 .proj2 button {
   padding: 7px 16px;
   float: right;
+}
+#move_to > .proj2,
+#move_to_2 > .proj2 {
+  float: right;
+}
+.cam2,
+.proj2 {
+  display: none;
+}
+.cam2 > *,
+.proj2 > * {
+  visibility: hidden;
+}
+.cam2.on,
+.proj2.on {
+  display: block;
+}
+.cam2.on > *,
+.proj2.on > * {
+  visibility: visible;
 }
 #overlay {
   position: fixed;

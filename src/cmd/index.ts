@@ -230,8 +230,8 @@ class Commands {
 				ms = await this.cam.both();
 			} else {
 				this.cam.move();
-				this.cam.move();
-				both = [await this.cam.move, await this.proj2.move];
+				this.cam2.move();
+				both = [await this.cam.move, await this.cam2.move];
 				ms = Math.max(...both);
 			}
 
@@ -268,8 +268,8 @@ class Commands {
 				ms = await this.cam.both();
 			} else {
 				this.cam.move();
-				this.cam.move();
-				both = [await this.cam.move, await this.proj2.move];
+				this.cam2.move();
+				both = [await this.cam.move, await this.cam2.move];
 				ms = Math.max(...both);
 			}
 
@@ -302,8 +302,8 @@ class Commands {
 				ms = await this.cam.both();
 			} else {
 				this.cam.move();
-				this.cam.move();
-				both = [await this.cam.move, await this.proj2.move];
+				this.cam2.move();
+				both = [await this.cam.move, await this.cam2.move];
 				ms = Math.max(...both);
 			}
 

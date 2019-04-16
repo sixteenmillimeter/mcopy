@@ -96,10 +96,16 @@ proj.second.pos = 0;
 
 proj.second.enable = function () {
 	proj.second.enabled = true;
+	//ui actions
+	$('.proj2').addClass('on');
+	$('#counters').addClass('projectors');
 }
 
 proj.second.disable = function () {
 	proj.second.disabled = true;
+	//ui actions
+	$('.proj2').removeClass('on');
+	$('#counters').removeClass('projectors');
 }
 
 module.exports = proj;
