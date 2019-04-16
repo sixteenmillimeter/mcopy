@@ -111,21 +111,31 @@ class Grid {
 		let c : string;
 		let checked : boolean = $(t).prop('checked');
 
-		//if input was not checked, but now is
-		//event occurs after user action
+		// if input was not checked, but now is
+		// event occurs after user action
 		if (checked) {
+
+
+
+
+
+
+
+
 			c = $(t).attr('class').replace('.', '');
 			seq.set(x, c);
 		} else {
+
+
+
+
+
+
+
 			seq.grid[x] = undefined;
 			delete seq.grid[x]; 
 			seq.unset(x);
 		}
-
-
-
-
-
 
 		this.state(x);
 		seq.stats();
