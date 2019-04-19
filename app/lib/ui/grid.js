@@ -9,8 +9,8 @@ class Grid {
     }
     init() {
         this.refresh();
-        seq.stats();
         this.events();
+        seq.stats();
     }
     /**
      * Set a specific grid pad to the state stored in the sequence
@@ -22,9 +22,49 @@ class Grid {
         const elem = $(`input[x=${x}]`);
         const lightElem = $(`.L[x=${x}]`);
         const step = seq.grid[x];
+        let className;
+        let className2;
         if (typeof step !== 'undefined') {
             elem.prop('checked', false);
-            $(`.${step.cmd}[x=${x}]`).prop('checked', true);
+            if (step.cmd === cfg.cmd.cameras_forward) {
+                className = cfg.cmd.camera_forward;
+                className2 = cfg.cmd.camera_second_forward;
+            }
+            else if (step.cmd === cfg.cmd.cameras_backward) {
+                className = cfg.cmd.camera_backward;
+                className2 = cfg.cmd.camera_second_backward;
+            }
+            else if (step.cmd === cfg.cmd.camera_forward_camera_second_backward) {
+                className = cfg.cmd.camera_forward;
+                className2 = cfg.cmd.camera_second_backward;
+            }
+            else if (step.cmd === cfg.cmd.camera_backward_camera_second_forward) {
+                className = cfg.cmd.camera_backward;
+                className2 = cfg.cmd.camera_second_forward;
+            }
+            else if (step.cmd === cfg.cmd.projectors_forward) {
+                className = cfg.cmd.projector_forward;
+                className2 = cfg.cmd.projector_second_forward;
+            }
+            else if (step.cmd === cfg.cmd.projectors_backward) {
+                className = cfg.cmd.projector_backward;
+                className2 = cfg.cmd.projector_second_backward;
+            }
+            else if (step.cmd === cfg.cmd.camera_forward_camera_second_backward) {
+                className = cfg.cmd.projector_forward;
+                className2 = cfg.cmd.projector_second_backward;
+            }
+            else if (step.cmd === cfg.cmd.camera_backward_camera_second_forward) {
+                className = cfg.cmd.projector_backward;
+                className2 = cfg.cmd.projector_second_forward;
+            }
+            else {
+                className = step.cmd;
+            }
+            $(`.${className}[x=${x}]`).prop('checked', true);
+            if (className2) {
+                $(`.${className2}[x=${x}]`).prop('checked', true);
+            }
             if (step.cmd === 'CF' || step.cmd === 'CB') {
                 lightElem.css('background', `rgb(${step.light})`)
                     .addClass('a')
@@ -41,6 +81,21 @@ class Grid {
                 .removeClass('a')
                 .prop('title', '');
         }
+    }
+    otherCmd(x, c) {
+        const step = $(`input[x=${x}]`);
+        let elem;
+        let selected = '';
+        let cmdStr;
+        $.each(step, function (index, value) {
+            elem = $(this);
+            cmdStr = elem.attr('class').replace('.', '');
+            if (elem.prop('checked') && cmdStr !== c) {
+                selected = cmdStr;
+                return false;
+            }
+        });
+        return selected;
     }
     /**
      * Clears the UI of the grid and restores it to the
@@ -87,18 +142,127 @@ class Grid {
     /**
      * Function bound to click on grid pad elements
      *
-     * @param  {object} t This, passed from clicked element
+     * @param  {object} elem This, passed from clicked element
      **/
-    click(t) {
-        const x = parseInt($(t).attr('x'));
-        let c;
-        if ($(t).prop('checked')) {
-            c = $(t).attr('class').replace('.', '');
+    click(elem) {
+        const x = parseInt($(elem).attr('x'));
+        let checked = $(elem).prop('checked');
+        let c = '';
+        let other;
+        // if input was not checked, but now is
+        // event occurs after user action
+        if (checked) {
+            c = $(elem).attr('class').replace('.', '');
+            if (cam.second.enabled) {
+                if (c === cfg.cmd.camera_forward) {
+                    other = this.otherCmd(x, c);
+                    if (other === '') {
+                        //skip modification
+                    }
+                    else if (other === cfg.cmd.camera_second_forward) {
+                        c = cfg.cmd.cameras_forward;
+                    }
+                    else if (other === cfg.cmd.camera_second_backward) {
+                        c = cfg.cmd.camera_forward_camera_second_backward;
+                    }
+                }
+                else if (c === cfg.cmd.camera_backward) {
+                    other = this.otherCmd(x, c);
+                    if (other === '') {
+                        //skip modification
+                    }
+                    else if (other === cfg.cmd.camera_second_forward) {
+                        c = cfg.cmd.camera_backward_camera_second_forward;
+                    }
+                    else if (other === cfg.cmd.camera_second_backward) {
+                        c = cfg.cmd.cameras_backward;
+                    }
+                }
+                else if (c === cfg.cmd.camera_second_forward) {
+                    other = this.otherCmd(x, c);
+                    if (other === '') {
+                        //skip modification
+                    }
+                    else if (other === cfg.cmd.camera_forward) {
+                        c = cfg.cmd.cameras_forward;
+                    }
+                    else if (other === cfg.cmd.camera_second_backward) {
+                        c = cfg.cmd.camera_forward_camera_second_backward;
+                    }
+                }
+                else if (c === cfg.cmd.camera_second_backward) {
+                    other = this.otherCmd(x, c);
+                    if (other === '') {
+                        //skip modification
+                    }
+                    else if (other === cfg.cmd.camera_second_forward) {
+                        c = cfg.cmd.camera_backward_camera_second_forward;
+                    }
+                    else if (other === cfg.cmd.camera_second_backward) {
+                        c = cfg.cmd.cameras_backward;
+                    }
+                }
+            }
+            if (proj.second.enabled) {
+                if (c === cfg.cmd.projector_forward) {
+                    other = this.otherCmd(x, c);
+                    if (other === '') {
+                        //skip modification
+                    }
+                    else if (other === cfg.cmd.projector_second_forward) {
+                        c = cfg.cmd.projectorss_forward;
+                    }
+                    else if (other === cfg.cmd.projector_second_backward) {
+                        c = cfg.cmd.projector_forward_projector_second_backward;
+                    }
+                }
+                else if (c === cfg.cmd.projector_backward) {
+                    other = this.otherCmd(x, c);
+                    if (other === '') {
+                        //skip modification
+                    }
+                    else if (other === cfg.cmd.projector_second_forward) {
+                        c = cfg.cmd.projector_backward_projector_second_forward;
+                    }
+                    else if (other === cfg.cmd.projector_second_backward) {
+                        c = cfg.cmd.projectors_backward;
+                    }
+                }
+                else if (c === cfg.cmd.projector_second_forward) {
+                    other = this.otherCmd(x, c);
+                    if (other === '') {
+                        //skip modification
+                    }
+                    else if (other === cfg.cmd.projector_forward) {
+                        c = cfg.cmd.projectors_forward;
+                    }
+                    else if (other === cfg.cmd.projector_backward) {
+                        c = cfg.cmd.projector_backward_projector_second_forward;
+                    }
+                }
+                else if (c === cfg.cmd.projector_second_backward) {
+                    other = this.otherCmd(x, c);
+                    if (other === '') {
+                        //skip modification
+                    }
+                    else if (other === cfg.cmd.projector_forward) {
+                        c = cfg.cmd.projectors_forward_projector_second_backward;
+                    }
+                    else if (other === cfg.cmd.projector_backward) {
+                        c = cfg.cmd.projectors_backward;
+                    }
+                }
+            }
             seq.set(x, c);
         }
         else {
-            seq.grid[x] = undefined;
-            delete seq.grid[x];
+            if (seq.grid[x]) {
+                c = seq.grid[x].cmd + ''; // cast to string, bad hack
+            }
+            if (cam.second.enabled) {
+            }
+            if (proj.second.enabled) {
+            }
             seq.unset(x);
         }
         this.state(x);
@@ -136,7 +300,7 @@ class Grid {
         if (typeof seq.grid[x].light === 'undefined') {
             return false;
         }
-        console.log(x);
+        //console.log(x)
         if (seq.grid[x].light === '0,0,0') {
             seq.setLight(x, light.color);
         }

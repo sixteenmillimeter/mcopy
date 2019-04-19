@@ -65,11 +65,29 @@ gui.updateCam = function (t) {
 		gui.counterFormat(t);
 	}
 };
+gui.updateCam2 = function (t) {
+	'use strict';
+	const val = t.value;
+	let change;
+
+	if (parseInt(val) === cam.pos) { 
+		return false; 
+	}
+	change = confirm(`Are you sure you want to set second camera counter to ${val}?`);
+
+	if (change) {
+		cam.second.pos = parseInt(val);
+		gui.updateState();
+	} else {
+		t.value = cam.second.pos;
+		gui.counterFormat(t);
+	}
+};
 gui.updateProj = function (t) {
 	'use strict';
 	const val = t.value;
 	let change;
-	if (parseInt(val) === cam.pos) { 
+	if (parseInt(val) === proj.pos) { 
 		return false; 
 	}
 	change = confirm(`Are you sure you want to set projector counter to ${val}?`);
@@ -82,16 +100,36 @@ gui.updateProj = function (t) {
 	}
 	proj.setValue(t.value);
 };
+gui.updateProj2 = function (t) {
+	'use strict';
+	const val = t.value;
+	let change;
+	if (parseInt(val) === proj.second.pos) { 
+		return false; 
+	}
+	change = confirm(`Are you sure you want to set second projector counter to ${val}?`);
+	if (change) {
+		proj.second.pos = parseInt(val);
+		gui.updateState();
+	} else {
+		t.value = proj.second.pos;
+		gui.counterFormat(t);
+	}
+	proj.setValue(t.value);
+};
+
 gui.updateState = function () {
 	'use strict';
 	const cpos = cam.pos;
 	const ppos = proj.pos;
+	const p2pos = proj.second.pos;
+	const c2pos = cam.second.pos;
 
 	$('#seq_cam_count').val(cpos).change();
 	$('#seq_proj_count').val(ppos).change();
 
-	$('#seq_cam_count_2').val(cpos).change();
-	$('#seq_proj_count_2').val(ppos).change();
+	$('#seq_cam_count_2').val(c2pos).change();
+	$('#seq_proj_count_2').val(p2pos).change();
 };
 gui.spinnerCfg =  {
 	lines: 11, // The number of lines to draw

@@ -98,6 +98,7 @@ cam.second.enable = function () {
 	//ui actions
 	$('.cam2').addClass('on');
 	$('#counters').addClass('cameras');
+	cam.second.init();
 }
 
 cam.second.disable = function () {
@@ -106,5 +107,84 @@ cam.second.disable = function () {
 	$('.cam2').removeClass('on');
 	$('#counters').removeClass('cameras');
 }
+
+cam.second.init = function () {
+	'use strict';
+	cam.second.listen();
+};
+cam.second.set = function (dir, callback) {
+	'use strict';
+	var obj;
+	if (cam.second.lock) {
+		return false;
+	}
+	obj = {
+		dir : dir,
+		id : uuid.v4()
+	};
+	ipcRenderer.sendSync(cam.second.id, obj);
+
+	if (typeof callback !== 'undefined') {
+		obj.callback = callback;
+	}
+	cam.second.queue[obj.id] = obj;
+	cam.second.lock = true;
+};
+
+cam.second.setValue = function (val) {
+	'use strict';
+	var obj = {
+		val: val,
+		id : uuid.v4()
+	};
+	ipcRenderer.sendSync(cam.second.id, obj);
+};
+cam.second.move = function (callback) {
+	'use strict';
+	var obj;
+	if (cam.second.lock) {
+		return false;
+	}
+	obj = {
+		frame : true,
+		id : uuid.v4()
+	};
+	ipcRenderer.sendSync(cam.second.id, obj);
+
+	if (typeof callback !== 'undefined') {
+		obj.callback = callback;
+	}
+	cam.second.queue[obj.id] = obj;
+	cam.second.lock = true;
+};
+cam.second.end = function (c, id, ms) {
+	'use strict';
+	if (c === cfg.arduino.cmd.camera_second_forward) {
+		cam.second.dir = true;
+	} else if (c === cfg.arduino.cmd.camera_second_backward) {
+		cam.second.dir = false;
+	} else if (c === cfg.arduino.cmd.camera_second) {
+		if (cam.dir) {
+			cam.second.pos += 1;
+		} else {
+			cam.second.pos -= 1;
+		}
+	}
+	gui.counterUpdate('cam', cam.second.pos)
+	if (typeof cam.second.queue[id] !== 'undefined') {
+		if (typeof cam.queue[id].callback !== 'undefined') {
+			cam.second.queue[id].callback(ms);
+		}
+		delete cam.second.queue[id];
+		cam.second.lock = false;
+	}
+};
+cam.listen = function () {
+	'use strict';
+	ipcRenderer.on(cam.second.id, function (event, arg) {
+		cam.second.end(arg.cmd, arg.id, arg.ms);		
+		return event.returnValue = true;
+	});
+};
 
 module.exports = cam;

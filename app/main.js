@@ -3,6 +3,8 @@
 
 'use strict'
 
+process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
+
 const electron = require('electron')
 const { Menu, MenuItem, ipcMain, BrowserWindow, app } = electron
 const fs = require('fs')
@@ -58,7 +60,10 @@ var createWindow = function () {
 		height: 600,
 		minWidth : 800,
 		minHeight : 600,
-		icon: path.join(__dirname, 'assets/icons/icon.png')
+		icon: path.join(__dirname, 'assets/icons/icon.png'),
+		webPreferences : {
+			nodeIntegration: true
+		}
 	})
 	mainWindow.loadURL('file://' + __dirname + '/index.html')
 	if (process.argv.indexOf('-d') !== -1 || process.argv.indexOf('--dev') !== -1) {

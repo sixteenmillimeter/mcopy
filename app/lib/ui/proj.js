@@ -93,12 +93,12 @@ proj.second.id = 'projector_second';
 proj.second.dir = true;
 proj.second.pos = 0;
 
-
 proj.second.enable = function () {
 	proj.second.enabled = true;
 	//ui actions
 	$('.proj2').addClass('on');
 	$('#counters').addClass('projectors');
+	proj.second.init();
 }
 
 proj.second.disable = function () {
@@ -107,5 +107,84 @@ proj.second.disable = function () {
 	$('.proj2').removeClass('on');
 	$('#counters').removeClass('projectors');
 }
+
+proj.second.init = function () {
+	'use strict';
+	proj.second.listen();
+};
+proj.second.set = function (dir, callback) {
+	'use strict';
+	var obj;
+	if (proj.second.lock) {
+		return false;
+	}
+	obj = {
+		dir : dir,
+		id : uuid.v4()
+	};
+	ipcRenderer.sendSync(proj.second.id, obj);
+
+	if (typeof callback !== 'undefined') {
+		obj.callback = callback;
+	}
+	proj.second.queue[obj.id] = obj;
+	proj.second.lock = true;
+};
+proj.second.move = function (callback) {
+	'use strict';
+	var obj;
+	if (proj.second.lock) {
+		return false;
+	}
+	obj = {
+		frame : true,
+		id : uuid.v4()
+	};
+	ipcRenderer.sendSync(proj.second.id, obj);
+
+	if (typeof callback !== 'undefined') {
+		obj.callback = callback;
+	}
+	proj.second.queue[obj.id] = obj;
+	proj.second.lock = true;
+};
+proj.second.end = function (c, id, ms) {
+	'use strict';
+	if (c === cfg.arduino.cmd.projector_second_forward) {
+		proj.second.dir = true;
+	} else if (c === cfg.arduino.cmd.projector_second_backward) {
+		proj.second.dir = false;
+	} else if (c === cfg.arduino.cmd.projector_second) {
+		if (proj.dir) {
+			proj.second.pos += 1;
+		} else {
+			proj.second.pos -= 1;
+		}
+	}
+	gui.counterUpdate('proj2', proj.second.pos);
+	if (typeof proj.second.queue[id] !== 'undefined') {
+		if (typeof proj.second.queue[id].callback !== 'undefined') {
+			proj.second.queue[id].callback(ms);
+		}
+		delete proj.second.queue[id];
+		proj.second.lock = false;
+	}
+};
+proj.second.listen = function () {
+	'use strict';
+	ipcRenderer.on(proj.second.id, function (event, arg) {
+		proj.second.end(arg.cmd, arg.id, arg.ms);		
+		return event.returnValue = true;
+	});
+};
+
+proj.second.setValue = function (val) {
+	'use strict';
+	var obj = {
+		val: val,
+		id : uuid.v4()
+	};
+	ipcRenderer.sendSync(proj.second.id, obj);
+};
 
 module.exports = proj;

@@ -2496,7 +2496,6 @@ const mse 		= require('./lib/ui/mscript.js');
 const Mscript 	= require('./lib/mscript');
 let log;
 
-
 /******
 	State shared by ALL interfaces
 *******/
