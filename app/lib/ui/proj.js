@@ -69,7 +69,7 @@ proj.end = function (c, id, ms) {
 		} else {
 			proj.second.pos -= 1;
 		}
-		gui.counterUpdate('proj2', proj.second.pos)
+		gui.counterUpdate('proj2', proj.second.pos);
 	}
 	gui.counterUpdate('proj', proj.pos)
 	if (typeof proj.queue[id] !== 'undefined') {
