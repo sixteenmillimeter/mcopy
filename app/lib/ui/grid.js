@@ -50,11 +50,11 @@ class Grid {
                 className = cfg.cmd.projector_backward;
                 className2 = cfg.cmd.projector_second_backward;
             }
-            else if (step.cmd === cfg.cmd.camera_forward_camera_second_backward) {
+            else if (step.cmd === cfg.cmd.projector_forward_projector_second_backward) {
                 className = cfg.cmd.projector_forward;
                 className2 = cfg.cmd.projector_second_backward;
             }
-            else if (step.cmd === cfg.cmd.camera_backward_camera_second_forward) {
+            else if (step.cmd === cfg.cmd.projector_backward_projector_second_forward) {
                 className = cfg.cmd.projector_backward;
                 className2 = cfg.cmd.projector_second_forward;
             }
@@ -90,6 +90,7 @@ class Grid {
         $.each(step, function (index, value) {
             elem = $(this);
             cmdStr = elem.attr('class').replace('.', '');
+            //console.log(cmdStr)
             if (elem.prop('checked') && cmdStr !== c) {
                 selected = cmdStr;
                 return false;
@@ -148,14 +149,15 @@ class Grid {
         const x = parseInt($(elem).attr('x'));
         let checked = $(elem).prop('checked');
         let c = '';
+        let current = '';
         let other;
         // if input was not checked, but now is
         // event occurs after user action
+        c = $(elem).attr('class').replace('.', '');
         if (checked) {
-            c = $(elem).attr('class').replace('.', '');
             if (cam.second.enabled) {
+                other = this.otherCmd(x, c);
                 if (c === cfg.cmd.camera_forward) {
-                    other = this.otherCmd(x, c);
                     if (other === '') {
                         //skip modification
                     }
@@ -167,7 +169,6 @@ class Grid {
                     }
                 }
                 else if (c === cfg.cmd.camera_backward) {
-                    other = this.otherCmd(x, c);
                     if (other === '') {
                         //skip modification
                     }
@@ -179,7 +180,6 @@ class Grid {
                     }
                 }
                 else if (c === cfg.cmd.camera_second_forward) {
-                    other = this.otherCmd(x, c);
                     if (other === '') {
                         //skip modification
                     }
@@ -191,7 +191,6 @@ class Grid {
                     }
                 }
                 else if (c === cfg.cmd.camera_second_backward) {
-                    other = this.otherCmd(x, c);
                     if (other === '') {
                         //skip modification
                     }
@@ -204,20 +203,19 @@ class Grid {
                 }
             }
             if (proj.second.enabled) {
+                other = this.otherCmd(x, c);
                 if (c === cfg.cmd.projector_forward) {
-                    other = this.otherCmd(x, c);
                     if (other === '') {
                         //skip modification
                     }
                     else if (other === cfg.cmd.projector_second_forward) {
-                        c = cfg.cmd.projectorss_forward;
+                        c = cfg.cmd.projectors_forward;
                     }
                     else if (other === cfg.cmd.projector_second_backward) {
                         c = cfg.cmd.projector_forward_projector_second_backward;
                     }
                 }
                 else if (c === cfg.cmd.projector_backward) {
-                    other = this.otherCmd(x, c);
                     if (other === '') {
                         //skip modification
                     }
@@ -229,7 +227,6 @@ class Grid {
                     }
                 }
                 else if (c === cfg.cmd.projector_second_forward) {
-                    other = this.otherCmd(x, c);
                     if (other === '') {
                         //skip modification
                     }
@@ -241,29 +238,93 @@ class Grid {
                     }
                 }
                 else if (c === cfg.cmd.projector_second_backward) {
-                    other = this.otherCmd(x, c);
                     if (other === '') {
                         //skip modification
                     }
                     else if (other === cfg.cmd.projector_forward) {
-                        c = cfg.cmd.projectors_forward_projector_second_backward;
+                        c = cfg.cmd.projector_forward_projector_second_backward;
                     }
                     else if (other === cfg.cmd.projector_backward) {
                         c = cfg.cmd.projectors_backward;
                     }
                 }
             }
+            console.log(c);
             seq.set(x, c);
         }
         else {
             if (seq.grid[x]) {
-                c = seq.grid[x].cmd + ''; // cast to string, bad hack
+                current = seq.grid[x].cmd + ''; // cast to string, bad hack
             }
             if (cam.second.enabled) {
+                other = this.otherCmd(x, c);
+                if (c === cfg.cmd.camera_forward
+                    || c === cfg.cmd.camera_backward) {
+                    if (other === '') {
+                        c = '';
+                    }
+                    else if (other === cfg.cmd.camera_second_forward) {
+                        c = cfg.cmd.camera_second_forward;
+                    }
+                    else if (other === cfg.cmd.camera_second_backward) {
+                        c = cfg.cmd.camera_second_backward;
+                    }
+                }
+                else if (c === cfg.cmd.camera_second_forward
+                    || c === cfg.cmd.camera_second_backward) {
+                    if (other === '') {
+                        c = '';
+                    }
+                    else if (other === cfg.cmd.camera_forward) {
+                        c = cfg.cmd.camera_forward;
+                    }
+                    else if (other === cfg.cmd.camera_backward) {
+                        c = cfg.cmd.camera_backward;
+                    }
+                }
             }
             if (proj.second.enabled) {
+                other = this.otherCmd(x, c);
+                if (current === cfg.cmd.projectors_forward) {
+                    if (other === cfg.cmd.projector_second_forward) {
+                        c = cfg.cmd.projector_second_forward;
+                    }
+                    else if (other === cfg.cmd.projector_forward) {
+                        c = cfg.cmd.projector_forward;
+                    }
+                }
+                else if (current === cfg.cmd.projectors_backward) {
+                    if (other === cfg.cmd.projector_second_backward) {
+                        c = cfg.cmd.projector_second_backward;
+                    }
+                    else if (other === cfg.cmd.projector_backward) {
+                        c = cfg.cmd.projector_backward;
+                    }
+                }
+                else if (current === cfg.cmd.projector_forward_projector_second_backward) {
+                    if (other === cfg.cmd.projector_second_backward) {
+                        c = cfg.cmd.projector_second_backward;
+                    }
+                    else if (other === cfg.cmd.projector_forward) {
+                        c = cfg.cmd.projector_forward;
+                    }
+                }
+                else if (current === cfg.cmd.projector_backward_projector_second_forward) {
+                    if (other === cfg.cmd.projector_second_forward) {
+                        c = cfg.cmd.projector_second_forward;
+                    }
+                    else if (other === cfg.cmd.projector_backward) {
+                        c = cfg.cmd.projector_backward;
+                    }
+                }
             }
-            seq.unset(x);
+            if (c === '') {
+                seq.unset(x);
+            }
+            else {
+                console.log(c);
+                seq.set(x, c);
+            }
         }
         this.state(x);
         seq.stats();
