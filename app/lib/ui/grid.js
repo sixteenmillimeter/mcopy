@@ -154,14 +154,14 @@ class Grid {
         // if input was not checked, but now is
         // event occurs after user action
         c = $(elem).attr('class').replace('.', '');
+        other = this.otherCmd(x, c);
+        if (seq.grid[x]) {
+            current = seq.grid[x].cmd + ''; // cast to string, bad hack
+        }
         if (checked) {
-            if (cam.second.enabled) {
-                other = this.otherCmd(x, c);
+            if (cam.second.enabled && current.indexOf('C') !== -1) {
                 if (c === cfg.cmd.camera_forward) {
-                    if (other === '') {
-                        //skip modification
-                    }
-                    else if (other === cfg.cmd.camera_second_forward) {
+                    if (other === cfg.cmd.camera_second_forward) {
                         c = cfg.cmd.cameras_forward;
                     }
                     else if (other === cfg.cmd.camera_second_backward) {
@@ -169,10 +169,7 @@ class Grid {
                     }
                 }
                 else if (c === cfg.cmd.camera_backward) {
-                    if (other === '') {
-                        //skip modification
-                    }
-                    else if (other === cfg.cmd.camera_second_forward) {
+                    if (other === cfg.cmd.camera_second_forward) {
                         c = cfg.cmd.camera_backward_camera_second_forward;
                     }
                     else if (other === cfg.cmd.camera_second_backward) {
@@ -180,10 +177,7 @@ class Grid {
                     }
                 }
                 else if (c === cfg.cmd.camera_second_forward) {
-                    if (other === '') {
-                        //skip modification
-                    }
-                    else if (other === cfg.cmd.camera_forward) {
+                    if (other === cfg.cmd.camera_forward) {
                         c = cfg.cmd.cameras_forward;
                     }
                     else if (other === cfg.cmd.camera_second_backward) {
@@ -191,10 +185,7 @@ class Grid {
                     }
                 }
                 else if (c === cfg.cmd.camera_second_backward) {
-                    if (other === '') {
-                        //skip modification
-                    }
-                    else if (other === cfg.cmd.camera_second_forward) {
+                    if (other === cfg.cmd.camera_second_forward) {
                         c = cfg.cmd.camera_backward_camera_second_forward;
                     }
                     else if (other === cfg.cmd.camera_second_backward) {
@@ -202,11 +193,13 @@ class Grid {
                     }
                 }
             }
-            if (proj.second.enabled) {
-                other = this.otherCmd(x, c);
+            else if (proj.second.enabled && current.indexOf('P') !== -1) {
                 if (c === cfg.cmd.projector_forward) {
-                    if (other === '') {
-                        //skip modification
+                    if (current === cfg.cmd.projectors_backward) {
+                        c = cfg.cmd.projector_forward_projector_second_backward;
+                    }
+                    else if (current === cfg.cmd.projector_backward_projector_second_forward) {
+                        c = cfg.cmd.projectors_forward;
                     }
                     else if (other === cfg.cmd.projector_second_forward) {
                         c = cfg.cmd.projectors_forward;
@@ -216,8 +209,11 @@ class Grid {
                     }
                 }
                 else if (c === cfg.cmd.projector_backward) {
-                    if (other === '') {
-                        //skip modification
+                    if (current === cfg.cmd.projectors_forward) {
+                        c = cfg.cmd.projector_backward_projector_second_forward;
+                    }
+                    else if (current === cfg.cmd.projector_forward_projector_second_backward) {
+                        c = cfg.cmd.projectors_backward;
                     }
                     else if (other === cfg.cmd.projector_second_forward) {
                         c = cfg.cmd.projector_backward_projector_second_forward;
@@ -227,8 +223,11 @@ class Grid {
                     }
                 }
                 else if (c === cfg.cmd.projector_second_forward) {
-                    if (other === '') {
-                        //skip modification
+                    if (current === cfg.cmd.projectors_backward) {
+                        c = cfg.cmd.projector_backward_projector_second_forward;
+                    }
+                    else if (current === cfg.cmd.projector_forward_projector_second_backward) {
+                        c = cfg.cmd.projectors_forward;
                     }
                     else if (other === cfg.cmd.projector_forward) {
                         c = cfg.cmd.projectors_forward;
@@ -238,8 +237,11 @@ class Grid {
                     }
                 }
                 else if (c === cfg.cmd.projector_second_backward) {
-                    if (other === '') {
-                        //skip modification
+                    if (current === cfg.cmd.projectors_forward) {
+                        c = cfg.cmd.projector_forward_projector_second_backward;
+                    }
+                    else if (current === cfg.cmd.projector_backward_projector_second_forward) {
+                        c = cfg.cmd.projectors_backward;
                     }
                     else if (other === cfg.cmd.projector_forward) {
                         c = cfg.cmd.projector_forward_projector_second_backward;
@@ -249,41 +251,47 @@ class Grid {
                     }
                 }
             }
-            console.log(c);
             seq.set(x, c);
         }
         else {
-            if (seq.grid[x]) {
-                current = seq.grid[x].cmd + ''; // cast to string, bad hack
-            }
-            if (cam.second.enabled) {
-                other = this.otherCmd(x, c);
-                if (c === cfg.cmd.camera_forward
-                    || c === cfg.cmd.camera_backward) {
-                    if (other === '') {
-                        c = '';
-                    }
-                    else if (other === cfg.cmd.camera_second_forward) {
+            if (cam.second.enabled && current.indexOf('C') !== -1) {
+                if (current === cfg.cmd.cameras_forward) {
+                    if (other === cfg.cmd.camera_second_forward) {
                         c = cfg.cmd.camera_second_forward;
-                    }
-                    else if (other === cfg.cmd.camera_second_backward) {
-                        c = cfg.cmd.camera_second_backward;
-                    }
-                }
-                else if (c === cfg.cmd.camera_second_forward
-                    || c === cfg.cmd.camera_second_backward) {
-                    if (other === '') {
-                        c = '';
                     }
                     else if (other === cfg.cmd.camera_forward) {
                         c = cfg.cmd.camera_forward;
+                    }
+                }
+                else if (current === cfg.cmd.cameras_backward) {
+                    if (other === cfg.cmd.camera_second_backward) {
+                        c = cfg.cmd.camera_second_backward;
                     }
                     else if (other === cfg.cmd.camera_backward) {
                         c = cfg.cmd.camera_backward;
                     }
                 }
+                else if (current === cfg.cmd.camera_forward_projector_second_backward) {
+                    if (other === cfg.cmd.camera_second_backward) {
+                        c = cfg.cmd.camera_second_backward;
+                    }
+                    else if (other === cfg.cmd.camera_forward) {
+                        c = cfg.cmd.camera_forward;
+                    }
+                }
+                else if (current === cfg.cmd.camera_backward_projector_second_forward) {
+                    if (other === cfg.cmd.camera_second_forward) {
+                        c = cfg.cmd.camera_second_forward;
+                    }
+                    else if (other === cfg.cmd.camera_backward) {
+                        c = cfg.cmd.camera_backward;
+                    }
+                }
+                else {
+                    c = '';
+                }
             }
-            if (proj.second.enabled) {
+            else if (proj.second.enabled && current.indexOf('P') !== -1) {
                 other = this.otherCmd(x, c);
                 if (current === cfg.cmd.projectors_forward) {
                     if (other === cfg.cmd.projector_second_forward) {
@@ -317,12 +325,17 @@ class Grid {
                         c = cfg.cmd.projector_backward;
                     }
                 }
+                else {
+                    c = '';
+                }
+            }
+            else {
+                c = '';
             }
             if (c === '') {
                 seq.unset(x);
             }
             else {
-                console.log(c);
                 seq.set(x, c);
             }
         }
