@@ -14,5 +14,7 @@
             "log" : ["./lib/log"]
         }
     },
-    "exclude" : []
+    "exclude" : [
+        "./app"
+    ]
 }
