@@ -18,7 +18,7 @@ cam.set = function (dir, callback) {
 	}
 	obj = {
 		dir : dir,
-		id : uuid.v4()
+		id : uuid()
 	};
 	ipcRenderer.sendSync(cam.id, obj);
 
@@ -33,7 +33,7 @@ cam.setValue = function (val) {
 	'use strict';
 	var obj = {
 		val: val,
-		id : uuid.v4()
+		id : uuid()
 	};
 	ipcRenderer.sendSync(cam.id, obj);
 };
@@ -45,7 +45,7 @@ cam.move = function (callback) {
 	}
 	obj = {
 		frame : true,
-		id : uuid.v4()
+		id : uuid()
 	};
 	ipcRenderer.sendSync(cam.id, obj);
 
@@ -67,6 +67,18 @@ cam.end = function (c, id, ms) {
 		} else {
 			cam.pos -= 1;
 		}
+	} else if (c === cfg.arduino.cmd.cameras) {
+		if (cam.dir) {
+			cam.pos += 1;
+		} else {
+			cam.pos -= 1;
+		}
+		if (cam.second.dir) {
+			cam.second.pos += 1;
+		} else {
+			cam.second.pos -= 1;
+		}
+		gui.counterUpdate('cam2', cam.second.pos);
 	}
 	gui.counterUpdate('cam', cam.pos)
 	if (typeof cam.queue[id] !== 'undefined') {
@@ -120,7 +132,7 @@ cam.second.set = function (dir, callback) {
 	}
 	obj = {
 		dir : dir,
-		id : uuid.v4()
+		id : uuid()
 	};
 	ipcRenderer.sendSync(cam.second.id, obj);
 
@@ -135,7 +147,7 @@ cam.second.setValue = function (val) {
 	'use strict';
 	var obj = {
 		val: val,
-		id : uuid.v4()
+		id : uuid()
 	};
 	ipcRenderer.sendSync(cam.second.id, obj);
 };
@@ -147,7 +159,7 @@ cam.second.move = function (callback) {
 	}
 	obj = {
 		frame : true,
-		id : uuid.v4()
+		id : uuid()
 	};
 	ipcRenderer.sendSync(cam.second.id, obj);
 
@@ -164,13 +176,13 @@ cam.second.end = function (c, id, ms) {
 	} else if (c === cfg.arduino.cmd.camera_second_backward) {
 		cam.second.dir = false;
 	} else if (c === cfg.arduino.cmd.camera_second) {
-		if (cam.dir) {
+		if (cam.second.dir) {
 			cam.second.pos += 1;
 		} else {
 			cam.second.pos -= 1;
 		}
 	}
-	gui.counterUpdate('cam', cam.second.pos)
+	gui.counterUpdate('cam2', cam.second.pos)
 	if (typeof cam.second.queue[id] !== 'undefined') {
 		if (typeof cam.queue[id].callback !== 'undefined') {
 			cam.second.queue[id].callback(ms);
@@ -179,7 +191,7 @@ cam.second.end = function (c, id, ms) {
 		cam.second.lock = false;
 	}
 };
-cam.listen = function () {
+cam.second.listen = function () {
 	'use strict';
 	ipcRenderer.on(cam.second.id, function (event, arg) {
 		cam.second.end(arg.cmd, arg.id, arg.ms);		

@@ -18,7 +18,7 @@ proj.set = function (dir, callback) {
 	}
 	obj = {
 		dir : dir,
-		id : uuid.v4()
+		id : uuid()
 	};
 	ipcRenderer.sendSync(proj.id, obj);
 
@@ -36,7 +36,7 @@ proj.move = function (callback) {
 	}
 	obj = {
 		frame : true,
-		id : uuid.v4()
+		id : uuid()
 	};
 	ipcRenderer.sendSync(proj.id, obj);
 
@@ -58,6 +58,18 @@ proj.end = function (c, id, ms) {
 		} else {
 			proj.pos -= 1;
 		}
+	} else if (c === cfg.arduino.cmd.projectors) {
+		if (proj.dir) {
+			proj.pos += 1;
+		} else {
+			proj.pos -= 1;
+		}
+		if (proj.second.dir) {
+			proj.second.pos += 1;
+		} else {
+			proj.second.pos -= 1;
+		}
+		gui.counterUpdate('proj2', proj.second.pos)
 	}
 	gui.counterUpdate('proj', proj.pos)
 	if (typeof proj.queue[id] !== 'undefined') {
@@ -71,6 +83,7 @@ proj.end = function (c, id, ms) {
 proj.listen = function () {
 	'use strict';
 	ipcRenderer.on(proj.id, function (event, arg) {
+		console.dir(arg)
 		proj.end(arg.cmd, arg.id, arg.ms);		
 		return event.returnValue = true;
 	});
@@ -80,7 +93,7 @@ proj.setValue = function (val) {
 	'use strict';
 	var obj = {
 		val: val,
-		id : uuid.v4()
+		id : uuid()
 	};
 	ipcRenderer.sendSync(proj.id, obj);
 };
@@ -120,7 +133,7 @@ proj.second.set = function (dir, callback) {
 	}
 	obj = {
 		dir : dir,
-		id : uuid.v4()
+		id : uuid()
 	};
 	ipcRenderer.sendSync(proj.second.id, obj);
 
@@ -138,7 +151,7 @@ proj.second.move = function (callback) {
 	}
 	obj = {
 		frame : true,
-		id : uuid.v4()
+		id : uuid()
 	};
 	ipcRenderer.sendSync(proj.second.id, obj);
 
@@ -155,7 +168,7 @@ proj.second.end = function (c, id, ms) {
 	} else if (c === cfg.arduino.cmd.projector_second_backward) {
 		proj.second.dir = false;
 	} else if (c === cfg.arduino.cmd.projector_second) {
-		if (proj.dir) {
+		if (proj.second.dir) {
 			proj.second.pos += 1;
 		} else {
 			proj.second.pos -= 1;
@@ -182,7 +195,7 @@ proj.second.setValue = function (val) {
 	'use strict';
 	var obj = {
 		val: val,
-		id : uuid.v4()
+		id : uuid()
 	};
 	ipcRenderer.sendSync(proj.second.id, obj);
 };

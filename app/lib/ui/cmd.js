@@ -50,6 +50,57 @@ cmd.projector_backward = function (callback) {
 		}, cfg.arduino.serialDelay);
 	}
 };
+
+cmd.projector_second_forward = function (callback) {
+	'use strict';
+	var res = function (ms) {
+		$('#cmd_proj2_forward').removeClass('active');
+		gui.updateState();
+		if (callback) { callback(ms); }
+	};
+	$('#cmd_proj2_forward').addClass('active');
+	if (!proj.second.dir) {
+		proj.second.set(true, function (ms) {				
+			setTimeout(function () {
+				proj.second.move(res);
+			}, cfg.arduino.serialDelay);
+		});
+	} else {
+		setTimeout(function () {
+			proj.second.move(res);
+		}, cfg.arduino.serialDelay);
+	}
+};
+cmd.projector_second_backward = function (callback) {
+	'use strict';
+	var res = function (ms) {
+		$('#cmd_proj2_backward').removeClass('active');
+		gui.updateState();
+		if (callback) { callback(ms); }
+	};
+	$('#cmd_proj2_backward').addClass('active');
+	if (proj.second.dir) {
+		proj.second.set(false, function (ms) {
+			setTimeout(function () {
+				proj.second.move(res);
+			}, cfg.arduino.serialDelay);
+		});
+	} else {
+		setTimeout(function () {
+			proj.second.move(res);
+		}, cfg.arduino.serialDelay);
+	}
+};
+
+/*
+no ui for these?
+cmd.projectors_forward = function (callback) {};
+cmd.projectors_backward = function (callback) {};
+
+cmd.projector_forward_projector_second_backward = function (callback) {};
+cmd.projector_backward_projector_second_forward = function (callback) {};
+*/
+
 /**
  * Move the camera one frame forward
  *
@@ -208,14 +259,136 @@ cmd.black_backward = function (callback) {
  *
  * @param {function} callback  Function to call after action
  **/
-cmd.projector_second_forward = function (callback) {};
-cmd.projector_second_backward = function (callback) {};
+cmd.camera_second_forward = function (callback) {
+	'use strict';
+	var off = [0, 0, 0];
+	var res = function (ms) {
+		gui.updateState();
+		setTimeout(function () {
+			light.display(off);
+			light.set(off, function () {
+				$('#cmd_cam2_forward').removeClass('active');
+				if (callback) { callback(ms); }
+			});
+		}, cfg.arduino.serialDelay);	
+	};
+	$('#cmd_cam2_forward').addClass('active');
+	if (!cam.second.dir) {
+		cam.second.set(true, function () {
+			setTimeout( function () {
+				light.display(rgb);
+				light.set(rgb, function () {
+					setTimeout( function () {
+						cam.second.move(res);
+					}, cfg.arduino.serialDelay);
+				});
+			}, cfg.arduino.serialDelay);
+		});
+	} else {
+		light.display(rgb);
+		light.set(rgb, function () {
+			setTimeout(function () {
+				cam.second.move(res);
+			}, cfg.arduino.serialDelay);
+		});
+	}
+};
+cmd.camera_second_backward = function (callback) {
+	'use strict';
+	var off = [0, 0, 0];
+	var res = function (ms) {
+		gui.updateState();
+		light.display(off);
+		light.set(off, function () {
+			$('#cmd_cam_backward').removeClass('active');
+			if (callback) { callback(ms); }
+		});	
+	};
+	$('#cmd_cam_backward').addClass('active');
+	if (cam.second.dir) {
+		cam.second.set(false, function () {
+			setTimeout(function () {
+				light.display(rgb);
+				light.set(rgb, function () {
+					cam.second.move(res);
+				});
+			}, cfg.arduino.serialDelay);
+		});
+	} else {
+		setTimeout(function () {
+			light.display(rgb);
+			light.set(rgb, function () {
+				cam.second.move(res);
+			});
+		}, cfg.arduino.serialDelay);
+	}
+};
 
-cmd.projectors_forward = function (callback) {};
-cmd.projectors_backward = function (callback) {};
+cmd.black_second_forward = function (callback) {
+	'use strict';
+	var off = [0, 0, 0];
+	var res = function (ms) {
+		$('#cmd_black2_forward').removeClass('active');
+		gui.updateState();	
+		if (callback) { callback(ms); }	
+	};
+	$('#cmd_black2_forward').addClass('active');
+	if (!cam.second.dir) {
+		cam.second.set(true, function () {
+			setTimeout( function () {
+				light.display(off);
+				light.set(off, function () {
+					setTimeout( function () {
+						cam.second.move(res);
+					}, cfg.arduino.serialDelay);
+				});
+			}, cfg.arduino.serialDelay);
+		});
+	} else {
+		light.display(off);
+		light.set(off, function () {
+			setTimeout(function () {
+				cam.second.move(res);
+			}, cfg.arduino.serialDelay);
+		});
+	}
+};
 
-cmd.projector_forward_projector_second_backward = function (callback) {};
-cmd.projector_backward_projector_second_forward = function (callback) {};
+cmd.black2_backward = function (callback) {
+	'use strict';
+	var off = [0, 0, 0];
+	var res = function (ms) {
+		$('#cmd_black2_backward').removeClass('active');
+		gui.updateState();
+		if (callback) { callback(ms); }
+	};
+	$('#cmd_black2_backward').addClass('active');
+	if (cam.second.dir) {
+		cam.second.set(false, function () {
+			setTimeout(function () {
+				light.display(off);
+				light.set(off, function () {
+					cam.second.move(res);
+				});
+			}, cfg.arduino.serialDelay);
+		});
+	} else {
+		setTimeout(function () {
+			light.display(off);
+			light.set(off, function () {
+				cam.second.move(res);
+			});
+		}, cfg.arduino.serialDelay);
+	}
+};
+
+/*
+cmd.cameras_forward = function (callback) {};
+cmd.cameras_backward = function (callback) {};
+
+cmd.camera_forward_camera_second_backward = function (callback) {};
+cmd.camera_backward_camera_second_forward = function (callback) {};
+*/
 
 /**
  * Move the camera to a specific frame. Accepts the input with the "move_cam_to"

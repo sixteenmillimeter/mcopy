@@ -92,8 +92,7 @@ class Projector {
 	}
 
 	public async both (frame : any, id : string) {
-		id = 'projectors';
-		const cmd : string = this.cfg.arduino.cmd[id];
+		const cmd : string = this.cfg.arduino.cmd[this.id + 's'];
 		let ms : number;
 		try {
 			ms = await this.arduino.send(this.id, cmd)

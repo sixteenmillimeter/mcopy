@@ -92,7 +92,7 @@ light.init = function () {
 light.disable = function () {
 	const obj = {
 		disable : true,
-		id : uuid.v4()
+		id : uuid()
 	};
 	light.disabled = true;
 	$('#tb_toolbar_item_light').hide();
@@ -104,7 +104,7 @@ light.disable = function () {
 light.enable = function () {
 	const obj = {
 		enable : true,
-		id : uuid.v4()
+		id : uuid()
 	};
 	light.disabled = false;
 	$('#tb_toolbar_item_light').show();
@@ -156,7 +156,7 @@ light.set = function (rgb, callback) { //rgb = [0,0,0]
 
 	obj = {
 		rgb,
-		id : uuid.v4()
+		id : uuid()
 	};
 	ipcRenderer.sendSync(light.id, obj);
 

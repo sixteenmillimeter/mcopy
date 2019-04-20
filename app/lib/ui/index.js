@@ -122,6 +122,7 @@ gui.updateState = function () {
 	'use strict';
 	const cpos = cam.pos;
 	const ppos = proj.pos;
+	
 	const p2pos = proj.second.pos;
 	const c2pos = cam.second.pos;
 

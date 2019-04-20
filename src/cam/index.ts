@@ -110,7 +110,6 @@ class Camera {
 	}
 
 	public async both (frame : any, id : string) {
-		id = 'cameras';
 		const cmd : string = this.cfg.arduino.cmd[id];
 		let ms : number;
 		try {
