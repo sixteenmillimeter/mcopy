@@ -83,7 +83,6 @@ proj.end = function (c, id, ms) {
 proj.listen = function () {
 	'use strict';
 	ipcRenderer.on(proj.id, function (event, arg) {
-		console.dir(arg)
 		proj.end(arg.cmd, arg.id, arg.ms);		
 		return event.returnValue = true;
 	});
