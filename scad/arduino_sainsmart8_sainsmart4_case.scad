@@ -17,10 +17,10 @@ module arduino () {
 
 projection () difference () {
 	$fn = 60;
-	Box2D([150, 150, 46], center = true);
+	Box2D([170, 170, 50], center = true);
 	
 	//sainsmart 8
-	translate([10, 43, 0]) {
+	translate([10, 43 + 10, 0]) {
 		translate([0, 0, 0]) cylinder(r = 3 / 2, h = 10, center = true);
 		translate([0, 121.5, 0]) cylinder(r = 3 / 2, h = 10, center = true);
 		translate([52, 121.5, 0]) cylinder(r = 3 / 2, h = 10, center = true);
@@ -34,21 +34,21 @@ projection () difference () {
 		translate([62, 0, 0]) cylinder(r = 3 / 2, h = 10, center = true);
 	}
 	//arduino
-	translate([-40, 64, 0]) arduino();
-	translate([-50, 46 / 2 - 9, 0]) cube([18, 18, 20], center = true);
-	translate([-19, 46 / 2 - 9 - 3 ,0]) cylinder(r = 10 / 2, h= 30, center = true);
-	translate([-19, 46 / 2 - 9 - 3 + 5 ,0]) cube([10, 10, 30], center = true);
+	translate([-40, 64 + 12, 0]) arduino();
+	translate([-50, 46 / 2 - 9 + 2, 0]) cube([18, 18, 20], center = true);
+	translate([-19, 46 / 2 - 9 - 3 + 2, 0]) cylinder(r = 10 / 2, h= 30, center = true);
+	translate([-19, 46 / 2 - 9 - 3 + 5 + 2, 0]) cube([10, 10, 30], center = true);
 	
 	//wires
 	
-	translate([120, 46 / 2 - 12, 0]) cylinder(r = 5 / 2, h= 30, center = true);
-	translate([120, 46 / 2 - 12 + 7, 0]) cube([5, 14, 30], center = true);
+	translate([140, 46 / 2 - 12, 0]) cylinder(r = 5 / 2, h= 30, center = true);
+	translate([140, 46 / 2 - 12 + 7, 0]) cube([5, 14, 30], center = true);
 	
-	translate([150, 46 / 2 - 12, 0]) cylinder(r = 5 / 2, h= 30, center = true);
-	translate([150, 46 / 2 - 12 + 7, 0]) cube([5, 14, 30], center = true);
+	translate([170, 46 / 2 - 12, 0]) cylinder(r = 5 / 2, h= 30, center = true);
+	translate([170, 46 / 2 - 12 + 7, 0]) cube([5, 14, 30], center = true);
 	
-	translate([180, 46 / 2 - 12, 0]) cylinder(r = 5 / 2, h= 30, center = true);
-	translate([180, 46 / 2 - 12 + 7, 0]) cube([5, 14, 30], center = true);
+	translate([200, 46 / 2 - 12, 0]) cylinder(r = 5 / 2, h= 30, center = true);
+	translate([200, 46 / 2 - 12 + 7, 0]) cube([5, 14, 30], center = true);
 	
 	//wires
 	
