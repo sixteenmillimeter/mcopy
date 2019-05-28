@@ -95,14 +95,7 @@ mse.mscript.toSequence = function () {
 	if (data !== mse.mscript.raw) {
 		cont = confirm(`Current script has not been compiled. Compile first?`);
 		if (cont) {
-			return mse.mscript.compile(() => {
-				mse.console.print(`Sending compiled script to GUI sequencer...`);
-				seq.clear();
-				mse.mscript.toGUI();
-				grid.refresh();
-				seq.stats();
-				return nav.change('sequencer');
-			})
+			mse.mscript.compile()
 		}
 	}
 	mse.console.print(`Sending compiled script to GUI sequencer...`);
@@ -112,19 +105,17 @@ mse.mscript.toSequence = function () {
 	seq.stats();
 	return nav.change('sequencer');
 }
-mse.mscript.compile = function (cb) {
+mse.mscript.compile = function () {
 	'use strict';
 	const data = mse.mscript.editor.getValue();
-	let mscript = new Mscript();
-	let output;
+	const mscript = new Mscript();
+	let output = mscript.interpret(data);
+	let len = output.arr.length;
+
 	mse.mscript.raw = data;
-	mscript.interpret(data, (output) => {
-		let len = output.arr.length;
-		mse.mscript.data = output;
-		//mse.console.print(JSON.stringify(output, null, '\t') + '\n')
-		mse.console.print(`Sequence contains ${len} step${(len === 1 ? '' : 's')}, CAM: ${output.cam}, PROJ: ${output.proj}`);
-		if (cb) cb();
-	});
+	mse.mscript.data = output;
+	//mse.console.print(JSON.stringify(output, null, '\t') + '\n')
+	mse.console.print(`Sequence contains ${len} step${(len === 1 ? '' : 's')}, CAM: ${output.cam}, PROJ: ${output.proj}`);
 };
 
 mse.mscript.prepare = function () {
@@ -153,21 +144,13 @@ mse.mscript.run = function () {
 	if (data !== mse.mscript.raw) {
 		cont = confirm(`Current script has not been compiled. Compile first?`);
 		if (cont) {
-			return mse.mscript.compile(() => {
-				mse.console.print(`Started running compiled sequence...`);
-				arr = mse.mscript.prepare();
-				gui.overlay(true);
-				gui.spinner(true, `Running mscript sequence...`, true, true);
-				return seq.exec(arr, 1);
-			})
+			mse.mscript.compile();
 		}
 	}
 	arr = mse.mscript.prepare();
-
 	mse.console.print(`Started running compiled sequence...`);
 	gui.overlay(true);
 	gui.spinner(true, `Running mscript sequence...`, true, true);
-
 	return seq.exec(arr, 1);
 };
 
@@ -201,7 +184,7 @@ mse.console.exec = function () {
 	let command;
 	mse.console.parse();
 	command = mse.console.lines[mse.console.lines.length - 1].replace('>', '').trim();
-	console.log(command);
+	log.info(command);
 	mse.console.newLine();
 	if (mscript.cmd.indexOf(command) !== -1) {
 		if (command === 'CF') {
