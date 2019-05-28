@@ -22,7 +22,8 @@ class Devices {
 	private cam : any;
 
 	/**
-	 * 
+	 * Constructor assigns arduino, settings, UI browser window and cam objects
+	 * locally to this class for reference.
 	 **/
 	constructor (arduino : Arduino, settings : any, mainWindow : any, cam : any) {
 		this.arduino = arduino;
