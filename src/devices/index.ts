@@ -33,7 +33,8 @@ class Devices {
 		this.init();
 	}
 	/**
-	 * 
+	 * Initialize the log for "devices". Establish an ipc connection to the UI.
+	 * Start listening on that ipc connection.
 	 **/
 	private async init () {
 		this.log = await Log({ label : 'devices' })
@@ -41,13 +42,14 @@ class Devices {
 		this.listen()
 	}
 	/**
-	 * 
+	 * Listen to the "profile" channel for messages from the UI.
 	 **/
 	private listen () {
 		this.ipc.on('profile', this.listener.bind(this));
 	}
 	/**
-	 * 
+	 * The "profile" channel callback. If a profile is changed, set it in the
+	 * local settings object.
 	 **/
 	private listener (event : any, arg : any){
 		this.log.info(`Saving profile ${arg.profile}`, 'SETTINGS', false, false);
