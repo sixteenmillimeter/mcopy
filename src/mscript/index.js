@@ -161,7 +161,7 @@ class Mscript {
 		if (!this.variables[key] || update) {
 			this.variables[key] = value;
 		}
-		console.dir(this.variables)
+		//console.dir(this.variables)
 	}
 	variable_replace(line) {
 
@@ -259,7 +259,7 @@ class Mscript {
 				}
 			}
 		} else {
-			if (target > this.cam) {
+			if (this.target > this.cam) {
 				this.dist = this.target - this.cam;
 				for (let x = 0; x < this.dist; x++) {
 					this.arr.push('BF');
