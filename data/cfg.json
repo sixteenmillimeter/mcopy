@@ -1,5 +1,5 @@
 {
-  "version": "1.4.2",
+  "version": "1.4.5",
   "ext_port": 1111,
   "profiles": {
     "mcopy": {
@@ -88,7 +88,7 @@
     "camera_second_forward": "C2F",
     "camera_second_backward": "C2B",
     "cameras_forward": "CCF",
-    "cameras_backward" : "CCB",
+    "cameras_backward": "CCB",
     "camera_forward_camera_second_backward": "CFCB",
     "camera_backward_camera_second_forward": "CBCF",
     "projector_second_forward": "P2F",
@@ -148,9 +148,9 @@
       "camera_second_backward": "2",
       "camera_second": "3",
       "cameras": "4",
-      "camera_projectors_identifier" : "5",
-      "cameras_projector_identifier" : "6",
-      "cameras_projectors_identifier" : "7"
+      "camera_projectors_identifier": "5",
+      "cameras_projector_identifier": "6",
+      "cameras_projectors_identifier": "7"
     }
   }
 }

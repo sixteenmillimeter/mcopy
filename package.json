@@ -1,6 +1,6 @@
 {
   "name": "mcopy",
-  "version": "1.4.3",
+  "version": "1.4.5",
   "description": "Small gauge film optical printer platform",
   "main": "build.js",
   "directories": {
@@ -11,8 +11,8 @@
     "test": "sh ./scripts/test.sh",
     "docs": "sh ./scripts/docs.sh",
     "build": "sh ./scripts/build.sh",
-    "patch": "sh ./scripts/version.sh patch",
-    "minor": "sh ./scripts/version.sh minor"
+    "patch": "bash ./scripts/version.sh patch",
+    "minor": "bash ./scripts/version.sh minor"
   },
   "repository": {
     "type": "git",
