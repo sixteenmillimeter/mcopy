@@ -37,8 +37,9 @@ mse.mscript.fromSequence = function () {
 	let cont;
 	let cmd;
 	//str = seq.grid.map(step => { return step.cmd }).join('\n'); //quick hack
-	console.dir(seq.grid);
+	//console.dir(seq.grid);
 	for (let step of seq.grid) {
+		if (!step || !step.cmd) continue;
 		cmd = step.cmd;
 		if (tmp.length > 0 && tmp[tmp.length - 1].cmd === cmd) {
 			tmp[tmp.length - 1].num++;
@@ -49,13 +50,13 @@ mse.mscript.fromSequence = function () {
 	tmp = tmp.map(line => {
 		return `${line.cmd} ${line.num}`
 	})
-	
-	if (seq.loop > 1) {
+	//console.dir(tmp)
+	if (seq.gridLoops > 1) {
 		tmp.map(line => {
 			return `	${line}`;
 		})
 		tmp.reverse();
-		tmp.push(`LOOP ${seq.loop}`);
+		tmp.push(`LOOP ${seq.gridLoops}`);
 		tmp.reverse();
 		tmp.push('END');
 	}
@@ -75,7 +76,6 @@ mse.mscript.toGUI = function () {
 	for (let x = 0; x < mse.mscript.data.arr.length; x++) {
 		c = mse.mscript.data.arr[x];
 		seq.set(x, c);
-		console.dir(mse.mscript.data);
 		if (c === 'CF' || c === 'CB') {
 			if (typeof mse.mscript.data.light[x] !== 'undefined' && mse.mscript.data.light[x] !== '') {
 				seq.setLight(x, mse.mscript.data.light[x]);
