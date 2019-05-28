@@ -32,7 +32,7 @@ gui.counterFormat = function (t, normal, prevent) {
 };
 gui.counterUpdate = function (which, raw) {
 	'use strict';
-	const formattedVal = gui.fmtZero(raw, 6)
+	const formattedVal = gui.fmtZero(raw, 6);
 	$(`.${which} .count`).val(formattedVal);
 };
 gui.notify = function (title, message) {
