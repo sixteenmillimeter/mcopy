@@ -37,15 +37,22 @@ gui.counterUpdate = function (which, raw) {
 };
 gui.notify = function (title, message) {
 	'use strict';
-	notifier.notify({
-		title: title,
-		message: message,
-		//icon: path.join(__dirname, 'coulson.jpg'), // Absolute path (doesn't work on balloons) 
-		sound: true, // Only Notification Center or Windows Toasters 
-		wait: true // Wait with callback, until user action is taken against notification 
-		}, function (err, response) {
-		// Response is response from notification 
-	});
+	return new Promise((resolve, reject) => {
+		notifier.notify({
+			title: title,
+			message: message,
+			//icon: path.join(__dirname, 'coulson.jpg'), // Absolute path (doesn't work on balloons) 
+			sound: true, // Only Notification Center or Windows Toasters 
+			wait: true // Wait with callback, until user action is taken against notification 
+			}, function (err, response) {
+				// Response is response from notification 
+				if (err) {
+					log.error(`Error with notification`, err);
+					return reject(err);
+				}
+				return resolve(true);
+		});
+	})
 };
 gui.updateCam = function (t) {
 	'use strict';
