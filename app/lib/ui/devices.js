@@ -96,6 +96,7 @@ devices.ready = function (event, arg) {
 	seq.set(1, cfg.cmd.projector_forward);
 	grid.state(0);
 	grid.state(1);
+	seq.stats();
 	
 	if (arg.projector_second) {
 		//add second row of projector pads to grid
