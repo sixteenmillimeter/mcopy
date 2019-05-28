@@ -80,12 +80,12 @@ mse.mscript.toGUI = function () {
 			if (typeof mse.mscript.data.light[x] !== 'undefined' && mse.mscript.data.light[x] !== '') {
 				seq.setLight(x, mse.mscript.data.light[x]);
 			} else {
-				seq.setLight(x, light.color.join(','));
+				seq.setLight(x, light.color);
 			}
 		} else {
 			//unset light?
 		}
-		grid.state(i);
+		grid.state(x);
 	}
 };
 mse.mscript.toSequence = function () {
