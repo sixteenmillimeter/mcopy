@@ -406,9 +406,9 @@ cmd.camera_to = function (t) {
 	let cont;
 	if (val !== cam.pos) {
 		if (val < cam.pos) {
-			total = -(cam.pos - val)
+			total = -(cam.pos - val);
 		} else if (val > cam.pos) {
-			total = val - cam.pos
+			total = val - cam.pos;
 		}
 		if (total > 0) {
 			c = cfg.cmd.black_forward;
@@ -424,6 +424,42 @@ cmd.camera_to = function (t) {
 		}
 	}
 };
+
+/**
+ * Move the secondary camera to a specific frame. Accepts the input with the "move_cam_to_2"
+ * value. Moves as black frames to prevent multiple exposure.
+ *
+ * @param {object} t  HTML input element with the move to val
+ **/
+cmd.camera_second_to = function (t) {
+	const raw = $('#move_cam_to_2').val();
+	const val = parseInt(raw);
+	let proceed = false;
+	let total;
+	let steps = [];
+	let c;
+	let cont;
+	if (val !== cam.second.pos) {
+		if (val < cam.second.pos) {
+			total = -(cam.second.pos - val)
+		} else if (val > cam.second.pos) {
+			total = val - cam.second.pos;
+		}
+		if (total > 0) {
+			c = cfg.cmd.black_second_forward;
+		} else if (total < 0) {
+			c = cfg.cmd.black_second_backward;
+		}
+		steps = [{ cmd : c, light : [0, 0, 0] }]
+		cont = confirm(`Do you want to ${(total > 0 ? 'advance' : 'rewind')} the secondary camera ${total} frame${(total === 1 ? '' : 's')} to frame ${val}?`)
+		if (cont) {
+			gui.overlay(true);
+			gui.spinner(true, `Second camera ${(total > 0 ? 'advancing' : 'rewinding')} ${total} frame${(total === 1 ? '' : 's')} `, true, true);
+			seq.exec(steps, Math.abs(total));
+		}
+	}
+};
+
 /**
  * Move the projector to a specific frame. Accepts the input with the "move_proj_to"
  * value.
@@ -440,9 +476,9 @@ cmd.projector_to = function (t) {
 	let cont
 	if (val !== proj.pos) {
 		if (val < proj.pos) {
-			total = -(proj.pos - val)
+			total = -(proj.pos - val);
 		} else if (val > proj.pos) {
-			total = val - proj.pos
+			total = val - proj.pos;
 		}
 		if (total > 0) {
 			c = cfg.cmd.projector_forward;
@@ -456,6 +492,43 @@ cmd.projector_to = function (t) {
 		if (cont) {
 			gui.overlay(true);
 			gui.spinner(true, `Projector ${(total > 0 ? 'advancing' : 'rewinding')} ${total} frame${(total === 1 ? '' : 's')} `, true, true);
+			seq.exec(steps, Math.abs(total));
+		}
+	}
+}
+
+/**
+ * Move the secondary projector to a specific frame. Accepts the input with the "move_proj_to_2"
+ * value.
+ *
+ * @param {object} t  HTML input element with the move to val
+ **/
+cmd.projector_second_to = function (t) {
+	const raw = $('#move_proj_to_2').val();
+	const val = parseInt(raw);
+	let proceed = false;
+	let total;
+	let steps = [];
+	let c;
+	let cont
+	if (val !== proj.second.pos) {
+		if (val < proj.second.pos) {
+			total = -(proj.second.pos - val);
+		} else if (val > proj.second.pos) {
+			total = val - proj.second.pos;
+		}
+		if (total > 0) {
+			c = cfg.cmd.projector_second_forward;
+		} else if (total < 0) {
+			c = cfg.cmd.projector_second_backward;
+		} else {
+			return false;
+		}
+		steps = [ { cmd : c }];
+		cont = confirm(`Do you want to ${(total > 0 ? 'advance' : 'rewind')} the secondary projector ${total} frame${(total === 1 ? '' : 's')} to frame ${val}?`)
+		if (cont) {
+			gui.overlay(true);
+			gui.spinner(true, `Second projector ${(total > 0 ? 'advancing' : 'rewinding')} ${total} frame${(total === 1 ? '' : 's')} `, true, true);
 			seq.exec(steps, Math.abs(total));
 		}
 	}

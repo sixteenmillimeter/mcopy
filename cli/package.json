@@ -1,6 +1,6 @@
 {
   "name": "mcopy-cli",
-  "version": "1.4.7",
+  "version": "1.4.8",
   "description": "CLI for controlling the mcopy optical printer platform",
   "main": "index.js",
   "scripts": {
