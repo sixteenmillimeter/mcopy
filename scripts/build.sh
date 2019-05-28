@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./node_modules/.bin/tsc -p tsconfig.json
+./node_modules/.bin/tsc -p tsconfig.json --extendedDiagnostics
 
 #electron-build fails when local modules are in parent directory
 #copy them into lib directory
