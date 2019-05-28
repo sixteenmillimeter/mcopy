@@ -18,6 +18,7 @@ interface Arg {
 	step : number;
 	stop : boolean;
 	start : boolean;
+	ms : number;
 }
 
 interface Step {
@@ -48,7 +49,8 @@ class Sequence {
 		ipcRenderer.on(this.id, this.listener.bind(this))
 	}
 	private listener (event : Event, arg : Arg) {
-		//console.log(JSON.stringify(arg))
+		let timeStr;
+		console.log(JSON.stringify(arg))
 		if (arg.start) {
 			if (typeof arg.loop !== 'undefined' && typeof arg.step !== 'undefined') {
 				this.activeStep(arg.step);
@@ -69,6 +71,9 @@ class Sequence {
 				gui.overlay(false);
 				gui.spinner(false);
 				log.info('Sequence stopped', 'SERIAL', true);
+				log.info(typeof arg.ms)
+				timeStr = ( arg.ms < 2000 ) ? `${arg.ms}ms` : humanizeDuration(arg.ms);
+				gui.notify(`SEQUENCE`, `Sequence finished in ${timeStr}`);
 			}
 		}
 		return event.returnValue = true;

@@ -70,6 +70,8 @@ class Sequencer {
     }
     //new, replaces exec and init
     async start(arg) {
+        let startTime = +new Date();
+        let ms;
         if (arg && arg.arr) {
             this.arr = arg.arr; //overwrite sequence
         }
@@ -116,9 +118,10 @@ class Sequencer {
             this.log.info(`Ended loop ${x + 1}`);
             this.ui.send(this.id, { loop: x, stop: true });
         }
+        ms = (+new Date()) - startTime;
         //end sequence
         this.log.info(`Ended sequence`);
-        this.ui.send(this.id, { stop: true });
+        this.ui.send(this.id, { stop: true, ms });
     }
     //new
     pause() {

@@ -6,7 +6,6 @@ import Log = require('log');
 let seq : Sequencer;
 
 class Sequencer {
-	private time : number;
 	private running : boolean = false;
 	private paused : boolean = false;
 
@@ -86,6 +85,9 @@ class Sequencer {
 
 	//new, replaces exec and init
 	public async start (arg : any) {
+		let startTime : number = +new Date();
+		let ms : number;
+
 		if (arg && arg.arr) {
 			this.arr = arg.arr; //overwrite sequence
 		} else {
@@ -140,9 +142,11 @@ class Sequencer {
 			this.log.info(`Ended loop ${x + 1}`)
 			this.ui.send(this.id, { loop : x, stop : true });
 		}
+
+		ms = ( +new Date() ) - startTime;
 		//end sequence
 		this.log.info(`Ended sequence`)
-		this.ui.send(this.id, { stop : true })
+		this.ui.send(this.id, { stop : true, ms })
 	}
 
 	//new
