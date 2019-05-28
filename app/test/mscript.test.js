@@ -5,106 +5,164 @@ const mscript = new Mscript();
 
 const assert = require('assert')
 
-describe(`Basic functions`, () => {
+describe(`mscript module`, () => {
 	const script1 = 'CF\nPF\nCB\nPB\nBF\nBB';
 	const script2 = `CF 3\nPF 3`
 	const script3 = `CF\nPF`
 
-	mscript.interpret(script1, (obj) => {
-		assert.ok(obj.success, `Simple script1 compiles`)
+	it ('Should compile very short scripts as strings', () => {
+		let obj = mscript.interpret(script1)
+		assert.ok(obj.success, `Simple script1 compiles`);
 		assert.equal(obj.cam, 0, 'Camera gets equaled out');
 		assert.equal(obj.proj, 0, 'Projector gets cancelled out');
 		assert.equal(obj.arr.length, 6, 'Generate sequence of 6 steps');
 	});
 
-	mscript.interpret(script2, (obj) => {
-		let pass = false;
-		if (obj.success === true 
-			&& obj.cam === 3
-			&& obj.proj === 3 
-			&& obj.arr.length === 6) {
-			pass = true;
-		}
-		assert.ok(pass, `Simple script2 compiles`)
+	it ('Should compile script with count values after command', () => {
+		let obj = mscript.interpret(script2)
+		assert.ok(obj.success, `Simple script2 compiles`);
+		assert.equal(obj.arr[0], 'CF', `First step is a camera_forward command`);
+		assert.equal(obj.cam, 3, `Camera finished on frame 3`);
+		assert.equal(obj.proj, 3, `Projector finished on frame 3`); 
+		assert.equal(obj.arr.length,  6, `Generate sequence of 6 steps`);
 	});
 
-	let obj = mscript.interpret(script3)
-	assert.ok(true, 'Simple script3 with implied counts compiles')
-	//console.log(obj)
+
+	it ('Should compile with implied counts of 1', () => {
+		let obj = mscript.interpret(script3);
+		assert.ok(obj.success, 'Simple script3 with implied counts compiles');
+		//console.log(obj);
+	});
+
 });
 
-describe(`Commands with integers`, () => {
-	const script = 'CF 5\nPF 5\nCB 5\nPB 5\nBF 3\nBB 3';
+describe(`mscript - Commands with integers`, () => {
+	const script = `
+CF 5
+PF 5
+CB 5
+PB 5
+BF 3
+BB 3`;
 
-	mscript.interpret(script, (obj) => {
-		let pass = false;
-		if (obj.success === true 
-			&& obj.cam === 0
-			&& obj.proj === 0 
-			&& obj.arr.length === 26) {
-			pass = true;
-		}
-		assert.ok(pass, `Script with integers cancels out count, but generates list of commands`)
-	});
-})
-
-
-describe('State', () => {
-	const script = 'CF 1000\nCB 1000\nSET PROJ 200\nPB 200';
-
-	mscript.interpret(script, (obj) => {
-		let pass = false;
-		if (obj.success === true 
-			&& obj.cam === 0
-			&& obj.proj === 0) {
-			pass = true;
-		}
-		assert.ok(pass, `Basic state test`);
+	it ('Should compile script with integers as count values', () => {
+		mscript.interpret(script, (obj) => {
+			let pass = false;
+			if (obj.success === true 
+				&& obj.cam === 0
+				&& obj.proj === 0 
+				&& obj.arr.length === 26) {
+				pass = true;
+			}
+			assert.ok(pass, `Script with integers cancels out count, but generates list of commands`)
+		});
 	});
 });
 
-describe('Loop', () => {
-	const script1 = 'LOOP 10\nCF 3\nPF 1\nEND LOOP';
+describe(`mscript - Device commands with counts`, () => {
+	const script = `
+CAM 50
+PROJ 50`;
 
-	mscript.interpret(script1, (obj) => {
-		let pass = false;
-		if (obj.success === true 
-			&& obj.cam === 30
-			&& obj.proj === 10
-			&& obj.arr.length === 40) {
-			pass = true;
-		}
-		assert.ok(pass, 'Basic loop');
+	it ('Should compile script with device commands', () => {
+		mscript.interpret(script, (obj) => {
+			let pass = false;
+			if (obj.success === true 
+				&& obj.cam === 50
+				&& obj.proj === 50 
+				&& obj.arr.length === 100) {
+				pass = true;
+			}
+			assert.ok(pass, `Script generates 100 step sequence with 50 steps on each device`)
+		});
+	});
+});
 
+describe('mscript - State', () => {
+	const script = `
+CF 1000
+CB 1000
+SET PROJ 200
+PB 200`;
+
+	it ('Should manage state using SET commands', () => {
+		mscript.interpret(script, (obj) => {
+			let pass = false;
+			if (obj.success === true 
+				&& obj.cam === 0
+				&& obj.proj === 0) {
+				pass = true;
+			}
+			assert.ok(pass, `Basic state test`);
+		});
 	});
-	const script2 = 'LOOP 4\nLOOP 4\nPF\nBF\nEND LOOP\nEND LOOP';
-	mscript.interpret(script2, (obj) => {
-		let pass = false;
-		if (obj.success === true 
-			&& obj.cam === 16
-			&& obj.proj === 16
-			&& obj.arr.length === 32) {
-			pass = true;
-		}
-		assert.ok(pass, 'Recursive loop');
+});
+
+describe('mscript - Loop', () => {
+	const script1 = `
+LOOP 10
+	CF 3
+	PF 1
+END LOOP`;
+
+	it ('Should generate a looped sequence between LOOP and END LOOP statements', () => {
+		mscript.interpret(script1, (obj) => {
+			let pass = false;
+			if (obj.success === true 
+				&& obj.cam === 30
+				&& obj.proj === 10
+				&& obj.arr.length === 40) {
+				pass = true;
+			}
+			assert.ok(pass, 'Basic loop');
+		});
 	});
+
+	const script2 = `
+LOOP 4
+	LOOP 4
+		PF
+		BF
+	END LOOP
+END LOOP`;
+
+	it ('Should generate a sequence with nested loops', () => {
+		mscript.interpret(script2, (obj) => {
+			let pass = false;
+			if (obj.success === true 
+				&& obj.cam === 16
+				&& obj.proj === 16
+				&& obj.arr.length === 32) {
+				pass = true;
+			}
+			assert.ok(pass, 'Nested loop works');
+		});
+	});
+
 	//LOOP W/ CAM and PROJ
-	const script3 = 'LOOP 2\nCAM 4\nPROJ 4\nEND';
-	mscript.interpret(script3, (obj) => {
-		let pass = false;
-		if (obj.success === true 
-			&& obj.cam === 8
-			&& obj.proj === 8
-			&& obj.arr.length === 16
-			&& obj.light.length === 16
-			&& obj.light[0] === '0,0,0') {
-			pass = true;
-		}
-		assert.ok(pass, 'Basic cam/proj loop');
+	const script3 = `
+LOOP 2
+	CAM 4
+	PROJ 4
+END`;
+
+	it ('Should generate a sequence with CAM and PROJ statements', () => {
+		mscript.interpret(script3, (obj) => {
+			let pass = false;
+			if (obj.success === true 
+				&& obj.cam === 8
+				&& obj.proj === 8
+				&& obj.arr.length === 16
+				&& obj.light.length === 16
+				&& obj.light[0] === '0,0,0') {
+				pass = true;
+			}
+			assert.ok(pass, 'Basic cam/proj loop');
+		});
 	});
 });
 
-describe('Light', () => {
+describe('mscript - Light', () => {
 	//Lighting tests
 	const script1 = 'L 255,255,255\nCF\nPF';
 
@@ -153,7 +211,7 @@ describe('Light', () => {
 	});
 });
 
-describe('Fade', () => {
+describe('mscript - Fade', () => {
 
 	const script1 = 
 `F 72 0,0,0 10,20,30
@@ -189,7 +247,7 @@ CF 10`
 	});
 })
 
-describe('Variables', () => {
+/*describe('mscript - Variables', () => {
 	const script1 = 
 `@LIGHT=200,200,200
 @COUNT=1
@@ -201,4 +259,4 @@ PF
 		//console.dir(obj)
 		assert.ok(true)
 	})
-})
+})*/
