@@ -15,6 +15,9 @@
         }
     },
     "exclude" : [
-        "./app"
+        "./app",
+        "./cli",
+        "./node_modules",
+        "./dist"
     ]
 }
