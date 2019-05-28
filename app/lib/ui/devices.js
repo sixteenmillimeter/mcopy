@@ -46,7 +46,7 @@ devices.listen = function () {
 };
 devices.ready = function (event, arg) {
 	'use strict';
-	console.dir(arg)
+	//console.dir(arg)
 	let opt;
 	let devs = [];
 	let notify = 'Connected to ';
@@ -70,6 +70,8 @@ devices.ready = function (event, arg) {
 	}
 	if (notify !== 'Connected to ') {
 		gui.notify('DEVICES', notify);
+	} else {
+		gui.notify('DEVICES', 'Connected to mock devices')
 	}
 	if (devs.length > 0) {
 		$('#devices').empty();
