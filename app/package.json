@@ -63,6 +63,7 @@
     "log": "file:lib/log",
     "moment": "^2.24.0",
     "mscript": "file:lib/mscript",
+    "node-media-server": "^2.1.0",
     "node-notifier": "^5.4.0",
     "proj": "file:lib/proj",
     "request": "^2.88.0",

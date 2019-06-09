@@ -7,6 +7,7 @@ declare module 'uuid';
 declare module 'exec';
 declare module 'spawn';
 declare module 'systeminformation';
+declare module 'exit';
 
 interface Device {
 	arduino : string;
