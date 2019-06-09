@@ -26,6 +26,7 @@
   "homepage": "https://github.com/sixteenmillimeter/mcopy#readme",
   "devDependencies": {
     "@types/electron": "^1.6.10",
+    "@types/fs-extra": "^7.0.0",
     "@types/node": "^11.10.4",
     "@types/uuid": "^3.4.4",
     "jsdoc-to-markdown": "^4.0.1",
