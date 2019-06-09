@@ -21,7 +21,7 @@ const settings = require('settings')
 const system = require('system')
 const Server = require('server')
 const Intval = require('intval')
-const delay = require('delay')
+const { delay } = require('delay')
 
 //Objects
 const mcopy = {}

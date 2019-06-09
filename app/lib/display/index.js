@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 const spawn = require("spawn");
-const delay = require("delay");
+const delay_1 = require("delay");
 const { BrowserWindow } = require('electron');
 let wv;
 let cp;
@@ -41,7 +41,7 @@ class WebView {
     async start() {
         await this.open();
         await this.fullScreen();
-        await delay(300);
+        await delay_1.delay(300);
     }
     async fullScreen() {
         //this.digitalWindow.setFullScreen(true);
@@ -90,7 +90,7 @@ function padded_frame(i) {
 async function display_eog(src) {
     //timeout 3 eog --fullscreen ${src}
     cp = spawn('eog', ['--fullscreen', src]);
-    await delay(200);
+    await delay_1.delay(200);
 }
 function display_wv(src) {
     wv.setImage(src);

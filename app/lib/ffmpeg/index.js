@@ -8,8 +8,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = __importStar(require("path"));
-const fs = __importStar(require("fs-extra"));
-const exec = __importStar(require("exec"));
+const fs_extra_1 = require("fs-extra");
+const exec_1 = require("exec");
 let system = {};
 let TMPDIR;
 function padded_frame(i) {
@@ -47,7 +47,7 @@ async function frame(state, light) {
     //-vf "select=gte(n\,${frame})" -compression_algo raw -pix_fmt rgb24 "export-${padded}.png"
     try {
         console.log(cmd);
-        output = await exec(cmd);
+        output = await exec_1.exec(cmd);
     }
     catch (err) {
         console.error(err);
@@ -57,7 +57,7 @@ async function frame(state, light) {
     if (rgb[0] !== 255 || rgb[1] !== 255 || rgb[2] !== 255) {
         try {
             console.log(cmd2);
-            output2 = await exec(cmd2);
+            output2 = await exec_1.exec(cmd2);
         }
         catch (err) {
             console.error(err);
@@ -75,7 +75,7 @@ async function frames(video, obj) {
     }
     tmpoutput = path.join(tmppath, `export-%05d.${ext}`);
     try {
-        await fs.mkdir(tmppath);
+        await fs_extra_1.mkdir(tmppath);
     }
     catch (err) {
         console.error(err);
@@ -88,21 +88,21 @@ async function clear(frame) {
     let tmppath;
     let tmpoutput;
     let cmd;
-    let exists;
+    let fileExists;
     if (system.platform !== 'nix') {
         ext = 'png';
     }
     tmppath = path.join(TMPDIR, `export-${padded}.${ext}`);
     try {
-        exists = await fs.exists(tmppath);
+        fileExists = await fs_extra_1.exists(tmppath);
     }
     catch (err) {
         console.error(err);
     }
-    if (!exists)
+    if (!fs_extra_1.exists)
         return false;
     try {
-        await fs.unlink(tmppath);
+        await fs_extra_1.unlink(tmppath);
         console.log(`Cleared frame ${tmppath}`);
     }
     catch (err) {
@@ -114,7 +114,7 @@ async function clearAll() {
     let tmppath = TMPDIR;
     let files;
     try {
-        files = await fs.readdir(tmppath);
+        files = await fs_extra_1.readdir(tmppath);
     }
     catch (err) {
         console.error(err);
@@ -122,7 +122,7 @@ async function clearAll() {
     if (files) {
         files.forEach(async (file, index) => {
             try {
-                await fs.unlink(path.join(tmppath, file));
+                await fs_extra_1.unlink(path.join(tmppath, file));
             }
             catch (err) {
                 console.error(err);
@@ -131,16 +131,16 @@ async function clearAll() {
     }
 }
 async function checkDir() {
-    let exists;
+    let fileExists;
     try {
-        exists = await fs.exists(TMPDIR);
+        fileExists = await fs_extra_1.exists(TMPDIR);
     }
     catch (err) {
         console.error('Error checking for tmp dir', err);
     }
-    if (!exists) {
+    if (!fs_extra_1.exists) {
         try {
-            await fs.mkdir(TMPDIR);
+            await fs_extra_1.mkdir(TMPDIR);
             console.log(`Created tmpdir ${TMPDIR}`);
         }
         catch (err) {

@@ -1,6 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-const delay = require("delay");
+const delay_1 = require("delay");
 const Log = require("log");
 class Digital {
     /**
@@ -78,13 +78,13 @@ class Digital {
             throw err;
         }
         await this.display.show(this.state.frame);
-        await delay(20);
+        await delay_1.delay(20);
     }
     /**
     *
     **/
     async end() {
-        await delay(20);
+        await delay_1.delay(20);
         this.display.hide();
     }
     /**

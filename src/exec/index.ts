@@ -44,4 +44,4 @@ async function exec(...args : string[]) {
     });
 }
 
-module.exports = exec
+module.exports.exec = exec

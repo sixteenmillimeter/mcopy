@@ -18,4 +18,4 @@ function exit (msg : string, code : number = 0) {
 	}
 }
 
-module.exports = exit;
+module.exports.exit = exit;

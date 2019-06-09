@@ -1,6 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-const delay = require("delay");
+const delay_1 = require("delay");
 class Commands {
     constructor(cfg, proj, cam, light, cam2 = null, proj2 = null) {
         this.cfg = cfg;
@@ -20,10 +20,10 @@ class Commands {
         let ms;
         try {
             if (!this.proj.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.proj.set(true);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             ms = await this.proj.move();
         }
         catch (err) {
@@ -38,10 +38,10 @@ class Commands {
         let ms;
         try {
             if (this.proj.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.proj.set(false);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             ms = await this.proj.move();
         }
         catch (err) {
@@ -59,14 +59,14 @@ class Commands {
         let ms;
         try {
             if (!this.cam.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam.set(true);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(rgb);
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             ms = await this.cam.move();
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off);
         }
         catch (err) {
@@ -82,14 +82,14 @@ class Commands {
         let ms;
         try {
             if (!this.cam.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam.set(true);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off); //make sure set to off
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             ms = await this.cam.move();
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off);
         }
         catch (err) {
@@ -107,14 +107,14 @@ class Commands {
         let ms;
         try {
             if (this.cam.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam.set(false);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(rgb);
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             ms = await this.cam.move();
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off);
         }
         catch (err) {
@@ -131,14 +131,14 @@ class Commands {
         let ms;
         try {
             if (this.cam.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam.set(false);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off); //make sure set to off
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             ms = await this.cam.move();
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off);
         }
         catch (err) {
@@ -156,14 +156,14 @@ class Commands {
         let ms;
         try {
             if (!this.cam2.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam2.set(true);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(rgb);
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             ms = await this.cam2.move();
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off);
         }
         catch (err) {
@@ -181,14 +181,14 @@ class Commands {
         let ms;
         try {
             if (this.cam2.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam2.set(false);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(rgb);
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             ms = await this.cam2.move();
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off);
         }
         catch (err) {
@@ -207,16 +207,16 @@ class Commands {
         let ms;
         try {
             if (!this.cam.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam.set(true);
             }
             if (!this.cam2.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam2.set(true);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(rgb);
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             if (this.cam && this.cam2 && this.cam.arduino.alias.camera === this.cam.arduino.alias.camera_second) {
                 ms = await this.cam.both();
             }
@@ -226,7 +226,7 @@ class Commands {
                 both = [await this.cam.move, await this.cam2.move];
                 ms = Math.max(...both);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off);
         }
         catch (err) {
@@ -245,16 +245,16 @@ class Commands {
         let ms;
         try {
             if (this.cam.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam.set(false);
             }
             if (this.cam2.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam2.set(false);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(rgb);
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             if (this.cam && this.cam2 && this.cam.arduino.alias.camera === this.cam.arduino.alias.camera_second) {
                 ms = await this.cam.both();
             }
@@ -264,7 +264,7 @@ class Commands {
                 both = [await this.cam.move, await this.cam2.move];
                 ms = Math.max(...both);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off);
         }
         catch (err) {
@@ -278,16 +278,16 @@ class Commands {
         let ms;
         try {
             if (!this.cam.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam.set(true);
             }
             if (this.cam2.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam2.set(false);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(rgb);
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             if (this.cam && this.cam2 && this.cam.arduino.alias.camera === this.cam.arduino.alias.camera_second) {
                 ms = await this.cam.both();
             }
@@ -297,7 +297,7 @@ class Commands {
                 both = [await this.cam.move, await this.cam2.move];
                 ms = Math.max(...both);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off);
         }
         catch (err) {
@@ -311,16 +311,16 @@ class Commands {
         let ms;
         try {
             if (this.cam.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam.set(false);
             }
             if (!this.cam2.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam2.set(true);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(rgb);
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             if (this.cam && this.cam2 && this.cam.arduino.alias.camera === this.cam.arduino.alias.camera_second) {
                 ms = await this.cam.both();
             }
@@ -330,7 +330,7 @@ class Commands {
                 both = [await this.cam.move, await this.proj2.move];
                 ms = Math.max(...both);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off);
         }
         catch (err) {
@@ -346,10 +346,10 @@ class Commands {
         let ms;
         try {
             if (!this.proj2.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.proj2.set(true);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             ms = await this.proj2.move();
         }
         catch (err) {
@@ -361,10 +361,10 @@ class Commands {
         let ms;
         try {
             if (this.proj2.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.proj2.set(false);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             ms = await this.proj2.move();
         }
         catch (err) {
@@ -377,14 +377,14 @@ class Commands {
         let ms;
         try {
             if (!this.proj.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.proj.set(true);
             }
             if (!this.proj2.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.proj2.set(true);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             if (this.proj && this.proj2 && this.proj.arduino.alias.projector === this.proj.arduino.alias.projector_second) {
                 ms = await this.proj.both();
             }
@@ -405,14 +405,14 @@ class Commands {
         let ms;
         try {
             if (this.proj.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.proj.set(false);
             }
             if (this.proj2.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.proj2.set(false);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             //run one projector without await?
             if (this.proj && this.proj2 && this.proj.arduino.alias.projector === this.proj.arduino.alias.projector_second) {
                 ms = await this.proj.both();
@@ -434,14 +434,14 @@ class Commands {
         let ms;
         try {
             if (!this.proj.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.proj.set(true);
             }
             if (this.proj2.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.proj2.set(false);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             //run one projector without await?
             if (this.proj && this.proj2 && this.proj.arduino.alias.projector === this.proj.arduino.alias.projector_second) {
                 ms = await this.proj.both();
@@ -463,14 +463,14 @@ class Commands {
         let ms;
         try {
             if (this.proj.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.proj.set(false);
             }
             if (!this.proj2.state.dir) {
-                await delay(this.cfg.arduino.serialDelay);
+                await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.proj2.set(true);
             }
-            await delay(this.cfg.arduino.serialDelay);
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             //run one projector without await?
             if (this.proj && this.proj2 && this.proj.arduino.alias.projector === this.proj.arduino.alias.projector_second) {
                 ms = await this.proj.both();

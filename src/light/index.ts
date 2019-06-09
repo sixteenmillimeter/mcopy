@@ -1,6 +1,6 @@
 'use strict';
 
-import delay = require('delay');
+import { delay } from 'delay';
 import Log = require('log');
 
 class Light {

@@ -2,10 +2,10 @@
 
 import uuid from 'uuid/v4';
 import * as path from 'path';
-import * as fs from 'fs-extra';
-import * as exec from 'exec';
+import { exists, mkdir, readdir, unlink } from 'fs-extra';
+import { exec } from 'exec';
 //const spawn = require('spawn');
-import * as exit from 'exit';
+import { exit } from 'exit';
 
 let system : any = {};
 let TMPDIR : string;
@@ -81,7 +81,7 @@ async function frames (video : string, obj : any) {
 
 	tmpoutput = path.join(tmppath, `export-%05d.${ext}`);
 	try {
-		await fs.mkdir(tmppath);
+		await mkdir(tmppath);
 	} catch (err) {
 		console.error(err);
 	}
@@ -95,7 +95,7 @@ async function clear (frame : number) {
 	let tmppath;
 	let tmpoutput;
 	let cmd;
-	let exists;
+	let fileExists;
 
 	if (system.platform !== 'nix') {
 		ext = 'png';
@@ -104,7 +104,7 @@ async function clear (frame : number) {
 	tmppath = path.join(TMPDIR, `export-${padded}.${ext}`);
 
 	try {
-		exists = await fs.exists(tmppath);
+		fileExists = await exists(tmppath);
 	} catch (err) {
 		console.error(err);
 	}
@@ -112,7 +112,7 @@ async function clear (frame : number) {
 	if (!exists) return false;
 
 	try {
-		await fs.unlink(tmppath);
+		await unlink(tmppath);
 		console.log(`Cleared frame ${tmppath}`);
 	} catch (err) {
 		console.error(err);
@@ -125,14 +125,14 @@ async function clearAll () {
 	let tmppath = TMPDIR;
 	let files;
 	try {
-		files = await fs.readdir(tmppath);
+		files = await readdir(tmppath);
 	} catch (err) {
 		console.error(err);
 	}
 	if (files) {
 		files.forEach(async (file : string, index : any) => {
 			try {
-				await fs.unlink(path.join(tmppath, file));
+				await unlink(path.join(tmppath, file));
 			} catch (err) {
 				console.error(err);
 			}
@@ -141,16 +141,16 @@ async function clearAll () {
 }
 
 async function checkDir () {
-	let exists;
+	let fileExists;
 	try {
-		exists = await fs.exists(TMPDIR);
+		fileExists = await exists(TMPDIR);
 	} catch (err) {
 		console.error('Error checking for tmp dir', err);
 	}
 
 	if (!exists) {
 		try {
-			await fs.mkdir(TMPDIR);
+			await mkdir(TMPDIR);
 			console.log(`Created tmpdir ${TMPDIR}`);
 		} catch (err) {
 			console.error('Error creating tmp dir', err);

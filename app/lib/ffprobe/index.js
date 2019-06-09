@@ -1,37 +1,30 @@
 'use strict';
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = __importStar(require("fs-extra"));
-const exec = __importStar(require("exec"));
+const fs_extra_1 = require("fs-extra");
+const exec_1 = require("exec");
 //const spawn = require('spawn');
 //const exit = require('exit');
 let system = {};
 async function info(video) {
     let cmd = `ffprobe -v quiet -print_format json -show_format -show_streams "${video}"`;
-    let exists;
+    let fileExists;
     let raw;
     let json;
     let vid;
     try {
-        exists = await fs.exists(video);
+        fileExists = await fs_extra_1.exists(video);
     }
     catch (err) {
         return exit(err, 5);
     }
-    if (!exists) {
+    if (!fileExists) {
         //return exit(`File ${video} does not exist`, 6);
         console.error(new Error(`File ${video} does not exist`));
         return false;
     }
     try {
         console.log(cmd);
-        raw = await exec(cmd);
+        raw = await exec_1.exec(cmd);
     }
     catch (err) {
         //return exit(err, 7);
@@ -58,25 +51,25 @@ async function info(video) {
 }
 async function frames(video) {
     let cmd = `ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 "${video}"`;
-    let exists;
+    let fileExists;
     let raw;
     let frames;
     try {
-        exists = await fs.exists(video);
+        fileExists = await fs_extra_1.exists(video);
     }
     catch (err) {
         //return exit(err, 5);
         console.error(err);
         return false;
     }
-    if (!exists) {
+    if (!fileExists) {
         //return exit(`File ${video} does not exist`, 6);
         console.error(new Error(`File ${video} does not exist`));
         return false;
     }
     try {
         console.log(cmd);
-        raw = await exec(cmd);
+        raw = await exec_1.exec(cmd);
     }
     catch (err) {
         console.error(err);

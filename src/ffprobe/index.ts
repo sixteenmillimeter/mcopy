@@ -1,7 +1,7 @@
 'use strict';
 
-import * as fs from 'fs-extra';
-import * as exec from'exec';
+import { exists } from 'fs-extra';
+import { exec } from 'exec';
 //const spawn = require('spawn');
 //const exit = require('exit');
 
@@ -9,17 +9,17 @@ let system = {};
 
 async function info (video : string) {
 	let cmd = `ffprobe -v quiet -print_format json -show_format -show_streams "${video}"`
-	let exists;
+	let fileExists;
 	let raw;
 	let json;
 	let vid;
 
 	try {
-		exists = await fs.exists(video);
+		fileExists = await exists(video);
 	} catch (err) {
 		return exit(err, 5);
 	}
-	if (!exists) {
+	if (!fileExists) {
 		//return exit(`File ${video} does not exist`, 6);
 		console.error(new Error(`File ${video} does not exist`));
 		return false
@@ -56,18 +56,18 @@ async function info (video : string) {
 
 async function frames (video : string) {
 	let cmd = `ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 "${video}"`;
-	let exists;
+	let fileExists;
 	let raw;
 	let frames;
 
 	try {
-		exists = await fs.exists(video);
+		fileExists = await exists(video);
 	} catch (err) {
 		//return exit(err, 5);
 		console.error(err);
 		return false
 	}
-	if (!exists) {
+	if (!fileExists) {
 		//return exit(`File ${video} does not exist`, 6);
 		console.error(new Error(`File ${video} does not exist`));
 		return false;
