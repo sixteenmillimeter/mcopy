@@ -1,7 +1,6 @@
 'use strict';
 
-import Intval = require('intval');
-import Log = require('log');
+import { Intval } from 'intval';
 import { delay } from 'delay';
 
 /** class representing camera functions **/
@@ -36,6 +35,7 @@ class Camera {
 	 *
 	 **/
 	private async init () {
+		const Log = require('log');
 		this.log = await Log({ label : this.id });
 		this.ipc = require('electron').ipcMain;
 		this.listen();

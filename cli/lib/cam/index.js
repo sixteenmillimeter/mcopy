@@ -1,7 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-const Intval = require("intval");
-const Log = require("log");
+const intval_1 = require("intval");
 /** class representing camera functions **/
 class Camera {
     /**
@@ -28,6 +27,7 @@ class Camera {
      *
      **/
     async init() {
+        const Log = require('log');
         this.log = await Log({ label: this.id });
         this.ipc = require('electron').ipcMain;
         this.listen();
@@ -129,7 +129,7 @@ class Camera {
     async connectIntval(event, arg) {
         return new Promise((resolve, reject) => {
             if (arg.connect) {
-                this.intval = new Intval(arg.url);
+                this.intval = new intval_1.Intval(arg.url);
                 this.intval.connect((err, ms, state) => {
                     if (err) {
                         this.ui.send('intval', { connected: false });
