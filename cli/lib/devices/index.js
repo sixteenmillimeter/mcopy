@@ -1,6 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-const delay = require("delay");
+const delay_1 = require("delay");
 const Log = require("log");
 /**
  * class representing the device discovery features
@@ -55,7 +55,7 @@ class Devices {
         }
         catch (err) {
             this.log.warn(err, 'SERIAL', false, true);
-            await delay(1000);
+            await delay_1.delay(1000);
             return this.all([]);
         }
         this.log.info(`Found ${devices.length} USB devices`, 'SERIAL', true, true);
@@ -101,7 +101,7 @@ class Devices {
             this.log.error('Error connecting', err);
             return null;
         }
-        await delay(2000);
+        await delay_1.delay(2000);
         try {
             verifySuccess = await this.arduino.verify();
         }
@@ -110,7 +110,7 @@ class Devices {
             return null;
         }
         this.log.info(`Verified ${device} as mcopy device`, 'SERIAL', true, true);
-        await delay(1000);
+        await delay_1.delay(1000);
         try {
             type = await this.arduino.distinguish();
         }

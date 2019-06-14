@@ -14,4 +14,4 @@ function delay (ms : number) {
 	});
 }
 
-module.exports = delay;
+module.exports.delay = delay;

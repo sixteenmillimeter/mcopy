@@ -2,7 +2,7 @@
 
 import Intval = require('intval');
 import Log = require('log');
-import delay = require('delay');
+import { delay } from 'delay';
 
 /** class representing camera functions **/
 

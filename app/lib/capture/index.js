@@ -8,8 +8,8 @@ const parser = new Readline('');
 const newlineRe = new RegExp('\n', 'g');
 const returnRe = new RegExp('\r', 'g');
 
-const exec = require('exec');
-const delay = require('delay');
+const { exec } = require('exec');
+const { delay } = require('delay');
 
 let system = {};
 let INTVAL;

@@ -1,11 +1,6 @@
 'use strict';
 
-/**
- * @module digital
- * For rendering and displaying single frames for film-out features.
- **/
 
-import delay = require('delay');
 import Log = require('log');
 
 class Digital {

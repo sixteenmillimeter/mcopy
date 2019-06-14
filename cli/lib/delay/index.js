@@ -11,5 +11,5 @@ function delay(ms) {
         return setTimeout(resolve, ms);
     });
 }
-module.exports = delay;
+module.exports.delay = delay;
 //# sourceMappingURL=index.js.map

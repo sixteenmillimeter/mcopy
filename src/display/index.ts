@@ -6,9 +6,10 @@
  **/
 
 import path = require('path');
-import exec = require('exec');
 import spawn = require('spawn');
-import delay = require('delay');
+
+import { delay } from 'delay';
+import { exec } from 'exec';
 
 const { BrowserWindow } = require('electron');
 

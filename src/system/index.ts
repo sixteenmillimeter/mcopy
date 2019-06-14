@@ -1,9 +1,9 @@
 'use strict';
 
-import os = require('os');
-import si = require('systeminformation');
+import { tmpdir, type } from 'os';
+import { graphics } from 'systeminformation';
 //private
-const exec = require('exec');
+import { exec } from 'exec';
 /**
  * Evaluates system dependencies for digital
  * projector features by executing processes with
@@ -45,7 +45,7 @@ function displayMap (obj : any) {
 }
 
 async function displays () {
-	const obj : any = await si.graphics()
+	const obj : any = await graphics()
 	const arr : any[] = obj.displays;
 	return arr.map(displayMap);
 }
@@ -62,12 +62,12 @@ async function system () {
 	let platform : string;
 
 	try {
-		obj.tmp = os.tmpdir();
+		obj.tmp = tmpdir();
 	} catch (err) {
 		obj.tmp = '/tmp'
 	}
 
-	platform = os.type();
+	platform = type();
 
 	if (platform === 'Darwin') {
 		obj.platform = 'osx';

@@ -1,9 +1,9 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-const os = require("os");
-const si = require("systeminformation");
+const os_1 = require("os");
+const systeminformation_1 = require("systeminformation");
 //private
-const exec = require('exec');
+const exec_1 = require("exec");
 /**
  * Evaluates system dependencies for digital
  * projector features by executing processes with
@@ -14,7 +14,7 @@ const exec = require('exec');
 async function dependencies(platform) {
     let obj = {};
     try {
-        await exec('ffmpeg -h');
+        await exec_1.exec('ffmpeg -h');
         obj.ffmpeg = 'ffmpeg';
     }
     catch (err) {
@@ -24,7 +24,7 @@ async function dependencies(platform) {
     //if linux
     if (platform === 'nix') {
         try {
-            await exec('eog -h');
+            await exec_1.exec('eog -h');
             obj.eog = 'eog';
         }
         catch (err) {
@@ -42,7 +42,7 @@ function displayMap(obj) {
     return sm;
 }
 async function displays() {
-    const obj = await si.graphics();
+    const obj = await systeminformation_1.graphics();
     const arr = obj.displays;
     return arr.map(displayMap);
 }
@@ -57,12 +57,12 @@ async function system() {
     const obj = {};
     let platform;
     try {
-        obj.tmp = os.tmpdir();
+        obj.tmp = os_1.tmpdir();
     }
     catch (err) {
         obj.tmp = '/tmp';
     }
-    platform = os.type();
+    platform = os_1.type();
     if (platform === 'Darwin') {
         obj.platform = 'osx';
     }

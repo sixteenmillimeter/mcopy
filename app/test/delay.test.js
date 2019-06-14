@@ -1,6 +1,6 @@
 const assert = require('assert')
 
-const delay = require('delay')
+const { delay } = require('delay')
 
 describe('delay module', async () => {
 	it('should be a function', () =>{

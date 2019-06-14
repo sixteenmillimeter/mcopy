@@ -1,7 +1,7 @@
 'use strict'
 
 //import Log = require('log');
-import delay = require('delay');
+import { delay }  from 'delay';
 
 const SerialPort = require('serialport')
 const Readline = SerialPort.parsers.Readline
