@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * @module display
+ * Provides features for displaying a full screen display of images for the digital module.
+ **/
+
 import path = require('path');
 import exec = require('exec');
 import spawn = require('spawn');
