@@ -1,6 +1,6 @@
 'use strict';
 
-
+import delay = require('delay');
 import Log = require('log');
 
 class Digital {
