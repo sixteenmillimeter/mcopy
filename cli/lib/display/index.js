@@ -1,5 +1,9 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @module display
+ * Provides features for displaying a full screen display of images for the digital module.
+ **/
 const path = require("path");
 const spawn = require("spawn");
 const delay_1 = require("delay");
