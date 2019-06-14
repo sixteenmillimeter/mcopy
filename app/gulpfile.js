@@ -18,17 +18,17 @@ var scripts = [
 	'./src/index.js'
 ];
 
-gulp.task('js', function () {
+gulp.task('js',  () => {
 	'use strict';
 	return gulp.src(scripts)
     	.pipe(concat('app.js'))
     	.pipe(gulp.dest('./js/'));
 });
 
-gulp.task('less', function () {
+gulp.task('less', () => {
 	return gulp.src('./less/app.less')
 		.pipe(less())
 		.pipe(gulp.dest('./css'));
 });
 
-gulp.task('default', ['js', 'less']);
+gulp.task('default', gulp.parallel('js', 'less'));
