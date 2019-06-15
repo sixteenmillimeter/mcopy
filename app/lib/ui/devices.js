@@ -240,7 +240,7 @@ devices.digitalCb = function (evt, args) {
 			light.enable();
 		}
 
-		$('#seq_loop').val(`${state.frames}`).trigger('change');
+		$('#seq_loop').val(`${state.frames - 1}`).trigger('change');
 
 		gui.updateState();
 	} else {

@@ -1,7 +1,6 @@
 'use strict';
 
-import delay = require('delay');
-import Log = require('log');
+import { delay } from 'delay';
 
 class Digital {
 	public state : any = {
@@ -35,6 +34,7 @@ class Digital {
 	 *
 	 **/
 	private async init () {
+		const Log = require('log');
 		this.log = await Log({ label : 'digital'});
 		this.ipc = require('electron').ipcMain;
 		this.listen();

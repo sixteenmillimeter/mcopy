@@ -4,14 +4,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @module display
  * Provides features for displaying a full screen display of images for the digital module.
  **/
-const path = require("path");
 const spawn = require("spawn");
+const path_1 = require("path");
 const delay_1 = require("delay");
 const { BrowserWindow } = require('electron');
-let wv;
-let cp;
-let system = {};
-let TMPDIR;
+function padded_frame(i) {
+    let len = (i + '').length;
+    let str = i + '';
+    for (let x = 0; x < 5 - len; x++) {
+        str = '0' + str;
+    }
+    return str;
+}
 class WebView {
     constructor() {
         this.opened = false;
@@ -41,29 +45,17 @@ class WebView {
         this.digitalWindow.show();
         this.showing = true;
         this.opened = true;
-    }
-    async start() {
-        await this.open();
-        await this.fullScreen();
+        await this.digitalWindow.maximize();
         await delay_1.delay(300);
     }
-    async fullScreen() {
-        //this.digitalWindow.setFullScreen(true);
-        await this.digitalWindow.maximize();
-    }
-    setImage(src) {
+    async show(src) {
         try {
             this.digitalWindow.webContents.send('display', { src });
         }
         catch (err) {
             console.error(err);
         }
-    }
-    setMeter() {
-        this.digitalWindow.webContents.send('display', { meter: true });
-    }
-    setGrid() {
-        this.digitalWindow.webContents.send('display', { grid: true });
+        this.showing = true;
     }
     hide() {
         if (this.digitalWindow) {
@@ -72,86 +64,88 @@ class WebView {
         this.showing = false;
     }
     close() {
+        this.hide();
         if (this.digitalWindow) {
             this.digitalWindow.close();
             this.digitalWindow = null;
         }
-        this.showing = false;
         this.opened = false;
         return true;
     }
-    async move() {
-    }
 }
-function padded_frame(i) {
-    let len = (i + '').length;
-    let str = i + '';
-    for (let x = 0; x < 5 - len; x++) {
-        str = '0' + str;
+class EOG {
+    constructor() {
     }
-    return str;
-}
-async function display_eog(src) {
-    //timeout 3 eog --fullscreen ${src}
-    cp = spawn('eog', ['--fullscreen', src]);
-    await delay_1.delay(200);
-}
-function display_wv(src) {
-    wv.setImage(src);
-}
-async function hide() {
-    if (system.platform !== 'nix') {
-        //wv.hide();
+    open() {
+        this.hide();
     }
-    else {
-        if (cp)
-            cp.kill();
+    async show(src) {
+        //timeout 3 eog --fullscreen ${src}
+        this.cp = spawn('eog', ['--fullscreen', src]);
+        await delay_1.delay(200);
     }
-}
-async function show(frame) {
-    let padded = padded_frame(frame);
-    let ext = 'tif';
-    let tmppath;
-    if (system.platform !== 'nix') {
-        ext = 'png';
-    }
-    tmppath = path.join(TMPDIR, `export-${padded}.${ext}`);
-    if (system.platform !== 'nix') {
-        await open();
-        display_wv(tmppath);
-    }
-    else {
-        await display_eog(tmppath);
-    }
-}
-async function open() {
-    if (system.platform !== 'nix') {
-        if (!wv || !wv.opened) {
-            wv = new WebView();
-            await wv.start();
+    async hide() {
+        if (this.cp) {
+            this.cp.kill();
+            this.cp = null;
         }
     }
-    else {
-        //
+    close() {
+        this.hide();
     }
 }
-async function close() {
-    if (system.platform !== 'nix') {
-        wv.close();
+class Display {
+    constructor(sys) {
+        this.platform = sys.platform;
+        this.tmpdir = path_1.join(sys.tmp, 'mcopy_digital');
     }
-    else {
-        if (cp)
-            cp.kill();
+    async open() {
+        if (this.platform !== 'nix') {
+            if (!this.wv || !this.wv.opened) {
+                this.wv = new WebView();
+                await this.wv.open();
+            }
+        }
+        else {
+            if (!this.eog) {
+                this.eog = new EOG();
+            }
+        }
+    }
+    async show(frame) {
+        let padded = padded_frame(frame);
+        let ext = 'tif';
+        let tmppath;
+        if (this.platform !== 'nix') {
+            ext = 'png';
+        }
+        tmppath = path_1.join(this.tmpdir, `export-${padded}.${ext}`);
+        if (this.platform !== 'nix') {
+            await this.wv.show(tmppath);
+        }
+        else {
+            await this.eog.show(tmppath);
+        }
+    }
+    hide() {
+        if (this.platform !== 'nix') {
+            //don't hide between frames
+            //this.wv.hide();
+        }
+        else {
+            this.eog.hide();
+        }
+    }
+    close() {
+        if (this.platform !== 'nix') {
+            this.wv.close();
+        }
+        else {
+            this.eog.close();
+        }
     }
 }
 module.exports = function (sys) {
-    system = sys;
-    TMPDIR = path.join(system.tmp, 'mcopy_digital');
-    return {
-        open,
-        show,
-        hide,
-        close
-    };
+    return new Display(sys);
 };
 //# sourceMappingURL=index.js.map

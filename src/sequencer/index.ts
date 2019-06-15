@@ -107,6 +107,10 @@ class Sequencer {
 		this.log.info(`Starting sequence...`)
 		this.ui.send(this.id, { start : true })
 
+		if (this.cmd.proj.dig.state.enabled === true) {
+			await this.cmd.proj.dig.display.open()
+		}
+
 		for (let x = 0; x < this.loops; x++) {
 			//start loop
 			this.log.info(`Starting loop ${x + 1}`)
@@ -143,6 +147,10 @@ class Sequencer {
 			this.ui.send(this.id, { loop : x, stop : true });
 		}
 
+		if (this.cmd.proj.dig.enabled === true) {
+			await this.cmd.proj.dig.close()
+		}
+
 		ms = ( +new Date() ) - startTime;
 		//end sequence
 		this.log.info(`Ended sequence`)
@@ -158,6 +166,9 @@ class Sequencer {
 	 * Stop the sequence
 	 **/
 	public stop () {
+		if (this.cmd.proj.dig.state.enabled === true) {
+			this.cmd.proj.dig.display.close()
+		}
 		this.running = false;
 		//clear?
 

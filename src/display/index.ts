@@ -5,19 +5,21 @@
  * Provides features for displaying a full screen display of images for the digital module.
  **/
 
-import path = require('path');
 import spawn = require('spawn');
-
+import { join as pathJoin } from 'path';
 import { delay } from 'delay';
 import { exec } from 'exec';
 
 const { BrowserWindow } = require('electron');
 
-let wv : any;
-let cp : any;
-let system : any = {};
-
-let TMPDIR : any;
+function padded_frame (i : number) {
+	let len = (i + '').length;
+	let str = i + '';
+	for (let x = 0; x < 5 - len; x++) {
+		str = '0' + str;
+	}
+	return str;
+}
 
 class WebView {
 	private digitalWindow : any;
@@ -49,124 +51,121 @@ class WebView {
 		this.digitalWindow.show();
 		this.showing = true;
 		this.opened = true;
-	}
-	async start () {
-		await this.open();
-		await this.fullScreen();
+		await this.digitalWindow.maximize();
 		await delay(300);
 	}
-	async fullScreen () {
-		//this.digitalWindow.setFullScreen(true);
-		await this.digitalWindow.maximize();
-	}
-	setImage (src : string) {
+	async show (src : string) {
 		try {
 			this.digitalWindow.webContents.send('display', { src });
 		} catch (err) {
 			console.error(err)
 		}
-	}
-	setMeter () {
-		this.digitalWindow.webContents.send('display', { meter : true });
-	}
-	setGrid () {
-		this.digitalWindow.webContents.send('display', { grid : true });
+		this.showing = true;
+		await delay(100)
+		return true
 	}
 	hide () {
 		if (this.digitalWindow) {
 			this.digitalWindow.hide();
 		}
 		this.showing = false;
+		return true
 	}
 	close () {
+		this.hide();
 		if (this.digitalWindow) {
 			this.digitalWindow.close();
 			this.digitalWindow = null;
-			
 		}
-		this.showing = false;
 		this.opened = false;
 		return true
 	}
-	async move () {
+}
+
+class EOG {
+	private cp : any;
+	constructor () {
 
 	}
-}
 
-function padded_frame (i : number) {
-	let len = (i + '').length;
-	let str = i + '';
-	for (let x = 0; x < 5 - len; x++) {
-		str = '0' + str;
-	}
-	return str;
-}
-
-async function display_eog (src :  string) {
-	//timeout 3 eog --fullscreen ${src}
-	cp = spawn('eog', ['--fullscreen', src]);
-	await delay(200)
-}
-
-
-function display_wv (src : string) {
-	wv.setImage(src);
-}
-
-async function hide () {
-	if (system.platform !== 'nix') {
-		//wv.hide();
-	} else {
-		if (cp) cp.kill();
-	}
-}
-
-async function show (frame : number) {
-	let padded : string = padded_frame(frame);
-	let ext : string = 'tif';
-	let tmppath : string;
-
-	if (system.platform !== 'nix') {
-		ext = 'png';
+	public open () {
+		this.hide();
 	}
 
-	tmppath = path.join(TMPDIR, `export-${padded}.${ext}`);
-
-	if (system.platform !== 'nix') {
-		await open()
-		display_wv(tmppath);
-	} else {
-		await display_eog(tmppath);
+	public async show (src :  string) {
+		//timeout 3 eog --fullscreen ${src}
+		this.cp = spawn('eog', ['--fullscreen', src]);
+		await delay(200)
+		return true
 	}
-}
 
-async function open () {
-	if (system.platform !== 'nix') {
-		if (!wv || !wv.opened) {
-        	wv = new WebView();
-        	await wv.start()
-    	}
-	} else {
-		//
+	public hide () {
+		if (this.cp) {
+			this.cp.kill();
+			this.cp = null;
+		}
 	}
-}
+	public close () {
+		this.hide();
+	}
+} 
 
-async function close () {
-	if (system.platform !== 'nix') {
-		wv.close()
-	} else {
-		if (cp) cp.kill();
+class Display {
+	private platform : string;
+	private tmpdir : string;
+	private wv : WebView;
+	private eog : EOG;
+
+	constructor (sys : any) {
+		this.platform = sys.platform;
+		this.tmpdir = pathJoin(sys.tmp, 'mcopy_digital');
+	}
+	public async open () {
+		if (this.platform !== 'nix') {
+			if (!this.wv || !this.wv.opened) {
+				this.wv = new WebView();
+				await this.wv.open()
+	    	}
+		} else {
+			if (!this.eog) {
+				this.eog = new EOG()
+			}
+		}
+	}
+	public async show (frame : number) {
+		let padded : string = padded_frame(frame);
+		let ext : string = 'tif';
+		let tmppath : string;
+
+		if (this.platform !== 'nix') {
+			ext = 'png';
+		}
+
+		tmppath = pathJoin(this.tmpdir, `export-${padded}.${ext}`);
+
+		if (this.platform !== 'nix') {
+			await this.wv.show(tmppath);
+		} else {
+			await this.eog.show(tmppath);
+		}
+	}
+	public hide () {
+		if (this.platform !== 'nix') {
+			//don't hide between frames
+			//this.wv.hide();
+		} else {
+			this.eog.hide();
+		}
+	}
+	public close () {
+		if (this.platform !== 'nix') {
+			this.wv.close()
+		} else {
+			this.eog.close()
+		}
 	}
 }
 
 module.exports = function (sys : any) {
-	system = sys;
-	TMPDIR = path.join(system.tmp, 'mcopy_digital');
-	
-	return {
-		open,
-		show,
-		hide,
-		close
-	}
+	return new Display(sys)
 }

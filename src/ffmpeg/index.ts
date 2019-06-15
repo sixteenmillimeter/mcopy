@@ -148,7 +148,7 @@ async function checkDir () {
 		console.error('Error checking for tmp dir', err);
 	}
 
-	if (!exists) {
+	if (!fileExists) {
 		try {
 			await mkdir(TMPDIR);
 			console.log(`Created tmpdir ${TMPDIR}`);
