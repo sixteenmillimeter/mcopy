@@ -739,6 +739,21 @@ button:focus {
   background: black;
   color: #fff;
 }
+#video_preview_wrap {
+  background: #000;
+  width: 100%;
+}
+#video_preview {
+  height: 400px;
+  min-height: 400px;
+  width: auto;
+  margin: 0 auto;
+  display: block;
+  opacity: 0;
+}
+#video_preview .on {
+  opacity: 1;
+}
 #screens {
   overflow-x: hidden;
 }
