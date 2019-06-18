@@ -41,7 +41,7 @@ let cam2;
 let proj;
 let proj2;
 let light;
-let dig;
+let filmout;
 let dev;
 let cmd;
 let seq;
@@ -108,9 +108,9 @@ var init = async function () {
 	}
 
 	light = require('light')(arduino, cfg, mainWindow.webContents)
-	dig = require('digital')(display, ffmpeg, ffprobe, mainWindow.webContents, light)
-	cam = require('cam')(arduino, cfg, mainWindow.webContents, dig)
-	proj = require('proj')(arduino, cfg, mainWindow.webContents, dig)
+	filmout = require('filmout')(display, ffmpeg, ffprobe, mainWindow.webContents, light)
+	cam = require('cam')(arduino, cfg, mainWindow.webContents, filmout)
+	proj = require('proj')(arduino, cfg, mainWindow.webContents, filmout)
 
 	if (dev && dev.connected && dev.connected.camera_second) {
 		cam2 = require('cam')(arduino, cfg, mainWindow.webContents, dig, true)

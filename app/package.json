@@ -49,7 +49,7 @@
     "cmd": "file:lib/cmd",
     "delay": "file:lib/delay",
     "devices": "file:lib/devices",
-    "digital": "file:lib/digital",
+    "filmout": "file:lib/filmout",
     "display": "file:lib/display",
     "electron-updater": "^4.0.6",
     "exec": "file:lib/exec",

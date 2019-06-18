@@ -24,7 +24,7 @@
     "delay": "file:../app/lib/delay",
     "device": "file:lib/device",
     "devices": "file:lib/devices",
-    "digital": "file:lib/digital",
+    "filmout": "file:lib/filmout",
     "display": "file:lib/display",
     "exec": "file:lib/exec",
     "exit": "file:lib/exit",
