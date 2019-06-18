@@ -107,8 +107,8 @@ class Sequencer {
 		this.log.info(`Starting sequence...`)
 		this.ui.send(this.id, { start : true })
 
-		if (this.cmd.proj.dig.state.enabled === true) {
-			await this.cmd.proj.dig.display.open()
+		if (this.cmd.proj.filmout.state.enabled === true) {
+			await this.cmd.proj.filmout.display.open()
 		}
 
 		for (let x = 0; x < this.loops; x++) {
@@ -147,8 +147,8 @@ class Sequencer {
 			this.ui.send(this.id, { loop : x, stop : true });
 		}
 
-		if (this.cmd.proj.dig.state.enabled === true) {
-			await this.cmd.proj.dig.display.close();
+		if (this.cmd.proj.filmout.state.enabled === true) {
+			await this.cmd.proj.filmout.display.close();
 		}
 
 		ms = ( +new Date() ) - startTime;
@@ -166,8 +166,8 @@ class Sequencer {
 	 * Stop the sequence
 	 **/
 	public stop () {
-		if (this.cmd.proj.dig.state.enabled === true) {
-			this.cmd.proj.dig.display.close();
+		if (this.cmd.proj.filmout.state.enabled === true) {
+			this.cmd.proj.filmout.display.close();
 		}
 		this.running = false;
 		//clear?
