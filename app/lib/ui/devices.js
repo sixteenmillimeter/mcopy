@@ -42,7 +42,7 @@ devices.listen = function () {
 	'use strict';
 	ipcRenderer.on('ready', devices.ready);
 	ipcRenderer.on('intval', devices.intvalCb);
-	ipcRenderer.on('digital', devices.digitalCb);
+	ipcRenderer.on('filmout', devices.digitalCb);
 };
 devices.ready = function (event, arg) {
 	'use strict';
@@ -209,7 +209,7 @@ devices.digital = function () {
 	if (proceed) {
 		gui.overlay(true);
 		gui.spinner(true, `Getting info about ${fileName}`);
-		ipcRenderer.send('digital', obj)
+		ipcRenderer.send('filmout', obj)
 	} else {
 		$('#projector_type_digital').prop('checked', 'checked');
 		$('#digital').removeClass('active');

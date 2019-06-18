@@ -64,6 +64,43 @@ class WebView {
         await delay_1.delay(100);
         return true;
     }
+    async focus() {
+        if (!this.digitalWindow) {
+            console.warn(`Cannot show focus screen because window does not exist`);
+            return false;
+        }
+        try {
+            this.digitalWindow.webContents.send('focus', { focus: true });
+        }
+        catch (err) {
+            console.error(err);
+        }
+    }
+    async field() {
+        if (!this.digitalWindow) {
+            console.warn(`Cannot show field guide because window does not exist`);
+            return false;
+        }
+        //aspect ratio
+        try {
+            this.digitalWindow.webContents.send('field', { field: true });
+        }
+        catch (err) {
+            console.error(err);
+        }
+    }
+    async meter() {
+        if (!this.digitalWindow) {
+            console.warn(`Cannot show meter screen because window does not exist`);
+            return false;
+        }
+        try {
+            this.digitalWindow.webContents.send('meter', { meter: true });
+        }
+        catch (err) {
+            console.error(err);
+        }
+    }
     hide() {
         if (this.digitalWindow) {
             this.digitalWindow.hide();
@@ -135,6 +172,9 @@ class Display {
         //await this.eog.show(tmppath);
         //}
     }
+    async showPath(pathStr) {
+        return await this.wv.show(pathStr);
+    }
     hide() {
         //if (this.platform !== 'nix') {
         //don't hide between frames
@@ -149,6 +189,15 @@ class Display {
         //} else {
         //this.eog.close()
         //}
+    }
+    async focus() {
+        return await this.wv.focus();
+    }
+    async field() {
+        return await this.wv.field();
+    }
+    async meter() {
+        return await this.wv.meter();
     }
 }
 module.exports = function (sys) {
