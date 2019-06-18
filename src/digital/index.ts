@@ -44,6 +44,7 @@ class Digital {
 	 **/
 	 private listen () {
 	 	this.ipc.on('digital', this.connectDigital.bind(this));
+	 	this.ipc.on('focus', this.focus.bind(this));
 	 }
 	/**
 	 *
@@ -128,6 +129,9 @@ class Digital {
 		this.log.info(`Frames : ${frames}`, 'DIGITAL', true, true);
 		this.state.enabled = true;
 		return await this.ui.send('digital', { valid : true, state : JSON.stringify(this.state) });
+	}
+	async focus () {
+
 	}
 }
 

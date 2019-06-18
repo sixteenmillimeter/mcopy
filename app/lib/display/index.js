@@ -46,7 +46,7 @@ class WebView {
         this.digitalWindow.show();
         this.showing = true;
         this.opened = true;
-        await this.digitalWindow.maximize();
+        await this.digitalWindow.setFullScreen(true);
         await delay_1.delay(300);
     }
     async show(src) {
@@ -110,49 +110,45 @@ class Display {
         this.tmpdir = path_1.join(sys.tmp, 'mcopy_digital');
     }
     async open() {
-        if (this.platform !== 'nix') {
-            if (!this.wv || !this.wv.opened) {
-                this.wv = new WebView();
-                await this.wv.open();
-            }
+        //if (this.platform !== 'nix') {
+        if (!this.wv || !this.wv.opened) {
+            this.wv = new WebView();
+            await this.wv.open();
         }
-        else {
-            if (!this.eog) {
-                this.eog = new EOG();
-            }
-        }
+        //} else {
+        //	if (!this.eog) {
+        //		this.eog = new EOG()
+        //	}
+        //}
     }
     async show(frame) {
         let padded = padded_frame(frame);
         let ext = 'tif';
         let tmppath;
-        if (this.platform !== 'nix') {
-            ext = 'png';
-        }
+        //if (this.platform !== 'nix') {
+        ext = 'png';
+        //}
         tmppath = path_1.join(this.tmpdir, `export-${padded}.${ext}`);
-        if (this.platform !== 'nix') {
-            await this.wv.show(tmppath);
-        }
-        else {
-            await this.eog.show(tmppath);
-        }
+        //if (this.platform !== 'nix') {
+        await this.wv.show(tmppath);
+        //} else {
+        //await this.eog.show(tmppath);
+        //}
     }
     hide() {
-        if (this.platform !== 'nix') {
-            //don't hide between frames
-            //this.wv.hide();
-        }
-        else {
-            this.eog.hide();
-        }
+        //if (this.platform !== 'nix') {
+        //don't hide between frames
+        //this.wv.hide();
+        //} else {
+        //this.eog.hide();
+        //}
     }
     close() {
-        if (this.platform !== 'nix') {
-            this.wv.close();
-        }
-        else {
-            this.eog.close();
-        }
+        //if (this.platform !== 'nix') {
+        this.wv.close();
+        //} else {
+        //this.eog.close()
+        //}
     }
 }
 module.exports = function (sys) {

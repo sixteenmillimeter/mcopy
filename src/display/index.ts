@@ -52,7 +52,7 @@ class WebView {
 		this.digitalWindow.show();
 		this.showing = true;
 		this.opened = true;
-		await this.digitalWindow.maximize();
+		await this.digitalWindow.setFullScreen(true);
 		await delay(300);
 	}
 	async show (src : string) {
@@ -127,48 +127,48 @@ class Display {
 		this.tmpdir = pathJoin(sys.tmp, 'mcopy_digital');
 	}
 	public async open () {
-		if (this.platform !== 'nix') {
+		//if (this.platform !== 'nix') {
 			if (!this.wv || !this.wv.opened) {
 				this.wv = new WebView();
 				await this.wv.open()
 	    	}
-		} else {
-			if (!this.eog) {
-				this.eog = new EOG()
-			}
-		}
+		//} else {
+		//	if (!this.eog) {
+		//		this.eog = new EOG()
+		//	}
+		//}
 	}
 	public async show (frame : number) {
 		let padded : string = padded_frame(frame);
 		let ext : string = 'tif';
 		let tmppath : string;
 
-		if (this.platform !== 'nix') {
+		//if (this.platform !== 'nix') {
 			ext = 'png';
-		}
+		//}
 
 		tmppath = pathJoin(this.tmpdir, `export-${padded}.${ext}`);
 
-		if (this.platform !== 'nix') {
+		//if (this.platform !== 'nix') {
 			await this.wv.show(tmppath);
-		} else {
-			await this.eog.show(tmppath);
-		}
+		//} else {
+			//await this.eog.show(tmppath);
+		//}
 	}
 	public hide () {
-		if (this.platform !== 'nix') {
+		//if (this.platform !== 'nix') {
 			//don't hide between frames
 			//this.wv.hide();
-		} else {
-			this.eog.hide();
-		}
+		//} else {
+			//this.eog.hide();
+		//}
 	}
 	public close () {
-		if (this.platform !== 'nix') {
+		//if (this.platform !== 'nix') {
 			this.wv.close()
-		} else {
-			this.eog.close()
-		}
+		//} else {
+			//this.eog.close()
+		//}
 	}
 }
 

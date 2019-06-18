@@ -33,9 +33,9 @@ async function frame (state : any, light : any) {
 	let cmd2;
 	let output2;
 
-	if (system.platform !== 'nix') {
+	//if (system.platform !== 'nix') {
 		ext = 'png';
-	}
+	//}
 
 	rgb = rgb.map((e : string) => {
 		return parseInt(e);
@@ -75,9 +75,9 @@ async function frames (video : string, obj : any) {
 	let ext = 'tif';
 	let tmpoutput;
 
-	if (system.platform !== 'nix') {
+	//if (system.platform !== 'nix') {
 		ext = 'png';
-	}
+	//}
 
 	tmpoutput = path.join(tmppath, `export-%05d.${ext}`);
 	try {
@@ -97,9 +97,9 @@ async function clear (frame : number) {
 	let cmd;
 	let fileExists;
 
-	if (system.platform !== 'nix') {
+	//if (system.platform !== 'nix') {
 		ext = 'png';
-	}
+	//}
 
 	tmppath = path.join(TMPDIR, `export-${padded}.${ext}`);
 
