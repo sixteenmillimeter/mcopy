@@ -12,6 +12,6 @@ declare var cam : any;
 declare var proj : any;
 
 
-let digital : any;
+let filmout : any;
 
-module.exports = digital
+module.exports = filmout
