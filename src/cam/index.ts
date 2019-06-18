@@ -15,14 +15,14 @@ class Camera {
 	private intval : any = null;
 	private log : any;
 	private cfg : any;
-	private dig : any;
+	private filmout : any;
 	private ui : any;
 	private ipc : any;
 	private id : string = 'camera';
 	/**
 	 *
 	 **/
-	constructor (arduino : Arduino, cfg : any, ui : any, dig : any, second : boolean = false) {
+	constructor (arduino : Arduino, cfg : any, ui : any, filmout : any, second : boolean = false) {
 		this.arduino = arduino;
 		this.cfg = cfg;	
 		this.ui = ui;
