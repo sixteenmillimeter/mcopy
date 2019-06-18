@@ -8,8 +8,7 @@ import { delay } from 'delay';
 class Camera {
 	private state : any = { 
 		pos : 0,
-		dir : true, 
-		digital : false 
+		dir : true
 	};
 	private arduino : Arduino = null;
 	private intval : any = null;

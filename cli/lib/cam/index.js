@@ -9,8 +9,7 @@ class Camera {
     constructor(arduino, cfg, ui, filmout, second = false) {
         this.state = {
             pos: 0,
-            dir: true,
-            digital: false
+            dir: true
         };
         this.arduino = null;
         this.intval = null;
