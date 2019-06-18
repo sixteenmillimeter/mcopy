@@ -6,7 +6,7 @@ class Camera {
     /**
      *
      **/
-    constructor(arduino, cfg, ui, dig, second = false) {
+    constructor(arduino, cfg, ui, filmout, second = false) {
         this.state = {
             pos: 0,
             dir: true,
@@ -18,7 +18,7 @@ class Camera {
         this.arduino = arduino;
         this.cfg = cfg;
         this.ui = ui;
-        this.dig = dig;
+        this.filmout = filmout;
         if (second)
             this.id += '_second';
         this.init();
@@ -76,8 +76,8 @@ class Camera {
     async move(frame, id) {
         const cmd = this.cfg.arduino.cmd[this.id];
         let ms;
-        if (this.dig.state.enabled) {
-            await this.dig.start();
+        if (this.filmout.state.enabled) {
+            await this.filmout.start();
         }
         if (this.intval) {
             try {
@@ -95,9 +95,9 @@ class Camera {
                 this.log.error(err);
             }
         }
-        if (this.dig.state.enabled) {
+        if (this.filmout.state.enabled) {
             //await delay(100 * 1000);
-            await this.dig.end();
+            await this.filmout.end();
         }
         //this.log.info('Camera move time', { ms });
         return this.end(cmd, id, ms);
@@ -219,7 +219,7 @@ class Camera {
         this.ui.send(this.id, { cmd: cmd, id: id, ms: ms });
     }
 }
-module.exports = function (arduino, cfg, ui, dig, second) {
-    return new Camera(arduino, cfg, ui, dig, second);
+module.exports = function (arduino, cfg, ui, filmout, second) {
+    return new Camera(arduino, cfg, ui, filmout, second);
 };
 //# sourceMappingURL=index.js.map

@@ -26,7 +26,7 @@ class Camera {
 		this.arduino = arduino;
 		this.cfg = cfg;	
 		this.ui = ui;
-		this.dig = dig;
+		this.filmout = filmout;
 		if (second) this.id += '_second';
 		this.init();
 	}
@@ -85,8 +85,8 @@ class Camera {
 	public async move (frame : number, id : string) {
 		const cmd : string = this.cfg.arduino.cmd[this.id];
 		let ms : number;
-		if (this.dig.state.enabled) {
-			await this.dig.start()
+		if (this.filmout.state.enabled) {
+			await this.filmout.start()
 		}
 		if (this.intval) {
 			try {
@@ -101,9 +101,9 @@ class Camera {
 				this.log.error(err);
 			}
 		}
-		if (this.dig.state.enabled) {
+		if (this.filmout.state.enabled) {
 			//await delay(100 * 1000);
-			await this.dig.end();
+			await this.filmout.end();
 		}
 		//this.log.info('Camera move time', { ms });
 		return this.end(cmd, id, ms);
@@ -216,6 +216,6 @@ class Camera {
 	}
 }
 
-module.exports = function (arduino : Arduino, cfg : any, ui : any, dig : any, second : boolean) {
-	return new Camera(arduino, cfg, ui, dig, second);
+module.exports = function (arduino : Arduino, cfg : any, ui : any, filmout : any, second : boolean) {
+	return new Camera(arduino, cfg, ui, filmout, second);
 }
