@@ -18,6 +18,7 @@ const nav 		= require('./lib/ui/nav.js');
 const seq 		= require('./lib/ui/seq.js');
 const cmd 		= require('./lib/ui/cmd.js');
 const devices 	= require('./lib/ui/devices.js');
+const digital 	= require('./lib/ui/digital.js');
 const mse 		= require('./lib/ui/mscript.js');
 const Mscript 	= require('./lib/mscript');
 let log;
