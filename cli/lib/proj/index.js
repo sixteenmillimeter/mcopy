@@ -6,18 +6,17 @@ class Projector {
     /**
      *
      **/
-    constructor(arduino, cfg, ui, dig, second = false) {
+    constructor(arduino, cfg, ui, filmout, second = false) {
         this.state = {
             pos: 0,
-            dir: true,
-            digital: false
+            dir: true
         };
         this.arduino = null;
         this.id = 'projector';
         this.arduino = arduino;
         this.cfg = cfg;
         this.ui = ui;
-        this.dig = dig;
+        this.filmout = filmout;
         if (second)
             this.id += '_second';
         this.init();
@@ -49,8 +48,8 @@ class Projector {
             cmd = this.cfg.arduino.cmd[`${this.id}_backward`];
         }
         this.state.dir = dir;
-        if (this.dig.state.enabled) {
-            this.dig.set(dir);
+        if (this.filmout.state.enabled) {
+            this.filmout.set(dir);
         }
         else {
             try {
@@ -68,9 +67,9 @@ class Projector {
     async move(frame, id) {
         const cmd = this.cfg.arduino.cmd[this.id];
         let ms;
-        if (this.dig.state.enabled) {
+        if (this.filmout.state.enabled) {
             try {
-                ms = await this.dig.move();
+                ms = await this.filmout.move();
             }
             catch (err) {
                 this.log.error(err);
@@ -121,7 +120,7 @@ class Projector {
         }
         else if (typeof arg.val !== 'undefined') {
             this.state.pos = arg.val;
-            this.dig.state.frame = arg.val;
+            this.filmout.state.frame = arg.val;
         }
         event.returnValue = true;
     }
@@ -170,7 +169,7 @@ class Projector {
         return await this.ui.send(this.id, { cmd: cmd, id: id, ms: ms });
     }
 }
-module.exports = function (arduino, cfg, ui, dig, second) {
-    return new Projector(arduino, cfg, ui, dig, second);
+module.exports = function (arduino, cfg, ui, filmout, second) {
+    return new Projector(arduino, cfg, ui, filmout, second);
 };
 //# sourceMappingURL=index.js.map

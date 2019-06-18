@@ -5,25 +5,24 @@ import Log = require('log');
 class Projector {
 	private state : any = { 
 		pos : 0,
-		dir : true, 
-		digital : false 
+		dir : true
 	};
 	private arduino : Arduino = null;
 	private log : any;
 	private cfg : any;
 	private ui : any;
 	private ipc : any;
-	private dig : any;
+	private filmout : any;
 	private id : string = 'projector';
 
 	/**
 	 *
 	 **/
-	constructor (arduino : Arduino, cfg : any, ui : any, dig : any, second : boolean = false) {
+	constructor (arduino : Arduino, cfg : any, ui : any, filmout : any, second : boolean = false) {
 		this.arduino = arduino;
 		this.cfg = cfg;
 		this.ui = ui;
-		this.dig = dig;
+		this.filmout = filmout;
 		if (second) this.id += '_second';
 		this.init();
 	}
@@ -56,8 +55,8 @@ class Projector {
 			cmd = this.cfg.arduino.cmd[`${this.id}_backward`]
 		}
 		this.state.dir = dir
-		if (this.dig.state.enabled) {
-			this.dig.set(dir)
+		if (this.filmout.state.enabled) {
+			this.filmout.set(dir)
 		} else {
 			try {
 				ms = await this.arduino.send(this.id, cmd)
@@ -74,9 +73,9 @@ class Projector {
 	public async move (frame : any, id : string) {
 		const cmd : string = this.cfg.arduino.cmd[this.id];
 		let ms : number;
-		if (this.dig.state.enabled) {
+		if (this.filmout.state.enabled) {
 			try {
-				ms = await this.dig.move()
+				ms = await this.filmout.move()
 			} catch (err) {
 				this.log.error(err)
 			}
@@ -121,7 +120,7 @@ class Projector {
 			}
 		} else if (typeof arg.val !== 'undefined') {
 			this.state.pos = arg.val;
-			this.dig.state.frame = arg.val
+			this.filmout.state.frame = arg.val
 		}
 		event.returnValue = true
 	}
@@ -164,6 +163,6 @@ class Projector {
 	}
 }
 
-module.exports = function (arduino : Arduino, cfg : any, ui : any, dig : any, second : boolean) {
-	return new Projector(arduino, cfg, ui, dig, second);
+module.exports = function (arduino : Arduino, cfg : any, ui : any, filmout : any, second : boolean) {
+	return new Projector(arduino, cfg, ui, filmout, second);
 }
