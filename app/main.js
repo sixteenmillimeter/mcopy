@@ -7,20 +7,15 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
 const electron = require('electron')
 const { Menu, MenuItem, ipcMain, BrowserWindow, app } = electron
-const fs = require('fs')
-const os = require('os')
 const { createLogger, format, transports } = require('winston')
 const { combine, timestamp, label, printf, colorize, prettyPrint, simple } = format
-const moment = require('moment')
-const uuid = require('uuid')
-const events = require('events')
-const path = require('path')
+const { EventEmitter } = require('events')
+const { join } = require('path')
 
-const ee = new events.EventEmitter()
+const ee = new EventEmitter()
 const settings = require('settings')
 const system = require('system')
 const Server = require('server')
-const Intval = require('intval')
 const { delay } = require('delay')
 
 //Objects
@@ -60,7 +55,7 @@ var createWindow = function () {
 		height: 600,
 		minWidth : 800,
 		minHeight : 600,
-		icon: path.join(__dirname, 'assets/icons/icon.png'),
+		icon: join(__dirname, 'assets/icons/icon.png'),
 		webPreferences : {
 			nodeIntegration: true
 		}
