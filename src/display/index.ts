@@ -43,7 +43,8 @@ class WebView {
 			this.digitalWindow.webContents.openDevTools();
 		}
 		this.digitalWindow.on('closed', () => {
-			this.digitalWindow = null
+			this.digitalWindow = null;
+			this.close();
 		});
 		this.digitalWindow.hide();
 	}
@@ -55,21 +56,25 @@ class WebView {
 		await delay(300);
 	}
 	async show (src : string) {
+		if (!this.digitalWindow) {
+			console.warn(`Cannot show "${src}" because window does not exist`);
+			return false;
+		}
 		try {
 			this.digitalWindow.webContents.send('display', { src });
 		} catch (err) {
-			console.error(err)
+			console.error(err);
 		}
 		this.showing = true;
-		await delay(100)
-		return true
+		await delay(100);
+		return true;
 	}
 	hide () {
 		if (this.digitalWindow) {
 			this.digitalWindow.hide();
 		}
 		this.showing = false;
-		return true
+		return true;
 	}
 	close () {
 		this.hide();
@@ -78,6 +83,7 @@ class WebView {
 			this.digitalWindow = null;
 		}
 		this.opened = false;
+		this.showing = false;
 		return true
 	}
 }

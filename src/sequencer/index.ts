@@ -147,8 +147,8 @@ class Sequencer {
 			this.ui.send(this.id, { loop : x, stop : true });
 		}
 
-		if (this.cmd.proj.dig.enabled === true) {
-			await this.cmd.proj.dig.close()
+		if (this.cmd.proj.dig.state.enabled === true) {
+			await this.cmd.proj.dig.display.close();
 		}
 
 		ms = ( +new Date() ) - startTime;
@@ -167,7 +167,7 @@ class Sequencer {
 	 **/
 	public stop () {
 		if (this.cmd.proj.dig.state.enabled === true) {
-			this.cmd.proj.dig.display.close()
+			this.cmd.proj.dig.display.close();
 		}
 		this.running = false;
 		//clear?
