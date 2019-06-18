@@ -1,7 +1,7 @@
 'use strict';
 
 import uuid from 'uuid/v4';
-import * as path from 'path';
+import { join } from 'path';
 import { exists, mkdir, readdir, unlink } from 'fs-extra';
 import { exec } from 'exec';
 //const spawn = require('spawn');
@@ -41,7 +41,7 @@ async function frame (state : any, light : any) {
 		return parseInt(e);
 	});
 
-	tmpoutput = path.join(TMPDIR, `export-${padded}.${ext}`);
+	tmpoutput = join(TMPDIR, `export-${padded}.${ext}`);
 
 	cmd = `ffmpeg -y -i "${video}" -vf "select='gte(n\\,${frame})',scale=${w}:${h}" -vframes 1 -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"`;
 	cmd2 = `convert "${tmpoutput}" -resize ${w}x${h} -size ${w}x${h} xc:"rgb(${rgb[0]},${rgb[1]},${rgb[2]})" +swap -compose Darken -composite "${tmpoutput}"`;
@@ -79,7 +79,7 @@ async function frames (video : string, obj : any) {
 		ext = 'png';
 	//}
 
-	tmpoutput = path.join(tmppath, `export-%05d.${ext}`);
+	tmpoutput = join(tmppath, `export-%05d.${ext}`);
 	try {
 		await mkdir(tmppath);
 	} catch (err) {
@@ -101,7 +101,7 @@ async function clear (frame : number) {
 		ext = 'png';
 	//}
 
-	tmppath = path.join(TMPDIR, `export-${padded}.${ext}`);
+	tmppath = join(TMPDIR, `export-${padded}.${ext}`);
 
 	try {
 		fileExists = await exists(tmppath);
@@ -132,7 +132,7 @@ async function clearAll () {
 	if (files) {
 		files.forEach(async (file : string, index : any) => {
 			try {
-				await unlink(path.join(tmppath, file));
+				await unlink(join(tmppath, file));
 			} catch (err) {
 				console.error(err);
 			}
@@ -165,7 +165,7 @@ async function checkDir () {
 
 module.exports = (sys : any) => {
 	system = sys;
-	TMPDIR = path.join(system.tmp, 'mcopy_digital');
+	TMPDIR = join(system.tmp, 'mcopy_digital');
 
 	checkDir();
 
