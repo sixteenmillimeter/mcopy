@@ -18,7 +18,7 @@ const nav 		= require('./lib/ui/nav.js');
 const seq 		= require('./lib/ui/seq.js');
 const cmd 		= require('./lib/ui/cmd.js');
 const devices 	= require('./lib/ui/devices.js');
-const digital 	= require('./lib/ui/digital.js');
+const filmout 	= require('./lib/ui/filmout.js');
 const mse 		= require('./lib/ui/mscript.js');
 const Mscript 	= require('./lib/mscript');
 let log;
@@ -42,6 +42,7 @@ async function init () {
 	mse.console.init();
 
 	devices.init();
+	//filmout.init();
 	light.init();
 	proj.init();
 	cam.init();
