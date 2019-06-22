@@ -346,10 +346,22 @@
         <div>
           <div>
             <div id="path_bar">
-              <input id="video_file" type="text" onclick="devices.digitalSelect();" readonly  />
+              <input id="filmout_file" type="text" onclick="devices.digitalSelect();" readonly  />
+                <button>Use Video</butto>
             </div>
-            <div id="video_preview_wrap">
-              <img src="#" id="video_preview">
+            <div id="filmout_preview_wrap">
+              <img src="#" id="filmout">
+            </div>
+            <div id="filmout_position_wrap">
+              <button id="filmout_rewind"><</button>
+              <input id="filmout_position" type="text" value="00001"/>
+              <button id="filmout_advance">></button>
+            </div>
+            <div id="filmout_functions">
+              <button id="filmout_preview">Preview</button>
+              <button id="filmout_meter">Meter</button>
+              <button id="filmout_focus">Focus</button>
+              <button id="filmout_field">Field Guide</button>
             </div>
           </div>
         </div>

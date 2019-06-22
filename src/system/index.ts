@@ -2,6 +2,7 @@
 
 import { tmpdir, type } from 'os';
 import { graphics } from 'systeminformation';
+import { screen } from 'electron';
 //private
 import { exec } from 'exec';
 /**
@@ -47,7 +48,10 @@ function displayMap (obj : any) {
 async function displays () {
 	const obj : any = await graphics()
 	const arr : any[] = obj.displays;
-	return arr.map(displayMap);
+	const displays : any[] = screen.getAllDisplays();
+	const siarr : any[] = arr.map(displayMap);
+	console.dir(arr)
+	console.dir(displays)
 }
 
 /**

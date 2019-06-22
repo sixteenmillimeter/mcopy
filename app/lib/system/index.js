@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const os_1 = require("os");
 const systeminformation_1 = require("systeminformation");
+const electron_1 = require("electron");
 //private
 const exec_1 = require("exec");
 /**
@@ -44,7 +45,10 @@ function displayMap(obj) {
 async function displays() {
     const obj = await systeminformation_1.graphics();
     const arr = obj.displays;
-    return arr.map(displayMap);
+    const displays = electron_1.screen.getAllDisplays();
+    const siarr = arr.map(displayMap);
+    console.dir(arr);
+    console.dir(displays);
 }
 /**
  * Profile the current system and return an object with
