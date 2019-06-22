@@ -29,8 +29,7 @@ class WebView {
 		this.digitalWindow = new BrowserWindow({
 			webPreferences: {
       			nodeIntegration: true,
-      			allowRunningInsecureContent: false,
-      			'unsafe-eval' : false
+      			allowRunningInsecureContent: false
     		},
 			width: 800, 
 			height: 600,
