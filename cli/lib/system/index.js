@@ -77,7 +77,7 @@ async function displays() {
  *
  * @returns {object} Object containing system information
  */
-async function system() {
+async function system(ui) {
     const obj = {};
     let platform;
     try {
@@ -98,6 +98,7 @@ async function system() {
     }
     obj.displays = await displays();
     obj.deps = await dependencies(obj.platform);
+    ui.send('system', obj);
     return obj;
 }
 module.exports = system;

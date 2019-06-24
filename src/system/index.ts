@@ -80,7 +80,7 @@ async function displays () {
  *
  * @returns {object} Object containing system information
  */ 
-async function system () {
+async function system (ui : any) {
 	const obj : any = {};
 	let platform : string;
 
@@ -102,6 +102,8 @@ async function system () {
 
 	obj.displays = await displays()
 	obj.deps = await dependencies(obj.platform);
+
+	ui.send('system', obj);
 
 	return obj;
 }

@@ -70,17 +70,16 @@ var createWindow = function () {
 }
 
 var init = async function () {
-
 	log = await require('log')({})
-
-	try {
-		SYSTEM = await system()
-	} catch (err) {
-		console.error(err)
-	}
 
 	createWindow()
 	createMenu()
+
+	try {
+		SYSTEM = await system(mainWindow.webContents)
+	} catch (err) {
+		console.error(err)
+	}
 
 	await settings.restore()
 
