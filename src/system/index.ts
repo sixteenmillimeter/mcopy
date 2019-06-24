@@ -22,6 +22,14 @@ async function dependencies (platform : string )  {
 		//return exit('ffmpeg is not installed', 3);
 		return console.error('ffmpeg is not installed', err);
 	}
+
+	try {
+		await exec('convert -h');
+		obj.convert = 'convert';
+	} catch (err) {
+		//return exit('ffmpeg is not installed', 3);
+		return console.error('ffmpeg is not installed', err);
+	}
 	//if linux
 	if (platform === 'nix') {
 		try {
