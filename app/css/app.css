@@ -739,11 +739,11 @@ button:focus {
   background: black;
   color: #fff;
 }
-#video_preview_wrap {
+#filmout_preview_wrap {
   background: #000;
   width: 100%;
 }
-#video_preview {
+#filmout {
   height: 400px;
   min-height: 400px;
   width: auto;
@@ -751,7 +751,7 @@ button:focus {
   display: block;
   opacity: 0;
 }
-#video_preview .on {
+#filmout .on {
   opacity: 1;
 }
 #screens {
