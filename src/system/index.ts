@@ -1,7 +1,6 @@
 'use strict';
 
 import { tmpdir, type } from 'os';
-import { graphics } from 'systeminformation';
 import { screen } from 'electron';
 //private
 import { exec } from 'exec';
@@ -38,20 +37,32 @@ async function dependencies (platform : string )  {
 }
 
 function displayMap (obj : any) {
-	const sm = {
-		width : obj.resolutionx,
-		height : obj.resolutiony
+	const sm : any = {
+		width : obj.size.width,
+		height : obj.size.height,
+		x : obj.bounds.x,
+		y : obj.bounds.y,
+		scale : obj.scaleFactor,
+		primary : (obj.bounds.x === 0 && obj.bounds.y === 0)
 	};
+	const primary : string = sm.primary ? ' (Primary)' : '' 
+	sm.name = `${sm.width}x${sm.height}${primary}`;
 	return sm;
+}
+function displaySort (a : any, b : any){
+	if (a.primary) {
+		return -1
+	} else if (b.primary) {
+		return 1
+	}
+	return 0
 }
 
 async function displays () {
-	const obj : any = await graphics()
-	const arr : any[] = obj.displays;
-	const displays : any[] = screen.getAllDisplays();
-	const siarr : any[] = arr.map(displayMap);
-	console.dir(arr)
-	console.dir(displays)
+	let displays : any[] = screen.getAllDisplays();
+	displays = displays.map(displayMap);
+	displays.sort(displaySort);
+	return displays;
 }
 
 /**

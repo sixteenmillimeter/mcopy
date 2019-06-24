@@ -1,7 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const os_1 = require("os");
-const systeminformation_1 = require("systeminformation");
 const electron_1 = require("electron");
 //private
 const exec_1 = require("exec");
@@ -37,18 +36,31 @@ async function dependencies(platform) {
 }
 function displayMap(obj) {
     const sm = {
-        width: obj.resolutionx,
-        height: obj.resolutiony
+        width: obj.size.width,
+        height: obj.size.height,
+        x: obj.bounds.x,
+        y: obj.bounds.y,
+        scale: obj.scaleFactor,
+        primary: (obj.bounds.x === 0 && obj.bounds.y === 0)
     };
+    const primary = sm.primary ? ' (Primary)' : '';
+    sm.name = `${sm.width}x${sm.height}${primary}`;
     return sm;
 }
+function displaySort(a, b) {
+    if (a.primary) {
+        return -1;
+    }
+    else if (b.primary) {
+        return 1;
+    }
+    return 0;
+}
 async function displays() {
-    const obj = await systeminformation_1.graphics();
-    const arr = obj.displays;
-    const displays = electron_1.screen.getAllDisplays();
-    const siarr = arr.map(displayMap);
-    console.dir(arr);
-    console.dir(displays);
+    let displays = electron_1.screen.getAllDisplays();
+    displays = displays.map(displayMap);
+    displays.sort(displaySort);
+    return displays;
 }
 /**
  * Profile the current system and return an object with
