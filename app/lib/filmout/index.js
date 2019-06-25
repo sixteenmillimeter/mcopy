@@ -41,6 +41,8 @@ class FilmOut {
         this.ipc.on('field', this.field.bind(this));
         this.ipc.on('meter', this.meter.bind(this));
         this.ipc.on('filmout_close', this.close.bind(this));
+        //preview
+        this.ipc.on('preview_frame', this.previewFrame.bind(this));
     }
     /**
      *
@@ -126,6 +128,21 @@ class FilmOut {
         this.log.info(`Frames : ${frames}`, 'FILMOUT', true, true);
         this.state.enabled = true;
         return await this.ui.send(this.id, { valid: true, state: JSON.stringify(this.state) });
+    }
+    async previewFrame(evt, arg) {
+        const state = JSON.parse(JSON.stringify(this.state));
+        let path;
+        state.frame = arg.frame;
+        try {
+            path = await this.ffmpeg.frame(state, { color: [255, 255, 255] });
+        }
+        catch (err) {
+            console.error(err);
+            throw err;
+        }
+        this.ui.send('preview_frame', { path, frame: arg.frame });
+    }
+    async preview(evt, arg) {
     }
     async focus(evt, arg) {
         try {

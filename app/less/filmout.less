@@ -1,5 +1,5 @@
 #video{
-	input[type=text],select{
+	input,select{
 		.button();
 		display: inline-block;
 		padding: 6px 12px;
@@ -41,6 +41,7 @@
 	box-sizing: border-box;
 	height: 360px;
 	margin: 0 auto;
+	position: relative;
 	&.on{
 		display: block;
 	}
@@ -51,13 +52,17 @@
 	height: 360px;
 }
 #filmout {
-	height: 360px;
-	min-height: 360px;
-	width: auto;
-	margin: 0 auto;
+	position: absolute;
+	background-repeat:no-repeat;
+	background-size: contain;
+	background-position: center;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
 	display: block;
 	opacity: 0;
-	& .on {
+	&.on {
 		opacity: 1.0;
 	}
 }

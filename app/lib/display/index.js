@@ -60,7 +60,7 @@ class WebView {
             console.error(err);
         }
         this.showing = true;
-        await delay_1.delay(100);
+        await delay_1.delay(200);
         return true;
     }
     async focus() {
@@ -68,6 +68,7 @@ class WebView {
             console.warn(`Cannot show focus screen because window does not exist`);
             return false;
         }
+        await delay_1.delay(500);
         try {
             this.digitalWindow.webContents.send('focus', { focus: true });
         }
@@ -80,7 +81,7 @@ class WebView {
             console.warn(`Cannot show field guide because window does not exist`);
             return false;
         }
-        //aspect ratio
+        await delay_1.delay(500);
         try {
             this.digitalWindow.webContents.send('field', { field: true });
         }
@@ -93,6 +94,7 @@ class WebView {
             console.warn(`Cannot show meter screen because window does not exist`);
             return false;
         }
+        await delay_1.delay(500);
         try {
             this.digitalWindow.webContents.send('meter', { meter: true });
         }

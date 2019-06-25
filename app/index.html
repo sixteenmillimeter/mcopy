@@ -353,7 +353,7 @@
 
             <div id="filmout_preview_wrap">
               <div id="filmout_monitor">
-                <img src="#" id="filmout">
+                <div id="filmout"></div>
               </div>
             </div>
             <div id="filmout_stats">
@@ -372,17 +372,17 @@
             </div>
             <div id="filmout_position_wrap">
               <div>
-                <button id="filmout_rewind" title="Rewind 1 Frame"><</button>
-                <input id="filmout_position" class="count" type="text" value="00000"/>
-                <button id="filmout_advance" title="Advance 1 Frame">></button>
+                <button id="filmout_rewind" title="Rewind 1 Frame" onclick="filmout.rewind();"><</button>
+                <input id="filmout_position" class="count" type="number" value="00000" onchange="gui.counterFormat(this, this.value);" />
+                <button id="filmout_advance" title="Advance 1 Frame" onclick="filmout.advance();">></button>
               </div>
             </div>
             <div id="filmout_functions">
               <div>
                 <button id="filmout_preview">PREVIEW</button>
-                <button id="filmout_meter">METER</button>
-                <button id="filmout_focus">FOCUS</button>
-                <button id="filmout_field">FIELD GUIDE</button>
+                <button id="filmout_meter" onclick="filmout.meter();">METER</button>
+                <button id="filmout_focus" onclick="filmout.focus();">FOCUS</button>
+                <button id="filmout_field" onclick="filmout.field();">FIELD GUIDE</button>
               </div>
             </div>
           </div>

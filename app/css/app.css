@@ -739,7 +739,7 @@ button:focus {
   background: black;
   color: #fff;
 }
-#video input[type=text],
+#video input,
 #video select {
   display: block;
   border-radius: 5px;
@@ -755,25 +755,25 @@ button:focus {
   font-size: 21px;
   min-width: 300px;
 }
-#video input[type=text] span,
+#video input span,
 #video select span {
   display: block;
   font-size: 16px;
   font-weight: 200;
 }
-#video input[type=text]:active,
+#video input:active,
 #video select:active,
-#video input[type=text] .active,
+#video input .active,
 #video select .active {
   background: #fff;
   color: #272b30;
   outline: none;
 }
-#video input[type=text]:focus,
+#video input:focus,
 #video select:focus {
   outline: none;
 }
-#video input[type=text].active,
+#video input.active,
 #video select.active {
   border-color: #DAE035;
   color: #DAE035;
@@ -805,6 +805,7 @@ button:focus {
   box-sizing: border-box;
   height: 360px;
   margin: 0 auto;
+  position: relative;
 }
 #filmout_monitor.on {
   display: block;
@@ -815,14 +816,18 @@ button:focus {
   height: 360px;
 }
 #filmout {
-  height: 360px;
-  min-height: 360px;
-  width: auto;
-  margin: 0 auto;
+  position: absolute;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: block;
   opacity: 0;
 }
-#filmout .on {
+#filmout.on {
   opacity: 1;
 }
 #filmout_position_wrap {

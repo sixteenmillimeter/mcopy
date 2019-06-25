@@ -35,6 +35,9 @@ class FilmOut {
     constructor() {
         this.id = 'filmout';
         this.displays = [];
+        this.state = {
+            frame: 0
+        };
     }
     init() {
         this.listen();
@@ -42,6 +45,7 @@ class FilmOut {
     listen() {
         ipcRenderer.on(this.id, this.onFilmout.bind(this));
         ipcRenderer.on('system', this.onSystem.bind(this));
+        ipcRenderer.on('preview_frame', this.onFrame.bind(this));
     }
     onSystem(evt, args) {
         let option;
@@ -58,6 +62,7 @@ class FilmOut {
         if (args.displays.length > 1) {
             $('#filmout_displays').on('change', this.onChange.bind(this));
         }
+        $('#filmout_position').on('change', this.previewFrame.bind(this));
     }
     onChange() {
         const val = $('#filmout_displays').val();
@@ -87,8 +92,9 @@ class FilmOut {
             elem.width(w);
         }
         elem.addClass('on');
-        $('#filmout_stats_monitor_size').text(`${display.width}x${display.height}`);
+        $('#filmout_stats_monitor_size').text(`${display.width} x ${display.height}`);
         $('#filmout_stats_monitor_aspect').text(`${aspect}`);
+        $('#filmout_stats_monitor_scale').text(`${parseFloat(display.scale).toFixed(1)} scale factor`);
         console.dir(display);
     }
     selectFile() {
@@ -156,8 +162,8 @@ class FilmOut {
         if (args.valid && args.valid === true) {
             //success state
             state = JSON.parse(args.state);
-            console.dir(args);
-            console.dir(state);
+            //console.dir(args)
+            //console.dir(state)
             $('#digital').addClass('active');
             $('#projector_type_digital').prop('checked', 'checked');
             gui.notify('DEVICES', `Using video ${state.fileName}`);
@@ -169,16 +175,60 @@ class FilmOut {
             if (light.disabled) {
                 light.enable();
             }
+            this.state.frame = 0;
+            this.state.frames = state.frames;
+            this.state.width = state.info.width;
+            this.state.height = state.info.height;
+            this.state.name = state.fileName;
             $('#seq_loop').val(`${state.frames - 1}`).trigger('change');
             $('#filmout_stats_video_name').text(state.fileName);
-            $('#filmout_stats_video_size').text(`${state.info.width}x${state.info.height}`);
+            $('#filmout_stats_video_size').text(`${state.info.width} x ${state.info.height}`);
             $('#filmout_stats_video_frames').text(`${state.frames} frames`);
             gui.updateState();
+            this.previewFrame();
         }
         else {
             $('#projector_type_digital').prop('checked', 'checked');
             $('#digital').removeClass('active');
         }
+    }
+    previewFrame() {
+        const frameStr = $('#filmout_position').val();
+        const frame = parseInt(frameStr, 10);
+        this.state.frame = frame;
+        ipcRenderer.send('preview_frame', { frame });
+    }
+    onFrame(evt, args) {
+        const elem = $('#filmout');
+        elem[0].style.backgroundImage = `url('${args.path}')`;
+        elem.addClass('on');
+    }
+    advance() {
+        this.state.frame++;
+        if (this.state.frame >= this.state.frames) {
+            this.state.frame = 0;
+        }
+        $('#filmout_position').val(this.state.frame).trigger('change');
+    }
+    rewind() {
+        this.state.frame--;
+        if (this.state.frame < 0) {
+            this.state.frame = this.state.frames - 1;
+        }
+        $('#filmout_position').val(this.state.frame).trigger('change');
+    }
+    preview(evt, arg) {
+    }
+    focus() {
+        ipcRenderer.send('focus', { focus: true });
+    }
+    field() {
+        ipcRenderer.send('field', { field: true });
+    }
+    meter() {
+        ipcRenderer.send('meter', { meter: true });
+    }
+    close(evt, arg) {
     }
 }
 filmout = new FilmOut();

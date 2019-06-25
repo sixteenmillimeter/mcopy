@@ -1,0 +1,15 @@
+ffprobe: Query the container
+ffprobe -v error -select_streams v:0 -show_entries stream=nb_frames -of default=nokey=1:noprint_wrappers=1 input.mp4
+This is a fast method.
+Not all formats (such as Matroska) will report the number of frames resulting in the output of N/A. See the other methods listed below.
+ffprobe: Count the number of frames
+ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 input.mkv
+This is a slow method.
+Add the -skip_frame nokey option to only count key frames.
+ffmpeg: Count the number of frames
+If you do not have ffprobe you can use ffmpeg instead:
+
+ffmpeg -i input.mkv -map 0:v:0 -c copy -f null -
+This is a somewhat fast method.
+Refer to frame= near the end of the console output.
+Add the -discard nokey input option (before -i) to only count key frames.

@@ -57,30 +57,75 @@
 				}
 
 				img.style.backgroundImage = `url('${src}')`;
-				//img.onload = () => {
-					//document.body.appendChild(img)
-					//return resolve(img)
-				//}
-				//img.onerror = reject
-				//img.src = src
-			})
+			});
 		}
 		async function onMeter () {
+			console.log('meter')
 			const body = document.querySelector('body')
 			if (!body.classList.contains('meter')) {
 				body.classList.add('meter')
 			}
 		}
-		async function onField () {
+		async function onFocus () {
+			console.log('focus')
 			const can = document.getElementById('can')
-			const ctx = can.getContext('2d')
+			const dpr = window.devicePixelRatio || 1
+			let ctx;
 			if (!can.classList.contains('show')) {
 				can.classList.add('show')
 			}
-			can.width = window.innerWidth
-            can.height = window.innerHeight
+			can.width = window.innerWidth * dpr
+            can.height = window.innerHeight * dpr
+
             can.style.width = `${window.innerWidth}px`
             can.style.height = `${window.innerHeight}px`
+
+           	ctx = can.getContext('2d')
+           	ctx.scale(dpr, dpr)
+
+            try{
+            	await drawFocus(can, ctx)
+            } catch (err) {
+            	alert(JSON.stringify(err))
+            }
+		}
+		async function drawFocus (can, ctx) {
+			const count = 20
+			const half = Math.round(count / 2)
+			const dpr = window.devicePixelRatio || 1
+			const w = can.width / dpr
+			const h = can.height / dpr
+			const opp = (Math.tan(360 / count) * ((h / 2) + h - w) / 1.5)
+
+			console.log(opp)
+			for (let i = 0; i < count; i++) {
+				ctx.beginPath()
+			    ctx.moveTo(w / 2, h / 2)
+			    ctx.lineTo((w / 2) + opp, h - w)
+			    ctx.lineTo((w / 2) -  opp, h - w)
+			    ctx.fill()
+			    ctx.translate(w / 2, h / 2);
+			    ctx.rotate((360 / count) * Math.PI / 180)
+			    ctx.translate(- w / 2, -h / 2)
+			}
+		}
+		async function onField () {
+			console.log('field guide')
+			const can = document.getElementById('can')
+			const dpr = window.devicePixelRatio || 1
+			let ctx;
+			if (!can.classList.contains('show')) {
+				can.classList.add('show')
+			}
+			can.width = window.innerWidth * dpr
+            can.height = window.innerHeight * dpr
+
+            can.style.width = `${window.innerWidth}px`
+            can.style.height = `${window.innerHeight}px`
+
+           	ctx = can.getContext('2d')
+           	ctx.scale(dpr, dpr)
+
             try{
             	await drawField(can, ctx)
             } catch (err) {
@@ -91,10 +136,13 @@
 		async function drawField (can, ctx) {
 			const count = 20
 			const half = Math.round(count / 2)
-			const w = can.width
-			const h = can.height
+			const dpr = window.devicePixelRatio || 1
+			const w = can.width / dpr
+			const h = can.height / dpr
 			const wsec = w / count
-			const hsec= h / count
+			const hsec = h / count
+			const spacer = 12
+			const fontSize = 18;
 
 			ctx.moveTo(w / 2, 0)
 			ctx.lineTo(w / 2, h)
@@ -111,31 +159,18 @@
 				ctx.lineTo(w - (wsec * i), hsec * i)
 				ctx.stroke()
 			}
-			ctx.font = '30px Arial'
+			ctx.font = `${fontSize}px Arial`
 			for (let i = 0; i < half; i++) {
-				ctx.fillText(`${(half - i)}`, (wsec * i) + 15, (h / 2) - 15)
-				ctx.fillText(`${(half - i)}`, (w - (wsec * i)) - 25, (h / 2) - 15)
-				ctx.fillText(`${(half - i)}`, (w / 2) + 15, (hsec * i) + 25 )
-				ctx.fillText(`${(half - i)}`, (w / 2) + 15, (h - (hsec * i)) - 15)
+				ctx.fillText(`${(half - i)}`, (wsec * i) + spacer, (h / 2) - spacer)
+				//ctx.fillText(`${(half - i)}`, (w - (wsec * i)) - spacer, (h / 2) - spacer)
+				ctx.fillText(`${(half - i)}`, (w / 2) + spacer, (hsec * i) + spacer + (fontSize / 2) )
+				//ctx.fillText(`${(half - i)}`, (w / 2) + spacer, (h - (hsec * i)) - spacer)
 			}
 		}
 		async function onDigital (event, arg) {
-			console.log('called')
 			if (arg.src) {
 				try {
 					await setImage(arg.src)
-				} catch (err) {
-					console.error(err)
-				}
-			} else if (arg.meter) {
-				try {
-					await setMeter()
-				} catch (err) {
-					console.error(err)
-				}
-			} else if (arg.grid) {
-				try {
-					await setGrid()
 				} catch (err) {
 					console.error(err)
 				}
@@ -160,6 +195,7 @@
 		ipcRenderer.on('display', onDigital)
 		ipcRenderer.on('field', onField)
 		ipcRenderer.on('meter', onMeter)
+		ipcRenderer.on('focus', onFocus)
 		document.onkeydown = onEscape
 	</script>
 </body>
