@@ -68,6 +68,7 @@ async function frame (state : any, light : any) {
 	}
 	
 	if (output2 && output2.stdout) console.log(`"${output2.stdout}"`);
+	return tmpoutput
 }
 
 async function frames (video : string, obj : any) {

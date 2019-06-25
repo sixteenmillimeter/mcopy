@@ -42,7 +42,7 @@ async function init () {
 	mse.console.init();
 
 	devices.init();
-	//filmout.init();
+	filmout.init();
 	light.init();
 	proj.init();
 	cam.init();

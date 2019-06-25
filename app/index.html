@@ -346,24 +346,44 @@
         <div>
           <div>
             <div id="path_bar">
-              <input id="filmout_file" type="text" onclick="devices.digitalSelect();" readonly  />
-                <button>Use Video</butto>
+              <input id="filmout_file" type="text" onclick="filmout.selectFile();" readonly  />
+                <button onclick="$('#projector_type_digital').click();">USE VIDEO</button>
+                <select id="filmout_displays"></select>
             </div>
+
             <div id="filmout_preview_wrap">
               <div id="filmout_monitor">
                 <img src="#" id="filmout">
               </div>
             </div>
+            <div id="filmout_stats">
+              <div id="filmout_stats_video">
+                <h3>Video</h3>
+                <div id="filmout_stats_video_name"></div>
+                <div id="filmout_stats_video_size"></div>
+                <div id="filmout_stats_video_frames"></div>
+              </div>
+              <div id="filmout_stats_monitor">
+                <h3>Monitor</h3>
+                <div id="filmout_stats_monitor_size"></div>
+                <div id="filmout_stats_monitor_aspect"></div>
+                <div id="filmout_stats_monitor_scale"></div>
+              </div>
+            </div>
             <div id="filmout_position_wrap">
-              <button id="filmout_rewind"><</button>
-              <input id="filmout_position" class="count" type="text" value="00001"/>
-              <button id="filmout_advance">></button>
+              <div>
+                <button id="filmout_rewind" title="Rewind 1 Frame"><</button>
+                <input id="filmout_position" class="count" type="text" value="00000"/>
+                <button id="filmout_advance" title="Advance 1 Frame">></button>
+              </div>
             </div>
             <div id="filmout_functions">
-              <button id="filmout_preview">PREVIEW</button>
-              <button id="filmout_meter">METER</button>
-              <button id="filmout_focus">FOCUS</button>
-              <button id="filmout_field">FIELD GUIDE</button>
+              <div>
+                <button id="filmout_preview">PREVIEW</button>
+                <button id="filmout_meter">METER</button>
+                <button id="filmout_focus">FOCUS</button>
+                <button id="filmout_field">FIELD GUIDE</button>
+              </div>
             </div>
           </div>
         </div>
@@ -385,8 +405,8 @@
             <input type="radio" id="projector_type_arduino" name="projector_type" value="arduino" checked="checked" />
           </div>
           <div class="spacer">
-            <input type="text" id="digital" name="digital" placeholder="Digital file" onclick="devices.digitalSelect();" data-file="" readonly />
-            <input type="radio" id="projector_type" name="projector_type" value="video" onclick="devices.digital();" />
+            <input type="text" id="digital" name="digital" placeholder="Digital file" onclick="filmout.selectFile();" data-file="" readonly />
+            <input type="radio" id="projector_type_digital" name="projector_type" value="video" onclick="filmout.useFile();" />
           </div>
           <div>
             <h4>Camera</h4>

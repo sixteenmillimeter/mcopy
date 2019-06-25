@@ -40,7 +40,7 @@ class Devices {
 	private async init () {
 		this.log = await Log({ label : 'devices' })
 		this.ipc = require('electron').ipcMain;
-		this.listen()
+		this.listen();
 	}
 	/**
 	 * Listen to the "profile" channel for messages from the UI.

@@ -1,5 +1,10 @@
 'use strict';
 
+interface ExecOutput {
+	stdout : string;
+	stderr : string;
+}
+
 import { tmpdir, type } from 'os';
 import { screen } from 'electron';
 //private
@@ -12,32 +17,48 @@ import { exec } from 'exec';
  * @param {string} platform  Operating system type
  **/
 
+
 async function dependencies (platform : string )  {
 	let obj : any = {};
+	let ffoutput : ExecOutput;
+	let imoutput : ExecOutput;
+	let eogoutput : ExecOutput;
 
 	try {
-		await exec('ffmpeg -h');
-		obj.ffmpeg = 'ffmpeg';
+		ffoutput = await exec('which ffmpeg');
 	} catch (err) {
-		//return exit('ffmpeg is not installed', 3);
-		return console.error('ffmpeg is not installed', err);
+		console.error('ffmpeg is not installed', err);
+	}
+
+	if (!ffoutput || ffoutput.stdout.trim() === '') {
+		console.error('ffmpeg is not installed');
+	} else {
+		obj.ffmpeg = ffoutput.stdout.trim();
 	}
 
 	try {
-		await exec('convert -h');
-		obj.convert = 'convert';
+		imoutput = await exec('which convert');
 	} catch (err) {
-		//return exit('ffmpeg is not installed', 3);
-		return console.error('ffmpeg is not installed', err);
+		console.error('imagemagick is not installed', err);
 	}
+
+	if (!imoutput || imoutput.stdout.trim() === '') {
+		console.error('imagemagick is not installed');
+	} else {
+		obj.convert = imoutput.stdout.trim();
+	}
+
 	//if linux
 	if (platform === 'nix') {
 		try {
-			await exec('eog -h');
-			obj.eog = 'eog';
+			eogoutput = await exec('which eog');
 		} catch (err) {
-			//return exit('eog is not installed', 4);
-			return console.error('eog is not installed', err);
+			console.error('eog is not installed', err);
+		}
+		if (!eogoutput || eogoutput.stdout.trim() === '') {
+			console.error('eog is not installed');
+		} else {
+			obj.eog = eogoutput.stdout.trim();
 		}
 	}
 
@@ -46,6 +67,7 @@ async function dependencies (platform : string )  {
 
 function displayMap (obj : any) {
 	const sm : any = {
+		id : obj.id,
 		width : obj.size.width,
 		height : obj.size.height,
 		x : obj.bounds.x,
@@ -57,6 +79,7 @@ function displayMap (obj : any) {
 	sm.name = `${sm.width}x${sm.height}${primary}`;
 	return sm;
 }
+
 function displaySort (a : any, b : any){
 	if (a.primary) {
 		return -1
@@ -103,7 +126,9 @@ async function system (ui : any) {
 	obj.displays = await displays()
 	obj.deps = await dependencies(obj.platform);
 
-	ui.send('system', obj);
+	setTimeout(() => {
+		ui.send('system', obj);
+	}, 3000);
 
 	return obj;
 }

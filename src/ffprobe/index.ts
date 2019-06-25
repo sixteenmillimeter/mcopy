@@ -1,6 +1,7 @@
 'use strict';
 
 import { exists } from 'fs-extra';
+import { extname } from 'path';
 import { exec } from 'exec';
 //const spawn = require('spawn');
 //const exit = require('exit');
@@ -55,7 +56,9 @@ async function info (video : string) {
 }
 
 async function frames (video : string) {
-	let cmd = `ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 "${video}"`;
+	const ext : string = extname(video.toLowerCase());
+	let cmd = `ffprobe -v error -select_streams v:0 -show_entries stream=nb_frames -of default=nokey=1:noprint_wrappers=1 "${video}"`;
+	let backup_cmd = `ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 "${video}"`;
 	let fileExists;
 	let raw;
 	let frames;
@@ -73,6 +76,9 @@ async function frames (video : string) {
 		return false;
 	}
 	
+	if (ext === '.mkv') {
+		cmd = backup_cmd;
+	}
 	try {
 		console.log(cmd);
 		raw = await exec(cmd);
