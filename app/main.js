@@ -56,10 +56,14 @@ var createWindow = function () {
 		minWidth : 800,
 		minHeight : 600,
 		icon: join(__dirname, 'assets/icons/icon.png'),
+		skipTaskbar: true,
+    	toolbar: false,	
 		webPreferences : {
 			nodeIntegration: true
 		}
 	})
+	mainWindow.setMenu(null)
+	mainWindow.setAutoHideMenuBar(true) 
 	mainWindow.loadURL('file://' + __dirname + '/index.html')
 	if (process.argv.indexOf('-d') !== -1 || process.argv.indexOf('--dev') !== -1) {
 		mainWindow.webContents.openDevTools()
