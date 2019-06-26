@@ -95,14 +95,18 @@
 			const dpr = window.devicePixelRatio || 1
 			const w = can.width / dpr
 			const h = can.height / dpr
-			const opp = (Math.tan(360 / count) * ((h / 2) + h - w) / 1.5)
-
-			console.log(opp)
+			const longest = w >= h ? w * 1.5 : h * 1.5
+			const opp = Math.tan(360 / (count * 32)) * longest / 10
+			
+			//console.log(`l: ${longest}`)
+			//console.log(`${360 / (count * 8)}deg`)
+			//console.log(`o: ${opp}`)
+      
 			for (let i = 0; i < count; i++) {
-				ctx.beginPath()
+				  ctx.beginPath()
 			    ctx.moveTo(w / 2, h / 2)
-			    ctx.lineTo((w / 2) + opp, h - w)
-			    ctx.lineTo((w / 2) -  opp, h - w)
+			    ctx.lineTo((w / 2) + opp, longest)
+			    ctx.lineTo((w / 2) - opp, longest)
 			    ctx.fill()
 			    ctx.translate(w / 2, h / 2);
 			    ctx.rotate((360 / count) * Math.PI / 180)
