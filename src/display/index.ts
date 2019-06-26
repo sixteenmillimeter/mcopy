@@ -25,7 +25,9 @@ class WebView {
 	private digitalWindow : any;
 	public opened : boolean = false;
 	public showing : boolean = false;
-	constructor() {
+	private platform : string;
+	
+	constructor (platform : string) {
 		this.digitalWindow = new BrowserWindow({
 			webPreferences: {
       			nodeIntegration: true,
@@ -45,7 +47,8 @@ class WebView {
 			this.digitalWindow = null;
 			this.close();
 		});
-		this.digitalWindow.hide();
+		//this.digitalWindow.hide();
+		this.platform = platform;
 	}
 	async open () {
 		this.digitalWindow.show();
@@ -53,6 +56,9 @@ class WebView {
 		this.opened = true;
 		await this.digitalWindow.setFullScreen(true);
 		await delay(300);
+		if (this.platform === 'osx') {
+			await delay(300); //give macs an extra 300ms to open fullscreen
+		}
 	}
 	async show (src : string) {
 		if (!this.digitalWindow) {
@@ -164,7 +170,7 @@ class Display {
 	public async open () {
 		//if (this.platform !== 'nix') {
 			if (!this.wv || !this.wv.opened) {
-				this.wv = new WebView();
+				this.wv = new WebView(this.platform);
 				await this.wv.open()
 	    	}
 		//} else {
