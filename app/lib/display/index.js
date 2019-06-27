@@ -17,10 +17,10 @@ function padded_frame(i) {
     return str;
 }
 class WebView {
-    constructor(platform) {
+    constructor(platform, display) {
         this.opened = false;
         this.showing = false;
-        this.digitalWindow = new BrowserWindow({
+        const prefs = {
             webPreferences: {
                 nodeIntegration: true,
                 allowRunningInsecureContent: false
@@ -30,7 +30,12 @@ class WebView {
             minWidth: 800,
             minHeight: 600 //,
             //icon: path.join(__dirname, '../../assets/icons/icon.png')
-        });
+        };
+        if (!display.primary) {
+            prefs.x = display.x + 50;
+            prefs.y = display.y + 50;
+        }
+        this.digitalWindow = new BrowserWindow(prefs);
         this.digitalWindow.loadURL('file://' + __dirname + '../../../display.html');
         if (process.argv.indexOf('-d') !== -1 || process.argv.indexOf('--dev') !== -1) {
             this.digitalWindow.webContents.openDevTools();
@@ -41,6 +46,7 @@ class WebView {
         });
         //this.digitalWindow.hide();
         this.platform = platform;
+        this.display = display;
     }
     async open() {
         this.digitalWindow.show();
@@ -149,51 +155,36 @@ class EOG {
 class Display {
     constructor(sys) {
         this.platform = sys.platform;
+        this.displays = sys.displays;
         this.tmpdir = path_1.join(sys.tmp, 'mcopy_digital');
+        this.display = this.displays.find((display) => {
+            if (display.primary)
+                return true;
+        });
     }
     async open() {
-        //if (this.platform !== 'nix') {
+        if (this.wv && this.wv.display && this.wv.display.id !== this.display.id) {
+            this.wv.close();
+        }
         if (!this.wv || !this.wv.opened) {
-            this.wv = new WebView(this.platform);
+            this.wv = new WebView(this.platform, this.display);
             await this.wv.open();
         }
-        //} else {
-        //	if (!this.eog) {
-        //		this.eog = new EOG()
-        //	}
-        //}
     }
     async show(frame) {
         let padded = padded_frame(frame);
-        let ext = 'tif';
+        let ext = 'png';
         let tmppath;
-        //if (this.platform !== 'nix') {
-        ext = 'png';
-        //}
         tmppath = path_1.join(this.tmpdir, `export-${padded}.${ext}`);
-        //if (this.platform !== 'nix') {
         await this.wv.show(tmppath);
-        //} else {
-        //await this.eog.show(tmppath);
-        //}
     }
     async showPath(pathStr) {
         return await this.wv.show(pathStr);
     }
     hide() {
-        //if (this.platform !== 'nix') {
-        //don't hide between frames
-        //this.wv.hide();
-        //} else {
-        //this.eog.hide();
-        //}
     }
-    close() {
-        //if (this.platform !== 'nix') {
-        this.wv.close();
-        //} else {
-        //this.eog.close()
-        //}
+    async close() {
+        return await this.wv.close();
     }
     async focus() {
         return await this.wv.focus();
@@ -203,6 +194,12 @@ class Display {
     }
     async meter() {
         return await this.wv.meter();
+    }
+    change(id) {
+        this.display = this.displays.find((display) => {
+            if (display.id == id)
+                return true;
+        });
     }
 }
 module.exports = function (sys) {

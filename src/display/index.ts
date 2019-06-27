@@ -26,9 +26,10 @@ class WebView {
 	public opened : boolean = false;
 	public showing : boolean = false;
 	private platform : string;
-	
-	constructor (platform : string) {
-		this.digitalWindow = new BrowserWindow({
+	public display : any;
+
+	constructor (platform : string, display : any) {
+		const prefs : any = {
 			webPreferences: {
       			nodeIntegration: true,
       			allowRunningInsecureContent: false
@@ -38,7 +39,12 @@ class WebView {
 			minWidth : 800,
 			minHeight : 600//,
 			//icon: path.join(__dirname, '../../assets/icons/icon.png')
-		});
+		}
+		if (!display.primary) {
+			prefs.x = display.x + 50;
+			prefs.y = display.y + 50;
+		}
+		this.digitalWindow = new BrowserWindow(prefs);
 		this.digitalWindow.loadURL('file://' + __dirname + '../../../display.html');
 		if (process.argv.indexOf('-d') !== -1 || process.argv.indexOf('--dev') !== -1) {
 			this.digitalWindow.webContents.openDevTools();
@@ -49,6 +55,7 @@ class WebView {
 		});
 		//this.digitalWindow.hide();
 		this.platform = platform;
+		this.display = display;
 	}
 	async open () {
 		this.digitalWindow.show();
@@ -159,60 +166,46 @@ class EOG {
 
 class Display {
 	private platform : string;
+	private displays : any[];
+	private display : any;
 	private tmpdir : string;
 	private wv : WebView;
 	private eog : EOG;
 
 	constructor (sys : any) {
 		this.platform = sys.platform;
+		this.displays = sys.displays;
 		this.tmpdir = pathJoin(sys.tmp, 'mcopy_digital');
+		this.display = this.displays.find((display : any) => {
+			if (display.primary) return true;
+		})
 	}
 	public async open () {
-		//if (this.platform !== 'nix') {
-			if (!this.wv || !this.wv.opened) {
-				this.wv = new WebView(this.platform);
-				await this.wv.open()
-	    	}
-		//} else {
-		//	if (!this.eog) {
-		//		this.eog = new EOG()
-		//	}
-		//}
+		if (this.wv && this.wv.display && this.wv.display.id !== this.display.id) {
+			this.wv.close();
+		}
+		if (!this.wv || !this.wv.opened) {
+			this.wv = new WebView(this.platform, this.display);
+			await this.wv.open();
+		}
 	}
 	public async show (frame : number) {
 		let padded : string = padded_frame(frame);
-		let ext : string = 'tif';
+		let ext : string = 'png';
 		let tmppath : string;
-
-		//if (this.platform !== 'nix') {
-			ext = 'png';
-		//}
 
 		tmppath = pathJoin(this.tmpdir, `export-${padded}.${ext}`);
 
-		//if (this.platform !== 'nix') {
-			await this.wv.show(tmppath);
-		//} else {
-			//await this.eog.show(tmppath);
-		//}
+		await this.wv.show(tmppath);
 	}
 	public async showPath (pathStr : string) {
 		return await this.wv.show(pathStr);
 	}
 	public hide () {
-		//if (this.platform !== 'nix') {
-			//don't hide between frames
-			//this.wv.hide();
-		//} else {
-			//this.eog.hide();
-		//}
+
 	}
-	public close () {
-		//if (this.platform !== 'nix') {
-			this.wv.close()
-		//} else {
-			//this.eog.close()
-		//}
+	public async close () {
+		return await this.wv.close()
 	}
 	public async focus () {
 		return await this.wv.focus();
@@ -222,6 +215,11 @@ class Display {
 	}
 	public async meter () {
 		return await this.wv.meter();
+	}
+	public change (id : any) {
+		this.display = this.displays.find((display : any) => {
+			if (display.id == id) return true;
+		});
 	}
 }
 

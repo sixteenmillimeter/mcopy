@@ -49,8 +49,9 @@ class FilmOut {
 	 	this.ipc.on('field', this.field.bind(this));
 	 	this.ipc.on('meter', this.meter.bind(this));
 	 	this.ipc.on('filmout_close', this.close.bind(this));
-	 	//preview
+	 	this.ipc.on('preview', this.preview.bind(this));
 	 	this.ipc.on('preview_frame', this.previewFrame.bind(this));
+	 	this.ipc.on('display', this.onDisplay.bind(this));
 	 }
 	/**
 	 *
@@ -80,14 +81,14 @@ class FilmOut {
 		try {
 			await this.ffmpeg.clearAll();
 		} catch (err) {
-			console.error(err);
+			this.log.error(err, 'FILMOUT', true, true);
 			throw err;
 		}
 		
 		try {
 			await this.ffmpeg.frame(this.state, this.light.state);
 		} catch (err) {
-			console.error(err);
+			this.log.error(err, 'FILMOUT', true, true);
 			throw err;
 		}
 		await this.display.show(this.state.frame);
@@ -140,20 +141,42 @@ class FilmOut {
 	async previewFrame (evt : any, arg : any) {
 		const state : any = JSON.parse(JSON.stringify(this.state));
 		let path : string;
+
 		state.frame = arg.frame;
+
 		try {
 			path = await this.ffmpeg.frame(state, { color : [255, 255, 255] });
 		} catch (err) {
-			console.error(err);
+			this.log.error(err, 'FILMOUT', true, true);;
 			throw err;
 		}
 		this.ui.send('preview_frame', { path, frame : arg.frame })
 	}
 
 	async preview (evt : any, arg : any) {
+		const state : any = JSON.parse(JSON.stringify(this.state));
+		let path : string;
 
+		state.frame = arg.frame;
+
+		this.log.info(`Previewing frame ${state.frame} of ${state.fileName}`);
+		try {
+			path = await this.ffmpeg.frame(state, { color : [255, 255, 255] });
+		} catch (err) {
+			this.log.error(err, 'FILMOUT', true, true);
+			throw err;
+		}
+
+		try {
+			await this.display.open();
+			await this.display.show(arg.frame);
+		} catch (err) {
+			this.log.error(err, 'FILMOUT', true, true);
+		}
 	}
+
 	async focus (evt : any, arg : any) {
+		this.log.info(`Showing focus screen`);
 		try {
 			await this.display.open();
 			await this.display.focus();
@@ -161,7 +184,9 @@ class FilmOut {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
 	}
+
 	async field (evt : any, arg : any) {
+		this.log.info(`Showing field guide screen`);
 		try {
 			await this.display.open();
 			await this.display.field();
@@ -169,7 +194,9 @@ class FilmOut {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
 	}
+
 	async meter (evt : any, arg : any) {
+		this.log.info(`Showing meter screen`);
 		try {
 			await this.display.open();
 			await this.display.meter();
@@ -177,6 +204,7 @@ class FilmOut {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
 	}
+
 	async close (evt : any, arg : any) {
 		try {
 			await this.display.hide();
@@ -184,6 +212,11 @@ class FilmOut {
 		} catch (err) {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
+	}
+
+	onDisplay (evt : any, arg : any) {
+		this.display.change(arg.display);
+		this.log.info(`Changing the display to ${arg.display}`);
 	}
 }
 
