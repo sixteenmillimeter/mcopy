@@ -43,6 +43,7 @@
     "typescript": "^3.5.2"
   },
   "dependencies": {
+    "animated-gif-detector": "^1.2.0",
     "arduino": "file:lib/arduino",
     "cam": "file:lib/cam",
     "capture": "file:lib/capture",
@@ -70,6 +71,7 @@
     "serialport": "^7.1.5",
     "server": "file:lib/server",
     "settings": "file:lib/settings",
+    "sharp": "^0.22.1",
     "spawn": "file:lib/spawn",
     "system": "file:lib/system",
     "uuid": "^3.3.2",

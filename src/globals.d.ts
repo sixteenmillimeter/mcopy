@@ -9,6 +9,7 @@ declare module 'spawn';
 declare module 'systeminformation';
 declare module 'exit';
 declare module 'request';
+declare module 'animated-gif-detector';
 
 interface Device {
 	arduino : string;
