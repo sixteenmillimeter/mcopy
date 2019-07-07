@@ -6,6 +6,7 @@ const notifier 	= require('node-notifier');
 const fs 		= require('fs');
 const uuid 		= require('uuid').v4;
 const moment 	= require('moment');
+const path 		= require('path');
 const humanizeDuration = require('humanize-duration');
 const PACKAGE 	= require('./package.json');
 const cfg 		= require('./data/cfg.json');

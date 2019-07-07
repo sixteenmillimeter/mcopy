@@ -1,12 +1,20 @@
 'use strict';
 
+import sharp from 'sharp';
+import * as  animated from 'animated-gif-detector';
+import { extname } from 'path';
+import { readFile } from 'fs-extra';
 import { delay } from 'delay';
 
 class FilmOut {
 	private id : string = 'filmout';
+	private videoExtensions : string[] =  ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4']; 
+	private stillExtensions : string[] = ['.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
+	private gifExtension : string = '.gif';
 	public state : any = {
 		frame : 0,
 		frames : 0,
+		still : false,
 		path : null,
 		fileName : null,
 		info : {},
@@ -45,6 +53,7 @@ class FilmOut {
 	 **/
 	 private listen () {
 	 	this.ipc.on(this.id, this.onConnect.bind(this));
+
 	 	this.ipc.on('focus', this.focus.bind(this));
 	 	this.ipc.on('field', this.field.bind(this));
 	 	this.ipc.on('meter', this.meter.bind(this));
@@ -64,6 +73,9 @@ class FilmOut {
 	 **/
 	public async move () {
 		let start : number = +new Date();
+		if (this.state.still) {
+			return false;
+		}
 		if (this.state.dir) {
 			this.state.frame++;
 		} else {
@@ -94,7 +106,7 @@ class FilmOut {
 		await this.display.show(this.state.frame);
 		await delay(20);
 	}
-	 /**
+	/**
 	 *
 	 **/
 	private async end () {
@@ -106,26 +118,64 @@ class FilmOut {
 	 *
 	 **/
 	async onConnect (evt : any, arg : any) {
-		let info;
-		let frames = 0;
+		let frames : number = 0;
+		let isAnimated : boolean = false;
+		let info : any;
+		let ext : string;
 
-		try {
-			info = await this.ffprobe.info(arg.path);
-		} catch (err) {
-			//this.log.error(err, 'FILMOUT', true, true);
-			this.state.enabled = false;
-			await this.ui.send(this.id, { valid : false });
+		ext = extname(arg.fileName.toLowerCase());
+
+		console.dir(arg)
+		console.log(ext)
+
+		if (ext === this.gifExtension) {
+			try {
+				isAnimated = await this.isGifAnimated(arg.path);
+			} catch (err) {
+				this.log.error(err, 'FILMOUT', true, true);
+				await this.ui.send(this.id, { valid : false });
+				return false;
+			}
+			this.state.still = !isAnimated;
+		} else if (this.stillExtensions.indexOf(ext) !== -1) {
+			this.state.still = true;
+		} else if (this.videoExtensions.indexOf(ext) !== -1) {
+			this.state.still = false;
+		} else {
+			this.log.error(`File is not of a valid file type`, 'FILMOUT', true, true);
 			return false;
 		}
-		try {
-			frames = await this.ffprobe.frames(arg.path);
-		} catch (err) {
-			this.log.error(err, 'FILMOUT', true, true);
-			this.state.enabled = false;
-			await this.ui.send(this.id, { valid : false });
-			return false;
-		}
 
+		if (this.state.still) {
+			try {
+				info = await this.stillInfo(arg.path);
+			} catch (err) {
+				this.log.error(err, 'FILMOUT', true, true);
+				this.state.enabled = false;
+				await this.ui.send(this.id, { valid : false });
+				return false;
+			}
+			frames = 1;
+		} else {
+			try {
+				info = await this.ffprobe.info(arg.path);
+			} catch (err) {
+				this.log.error(err, 'FILMOUT', true, true);
+				this.state.enabled = false;
+				await this.ui.send(this.id, { valid : false });
+				return false;
+			}
+
+			try {
+				frames = await this.ffprobe.frames(arg.path);
+			} catch (err) {
+				this.log.error(err, 'FILMOUT', true, true);
+				this.state.enabled = false;
+				await this.ui.send(this.id, { valid : false });
+				return false;
+			}
+		}
+		console.dir(info)
 		this.state.frame = 0;
 		this.state.path = arg.path;
 		this.state.fileName = arg.fileName;
@@ -137,7 +187,28 @@ class FilmOut {
 		this.state.enabled = true;
 		return await this.ui.send(this.id, { valid : true, state : JSON.stringify(this.state) });
 	}
-
+	/**
+	 * Return true if gif is animated, false if it is a still
+	 **/
+	async isGifAnimated (pathStr : string) {
+		let gifBuffer : Buffer;
+		try {
+			gifBuffer = await readFile(pathStr);
+		} catch (err) {
+			this.log.error(err, 'FILMOUT', true, true);
+			return false;
+		}
+		return animated(gifBuffer);
+	}
+	/**
+	 * Return information on a still image using the sharp module
+	 **/
+	async stillInfo (pathStr : string) {
+		return sharp(pathStr).metadata();
+	}
+	/**
+	 *
+	 **/
 	async previewFrame (evt : any, arg : any) {
 		const state : any = JSON.parse(JSON.stringify(this.state));
 		let path : string;
@@ -152,7 +223,9 @@ class FilmOut {
 		}
 		this.ui.send('preview_frame', { path, frame : arg.frame })
 	}
-
+	/**
+	 *
+	 **/
 	async preview (evt : any, arg : any) {
 		const state : any = JSON.parse(JSON.stringify(this.state));
 		let path : string;
@@ -174,7 +247,9 @@ class FilmOut {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
 	}
-
+	/**
+	 *
+	 **/
 	async focus (evt : any, arg : any) {
 		this.log.info(`Showing focus screen`);
 		try {
@@ -184,7 +259,9 @@ class FilmOut {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
 	}
-
+	/**
+	 *
+	 **/
 	async field (evt : any, arg : any) {
 		this.log.info(`Showing field guide screen`);
 		try {
@@ -194,7 +271,9 @@ class FilmOut {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
 	}
-
+	/**
+	 *
+	 **/
 	async meter (evt : any, arg : any) {
 		this.log.info(`Showing meter screen`);
 		try {
@@ -204,7 +283,9 @@ class FilmOut {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
 	}
-
+	/**
+	 *
+	 **/
 	async close (evt : any, arg : any) {
 		try {
 			await this.display.hide();
@@ -213,7 +294,9 @@ class FilmOut {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
 	}
-
+	/**
+	 *
+	 **/
 	onDisplay (evt : any, arg : any) {
 		this.display.change(arg.display);
 		this.log.info(`Changing the display to ${arg.display}`);

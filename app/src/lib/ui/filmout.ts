@@ -13,8 +13,12 @@ declare var proj : any;
 declare var grid : any;
 declare var dialog : any;
 declare var ipcRenderer : any;
+declare var path : any;
 
-function gcd (a : number, b : number) { 
+/**
+ * Determine the greatest common denominator
+ */
+function gcd (a : number, b : number) : any { 
     if (b === 0) return a;
     return gcd(b, a % b);
 }
@@ -49,6 +53,9 @@ let filmout : FilmOut;
 
 class FilmOut {
 	private id : string = 'filmout';
+	private extensions : string[] =  ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4', 
+									  '.gif',
+									  '.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
 	private displays : any[] = [];
 	private state : any = {
 		frame : 0,
@@ -100,6 +107,7 @@ class FilmOut {
 		const w : number = display.width / scale;
 		const elem : any = $('#filmout_monitor');
 		const aspect : any = reduceRatio(display.width, display.height);
+
 		let h : number;
 		let top : number;
 
@@ -120,13 +128,12 @@ class FilmOut {
 		$('#filmout_stats_monitor_size').text(`${display.width} x ${display.height}`);
 		$('#filmout_stats_monitor_aspect').text(`${aspect}`);
 		$('#filmout_stats_monitor_scale').text(`${parseFloat(display.scale).toFixed(1)} scale factor`);
-		console.dir(display);
+		//console.dir(display);
 		this.state.display = id;
 		ipcRenderer.send('display', { display : id });
 	}
 	selectFile () {
 		const elem : any = $('#digital');
-		const extensions : string[] =  ['mpg', 'mpeg', 'mov', 'mkv', 'avi', 'mp4'];
 		dialog.showOpenDialog({
 			title : `Select video or image sequence`,
 	        properties : [`openFile`], // openDirectory, multiSelection, openFile
@@ -140,18 +147,18 @@ class FilmOut {
 	    }, (files : string[]) => {
 	    	if (!files) return false;
 	    	let valid : boolean = false;
-	    	let path : string = files[0];
+	    	let pathStr : string = files[0];
 	    	let displayName : string;
-			if (path && path !== '') {
-				for (let ext of extensions) {
-					if (path.toLowerCase().indexOf(`.${ext}`) !== -1) {
-						valid = true;
-					}
+	    	let ext : string;
+			if (pathStr && pathStr !== '') {
+				ext = path.extname(pathStr.toLowerCase());
+				valid = this.extensions.indexOf(ext) === -1 ? false : true;
+				if (!valid) {
+					return false;
 				}
-				if (!valid) return false;
-				log.info(`Selected video ${path.split('/').pop()}`, 'DIGITAL', true);
-				elem.attr('data-file', path);
-				displayName = path.split('/').pop();
+				log.info(`Selected video ${pathStr.split('/').pop()}`, 'DIGITAL', true);
+				elem.attr('data-file', pathStr);
+				displayName = pathStr.split('/').pop();
 				elem.val(displayName);
 				$('#filmout_file').val(displayName);
 			}

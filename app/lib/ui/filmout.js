@@ -34,6 +34,8 @@ let filmout;
 class FilmOut {
     constructor() {
         this.id = 'filmout';
+        this.extensions = ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4', '.gif',
+            '.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
         this.displays = [];
         this.state = {
             frame: 0,
@@ -99,13 +101,12 @@ class FilmOut {
         $('#filmout_stats_monitor_size').text(`${display.width} x ${display.height}`);
         $('#filmout_stats_monitor_aspect').text(`${aspect}`);
         $('#filmout_stats_monitor_scale').text(`${parseFloat(display.scale).toFixed(1)} scale factor`);
-        console.dir(display);
+        //console.dir(display);
         this.state.display = id;
         ipcRenderer.send('display', { display: id });
     }
     selectFile() {
         const elem = $('#digital');
-        const extensions = ['mpg', 'mpeg', 'mov', 'mkv', 'avi', 'mp4'];
         dialog.showOpenDialog({
             title: `Select video or image sequence`,
             properties: [`openFile`],
@@ -120,19 +121,18 @@ class FilmOut {
             if (!files)
                 return false;
             let valid = false;
-            let path = files[0];
+            let pathStr = files[0];
             let displayName;
-            if (path && path !== '') {
-                for (let ext of extensions) {
-                    if (path.toLowerCase().indexOf(`.${ext}`) !== -1) {
-                        valid = true;
-                    }
-                }
-                if (!valid)
+            let ext;
+            if (pathStr && pathStr !== '') {
+                ext = path.extname(pathStr.toLowerCase());
+                valid = this.extensions.indexOf(ext) === -1 ? false : true;
+                if (!valid) {
                     return false;
-                log.info(`Selected video ${path.split('/').pop()}`, 'DIGITAL', true);
-                elem.attr('data-file', path);
-                displayName = path.split('/').pop();
+                }
+                log.info(`Selected video ${pathStr.split('/').pop()}`, 'DIGITAL', true);
+                elem.attr('data-file', pathStr);
+                displayName = pathStr.split('/').pop();
                 elem.val(displayName);
                 $('#filmout_file').val(displayName);
             }
