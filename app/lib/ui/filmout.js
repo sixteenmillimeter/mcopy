@@ -1,4 +1,7 @@
 'use strict';
+/**
+ * Determine the greatest common denominator
+ */
 function gcd(a, b) {
     if (b === 0)
         return a;
@@ -34,7 +37,8 @@ let filmout;
 class FilmOut {
     constructor() {
         this.id = 'filmout';
-        this.extensions = ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4', '.gif',
+        this.extensions = ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4',
+            '.gif',
             '.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
         this.displays = [];
         this.state = {
