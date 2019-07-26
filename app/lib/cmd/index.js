@@ -2,6 +2,17 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const delay_1 = require("delay");
 class Commands {
+    /**
+     * @constructor
+     * Assign all connected devices and mock devices as private classes.
+     *
+     * @param {object} cfg Configuration object
+     * @param {object} proj Projector 1
+     * @param {object} cam  Camera 1
+     * @param {object} light Light source
+     * @param {object} cam2 (optional) Camera 2
+     * @param {object} proj2 {optional} Projector 2
+     **/
     constructor(cfg, proj, cam, light, cam2 = null, proj2 = null) {
         this.cfg = cfg;
         this.proj = proj;
@@ -15,6 +26,8 @@ class Commands {
     }
     /**
      * Move the projector one frame forward
+     *
+     * @returns {integer} Length of action in ms
      **/
     async projector_forward() {
         let ms;
@@ -33,6 +46,8 @@ class Commands {
     }
     /**
      * Move the projector one frame backward
+     *
+     * @returns {integer} Length of action in ms
      **/
     async projector_backward() {
         let ms;
@@ -53,6 +68,8 @@ class Commands {
      * Move the camera one frame forward
      *
      * @param {array} 	 rgb 	   Color to set light for frame
+     *
+     * @returns {integer} Length of action in ms
      **/
     async camera_forward(rgb = [255, 255, 255]) {
         const off = [0, 0, 0];
@@ -75,7 +92,9 @@ class Commands {
         return ms;
     }
     /**
-     * Move the camera one frame forwardwith light off
+     * Move the camera one frame forward with light off
+     *
+     * @returns {integer} Length of action in ms
      **/
     async black_forward() {
         const off = [0, 0, 0];
@@ -101,6 +120,8 @@ class Commands {
      * Move the camera one frame backward
      *
      * @param {array} 	 rgb 	   Color to set light for frame
+     *
+     * @returns {integer} Length of action in ms
      **/
     async camera_backward(rgb = [255, 255, 255]) {
         const off = [0, 0, 0];
@@ -125,6 +146,7 @@ class Commands {
     /**
      * Move the camera one frame forward, light set to black or off
      *
+     * @returns {integer} Length of action in ms
      **/
     async black_backward() {
         const off = [0, 0, 0];
@@ -150,6 +172,8 @@ class Commands {
      * Move the second camera one frame forward
      *
      * @param {array} 	 rgb 	   Color to set light for frame
+     *
+     * @returns {integer} Length of action in ms
      **/
     async camera_second_forward(rgb = [255, 255, 255]) {
         const off = [0, 0, 0];
@@ -175,6 +199,8 @@ class Commands {
      * Move the second camera one frame backward
      *
      * @param {array} 	 rgb 	   Color to set light for frame
+     *
+     * @returns {integer} Length of action in ms
      **/
     async camera_second_backward(rgb = [255, 255, 255]) {
         const off = [0, 0, 0];
@@ -200,6 +226,8 @@ class Commands {
      * Move the both cameras one frame forward
      *
      * @param {array} 	 rgb 	   Color to set light for frame
+     *
+     * @returns {integer} Length of action in ms
      **/
     async cameras_forward(rgb = [255, 255, 255]) {
         const off = [0, 0, 0];
@@ -238,6 +266,8 @@ class Commands {
      * Move the both cameras one frame backward
      *
      * @param {array} 	 rgb 	   Color to set light for frame
+     *
+     * @returns {integer} Length of action in ms
      **/
     async cameras_backward(rgb = [255, 255, 255]) {
         const off = [0, 0, 0];
@@ -272,6 +302,13 @@ class Commands {
         }
         return ms;
     }
+    /**
+     * Move first camera one frame forward and rewind secondary camera one frame backward
+     *
+     * @param {array} 	 rgb 	   Color to set light for frames
+     *
+     * @returns {integer} Length of action in ms
+     **/
     async camera_forward_camera_second_backward(rgb = [255, 255, 255]) {
         const off = [0, 0, 0];
         let both;
@@ -305,6 +342,13 @@ class Commands {
         }
         return ms;
     }
+    /**
+     * Rewind first camera one frame backward and move secondary camera one frame forward
+     *
+     * @param {array} 	 rgb 	   Color to set light for frame
+     *
+     * @returns {integer} Length of action in ms
+     **/
     async camera_backward_camera_second_forward(rgb = [255, 255, 255]) {
         const off = [0, 0, 0];
         let both;
@@ -341,6 +385,7 @@ class Commands {
     /**
      * Move the secondary projector forward one frame
      *
+     * @returns {integer} Length of action in ms
      **/
     async projector_second_forward() {
         let ms;
@@ -357,6 +402,11 @@ class Commands {
         }
         return ms;
     }
+    /**
+     * Rewind the secondary projector backward one frame
+     *
+     * @returns {integer} Length of action in ms
+     **/
     async projector_second_backward() {
         let ms;
         try {
@@ -372,6 +422,11 @@ class Commands {
         }
         return ms;
     }
+    /**
+     * Move the both projectors forward one frame
+     *
+     * @returns {integer} Length of action in ms
+     **/
     async projectors_forward() {
         let both;
         let ms;
@@ -400,6 +455,11 @@ class Commands {
         }
         return ms;
     }
+    /**
+     * Rewind both projectors backwards one frame
+     *
+     * @returns {integer} Length of action in ms
+     **/
     async projectors_backward() {
         let both;
         let ms;
@@ -429,6 +489,12 @@ class Commands {
         }
         return ms;
     }
+    /**
+     * Move the primary projector forward one frame and rewind the secondary projector
+     * one frame backwards.
+     *
+     * @returns {integer} Length of action in ms
+     **/
     async projector_forward_projector_second_backward() {
         let both;
         let ms;
@@ -458,6 +524,12 @@ class Commands {
         }
         return ms;
     }
+    /**
+     * Rewind the primary projector backwards one frame and move the secondary
+     * projector forward one frame.
+     *
+     * @returns {integer} Length of action in ms
+     **/
     async projector_backward_projector_second_forward() {
         let both;
         let ms;

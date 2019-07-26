@@ -13,6 +13,18 @@ class Commands {
 	private cfg : any;
 	private ipc : any;
 
+	/**
+	 * @constructor
+	 * Assign all connected devices and mock devices as private classes.
+	 *
+	 * @param {object} cfg Configuration object
+	 * @param {object} proj Projector 1
+	 * @param {object} cam  Camera 1
+	 * @param {object} light Light source
+	 * @param {object} cam2 (optional) Camera 2
+	 * @param {object} proj2 {optional} Projector 2
+	 **/
+
 	constructor (cfg : any, proj : any, cam : any, light : any, cam2 : any = null, proj2 : any = null) {
 		this.cfg = cfg;
 		this.proj = proj;
@@ -27,6 +39,8 @@ class Commands {
 
 	/**
 	 * Move the projector one frame forward
+	 * 
+	 * @returns {integer} Length of action in ms
 	 **/
 	public async projector_forward () {
 		let ms : number;
@@ -44,6 +58,8 @@ class Commands {
 	}
 	/**
 	 * Move the projector one frame backward
+	 *
+	 * @returns {integer} Length of action in ms
 	 **/
 	public async projector_backward () {
 		let ms : number;
@@ -63,6 +79,8 @@ class Commands {
 	 * Move the camera one frame forward
 	 *
 	 * @param {array} 	 rgb 	   Color to set light for frame
+	 *
+	 * @returns {integer} Length of action in ms
 	 **/
 	public async camera_forward (rgb : number[] = [255, 255, 255]) {
 		const off : number[] = [0, 0, 0];
@@ -84,7 +102,9 @@ class Commands {
 		return ms;
 	}
 	/**
-	 * Move the camera one frame forwardwith light off 
+	 * Move the camera one frame forward with light off 
+	 *
+	 * @returns {integer} Length of action in ms
 	 **/
 	public async black_forward () {
 		const off : number[] = [0, 0, 0];
@@ -109,6 +129,8 @@ class Commands {
 	 * Move the camera one frame backward
 	 *
 	 * @param {array} 	 rgb 	   Color to set light for frame
+	 *
+	 * @returns {integer} Length of action in ms
 	 **/
 	public async camera_backward (rgb : number[] = [255, 255, 255]) {
 		const off : number[] = [0, 0, 0];
@@ -132,6 +154,7 @@ class Commands {
 	/**
 	 * Move the camera one frame forward, light set to black or off
 	 *
+	 * @returns {integer} Length of action in ms
 	 **/
 	public async black_backward  () {
 		const off : number[] = [0, 0, 0];
@@ -157,6 +180,8 @@ class Commands {
 	 * Move the second camera one frame forward
 	 *
 	 * @param {array} 	 rgb 	   Color to set light for frame
+	 *
+	 * @returns {integer} Length of action in ms
 	 **/
 	public async camera_second_forward (rgb : number[] = [255, 255, 255]) {
 		const off : number[] = [0, 0, 0];
@@ -182,6 +207,8 @@ class Commands {
 	 * Move the second camera one frame backward
 	 *
 	 * @param {array} 	 rgb 	   Color to set light for frame
+	 *
+	 * @returns {integer} Length of action in ms
 	 **/
 	public async camera_second_backward (rgb : number[] = [255, 255, 255]) {
 		const off : number[] = [0, 0, 0];
@@ -208,6 +235,8 @@ class Commands {
 	 * Move the both cameras one frame forward
 	 *
 	 * @param {array} 	 rgb 	   Color to set light for frame
+	 *
+	 * @returns {integer} Length of action in ms
 	 **/
 	public async cameras_forward (rgb : number[] = [255, 255, 255]) {
 		const off : number[] = [0, 0, 0];
@@ -246,6 +275,8 @@ class Commands {
 	 * Move the both cameras one frame backward
 	 *
 	 * @param {array} 	 rgb 	   Color to set light for frame
+	 *
+	 * @returns {integer} Length of action in ms
 	 **/
 	public async cameras_backward (rgb : number[] = [255, 255, 255]) {
 		const off : number[] = [0, 0, 0];
@@ -281,6 +312,13 @@ class Commands {
 		return ms;
 	}
 
+	/**
+	 * Move first camera one frame forward and rewind secondary camera one frame backward
+	 *
+	 * @param {array} 	 rgb 	   Color to set light for frames
+	 *
+	 * @returns {integer} Length of action in ms
+	 **/
 	public async camera_forward_camera_second_backward (rgb : number[] = [255, 255, 255]) {
 		const off : number[] = [0, 0, 0];
 		let both : number[];
@@ -314,7 +352,13 @@ class Commands {
 		}
 		return ms;
 	}
-
+	/**
+	 * Rewind first camera one frame backward and move secondary camera one frame forward
+	 *
+	 * @param {array} 	 rgb 	   Color to set light for frame
+	 *
+	 * @returns {integer} Length of action in ms
+	 **/
 	public async camera_backward_camera_second_forward (rgb : number[] = [255, 255, 255]) {
 		const off : number[] = [0, 0, 0];
 		let both : number[];
@@ -349,10 +393,10 @@ class Commands {
 		return ms;
 	}
 
-
 	/**
 	 * Move the secondary projector forward one frame
 	 *
+	 * @returns {integer} Length of action in ms
 	 **/
 	public async projector_second_forward () {
 		let ms : number;
@@ -368,6 +412,11 @@ class Commands {
 		}
 		return ms;
 	}
+	/**
+	 * Rewind the secondary projector backward one frame
+	 *
+	 * @returns {integer} Length of action in ms
+	 **/
 	public async projector_second_backward () {
 		let ms : number;
 		try {
@@ -383,6 +432,11 @@ class Commands {
 		return ms;
 	}
 
+	/**
+	 * Move the both projectors forward one frame
+	 *
+	 * @returns {integer} Length of action in ms
+	 **/
 	public async projectors_forward () {
 		let both : number[];
 		let ms : number;
@@ -409,7 +463,11 @@ class Commands {
 		}
 		return ms;
 	}
-
+	/**
+	 * Rewind both projectors backwards one frame
+	 *
+	 * @returns {integer} Length of action in ms
+	 **/
 	public async projectors_backward () {
 		let both : number[];
 		let ms : number;
@@ -438,6 +496,12 @@ class Commands {
 		return ms;
 	}
 
+	/**
+	 * Move the primary projector forward one frame and rewind the secondary projector
+	 * one frame backwards.
+	 *
+	 * @returns {integer} Length of action in ms
+	 **/
 	public async projector_forward_projector_second_backward () {
 		let both : number[];
 		let ms : number;
@@ -465,7 +529,12 @@ class Commands {
 		}
 		return ms;
 	}
-
+	/**
+	 * Rewind the primary projector backwards one frame and move the secondary
+	 * projector forward one frame.
+	 *
+	 * @returns {integer} Length of action in ms
+	 **/
 	public async projector_backward_projector_second_forward () {
 		let both : number[];
 		let ms : number;
