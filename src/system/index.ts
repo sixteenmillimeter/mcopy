@@ -11,8 +11,8 @@ import { screen } from 'electron';
 import { exec } from 'exec';
 /**
  * Evaluates system dependencies for digital
- * projector features by executing processes with
- * --help flag. If they do not exist, log to console
+ * projector features by executing `which` on binary.
+ * If they do not exist, log to console
  * 
  * @param {string} platform  Operating system type
  * 
