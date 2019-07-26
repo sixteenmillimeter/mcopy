@@ -2,6 +2,11 @@
 
 /** @module lib/mscript */
 
+
+interface RGB extends Array<number>{
+	[index : number] : number;
+}
+
 const BLACK = '0,0,0';
 const WHITE = '255,255,255';
 const CMD = [
@@ -25,9 +30,15 @@ const ALTS = {
 
 /** helper functions */
 
-/** startswith function from lodash, do not want the entire lib for this */
-function startsWith(string, target, position) {
-	const { length } = string;
+/** startswith function from lodash, do not want the entire lib for this 
+ * @param str 		{string} Text to evaluate
+ * @param target 	{string} Text to compare string against
+ * @param position  {integer} Position in the string to make comparison at
+ *
+ * @returns {boolean} True for match, false for no match
+ **/
+function startsWith (str : string, target : string, position? : number) : boolean {
+	const { length } = str;
 	position = position == null ? 0 : position;
 	if (position < 0) {
 		position = 0;
@@ -35,11 +46,24 @@ function startsWith(string, target, position) {
 		position = length;
 	}
 	target = `${target}`;
-	return string.slice(position, position + target.length) == target;
+	return str.slice(position, position + target.length) == target;
 }
 
 /** class Mscript */
 class Mscript {
+	output : any;
+	lines : any[];
+	cam : number;
+	proj : number;
+	color : string;
+	loops : any[];
+	rec : number;
+	two : string;
+	arr : any[];
+	light : string[];
+	target : number;
+	dist : number;
+	variables : any; 
 	constructor () {
 		this.output = {};
 	}
@@ -69,8 +93,13 @@ class Mscript {
 	 * Main function, accepts multi-line string, parses into lines
 	 * and interprets the instructions from the text. Returns an array
 	 * of steps to be fed into the mcopy.
+	 * 
+	 * @param text {string}  Mscript text to interpret
+	 * @param callback {function} Function to call when string is interpreted
+	 *
+	 * returns {object} if callback is not provided
 	 */
-	interpret (text, callback) {
+	interpret (text : string, callback : Function) {
 		this.clear()
 
 		if (typeof text === 'undefined') {
@@ -126,11 +155,11 @@ class Mscript {
 			return this.output;
 		}
 	}
-	variable (line) {
-		let parts = line.split('=');
-		let key = parts[0];
-		let value = parts[1];
-		let update = false;
+	variable (line : string) {
+		let parts : string[] = line.split('=');
+		let key : string = parts[0];
+		let value : any = parts[1];
+		let update : boolean = false;
 
 		if (value && value.indexOf('#') !== -1) {
 			value = value.split('#')[0];
@@ -146,7 +175,6 @@ class Mscript {
 		}
 
 		if (line.indexOf('-') !== -1) {
-
 			update = true;
 		}
 
@@ -163,13 +191,15 @@ class Mscript {
 		}
 		//console.dir(this.variables)
 	}
-	variable_replace(line) {
+	variable_replace(line : string) {
 
 	}
 	/**
-	 * Apply a basic two character command
+	 * Interpret a basic two character command
+	 * 
+	 * @param line {string} Line of script to interpret
 	 */
-	basic_cmd (line) {
+	basic_cmd (line : string) {
 		if (this.rec !== -1) {
 			//hold generated arr in state loop array
 			this.loops[this.rec].arr
@@ -187,8 +217,11 @@ class Mscript {
 	}
 	/**
 	 * Start a new loop
+	 * 
+	 * @param line {string} Line to evaluate as either loop or fade
+	 * @param fade {boolean} Flag as boolean if true
 	 */
-	new_loop (line, fade) {
+	new_loop (line : string, fade? : boolean) {
 		this.rec++;
 		this.loops[this.rec] = {
 			arr : [],
@@ -203,12 +236,14 @@ class Mscript {
 	}
 	/**
 	 * Close the most recent loop
+	 * 
+	 * @param line {string} Line to interpret
 	 */
-	end_loop (line) {
-		let light_arr;
-		let start;
-		let end;
-		let len;
+	end_loop (line : string) {
+		let light_arr : any[];
+		let start : RGB;
+		let end : RGB;
+		let len : number;
 		
 		for (let x = 0; x < this.loop_count(this.loops[this.rec].cmd); x++) {
 			light_arr = this.loops[this.rec].light;
@@ -239,8 +274,10 @@ class Mscript {
 	}
 	/**
 	 * Move camera to explicitly-defined frame
+	 * 
+	 * @param line {string} Line to interpret with camera move statement
 	 */
-	move_cam (line) {
+	move_cam (line : string) {
 		this.target = parseInt(line.split('CAM ')[1]);
 		if (this.rec !== -1) {
 			if (this.target > this.cam) {
@@ -279,7 +316,7 @@ class Mscript {
 	/**
 	 * Move projector to explicitly-defined frame
 	 */
-	move_proj (line) {
+	move_proj (line : string) {
 		this.target = parseInt(line.split('PROJ ')[1]);
 		if (this.rec !== -1) {
 			if (this.target > this.proj) {
@@ -318,7 +355,7 @@ class Mscript {
 	/**
 	 * Set the state of either the cam or projector
 	 */
-	set_state (line) {
+	set_state (line : string) {
 		if (startsWith(line, 'SET CAM')) {
 			this.cam = parseInt(line.split('SET CAM')[1]);
 		} else if (startsWith(line, 'SET PROJ')) {
@@ -340,13 +377,13 @@ class Mscript {
 	/**
 	 * Extract the loop count integer from a LOOP cmd
 	 */
-	loop_count (str) {
+	loop_count (str : string) {
 		return parseInt(str.split(' ')[1]);
 	}
 	/**
 	 * Execute a fade of frame length, from color to another color
 	 */
-	fade (line) {
+	fade (line : string) {
 		let len = this.fade_count(line);
 		let start = this.fade_start(line);
 		let end = this.fade_end(line);
@@ -360,27 +397,27 @@ class Mscript {
 	/**
 	 * Extract the fade length integer from a FADE cmd
 	 */
-	fade_count (str) {
+	fade_count (str : string) {
 		return parseInt(str.split(' ')[1]);
 	}
 	/**
 	 * Extract the start color from a string
 	 */
-	fade_start (str) {
-		let color = str.split(' ')[2];
+	fade_start (str :  string) : RGB {
+		let color : string = str.split(' ')[2];
 		return this.rgb(color.trim())
 	}
 	/**
 	 * Extract the end color from a string
 	 */
-	fade_end (str) {
-		let color = str.split(' ')[3];
+	fade_end (str : string) : RGB {
+		let color : string = str.split(' ')[3];
 		return this.rgb(color.trim())
 	}
-	fade_rgb (start, end, len, x) {
+	fade_rgb (start : RGB, end : RGB, len : number, x : number) {
 		let cur = [];
 		let diff;
-		for (let i = 0; i < 3; i++) {
+		for (let i : number = 0; i < 3; i++) {
 			if (x === len - 1) {
 				cur[i] = end[i];
 			} else if (start[i] >= end[i]) {
@@ -394,20 +431,23 @@ class Mscript {
 		return this.rgb_str(cur);
 
 	}
-	rgb (str) {
+	rgb (str : string) : RGB {
 		let rgb = str.split(',');
-		return rgb.map( char => {
+		return rgb.map( (char : string) => {
 			return parseInt(char);
 		})
 	} 
-	rgb_str (arr) {
+	/**
+	 *  
+	 **/
+	rgb_str (arr : RGB) : string {
 		return arr.join(',');
 	}
 	/**
 	 * Increase the state of a specific object, such as the camera/projector,
 	 * by the value defined in val
 	 */
-	update (cmd, val = 1) {
+	update (cmd : string, val : number = 1) {
 		if (cmd === 'END') {
 			//I don't understand this loop
 			for (let i = 0; i < val; i++) {
@@ -462,10 +502,10 @@ class Mscript {
 	/**
 	 * Split string on command, extract any integers from string
 	 */
-	str_to_arr (str, cmd) {
-		const cnt = str.split(cmd);
-		let c = parseInt(cnt[1]);
-		let arr = [];
+	str_to_arr (str : string, cmd : string) : any[] {
+		const cnt : string[] = str.split(cmd);
+		let c  : number = parseInt(cnt[1]);
+		let arr  : any[] = [];
 		if (cnt[1] === '') {
 			c = 1;
 		} else {
@@ -478,16 +518,16 @@ class Mscript {
 	/**
 	 * Split a string on a command to extract data for light array
 	 */
-	light_to_arr (str, cmd) {
-		const cnt = str.split(cmd);
-		let c = parseInt(cnt[1]);
-		let arr = [];
+	light_to_arr (str : string, cmd : string) {
+		const cnt : string[] = str.split(cmd);
+		let c : number = parseInt(cnt[1]);
+		let arr : any[] = [];
 		if (cnt[1] === '') {
 			c = 1;
 		} else {
 			c = parseInt(cnt[1]);
 		}
-		for (var i = 0; i < c; i++) {
+		for (let i : number = 0; i < c; i++) {
 			if (cmd === 'CF'
 			 || cmd === 'CB') {
 				arr.push(this.color);
@@ -503,16 +543,18 @@ class Mscript {
 	/**
 	 * Split a string to extract an rgb color value
 	 */
-	light_state (str) {
+	light_state (str : string) {
 		//add parsers for other color spaces
-		const color = str.replace('L ', '').trim();
+		const color : string = str.replace('L ', '').trim();
 		this.color = color;
 	}
 
 	/**
 	 * Throw an error with specific message
+	 *
+	 * @param msg {string} Error message to print
 	 */
-	fail (msg) {
+	fail (msg : string) {
 		throw new Error(msg);
 	}
 }
@@ -534,6 +576,7 @@ END LOOP - (or END) closes loop
 L #RGB - sets light to rgb value
 
 FADE 24 0,0,0 255,255,255
+END FADE
 
 CF - Camera forwards
 PF - Projector forwards
