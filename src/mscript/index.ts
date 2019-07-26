@@ -60,7 +60,7 @@ class Mscript {
 	rec : number;
 	two : string;
 	arr : any[];
-	light : string[];
+	meta : string[];
 	target : number;
 	dist : number;
 	variables : any;
@@ -87,7 +87,7 @@ class Mscript {
 
 		this.two = '';
 		this.arr = [];
-		this.light = [];
+		this.meta = [];
 		this.target = 0; //move to target using CAM # or PROJ #
 		this.dist = 0;
 
@@ -148,13 +148,13 @@ class Mscript {
 			} else if (startsWith(line, 'ALERT')) {
 
 			} else if (startsWith(line, 'PAUSE')) {
-
+				this.pause(line);
 			}
 		}
 
 		this.output.success = true;
 		this.output.arr = this.arr; //all instructions
-		this.output.light = this.light; //all light instructions
+		this.output.meta = this.meta; //all metadata for instructions
 		this.output.cam = this.cam;
 		this.output.proj = this.proj;
 
@@ -232,13 +232,13 @@ class Mscript {
 				.push.apply(this.loops[this.rec].arr, 
 							this.str_to_arr(line, 
 							this.two));
-			this.loops[this.rec].light
-				.push.apply(this.loops[this.rec].light, 
+			this.loops[this.rec].meta
+				.push.apply(this.loops[this.rec].meta, 
 							this.light_to_arr(line, 
 							this.two));
 		} else {
 			this.arr.push.apply(this.arr, this.str_to_arr(line, this.two));
-			this.light.push.apply(this.light, this.light_to_arr(line, this.two))
+			this.meta.push.apply(this.meta, this.light_to_arr(line, this.two));
 		}
 	}
 	/**
@@ -251,7 +251,7 @@ class Mscript {
 		this.rec++;
 		this.loops[this.rec] = {
 			arr : [],
-			light : [],
+			meta : [],
 			cam : 0,
 			proj : 0,
 			cmd : line + ''
@@ -266,32 +266,32 @@ class Mscript {
 	 * @param {string} line Line to interpret
 	 */
 	end_loop (line : string) {
-		let light_arr : any[];
+		let meta_arr : string[];
 		let start : RGB;
 		let end : RGB;
 		let len : number;
 		
 		for (let x = 0; x < this.loop_count(this.loops[this.rec].cmd); x++) {
-			light_arr = this.loops[this.rec].light;
+			meta_arr = this.loops[this.rec].meta;
 			if (this.loops[this.rec].fade) {
 				start = this.loops[this.rec].start;
 				end = this.loops[this.rec].end;
 				len = this.loops[this.rec].fade_len;
-				light_arr = light_arr.map(l => {
+				meta_arr = meta_arr.map(l => {
 					return this.fade_rgb(start, end, len, x);
 				})
 			}
 			if (this.rec === 0) {
 				this.arr.push.apply(this.arr, this.loops[this.rec].arr);
-				this.light.push.apply(this.light, light_arr);
+				this.meta.push.apply(this.meta, meta_arr);
 			} else if (this.rec >= 1) {
 				this.loops[this.rec - 1].arr
 					.push.apply(this.loops[this.rec - 1].arr, 
 								this.loops[this.rec].arr);
 
-				this.loops[this.rec - 1].light
-					.push.apply(this.loops[this.rec - 1].light, 
-								light_arr);
+				this.loops[this.rec - 1].meta
+					.push.apply(this.loops[this.rec - 1].meta, 
+								meta_arr);
 			}
 		}
 		this.update('END', this.loop_count(this.loops[this.rec].cmd));
@@ -310,14 +310,14 @@ class Mscript {
 				this.dist = this.target - this.cam;
 				for (let x = 0; x < this.dist; x++) {
 					this.loops[this.rec].arr.push('BF');
-					this.loops[this.rec].light.push(BLACK);
+					this.loops[this.rec].meta.push(BLACK);
 					this.update('BF');
 				} 
 			} else {
 				this.dist = this.cam - this.target;
 				for (let x = 0; x < this.dist; x++) {
 					this.loops[this.rec].arr.push('BB');
-					this.loops[this.rec].light.push(BLACK);
+					this.loops[this.rec].meta.push(BLACK);
 					this.update('BB');
 				}
 			}
@@ -326,14 +326,14 @@ class Mscript {
 				this.dist = this.target - this.cam;
 				for (let x = 0; x < this.dist; x++) {
 					this.arr.push('BF');
-					this.light.push(BLACK);
+					this.meta.push(BLACK);
 					this.update('BF');
 				} 
 			} else {
 				this.dist = this.cam - this.target;
 				for (let x = 0; x < this.dist; x++) {
 					this.arr.push('BB');
-					this.light.push(BLACK);
+					this.meta.push(BLACK);
 					this.update('BB');
 				}
 			}
@@ -351,14 +351,14 @@ class Mscript {
 				this.dist = this.target - this.proj;
 				for (let x = 0; x < this.dist; x++) {
 					this.loops[this.rec].arr.push('PF');
-					this.loops[this.rec].light.push('');
+					this.loops[this.rec].meta.push('');
 					this.update('PF');
 				} 
 			} else {
 				this.dist = this.proj - this.target;
 				for (let x = 0; x < this.dist; x++) {
 					this.loops[this.rec].arr.push('PB');
-					this.loops[this.rec].light.push('');
+					this.loops[this.rec].meta.push('');
 					this.update('PB');
 				} 
 			}
@@ -367,14 +367,14 @@ class Mscript {
 				this.dist = this.target - this.proj;
 				for (let x = 0; x < this.dist; x++) {
 					this.arr.push('PF');
-					this.light.push('');
+					this.meta.push('');
 					this.update('PF');
 				} 
 			} else {
 				this.dist = this.proj - this.target;
 				for (let x = 0; x < this.dist; x++) {
 					this.arr.push('PB');
-					this.light.push('');
+					this.meta.push('');
 					this.update('PB');
 				} 
 			}
@@ -630,6 +630,15 @@ class Mscript {
 		const color : string = str.replace('L ', '').trim();
 		this.color = color;
 	}
+
+	/**
+	 * Interpret a pause command
+	 * 
+	 * @param {string} line String containing pause command
+	 **/
+	 pause (line : string) {
+
+	 }
 
 	/**
 	 * Throw an error with specific message

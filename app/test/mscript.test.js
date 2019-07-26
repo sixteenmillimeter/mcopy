@@ -159,8 +159,8 @@ END`;
 			&& obj.cam === 8
 			&& obj.proj === 8
 			&& obj.arr.length === 16
-			&& obj.light.length === 16
-			&& obj.light[0] === '0,0,0') {
+			&& obj.meta.length === 16
+			&& obj.meta[0] === '0,0,0') {
 			pass = true;
 		}
 		assert.ok(pass, 'Basic cam/proj loop');
@@ -178,9 +178,9 @@ describe('mscript - Light', () => {
 			&& obj.cam === 1
 			&& obj.proj === 1
 			&& obj.arr.length === 2
-			&& obj.light.length === 2
-			&& obj.light[0] === '255,255,255'
-			&& obj.light[1] === '') {
+			&& obj.meta.length === 2
+			&& obj.meta[0] === '255,255,255'
+			&& obj.meta[1] === '') {
 			pass = true;
 		}
 		assert.ok(pass, 'Basic light');
@@ -194,10 +194,10 @@ describe('mscript - Light', () => {
 			&& obj.cam === 2
 			&& obj.proj === 1
 			&& obj.arr.length === 3
-			&& obj.light.length === 3
-			&& obj.light[0] === '255,255,255'
-			&& obj.light[1] === ''
-			&& obj.light[2] === '0,0,0') {
+			&& obj.meta.length === 3
+			&& obj.meta[0] === '255,255,255'
+			&& obj.meta[1] === ''
+			&& obj.meta[2] === '0,0,0') {
 			pass = true;
 		}
 		assert.ok(pass, 'Basic black');
@@ -210,9 +210,9 @@ describe('mscript - Light', () => {
 			&& obj.cam === 4
 			&& obj.proj === 0
 			&& obj.arr.length === 4
-			&& obj.light.length === 4
-			&& obj.light[0] === '1,1,1'
-			&& obj.light[3] === '2,2,2') {
+			&& obj.meta.length === 4
+			&& obj.meta[0] === '1,1,1'
+			&& obj.meta[3] === '2,2,2') {
 			pass = true;
 		}
 		assert.ok(pass, 'Basic light');
@@ -233,9 +233,9 @@ PF 10`
 		assert.equal(obj.cam, 72, `Camera moves forward 72 frames`);
 		assert.equal(obj.proj, 10, 'Projector moves forward 10 frames');
 		assert.equal(obj.arr.length, 82, 'Generates 82 steps');
-		assert.equal(obj.light[0], '0,0,0', 'Fade starts with starting color');
-		assert.equal(obj.light[71], '10,20,30', 'Fade ends with ending color');
-		assert.equal(obj.light[72], '', 'Frame after fade is default color');
+		assert.equal(obj.meta[0], '0,0,0', 'Fade starts with starting color');
+		assert.equal(obj.meta[71], '10,20,30', 'Fade ends with ending color');
+		assert.equal(obj.meta[72], '', 'Frame after fade is default color');
 	})
 
 	const script2 =
@@ -252,9 +252,9 @@ CF 10`
 		assert.ok(obj.success, 'Mscript labeled output success');
 		assert.equal(obj.cam, 34, 'There are 34 camera frames');
 		assert.equal(obj.arr.length, 34, 'There are 34 steps in the script');
-		assert.equal(obj.light[0], '25,255,125', 'First frame is equal to start color');
-		assert.equal(obj.light[23], '225,125,10', 'Last frame in fade is equal to end color');
-		assert.equal(obj.light[24], '225,125,10', 'First frame after fade is set using Light command');
+		assert.equal(obj.meta[0], '25,255,125', 'First frame is equal to start color');
+		assert.equal(obj.meta[23], '225,125,10', 'Last frame in fade is equal to end color');
+		assert.equal(obj.meta[24], '225,125,10', 'First frame after fade is set using Light command');
 	})
 })
 
