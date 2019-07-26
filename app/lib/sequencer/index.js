@@ -1,8 +1,17 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const Log = require("log");
+/** @module lib/sequencer **/
 let seq;
 class Sequencer {
+    /**
+     * @constructor
+     * Create a new sequencer and assign command and UI as private sub-classes
+     *
+     * @param {object} cfg Configuration object
+     * @param {object} cmd Shared command class
+     * @param {object} ui Electron UI, browser window
+     **/
     constructor(cfg, cmd, ui) {
         this.running = false;
         this.paused = false;
@@ -12,27 +21,52 @@ class Sequencer {
         this.loops = 1;
         this.CMDS = {};
         this.id = 'sequence';
+        this.alerted = false;
+        this.delayed = false;
         this.cfg = cfg;
         this.cmd = cmd;
         this.ui = ui;
         this.cmds(cfg.cmd);
         this.init();
     }
+    /**
+     * Take configuration object and assign all commands as keys
+     * in the internal CMDS object.
+     *
+     * @param {object} obj Configuration object
+     **/
     cmds(obj) {
         let keys = Object.keys(obj);
         for (let key of keys) {
             this.CMDS[obj[key]] = key;
         }
+        //
+        //
     }
-    //currently called by ui
+    /**
+     * Initialize the class by requiring ipcMain from electron
+     * and creating logger.
+     *
+     **/
     async init() {
         this.log = await Log({ label: this.id });
         this.ipc = require('electron').ipcMain;
         this.listen();
     }
+    /**
+     * Bind ipc listener to channel 'sequencer' or current id of
+     * class.
+     **/
     listen() {
         this.ipc.on(this.id, this.listener.bind(this));
     }
+    /**
+     * Listener callback function. Called whenever ipc
+     * message is sent to channel 'sequencer'.
+     *
+     * @param {object} event IPC message event
+     * @param {object} arg Arguments provided in message
+     **/
     async listener(event, arg) {
         if (arg && arg.start) {
             this.start(arg);
@@ -54,21 +88,43 @@ class Sequencer {
         }
         event.returnValue = true;
     }
+    /**
+     * Sets the value of the loops in the grid sequence
+     * to value sent by UI in ipc message.
+     *
+     * @param {integer} count Number of loops to set grid sequence to
+     **/
     setLoops(count) {
         this.gridLoops = count;
         this.log.info(`Set loop count to ${count}`);
     }
+    /**
+     * Sets multiple steps at once
+     *
+     * @param {array} steps Array of steps to set or update
+     **/
     setSteps(steps) {
         for (let step of steps) {
             this.grid[step.x] = step;
         }
     }
+    /**
+     * Resets multiple steps to default 'undefined' state
+     *
+     * @param {array} steps Array containing the x location of steps to unset
+     **/
     unsetSteps(steps) {
         for (let x of steps) {
             this.grid[x] = undefined;
         }
     }
-    //new, replaces exec and init
+    /**
+     * Starts a sequence with the existing grid sequence,
+     * or if one is provided in the arg object, starts
+     * that sequence.
+     *
+     * @param {object} arg Arguments from ipc message
+     **/
     async start(arg) {
         let startTime = +new Date();
         let ms;
@@ -101,6 +157,7 @@ class Sequencer {
                 if (!this.running) {
                     break;
                 }
+                //UI initiates pause, not planned
                 while (this.paused) {
                     await delay(42);
                 }
@@ -129,12 +186,14 @@ class Sequencer {
         this.log.info(`Ended sequence`);
         this.ui.send(this.id, { stop: true, ms });
     }
-    //new
+    /**
+     * Pauses sequence from UI.
+     **/
     pause() {
         this.paused = true;
     }
     /**
-     * Stop the sequence
+     * Stops the sequence
      **/
     stop() {
         if (this.cmd.proj.filmout.state.enabled === true) {
@@ -143,15 +202,25 @@ class Sequencer {
         this.running = false;
         //clear?
     }
+    /**
+     * Execute command @ step x. Wrapper with try catch.
+     *
+     * @param {integer} x Step to execute command at
+     **/
     async step(x) {
         try {
-            await this.cmdMap(x);
+            await this.cmdExec(x);
         }
         catch (err) {
             throw err;
         }
     }
-    async cmdMap(x) {
+    /**
+     * Locate step @ position x and execute the command.
+     *
+     * @param {integer} x Step to execute command at
+     **/
+    async cmdExec(x) {
         const cmdOriginal = this.arr[x].cmd;
         const cmd = this.CMDS[cmdOriginal];
         this.log.info(`CMD: '${cmdOriginal}' -> ${cmd}`);
