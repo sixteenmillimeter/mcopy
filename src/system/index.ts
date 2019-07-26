@@ -15,6 +15,8 @@ import { exec } from 'exec';
  * --help flag. If they do not exist, log to console
  * 
  * @param {string} platform  Operating system type
+ * 
+ * @returns {object} Object containing path to dependency from `which`, if they exist
  **/
 
 

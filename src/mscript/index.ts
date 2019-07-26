@@ -63,7 +63,13 @@ class Mscript {
 	light : string[];
 	target : number;
 	dist : number;
-	variables : any; 
+	variables : any;
+
+	/**
+	 * @constructor
+	 * Create new Mscript interpreter
+	 **/
+
 	constructor () {
 		this.output = {};
 	}
@@ -92,12 +98,12 @@ class Mscript {
 	/**
 	 * Main function, accepts multi-line string, parses into lines
 	 * and interprets the instructions from the text. Returns an array
-	 * of steps to be fed into the mcopy.
+	 * of steps to be fed into the mcopy sequence.
 	 * 
-	 * @param text {string}  Mscript text to interpret
-	 * @param callback {function} Function to call when string is interpreted
+	 * @param {string} text  Mscript text to interpret
+	 * @param {function} callback Function to call when string is interpreted
 	 *
-	 * returns {object} if callback is not provided
+	 * @returns {object} if callback is not provided
 	 */
 	interpret (text : string, callback : Function) {
 		this.clear()
@@ -139,6 +145,10 @@ class Mscript {
 			} else if (startsWith(line, '#') || startsWith(line, '//')) {
 				//comments
 				//ignore while parsing
+			} else if (startsWith(line, 'ALERT')) {
+
+			} else if (startsWith(line, 'PAUSE')) {
+
 			}
 		}
 
@@ -155,6 +165,13 @@ class Mscript {
 			return this.output;
 		}
 	}
+	/**
+	 * Interprets variables for complex sequence behavior.
+	 * TODO: Fully implement, add test coverage
+	 *
+	 * @param {string} line Line containing a variable assignment
+	 *
+	 **/
 	variable (line : string) {
 		let parts : string[] = line.split('=');
 		let key : string = parts[0];
@@ -191,13 +208,22 @@ class Mscript {
 		}
 		//console.dir(this.variables)
 	}
-	variable_replace(line : string) {
 
+	/**
+	 * Replace variable with value at time of interpretation
+	 * TODO: Implement this please
+	 *
+	 * @param {string} line Line containing variable to be replaced with value
+	 *
+	 * @returns {string} New string to be interpreted
+	 **/
+	variable_replace(line : string) : string {
+		return line;
 	}
 	/**
 	 * Interpret a basic two character command
 	 * 
-	 * @param line {string} Line of script to interpret
+	 * @param {string} line Line of script to interpret
 	 */
 	basic_cmd (line : string) {
 		if (this.rec !== -1) {
@@ -218,8 +244,8 @@ class Mscript {
 	/**
 	 * Start a new loop
 	 * 
-	 * @param line {string} Line to evaluate as either loop or fade
-	 * @param fade {boolean} Flag as boolean if true
+	 * @param {string} line  	Line to evaluate as either loop or fade
+	 * @param {boolean} fade 	Flag as boolean if true
 	 */
 	new_loop (line : string, fade? : boolean) {
 		this.rec++;
@@ -237,7 +263,7 @@ class Mscript {
 	/**
 	 * Close the most recent loop
 	 * 
-	 * @param line {string} Line to interpret
+	 * @param {string} line Line to interpret
 	 */
 	end_loop (line : string) {
 		let light_arr : any[];
@@ -275,7 +301,7 @@ class Mscript {
 	/**
 	 * Move camera to explicitly-defined frame
 	 * 
-	 * @param line {string} Line to interpret with camera move statement
+	 * @param {string} line Line to interpret with camera move statement
 	 */
 	move_cam (line : string) {
 		this.target = parseInt(line.split('CAM ')[1]);
@@ -315,6 +341,8 @@ class Mscript {
 	}
 	/**
 	 * Move projector to explicitly-defined frame
+	 * 
+	 * @param {string} line Line containing `move` statement to interpret
 	 */
 	move_proj (line : string) {
 		this.target = parseInt(line.split('PROJ ')[1]);
@@ -354,6 +382,8 @@ class Mscript {
 	}
 	/**
 	 * Set the state of either the cam or projector
+	 *
+	 * @param line {string} String containing set statement
 	 */
 	set_state (line : string) {
 		if (startsWith(line, 'SET CAM')) {
@@ -364,24 +394,32 @@ class Mscript {
 	}
 	/**
 	 * Return the last loop
+	 *
+	 * @returns {object}
 	 */
-	last_loop () {
+	last_loop () : any {
 		return this.loops[this.loops.length - 1];
 	}
 	/**
 	 * Return the second-last loop
+	 * 
+	 * @returns {object} Loop array
 	 */
-	parent_loop () {
+	parent_loop () : any {
 		return this.loops[this.loops.length - 2];
 	}
 	/**
 	 * Extract the loop count integer from a LOOP cmd
+	 *
+	 * @returns {integer} Loop count in string parsed into integer
 	 */
-	loop_count (str : string) {
+	loop_count (str : string) : number {
 		return parseInt(str.split(' ')[1]);
 	}
 	/**
 	 * Execute a fade of frame length, from color to another color
+	 * 
+	 * @param {string} line Line containing a fade initiator
 	 */
 	fade (line : string) {
 		let len = this.fade_count(line);
@@ -396,12 +434,18 @@ class Mscript {
 	}
 	/**
 	 * Extract the fade length integer from a FADE cmd
+	 *
+	 * @param {string} str Line containing the length of fade in frames
 	 */
 	fade_count (str : string) {
 		return parseInt(str.split(' ')[1]);
 	}
 	/**
 	 * Extract the start color from a string
+	 *
+	 * @param {string} str Line containing the start color value in a fade initiator
+	 *
+	 * @returns {array} Array containing RGB color values
 	 */
 	fade_start (str :  string) : RGB {
 		let color : string = str.split(' ')[2];
@@ -409,6 +453,10 @@ class Mscript {
 	}
 	/**
 	 * Extract the end color from a string
+	 *
+	 * @param {string} str Line containing the end color value in a fade initiator
+	 *
+	 * @returns {array} Array containing RGB color values
 	 */
 	fade_end (str : string) : RGB {
 		let color : string = str.split(' ')[3];
@@ -431,6 +479,11 @@ class Mscript {
 		return this.rgb_str(cur);
 
 	}
+	/**
+	 * Parse string into array of RGB color values. 0-255 octet.
+	 * 
+	 * @param {string} str String containing only color values as `#,#,#`
+	 **/
 	rgb (str : string) : RGB {
 		let rgb = str.split(',');
 		return rgb.map( (char : string) => {
@@ -438,14 +491,20 @@ class Mscript {
 		})
 	} 
 	/**
-	 *  
+	 *  Cast RGB color values as string
+	 * 
+	 * @param {array} arr Array to join into string
+	 *
+	 * @returns {string} String of RGB values
 	 **/
 	rgb_str (arr : RGB) : string {
 		return arr.join(',');
 	}
 	/**
 	 * Increase the state of a specific object, such as the camera/projector,
-	 * by the value defined in val
+	 * by the value defined in val.
+	 *
+	 * @param {string} cmd String representing command to interpret and update state
 	 */
 	update (cmd : string, val : number = 1) {
 		if (cmd === 'END') {
@@ -500,9 +559,15 @@ class Mscript {
 		}
 	}
 	/**
-	 * Split string on command, extract any integers from string
+	 * Split string on command, turn into array of commands
+	 * as long as count variable. Default 1.
+	 *
+	 * @param {string} str String to split
+	 * @param {string} cmd String representing command to split at
+	 * 
+	 * @returns {array} Array containing commands
 	 */
-	str_to_arr (str : string, cmd : string) : any[] {
+	str_to_arr (str : string, cmd : string) : string[] {
 		const cnt : string[] = str.split(cmd);
 		let c  : number = parseInt(cnt[1]);
 		let arr  : any[] = [];
@@ -517,8 +582,13 @@ class Mscript {
 	}
 	/**
 	 * Split a string on a command to extract data for light array
+	 *
+	 * @param {string} str String containing light command
+	 * @param {string} cmd String representing command
+	 *
+	 * @returns {array} An RGB array containing the color values
 	 */
-	light_to_arr (str : string, cmd : string) {
+	light_to_arr (str : string, cmd : string) : RGB {
 		const cnt : string[] = str.split(cmd);
 		let c : number = parseInt(cnt[1]);
 		let arr : any[] = [];
@@ -542,6 +612,8 @@ class Mscript {
 	}
 	/**
 	 * Split a string to extract an rgb color value
+	 *
+	 * @param {string} Color string assign to color property
 	 */
 	light_state (str : string) {
 		//add parsers for other color spaces
@@ -552,7 +624,7 @@ class Mscript {
 	/**
 	 * Throw an error with specific message
 	 *
-	 * @param msg {string} Error message to print
+	 * @param {string} msg Error message to print
 	 */
 	fail (msg : string) {
 		throw new Error(msg);
@@ -584,5 +656,8 @@ BF - Black forwards
 CB - Camera backwards
 PB - Projector backwards
 BB - Black backwards
+
+ALERT {MESSAGE} - Stop the sequence and requiure user interaction to complete
+PAUSE # - Pause the sequence for a # of seconds
 
 */
