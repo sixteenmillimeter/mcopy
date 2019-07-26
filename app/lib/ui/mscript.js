@@ -77,8 +77,8 @@ mse.mscript.toGUI = function () {
 		c = mse.mscript.data.arr[x];
 		seq.set(x, c);
 		if (c === 'CF' || c === 'CB') {
-			if (typeof mse.mscript.data.light[x] !== 'undefined' && mse.mscript.data.light[x] !== '') {
-				seq.setLight(x, mse.mscript.data.light[x]);
+			if (typeof mse.mscript.data.meta[x] !== 'undefined' && mse.mscript.data.meta[x] !== '') {
+				seq.setLight(x, mse.mscript.data.meta[x]);
 			} else {
 				seq.setLight(x, light.color);
 			}
@@ -126,8 +126,8 @@ mse.mscript.prepare = function () {
 		obj = {
 			cmd : mse.mscript.data.arr[i]
 		};
-		if (typeof mse.mscript.data.light[i] !== 'undefined' && mse.mscript.data.light[i] !== '') {
-			obj.light = mse.mscript.data.light[i];
+		if (typeof mse.mscript.data.meta[i] !== 'undefined' && mse.mscript.data.meta[i] !== '') {
+			obj.light = mse.mscript.data.meta[i];
 		} else {
 			obj.light = light.color.join(',');
 		}
