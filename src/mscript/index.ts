@@ -462,6 +462,16 @@ class Mscript {
 		let color : string = str.split(' ')[3];
 		return this.rgb(color.trim())
 	}
+    /** 
+     * Determine the state of a fade at a particular frame in the sequence, x
+	 *
+	 * @param {array} start Color the fade starts at
+	 * @param {array} end Color the fade finishes at
+	 * @param {integer} len Total length of the fade in frames
+	 * @param {integer} x Position of the fade to get color value of
+	 *
+	 * @returns {array} Array containing RGB color values
+	 */
 	fade_rgb (start : RGB, end : RGB, len : number, x : number) {
 		let cur = [];
 		let diff;
