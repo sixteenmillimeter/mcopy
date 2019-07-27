@@ -1,5 +1,5 @@
 {
-  "version": "1.4.16",
+  "version": "1.4.17",
   "ext_port": 1111,
   "profiles": {
     "mcopy": {
@@ -96,7 +96,9 @@
     "projectors_forward": "PPF",
     "projectors_backward": "PPB",
     "projector_forward_projector_second_backward": "PFPB",
-    "projector_backward_projector_second_forward": "PBPF"
+    "projector_backward_projector_second_forward": "PBPF",
+    "pause": "PA",
+    "alert": "AL"
   },
   "arduino": {
     "baud": 57600,
