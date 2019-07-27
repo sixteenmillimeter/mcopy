@@ -111,11 +111,11 @@ var init = async function () {
 	proj = require('proj')(arduino, cfg, mainWindow.webContents, filmout)
 
 	if (dev && dev.connected && dev.connected.camera_second) {
-		cam2 = require('cam')(arduino, cfg, mainWindow.webContents, dig, true)
+		cam2 = require('cam')(arduino, cfg, mainWindow.webContents, filmout, true)
 	}
 
 	if (dev && dev.connected && dev.connected.projector_second) {
-		proj2 = require('proj')(arduino, cfg, mainWindow.webContents, dig, true)
+		proj2 = require('proj')(arduino, cfg, mainWindow.webContents, filmout, true)
 	}
 
 	cmd = require('cmd')(cfg, proj, cam, light, cam2, proj2)
