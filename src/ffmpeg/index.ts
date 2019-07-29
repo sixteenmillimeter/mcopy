@@ -33,6 +33,8 @@ async function frame (state : any, light : any) {
 	let cmd2;
 	let output2;
 
+	console.dir(state)
+
 	//if (system.platform !== 'nix') {
 		ext = 'png';
 	//}
@@ -42,8 +44,8 @@ async function frame (state : any, light : any) {
 	});
 
 	tmpoutput = join(TMPDIR, `export-${padded}.${ext}`);
-
-	cmd = `ffmpeg -y -i "${video}" -vf "select='gte(n\\,${frame})',scale=${w}:${h}" -vframes 1 -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"`;
+//,scale=${w}:${h}
+	cmd = `ffmpeg -y -i "${video}" -vf "select='gte(n\\,${frame})'" -vframes 1 -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"`;
 	cmd2 = `convert "${tmpoutput}" -resize ${w}x${h} -size ${w}x${h} xc:"rgb(${rgb[0]},${rgb[1]},${rgb[2]})" +swap -compose Darken -composite "${tmpoutput}"`;
 
 	//ffmpeg -i "${video}" -ss 00:00:07.000 -vframes 1 "export-${time}.jpg"

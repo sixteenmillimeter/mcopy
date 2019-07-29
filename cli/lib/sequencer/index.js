@@ -22,7 +22,6 @@ class Sequencer {
         this.CMDS = {};
         this.id = 'sequence';
         this.alerted = false;
-        this.delayed = false;
         this.cfg = cfg;
         this.cmd = cmd;
         this.ui = ui;

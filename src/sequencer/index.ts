@@ -25,7 +25,6 @@ class Sequencer {
 	private log : any;
 	private id : string = 'sequence';
 	private alerted : boolean = false;
-	private delayed : boolean = false;
 
 	/**
 	 * @constructor

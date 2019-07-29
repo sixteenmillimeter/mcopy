@@ -28,6 +28,9 @@ const ALTS = {
 	'F ' : ['FADE']
 };
 
+const PAUSE = 'PAUSE';
+const ALERT = 'ALERT';
+
 /** helper functions */
 
 /** startswith function from lodash, do not want the entire lib for this 
@@ -126,6 +129,10 @@ class Mscript {
 			this.two = line.substring(0, 2);
 			if (CMD.indexOf(this.two) !== -1) {
 				this.basic_cmd(line);
+			} else if (startsWith(line, PAUSE)) {
+				this.pause(line);
+			} else if (startsWith(line, ALERT)) {
+				this.alert(line);
 			} else if (startsWith(line, '@') || line.indexOf('@') !== -1) {
 				this.variable(line);
 			} else if (startsWith(line, 'LOOP')) {
@@ -637,7 +644,52 @@ class Mscript {
 	 * @param {string} line String containing pause command
 	 **/
 	 pause (line : string) {
+	 	let lenStr : string = line.split(' ')[1] || ''
+	 	let len : number;
+	 	lenStr = lenStr.trim();
 
+	 	try {
+	 		len = parseInt(lenStr, 10); //clean up string or fail
+	 	} catch (err) {
+	 		len = 0;
+	 	}
+
+	 	if (isNaN(len)) {
+	 		len = 0;
+	 	}
+
+	 	lenStr = String(len);
+
+	 	if (this.rec !== -1) {
+			//hold generated arr in state loop array
+			this.loops[this.rec].arr
+				.push('PA');
+			this.loops[this.rec].meta
+				.push(lenStr);
+		} else {
+			this.arr.push('AL');
+			this.meta.push(lenStr);
+		}
+	 }
+
+	 /**
+	 * Interpret an alert command
+	 * 
+	 * @param {string} line String containing pause command
+	 **/
+	 alert (line : string) {
+	 	let msg : string = line.split(' ')[1] || ''
+	 	msg = msg.trim();
+	 	if (this.rec !== -1) {
+			//hold generated arr in state loop array
+			this.loops[this.rec].arr
+				.push('AL');
+			this.loops[this.rec].meta
+				.push(msg);
+		} else {
+			this.arr.push('AL');
+			this.meta.push(msg);
+		}
 	 }
 
 	/**
