@@ -1,9 +1,9 @@
 'use strict';
-const { createLogger, format, transports } = require('winston');
-const { combine, timestamp, label, colorize, simple, json } = format;
-const path = require('path');
-const fs = require('fs-extra');
-const os = require('os');
+Object.defineProperty(exports, "__esModule", { value: true });
+const winston_1 = require("winston");
+const path_1 = require("path");
+const fs_extra_1 = require("fs-extra");
+const os_1 = require("os");
 const logTime = 'MM/DD/YY-HH:mm:ss';
 let transport;
 /**
@@ -13,23 +13,23 @@ let transport;
  * @returns {string} Path to log file
  **/
 async function logFile() {
-    const homeDir = os.homedir();
+    const homeDir = os_1.homedir();
     const linuxDir = `/.config/mcopy/`;
     const macDir = `/Library/Logs/mcopy/`;
     const winDir = `/AppData/Roaming/mcopy/`;
-    let logPath = path.join(homeDir, linuxDir);
-    let exists;
+    let logPath = path_1.join(homeDir, linuxDir);
+    let dirExists;
     if (process.platform === 'darwin') {
-        logPath = path.join(homeDir, macDir);
+        logPath = path_1.join(homeDir, macDir);
     }
     else if (process.platform === 'win32') {
-        logPath = path.join(homeDir, winDir);
+        logPath = path_1.join(homeDir, winDir);
     }
-    exists = await fs.exists(logPath);
-    if (!exists) {
-        await fs.mkdir(logPath);
+    dirExists = await fs_extra_1.exists(logPath);
+    if (!dirExists) {
+        await fs_extra_1.mkdir(logPath);
     }
-    return path.join(logPath, 'mcopy.log');
+    return path_1.join(logPath, 'mcopy.log');
 }
 /**
  * Create and return the logger transport based on settings determined in
@@ -40,7 +40,13 @@ async function logFile() {
  * @returns {object} Logger transport
  **/
 module.exports = async function (arg) {
-    let format;
+    let consoleFormat = {
+        colorize: true
+    };
+    let fileFormat = {
+        filename: await logFile(),
+        json: true
+    };
     if (arg && arg.quiet) {
         transport = {
             info: function () { return false; },
@@ -50,26 +56,13 @@ module.exports = async function (arg) {
     }
     else {
         if (arg && arg.label) {
-            format = combine(label({ label: arg.label }), 
-            //timestamp(),
-            colorize(), simple());
+            consoleFormat.label = arg.label;
+            fileFormat.label = arg.label;
         }
-        else {
-            format = combine(
-            //timestamp(),
-            colorize(), simple());
-        }
-        transport = createLogger({
+        transport = new (winston_1.Logger)({
             transports: [
-                new (transports.Console)({
-                    format
-                }),
-                new (transports.File)({
-                    filename: await logFile(),
-                    format: combine(label({ label: arg.label }), 
-                    //timestamp(),
-                    json())
-                })
+                new (winston_1.transports.Console)(consoleFormat),
+                new (winston_1.transports.File)(fileFormat)
             ]
         });
     }

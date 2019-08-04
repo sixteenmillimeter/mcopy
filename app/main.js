@@ -7,8 +7,6 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
 const electron = require('electron')
 const { Menu, MenuItem, ipcMain, BrowserWindow, app } = electron
-const { createLogger, format, transports } = require('winston')
-const { combine, timestamp, label, printf, colorize, prettyPrint, simple } = format
 const { EventEmitter } = require('events')
 const { join } = require('path')
 
