@@ -16,11 +16,21 @@ class FFMPEG {
 	private log : any;
 	private id : string = 'ffmpeg';
 	private TMPDIR : string;
+
+	/**
+	 * @constructor
+	 * Creates an ffmpeg class
+	 *
+	 * @param {object} sys System object to be used to get temp directory
+	 **/
 	constructor (sys : any) {
 		this.system = sys;
 		this.TMPDIR = join(this.system.tmp, 'mcopy_digital');
 		this.init()
 	}
+	/**
+	 * Async method to call async functions from constructor
+	 **/
 	async init () {
 		const Log = require('log');
 		this.log = await Log({ label : this.id });
@@ -90,23 +100,23 @@ class FFMPEG {
 		//-vf "select=gte(n\,${frame})" -compression_algo raw -pix_fmt rgb24 "export-${padded}.png"
 
 		try {
-			console.log(cmd);
+			this.log.info(cmd);
 			output = await exec(cmd);
 		} catch (err) {
-			console.error(err);
+			this.log.error(err);
 		}
-		if (output && output.stdout) console.log(`"${output.stdout}"`);
+		if (output && output.stdout) this.log.info(`"${output.stdout}"`);
 
 		if (rgb[0] !== 255 || rgb[1] !== 255 || rgb[2] !== 255) {
 			try {
-				console.log(cmd2);
+				this.log.info(cmd2);
 				output2 = await exec(cmd2);
 			} catch (err) {
-				console.error(err);
+				this.log.error(err);
 			}
 		}
 		
-		if (output2 && output2.stdout) console.log(`"${output2.stdout}"`);
+		if (output2 && output2.stdout) this.log.info(`"${output2.stdout}"`);
 		return tmpoutput
 	}
 
@@ -132,7 +142,7 @@ class FFMPEG {
 		try {
 			await mkdir(tmppath);
 		} catch (err) {
-			console.error(err);
+			this.log.error(err);
 		}
 
 		//ffmpeg -i "${video}" -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"
@@ -162,16 +172,16 @@ class FFMPEG {
 		try {
 			fileExists = await exists(tmppath);
 		} catch (err) {
-			console.error(err);
+			this.log.error(err);
 		}
 
 		if (!exists) return false;
 
 		try {
 			await unlink(tmppath);
-			console.log(`Cleared frame ${tmppath}`);
+			this.log.info(`Cleared frame ${tmppath}`);
 		} catch (err) {
-			console.error(err);
+			this.log.error(err);
 		}
 
 		return true;
@@ -187,14 +197,14 @@ class FFMPEG {
 		try {
 			files = await readdir(tmppath);
 		} catch (err) {
-			console.error(err);
+			this.log.error(err);
 		}
 		if (files) {
 			files.forEach(async (file : string, index : any) => {
 				try {
 					await unlink(join(tmppath, file));
 				} catch (err) {
-					console.error(err);
+					this.log.error(err);
 				}
 			});
 		}
@@ -209,21 +219,21 @@ class FFMPEG {
 		try {
 			fileExists = await exists(this.TMPDIR);
 		} catch (err) {
-			console.error('Error checking for tmp dir', err);
+			this.log.error('Error checking for tmp dir', err);
 		}
 
 		if (!fileExists) {
 			try {
 				await mkdir(this.TMPDIR);
-				console.log(`Created tmpdir ${this.TMPDIR}`);
+				this.log.info(`Created tmpdir ${this.TMPDIR}`);
 			} catch (err) {
-				console.error('Error creating tmp dir', err);
+				this.log.error('Error creating tmp dir', err);
 			}
 		}
 		try {
 			await this.clearAll();
 		} catch (err) {
-			console.error(err);
+			this.log.error(err);
 		}
 	}
 }
