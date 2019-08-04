@@ -20,32 +20,37 @@ function padded_frame (i : number) {
 }
 
 async function frame (state : any, light : any) {
-	let frame = state.frame
-	let video = state.path
-	let w = state.info.width
-	let h = state.info.height
-	let padded = padded_frame(frame)
-	let ext = 'tif'
-	let rgb = light.color;
-	let tmpoutput;
-	let cmd;
-	let output;
-	let cmd2;
-	let output2;
+	const frameNum : number = state.frame
+	const video : string = state.path
+	const w : number = state.info.width
+	const h : number = state.info.height
+	const padded : string = padded_frame(frameNum)
+	let ext : string = 'tif'
+	let rgb : any[] = light.color;
+	let tmpoutput : string;
+	let cmd : string;
+	let output : any;
+	let cmd2 : string;
+	let output2 : any;
 
-	console.dir(state)
+	let scale : string = '';
+	if (w && h) {
+		scale = `,scale=${w}:${h}`;
+	}
+
+	//console.dir(state)
 
 	//if (system.platform !== 'nix') {
 		ext = 'png';
 	//}
 
+	tmpoutput = join(TMPDIR, `export-${padded}.${ext}`);
+
 	rgb = rgb.map((e : string) => {
 		return parseInt(e);
 	});
-
-	tmpoutput = join(TMPDIR, `export-${padded}.${ext}`);
-//,scale=${w}:${h}
-	cmd = `ffmpeg -y -i "${video}" -vf "select='gte(n\\,${frame})'" -vframes 1 -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"`;
+//
+	cmd = `ffmpeg -y -i "${video}" -vf "select='gte(n\\,${frameNum})'${scale}" -vframes 1 -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"`;
 	cmd2 = `convert "${tmpoutput}" -resize ${w}x${h} -size ${w}x${h} xc:"rgb(${rgb[0]},${rgb[1]},${rgb[2]})" +swap -compose Darken -composite "${tmpoutput}"`;
 
 	//ffmpeg -i "${video}" -ss 00:00:07.000 -vframes 1 "export-${time}.jpg"
