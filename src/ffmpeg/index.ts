@@ -1,5 +1,7 @@
 'use strict';
 
+/** @module ffmpeg **/
+
 import uuid from 'uuid/v4';
 import { join } from 'path';
 import { exists, mkdir, readdir, unlink } from 'fs-extra';
@@ -10,6 +12,14 @@ import { exit } from 'exit';
 let system : any = {};
 let TMPDIR : string;
 
+/**
+ * Add padding to a number to 5 places. Return a string.
+ *
+ * @param {integer} i Integer to pad
+ *
+ * @returns {string} Padded string
+ **/
+
 function padded_frame (i : number) {
 	let len = (i + '').length;
 	let str = i + '';
@@ -19,13 +29,21 @@ function padded_frame (i : number) {
 	return str;
 }
 
+/**
+ * Render a single frame from a video or image to a png.
+ *
+ * @param {object} state State object containing file data
+ * @param {object} light Object containing color information for frame
+ *
+ * @returns {string} Path of frame
+ **/
 async function frame (state : any, light : any) {
-	const frameNum : number = state.frame
-	const video : string = state.path
-	const w : number = state.info.width
-	const h : number = state.info.height
-	const padded : string = padded_frame(frameNum)
-	let ext : string = 'tif'
+	const frameNum : number = state.frame;
+	const video : string = state.path;
+	const w : number = state.info.width;
+	const h : number = state.info.height;
+	const padded : string = padded_frame(frameNum);
+	let ext : string = 'tif';
 	let rgb : any[] = light.color;
 	let tmpoutput : string;
 	let cmd : string;
@@ -78,10 +96,19 @@ async function frame (state : any, light : any) {
 	return tmpoutput
 }
 
+/**
+ * Render all frames in a video to the temp directory.
+ * Not in use.
+ *
+ * @param {string} video Path to video
+ * @param {object} obj Not sure
+ *
+ * @returns {?}
+ **/
 async function frames (video : string, obj : any) {
-	let tmppath = TMPDIR;
-	let ext = 'tif';
-	let tmpoutput;
+	const tmppath : string = TMPDIR;
+	let ext : string = 'tif';
+	let tmpoutput : string;
 
 	//if (system.platform !== 'nix') {
 		ext = 'png';
@@ -97,13 +124,20 @@ async function frames (video : string, obj : any) {
 	//ffmpeg -i "${video}" -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"
 }
 
+/**
+ * Clears a specific frame from the tmp directory
+ *
+ * @param {integer} frame Integer of frame to clear
+ * 
+ * @returns {boolean} True if successful, false if not
+ **/
 async function clear (frame : number) {
-	let padded = padded_frame(frame);
-	let ext = 'tif';
-	let tmppath;
-	let tmpoutput;
-	let cmd;
-	let fileExists;
+	const padded : string = padded_frame(frame);
+	let ext : string = 'tif';
+	let tmppath : string;
+	let tmpoutput : string;
+	let cmd : string;
+	let fileExists : boolean;
 
 	//if (system.platform !== 'nix') {
 		ext = 'png';
@@ -129,9 +163,13 @@ async function clear (frame : number) {
 	return true;
 }
 
+/**
+ * Delete all frames in temp directory.
+ *
+ **/
 async function clearAll () {
-	let tmppath = TMPDIR;
-	let files;
+	const tmppath : string = TMPDIR;
+	let files : any;
 	try {
 		files = await readdir(tmppath);
 	} catch (err) {
@@ -148,8 +186,12 @@ async function clearAll () {
 	}
 }
 
+/**
+ * Checks if mcopy temp directory exists. If it doesn't,
+ * create it.
+ **/
 async function checkDir () {
-	let fileExists;
+	let fileExists : boolean;
 	try {
 		fileExists = await exists(TMPDIR);
 	} catch (err) {

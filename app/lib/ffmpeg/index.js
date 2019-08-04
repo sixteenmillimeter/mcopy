@@ -5,6 +5,13 @@ const fs_extra_1 = require("fs-extra");
 const exec_1 = require("exec");
 let system = {};
 let TMPDIR;
+/**
+ * Add padding to a number to 5 places. Return a string.
+ *
+ * @param {integer} i Integer to pad
+ *
+ * @returns {string} Padded string
+ **/
 function padded_frame(i) {
     let len = (i + '').length;
     let str = i + '';
@@ -13,6 +20,14 @@ function padded_frame(i) {
     }
     return str;
 }
+/**
+ * Render a single frame from a video or image to a png.
+ *
+ * @param {object} state State object containing file data
+ * @param {object} light Object containing color information for frame
+ *
+ * @returns {string} Path of frame
+ **/
 async function frame(state, light) {
     const frameNum = state.frame;
     const video = state.path;
@@ -66,8 +81,17 @@ async function frame(state, light) {
         console.log(`"${output2.stdout}"`);
     return tmpoutput;
 }
+/**
+ * Render all frames in a video to the temp directory.
+ * Not in use.
+ *
+ * @param {string} video Path to video
+ * @param {object} obj Not sure
+ *
+ * @returns {?}
+ **/
 async function frames(video, obj) {
-    let tmppath = TMPDIR;
+    const tmppath = TMPDIR;
     let ext = 'tif';
     let tmpoutput;
     //if (system.platform !== 'nix') {
@@ -82,8 +106,15 @@ async function frames(video, obj) {
     }
     //ffmpeg -i "${video}" -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"
 }
+/**
+ * Clears a specific frame from the tmp directory
+ *
+ * @param {integer} frame Integer of frame to clear
+ *
+ * @returns {boolean} True if successful, false if not
+ **/
 async function clear(frame) {
-    let padded = padded_frame(frame);
+    const padded = padded_frame(frame);
     let ext = 'tif';
     let tmppath;
     let tmpoutput;
@@ -110,8 +141,12 @@ async function clear(frame) {
     }
     return true;
 }
+/**
+ * Delete all frames in temp directory.
+ *
+ **/
 async function clearAll() {
-    let tmppath = TMPDIR;
+    const tmppath = TMPDIR;
     let files;
     try {
         files = await fs_extra_1.readdir(tmppath);
@@ -130,6 +165,10 @@ async function clearAll() {
         });
     }
 }
+/**
+ * Checks if mcopy temp directory exists. If it doesn't,
+ * create it.
+ **/
 async function checkDir() {
     let fileExists;
     try {
