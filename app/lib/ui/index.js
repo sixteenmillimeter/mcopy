@@ -62,7 +62,7 @@ gui.updateCam = function (t) {
 	if (parseInt(val) === cam.pos) { 
 		return false; 
 	}
-	change = confirm(`Are you sure you want to set camera counter to ${val}?`);
+	change = gui.confirm(`Are you sure you want to set camera counter to ${val}?`);
 
 	if (change) {
 		cam.pos = parseInt(val);
@@ -80,7 +80,7 @@ gui.updateCam2 = function (t) {
 	if (parseInt(val) === cam.pos) { 
 		return false; 
 	}
-	change = confirm(`Are you sure you want to set second camera counter to ${val}?`);
+	change = gui.confirm(`Are you sure you want to set second camera counter to ${val}?`);
 
 	if (change) {
 		cam.second.pos = parseInt(val);
@@ -97,7 +97,7 @@ gui.updateProj = function (t) {
 	if (parseInt(val) === proj.pos) { 
 		return false; 
 	}
-	change = confirm(`Are you sure you want to set projector counter to ${val}?`);
+	change = gui.confirm(`Are you sure you want to set projector counter to ${val}?`);
 	if (change) {
 		proj.pos = parseInt(val);
 		gui.updateState();
@@ -114,7 +114,7 @@ gui.updateProj2 = function (t) {
 	if (parseInt(val) === proj.second.pos) { 
 		return false; 
 	}
-	change = confirm(`Are you sure you want to set second projector counter to ${val}?`);
+	change = gui.confirm(`Are you sure you want to set second projector counter to ${val}?`);
 	if (change) {
 		proj.second.pos = parseInt(val);
 		gui.updateState();
@@ -207,9 +207,16 @@ gui.info = function (title, message) {
 		title: title,
 		message : message
 	};
-	dialog.showMessageBox(config);
+	return dialog.showMessageBox(config);
 };
-gui.confirm = function () {};
+gui.confirm = function (message) {
+	const config = {
+		buttons : ['Yes', 'Cancel'],
+		message
+	}
+	const res = dialog.showMessageBox(config);
+	return res === 0;
+};
 gui.warn = function (title, message) {
 	'use strict';
 	const config = {
@@ -218,7 +225,7 @@ gui.warn = function (title, message) {
 		title: title,
 		message : message
 	};
-	dialog.showMessageBox(config);
+	return dialog.showMessageBox(config);
 };
 gui.error = function () {};
 
