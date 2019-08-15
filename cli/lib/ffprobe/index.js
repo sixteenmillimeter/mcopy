@@ -74,6 +74,7 @@ class FFPROBE {
         const ext = path_1.extname(video.toLowerCase());
         let cmd = `ffprobe -v error -select_streams v:0 -show_entries stream=nb_frames -of default=nokey=1:noprint_wrappers=1 "${video}"`;
         let backup_cmd = `ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 "${video}"`;
+        let gif_cmd = `identify -format "%n\n" "${video}" | head -1`;
         let fileExists;
         let raw;
         let frames;
@@ -92,6 +93,9 @@ class FFPROBE {
         }
         if (ext === '.mkv') {
             cmd = backup_cmd;
+        }
+        else if (ext === '.gif') {
+            cmd = gif_cmd;
         }
         try {
             console.log(cmd);

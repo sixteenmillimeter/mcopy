@@ -144,15 +144,18 @@ class FilmOut {
     }
     useFile() {
         const elem = $('#digital');
-        const path = elem.attr('data-file');
+        const filePath = elem.attr('data-file');
         const fileName = elem.val();
         let proceed = false;
         let obj = {
-            path,
+            path: filePath,
             fileName
         };
-        if (path && path !== '') {
+        if (filePath && filePath !== '') {
             proceed = confirm(`Are you sure you want to use ${fileName}?`);
+        }
+        else {
+            this.selectFile();
         }
         if (proceed) {
             gui.overlay(true);

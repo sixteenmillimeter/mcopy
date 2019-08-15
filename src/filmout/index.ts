@@ -1,10 +1,12 @@
 'use strict';
 
 import sharp from 'sharp';
-import * as  animated from 'animated-gif-detector';
+import { default as  animated } from 'animated-gif-detector';
 import { extname } from 'path';
 import { readFile } from 'fs-extra';
 import { delay } from 'delay';
+
+console.dir(animated)
 
 class FilmOut {
 	private id : string = 'filmout';

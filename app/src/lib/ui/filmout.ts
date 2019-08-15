@@ -166,16 +166,18 @@ class FilmOut {
 	}
 	useFile () {
 		const elem : any = $('#digital');
-		const path : string = elem.attr('data-file');
+		const filePath : string = elem.attr('data-file');
 		const fileName : string = elem.val();
 		let proceed : boolean = false;
 		let obj : any = {
-			path,
+			path : filePath,
 			fileName
 		}
 
-		if (path && path !== '') {
+		if (filePath && filePath !== '') {
 			proceed = confirm(`Are you sure you want to use ${fileName}?`);
+		} else {
+			this.selectFile();
 		}
 		
 		if (proceed) {
