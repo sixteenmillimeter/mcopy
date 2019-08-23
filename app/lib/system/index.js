@@ -15,21 +15,11 @@ const exec_1 = require("exec");
  **/
 async function dependencies(platform) {
     let obj = {};
+    let ffmpeg = require('ffmpeg-static');
     let ffoutput;
     let imoutput;
     let eogoutput;
-    try {
-        ffoutput = await exec_1.exec('which ffmpeg');
-    }
-    catch (err) {
-        console.error('ffmpeg is not installed', err);
-    }
-    if (!ffoutput || ffoutput.stdout.trim() === '') {
-        console.error('ffmpeg is not installed');
-    }
-    else {
-        obj.ffmpeg = ffoutput.stdout.trim();
-    }
+    obj.ffmpeg = ffmpeg.path;
     try {
         imoutput = await exec_1.exec('which convert');
     }

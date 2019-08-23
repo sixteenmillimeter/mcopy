@@ -22,21 +22,12 @@ import { exec } from 'exec';
 
 async function dependencies (platform : string )  {
 	let obj : any = {};
+	let ffmpeg : any = require('ffmpeg-static')
 	let ffoutput : ExecOutput;
 	let imoutput : ExecOutput;
 	let eogoutput : ExecOutput;
 
-	try {
-		ffoutput = await exec('which ffmpeg');
-	} catch (err) {
-		console.error('ffmpeg is not installed', err);
-	}
-
-	if (!ffoutput || ffoutput.stdout.trim() === '') {
-		console.error('ffmpeg is not installed');
-	} else {
-		obj.ffmpeg = ffoutput.stdout.trim();
-	}
+	obj.ffmpeg = ffmpeg.path;
 
 	try {
 		imoutput = await exec('which convert');

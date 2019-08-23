@@ -12,7 +12,7 @@ import { exit } from 'exit';
 /** @class FFMPEG **/
 
 class FFMPEG {
-	private system : any;
+	private bin : string;
 	private log : any;
 	private id : string = 'ffmpeg';
 	private TMPDIR : string;
@@ -24,9 +24,9 @@ class FFMPEG {
 	 * @param {object} sys System object to be used to get temp directory
 	 **/
 	constructor (sys : any) {
-		this.system = sys;
-		this.TMPDIR = join(this.system.tmp, 'mcopy_digital');
-		this.init()
+		this.bin = sys.deps.ffmpeg;
+		this.TMPDIR = join(sys.tmp, 'mcopy_digital');
+		this.init();
 	}
 	/**
 	 * Async method to call async functions from constructor
@@ -92,7 +92,7 @@ class FFMPEG {
 			return parseInt(e);
 		});
 	//
-		cmd = `ffmpeg -y -i "${video}" -vf "select='gte(n\\,${frameNum})'${scale}" -vframes 1 -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"`;
+		cmd = `${this.bin} -y -i "${video}" -vf "select='gte(n\\,${frameNum})'${scale}" -vframes 1 -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"`;
 		cmd2 = `convert "${tmpoutput}" -resize ${w}x${h} -size ${w}x${h} xc:"rgb(${rgb[0]},${rgb[1]},${rgb[2]})" +swap -compose Darken -composite "${tmpoutput}"`;
 
 		//ffmpeg -i "${video}" -ss 00:00:07.000 -vframes 1 "export-${time}.jpg"
