@@ -6,7 +6,9 @@ import { extname } from 'path';
 import { readFile } from 'fs-extra';
 import { delay } from 'delay';
 
-console.dir(animated)
+/**
+ * @module FilmOut
+ **/
 
 class FilmOut {
 	private id : string = 'filmout';
@@ -31,7 +33,14 @@ class FilmOut {
 	private ui : any;
 	private log : any;
 	/**
+	 * @constructor
+	 * Builds FilmOut class with display, ffmpeg, ffprobe, ui and light as internal properties.
 	 *
+	 * @param {object} display Display object for showing frames
+	 * @param {object} ffmpeg  FFMPEG wrapper
+	 * @param {object} ffprobe FFPROBE wrapper for file info
+	 * @param {object} ui      Electron ui object
+	 * @param {object} light   Light device object
 	 **/
 	constructor (display : any, ffmpeg : any, ffprobe : any, ui : any, light : any) {
 		this.display = display;
@@ -42,7 +51,7 @@ class FilmOut {
 		this.init();
 	}
 	/**
-	 *
+	 * Async function for requiring log, ipcMain and bind events.
 	 **/
 	private async init () {
 		const Log = require('log');
@@ -51,7 +60,7 @@ class FilmOut {
 		this.listen();
 	}
 	/**
-	 *
+	 * 
 	 **/
 	 private listen () {
 	 	this.ipc.on(this.id, this.onConnect.bind(this));
@@ -65,13 +74,15 @@ class FilmOut {
 	 	this.ipc.on('display', this.onDisplay.bind(this));
 	 }
 	/**
+	 * Sets filmout direction.
 	 *
+	 * @param {boolean} dir  Direction of filmout
 	 **/
 	public set (dir : boolean) {
 		this.state.dir = dir;
 	}
 	/**
-	 *
+	 * Moves filmout a frame at a time.
 	 **/
 	public async move () {
 		let start : number = +new Date();
@@ -89,7 +100,7 @@ class FilmOut {
 		return (+new Date()) - start;
 	}
 	 /**
-	 *
+	 * Begin the process of exporting single frames from the video for display.
 	 **/
 	async start () {
 		try {
@@ -109,7 +120,7 @@ class FilmOut {
 		await delay(20);
 	}
 	/**
-	 *
+	 * Ends the filmout process and closes the display.
 	 **/
 	private async end () {
 		await delay(20);
@@ -118,6 +129,8 @@ class FilmOut {
 	/**
 	 * Use a video file as a film out source on "projector"
 	 *
+	 * @param {object} evt Original connect event
+	 * @param {object} arg Arguments from ipc message
 	 **/
 	async onConnect (evt : any, arg : any) {
 		let frames : number = 0;
@@ -127,8 +140,8 @@ class FilmOut {
 
 		ext = extname(arg.fileName.toLowerCase());
 
-		console.dir(arg)
-		console.log(ext)
+		//console.dir(arg)
+		//console.log(ext)
 
 		if (ext === this.gifExtension) {
 			try {
@@ -177,7 +190,7 @@ class FilmOut {
 				return false;
 			}
 		}
-		console.dir(info)
+		//console.dir(info)
 		this.state.frame = 0;
 		this.state.path = arg.path;
 		this.state.fileName = arg.fileName;
@@ -191,6 +204,10 @@ class FilmOut {
 	}
 	/**
 	 * Return true if gif is animated, false if it is a still
+	 *
+	 * @param {string} pathStr Path to gif to check
+	 *
+	 * @returns {boolean} Whether or not gif is animated
 	 **/
 	async isGifAnimated (pathStr : string) {
 		let gifBuffer : Buffer;
@@ -204,12 +221,19 @@ class FilmOut {
 	}
 	/**
 	 * Return information on a still image using the sharp module
+	 *
+	 * @param {string} pathStr Path to gif to check
+	 *
+	 * @returns {object} Info about still from sharp
 	 **/
 	async stillInfo (pathStr : string) {
 		return sharp(pathStr).metadata();
 	}
 	/**
+	 * Preview a frame from the selected video.
 	 *
+	 * @param {object} evt Original event
+	 * @param {object} arg Arguments from message
 	 **/
 	async previewFrame (evt : any, arg : any) {
 		const state : any = JSON.parse(JSON.stringify(this.state));
@@ -226,7 +250,10 @@ class FilmOut {
 		this.ui.send('preview_frame', { path, frame : arg.frame })
 	}
 	/**
+	 * 
 	 *
+	 * @param {object} evt Original event
+	 * @param {object} arg Arguments from message
 	 **/
 	async preview (evt : any, arg : any) {
 		const state : any = JSON.parse(JSON.stringify(this.state));
