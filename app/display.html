@@ -30,7 +30,8 @@
 		background: #fff;
 		display: none;
 		position: fixed;
-		left: 0;
+		left: 50%;
+    	transform: translateX(-50%);
 		top: 0;
 	}
 	#can.show{
@@ -113,18 +114,27 @@
 			    ctx.translate(- w / 2, -h / 2)
 			}
 		}
-		async function onField () {
+		async function onField (evt, arg) {
 			console.log('field guide')
+			console.dir(arg)
 			const can = document.getElementById('can')
 			const dpr = window.devicePixelRatio || 1
 			let ctx;
 			if (!can.classList.contains('show')) {
 				can.classList.add('show')
 			}
-			can.width = window.innerWidth * dpr
-            can.height = window.innerHeight * dpr
+			if (arg.ratio) {
+				can.width = (window.innerHeight * arg.ratio) * dpr
+			} else {
+				can.width = window.innerWidth * dpr
+        	}
+        	can.height = window.innerHeight * dpr
 
-            can.style.width = `${window.innerWidth}px`
+       		if (arg.ratio) {
+       			can.style.width = `${window.innerHeight * arg.ratio}px`
+       		} else {
+            	can.style.width = `${window.innerWidth}px`
+       		}
             can.style.height = `${window.innerHeight}px`
 
            	ctx = can.getContext('2d')

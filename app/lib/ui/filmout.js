@@ -235,7 +235,11 @@ class FilmOut {
         ipcRenderer.send('focus', { focus: true });
     }
     field() {
-        ipcRenderer.send('field', { field: true });
+        let ratio = null;
+        if (this.state.name) {
+            ratio = this.state.width / this.state.height;
+        }
+        ipcRenderer.send('field', { field: true, ratio });
     }
     meter() {
         ipcRenderer.send('meter', { meter: true });

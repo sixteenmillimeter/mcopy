@@ -292,10 +292,11 @@ class FilmOut {
 	 *
 	 **/
 	async field (evt : any, arg : any) {
+		const ratio : number = arg.ratio;
 		this.log.info(`Showing field guide screen`);
 		try {
 			await this.display.open();
-			await this.display.field();
+			await this.display.field(ratio);
 		} catch (err) {
 			this.log.error(err, 'FILMOUT', true, true);
 		}

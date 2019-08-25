@@ -172,7 +172,7 @@ class FilmOut {
 		let obj : any = {
 			path : filePath,
 			fileName
-		}
+		};
 
 		if (filePath && filePath !== '') {
 			proceed = confirm(`Are you sure you want to use ${fileName}?`);
@@ -183,7 +183,7 @@ class FilmOut {
 		if (proceed) {
 			gui.overlay(true);
 			gui.spinner(true, `Getting info about ${fileName}`);
-			ipcRenderer.send('filmout', obj)
+			ipcRenderer.send('filmout', obj);
 		} else {
 			$('#projector_type_digital').prop('checked', 'checked');
 			$('#digital').removeClass('active');
@@ -267,7 +267,11 @@ class FilmOut {
 	}
 
 	field () {
-		ipcRenderer.send('field', { field : true });
+		let ratio : number = null;
+		if (this.state.name) {
+			ratio = this.state.width / this.state.height
+		}
+		ipcRenderer.send('field', { field : true, ratio });
 	}
 
 	meter () {

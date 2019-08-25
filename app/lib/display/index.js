@@ -86,14 +86,14 @@ class WebView {
             console.error(err);
         }
     }
-    async field() {
+    async field(ratio) {
         if (!this.digitalWindow) {
             console.warn(`Cannot show field guide because window does not exist`);
             return false;
         }
         await delay_1.delay(500);
         try {
-            this.digitalWindow.webContents.send('field', { field: true });
+            this.digitalWindow.webContents.send('field', { field: true, ratio });
         }
         catch (err) {
             console.error(err);
@@ -189,8 +189,8 @@ class Display {
     async focus() {
         return await this.wv.focus();
     }
-    async field() {
-        return await this.wv.field();
+    async field(ratio) {
+        return await this.wv.field(ratio);
     }
     async meter() {
         return await this.wv.meter();
