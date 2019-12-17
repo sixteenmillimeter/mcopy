@@ -2,6 +2,8 @@
 
 import uuid from 'uuid/v4';
 import Log = require('log');
+import { powerSaveBlocker } from 'electron'
+
 
 /** @module lib/sequencer **/
 
@@ -25,6 +27,7 @@ class Sequencer {
 	private log : any;
 	private id : string = 'sequence';
 	private alerted : boolean = false;
+	private psbId : any;
 
 	/**
 	 * @constructor
@@ -145,6 +148,8 @@ class Sequencer {
 		let startTime : number = +new Date();
 		let ms : number;
 
+		this.psbId = powerSaveBlocker.start('prevent-display-sleep');
+
 		if (arg && arg.arr) {
 			this.arr = arg.arr; //overwrite sequence
 		} else {
@@ -209,6 +214,9 @@ class Sequencer {
 			await this.cmd.proj.filmout.display.close();
 		}
 
+		powerSaveBlocker.stop(this.psbId)
+		this.psbId = null
+
 		ms = ( +new Date() ) - startTime;
 		//end sequence
 		this.log.info(`Ended sequence`);
@@ -230,6 +238,9 @@ class Sequencer {
 			this.cmd.proj.filmout.display.close();
 		}
 		this.running = false;
+		if (this.psbId) {
+			powerSaveBlocker.stop(this.psbId);
+		}
 		//clear?
 
 	}
