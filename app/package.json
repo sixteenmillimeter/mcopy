@@ -1,6 +1,6 @@
 {
   "name": "mcopy-app",
-  "version": "1.4.18",
+  "version": "1.4.19",
   "description": "GUI for the mcopy small gauge film optical printer platform",
   "main": "main.js",
   "scripts": {
@@ -28,19 +28,19 @@
   },
   "homepage": "https://github.com/sixteenmillimeter/mcopy#readme",
   "devDependencies": {
-    "@types/jquery": "^3.3.29",
+    "@types/jquery": "^3.3.31",
     "chai": "^4.2.0",
-    "electron": "^5.0.3",
-    "electron-installer-common": "^0.7.2",
+    "electron": "^7.1.5",
+    "electron-installer-common": "^0.8.0",
     "electron-installer-dmg": "^3.0.0",
-    "electron-packager": "^13.1.1",
-    "electron-rebuild": "^1.8.5",
-    "electron-wix-msi": "^2.1.1",
+    "electron-packager": "^14.1.1",
+    "electron-rebuild": "^1.8.8",
+    "electron-wix-msi": "^2.2.0",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-less": "^4.0.1",
-    "mocha": "^6.1.4",
-    "typescript": "^3.5.2"
+    "mocha": "^6.2.2",
+    "typescript": "^3.7.3"
   },
   "dependencies": {
     "animated-gif-detector": "^1.2.0",
@@ -51,34 +51,34 @@
     "delay": "file:lib/delay",
     "devices": "file:lib/devices",
     "display": "file:lib/display",
-    "electron-updater": "^4.0.6",
+    "electron-updater": "^4.2.0",
     "exec": "file:lib/exec",
     "exit": "file:lib/exit",
     "ffmpeg": "file:lib/ffmpeg",
-    "ffmpeg-static": "^2.5.0",
+    "ffmpeg-static": "^2.7.0",
     "ffprobe": "file:lib/ffprobe",
     "filmout": "file:lib/filmout",
-    "fs-extra": "^8.0.1",
-    "humanize-duration": "^3.18.0",
+    "fs-extra": "^8.1.0",
+    "humanize-duration": "^3.21.0",
     "intval": "file:lib/intval",
     "light": "file:lib/light",
     "log": "file:lib/log",
     "moment": "^2.24.0",
     "mscript": "file:lib/mscript",
-    "node-notifier": "^5.4.0",
+    "node-notifier": "^6.0.0",
     "proj": "file:lib/proj",
     "request": "^2.88.0",
     "sequencer": "file:lib/sequencer",
-    "serialport": "^7.1.5",
+    "serialport": "^8.0.5",
     "server": "file:lib/server",
     "settings": "file:lib/settings",
-    "sharp": "^0.22.1",
+    "sharp": "^0.23.4",
     "spawn": "file:lib/spawn",
     "system": "file:lib/system",
-    "uuid": "^3.3.2",
-    "winston": "^2.4.4"
+    "uuid": "^3.3.3",
+    "winston": "^3.2.1"
   },
   "optionalDependencies": {
-    "electron-installer-debian": "^2.0.0"
+    "electron-installer-debian": "^2.0.1"
   }
 }
