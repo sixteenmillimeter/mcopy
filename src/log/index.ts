@@ -1,6 +1,6 @@
 'use strict'
 
-import { Logger, transports } from 'winston';
+import { createLogger, transports } from 'winston';
 import { join } from 'path';
 import { mkdir, exists } from 'fs-extra';
 import { homedir } from 'os';
@@ -60,7 +60,7 @@ module.exports = async function (arg : any) {
 			consoleFormat.label = arg.label;
 			fileFormat.label = arg.label;
 		}
-		transport = new (Logger)({
+		transport = createLogger({
 			transports: [
 				new (transports.Console)(consoleFormat),
 				new (transports.File)(fileFormat)
