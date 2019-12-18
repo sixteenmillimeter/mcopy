@@ -17,8 +17,8 @@ const int cam_pin =        9;
 boolean running = false;
 boolean cam_dir = true;
 
-const int cam_time = 700;
-const int cam_momentary = 120;
+const int cam_time = 550;
+const int cam_momentary = 130;
 const int cam_delay = 42;
 
 const char cmd_camera = 'c';
