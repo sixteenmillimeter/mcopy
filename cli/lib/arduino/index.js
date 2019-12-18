@@ -42,37 +42,37 @@ class Arduino {
      * @returns {Promise} Resolves after enumerating
      **/
     async enumerate() {
-        return new Promise((resolve, reject) => {
-            return SerialPort.list((err, ports) => {
-                let matches = [];
-                if (err) {
-                    return reject(err);
-                }
-                ports.forEach((port) => {
-                    if (this.known.indexOf(port.comName) !== -1) {
-                        matches.push(port.comName);
-                    }
-                    else if ((port.manufacturer + '').toLowerCase().indexOf('arduino') !== -1) {
-                        matches.push(port.comName);
-                    }
-                    else if ((port.comName + '').toLowerCase().indexOf('usbserial') !== -1) {
-                        matches.push(port.comName);
-                    }
-                    else if ((port.comName + '').toLowerCase().indexOf('usbmodem') !== -1) {
-                        matches.push(port.comName);
-                    }
-                    else if ((port.comName + '').toLowerCase().indexOf('ttyusb') !== -1) {
-                        matches.push(port.comName);
-                    }
-                });
-                if (matches.length === 0) {
-                    return reject('No USB devices found');
-                }
-                else if (matches.length > 0) {
-                    return resolve(matches);
-                }
-            });
+        let ports;
+        let matches = [];
+        try {
+            ports = await SerialPort.list();
+        }
+        catch (err) {
+            throw err;
+        }
+        ports.forEach((port) => {
+            if (this.known.indexOf(port.path) !== -1) {
+                matches.push(port.path);
+            }
+            else if ((port.manufacturer + '').toLowerCase().indexOf('arduino') !== -1) {
+                matches.push(port.path);
+            }
+            else if ((port.path + '').toLowerCase().indexOf('usbserial') !== -1) {
+                matches.push(port.path);
+            }
+            else if ((port.path + '').toLowerCase().indexOf('usbmodem') !== -1) {
+                matches.push(port.path);
+            }
+            else if ((port.path + '').toLowerCase().indexOf('ttyusb') !== -1) {
+                matches.push(port.path);
+            }
         });
+        if (matches.length === 0) {
+            throw new Error('No USB devices found');
+        }
+        else if (matches.length > 0) {
+            return matches;
+        }
     }
     /**
      * Send a command to an Arduino using async/await

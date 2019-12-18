@@ -427,7 +427,6 @@ class Devices {
             this.settings.save();
         }
     }
-    ;
     /**
     *
     **/
@@ -460,7 +459,6 @@ class Devices {
         this.ui.send('ready', args);
         return true;
     }
-    ;
 }
 module.exports = function (arduino, settings, mainWindow, cam) {
     return new Devices(arduino, settings, mainWindow, cam);

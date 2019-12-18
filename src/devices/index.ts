@@ -405,7 +405,6 @@ class Devices {
 			c.intval = this.settings.state.camera.intval
 
 		}
-
 		return this.ready(p, c, l, cs, ps)
 	}
 	 /**
@@ -427,7 +426,7 @@ class Devices {
 			this.settings.update('devices', this.settings.state.devices)
 			this.settings.save()
 		}
-	};
+	}
 	 /**
 	 * 
 	 **/
@@ -463,7 +462,7 @@ class Devices {
 		this.ui.send('ready', args)
 		
 		return true
-	};
+	}
 
 	 /**
 	 * 
