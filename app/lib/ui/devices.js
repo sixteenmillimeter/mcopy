@@ -20,8 +20,14 @@ class Devices {
         let devs = [];
         let notify = 'Connected to ';
         let p;
-        gui.spinner(false);
-        gui.overlay(false);
+        try {
+            gui.spinner(false);
+            gui.overlay(false);
+            console.log('got here');
+        }
+        catch (err) {
+            console.error(err);
+        }
         for (let i in arg) {
             devs.push(arg[i].arduino);
             if (arg[i].arduino && arg[i].arduino !== '/dev/fake') {
