@@ -60,6 +60,7 @@ module.exports = async function (arg) {
             fileFormat.label = arg.label;
         }
         transport = winston_1.createLogger({
+            format: winston_1.format.simple(),
             transports: [
                 new (winston_1.transports.Console)(consoleFormat),
                 new (winston_1.transports.File)(fileFormat)
