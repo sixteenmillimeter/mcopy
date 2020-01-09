@@ -33,19 +33,20 @@ class Devices {
 		ipcRenderer.on('intval', this.intvalCb.bind(this));
 	}
 
-	ready (event : any, arg : any) {
+	async ready (event : any, arg : any) {
 		//console.dir(arg)
 		let opt : any;
 		let devs : any[] = [];
 		let notify : string = 'Connected to ';
 		let p : any;
+		//@ts-ignore
+		await delay(1000);
 
 		try {
 			gui.spinner(false);
 			gui.overlay(false);
-			console.log('got here');
 		} catch (err) {
-			console.error(err);
+			log.error(err);
 		}
 		for (let i in arg) {
 			devs.push(arg[i].arduino);
