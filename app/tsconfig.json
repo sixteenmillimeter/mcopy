@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "target": "ES2016",
+        "noImplicitAny": true,
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "removeComments" : false,
+        "baseUrl" : "lib",
+        "outDir": "./",
+        "rootDir" : "./src/",
+        "paths" : {
+            "log" : ["./lib/log"]
+        }
+    },
+    "exclude" : [
+        "./node_modules"
+    ]
+}

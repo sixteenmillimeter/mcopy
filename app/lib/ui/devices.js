@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+/// <reference path ="jquery.d.ts"/> 
 let devices;
 class Devices {
     constructor() {
@@ -175,3 +176,4 @@ class Devices {
 }
 devices = new Devices();
 module.exports = devices;
+//# sourceMappingURL=devices.js.map

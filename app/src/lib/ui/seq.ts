@@ -3,7 +3,6 @@
 /// <reference path ="jquery.d.ts"/> 
 
 declare var gui : any;
-declare var grid : any;
 declare var light : any;
 declare var cfg : any;
 declare var log : any;

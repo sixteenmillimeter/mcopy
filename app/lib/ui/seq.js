@@ -231,3 +231,4 @@ class Sequence {
 }
 seq = new Sequence();
 module.exports = seq;
+//# sourceMappingURL=seq.js.map

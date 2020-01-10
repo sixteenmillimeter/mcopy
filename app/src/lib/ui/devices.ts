@@ -2,18 +2,6 @@
 
 /// <reference path ="jquery.d.ts"/> 
 
-declare var gui : any;
-declare var seq : any;
-declare var light : any;
-declare var cfg : any;
-declare var log : any;
-declare var w2popup : any;
-declare var cam : any;
-declare var proj : any;
-declare var light : any;
-declare var grid : any;
-declare var ipcRenderer : any;
-declare var dialog : any;
 
 let devices : Devices;
 

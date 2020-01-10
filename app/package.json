@@ -30,7 +30,7 @@
   "devDependencies": {
     "@types/jquery": "^3.3.31",
     "chai": "^4.2.0",
-    "electron": "^7.1.6",
+    "electron": "^7.1.8",
     "electron-installer-common": "^0.8.0",
     "electron-installer-dmg": "^3.0.0",
     "electron-packager": "^14.1.1",
@@ -39,8 +39,8 @@
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-less": "^4.0.1",
-    "mocha": "^6.2.2",
-    "typescript": "^3.7.3"
+    "mocha": "^7.0.0",
+    "typescript": "^3.7.4"
   },
   "dependencies": {
     "animated-gif-detector": "^1.2.0",
@@ -55,7 +55,7 @@
     "exec": "file:lib/exec",
     "exit": "file:lib/exit",
     "ffmpeg": "file:lib/ffmpeg",
-    "ffmpeg-static": "^2.7.0",
+    "ffmpeg-static": "^3.0.0",
     "ffprobe": "file:lib/ffprobe",
     "filmout": "file:lib/filmout",
     "fs-extra": "^8.1.0",
@@ -69,7 +69,7 @@
     "proj": "file:lib/proj",
     "request": "^2.88.0",
     "sequencer": "file:lib/sequencer",
-    "serialport": "^8.0.5",
+    "serialport": "^8.0.6",
     "server": "file:lib/server",
     "settings": "file:lib/settings",
     "sharp": "^0.23.4",
