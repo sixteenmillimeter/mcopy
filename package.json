@@ -27,12 +27,12 @@
   "devDependencies": {
     "@types/electron": "^1.6.10",
     "@types/fs-extra": "^8.0.1",
-    "@types/node": "^12.12.18",
-    "@types/request": "^2.48.3",
+    "@types/node": "^13.1.6",
+    "@types/request": "^2.48.4",
     "@types/sharp": "^0.23.1",
     "@types/uuid": "^3.4.6",
     "jsdoc-to-markdown": "^5.0.3",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.4"
   },
   "dependencies": {
     "arduino": "file:lib/arduino",
@@ -40,8 +40,9 @@
     "cmd": "file:lib/cmd",
     "delay": "file:lib/delay",
     "devices": "file:lib/devices",
-    "filmout": "file:lib/filmout",
     "display": "file:lib/display",
+    "filmout": "file:lib/filmout",
+    "form-data": "^3.0.0",
     "light": "file:lib/light",
     "log": "file:lib/log",
     "mscript": "file:lib/mscript",
