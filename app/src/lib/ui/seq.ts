@@ -3,7 +3,6 @@
 /// <reference path ="jquery.d.ts"/> 
 
 declare var gui : any;
-declare var light : any;
 declare var cfg : any;
 declare var log : any;
 declare var w2popup : any;
@@ -49,7 +48,7 @@ class Sequence {
 	}
 	private listener (event : Event, arg : Arg) {
 		let timeStr;
-		console.log(JSON.stringify(arg))
+		//console.log(JSON.stringify(arg))
 		if (arg.start) {
 			if (typeof arg.loop !== 'undefined' && typeof arg.step !== 'undefined') {
 				this.activeStep(arg.step);

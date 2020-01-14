@@ -1,6 +1,6 @@
 {
   "name": "mcopy",
-  "version": "1.4.20",
+  "version": "1.4.21",
   "description": "Small gauge film optical printer platform",
   "main": "build.js",
   "directories": {
@@ -35,20 +35,19 @@
     "typescript": "^3.7.4"
   },
   "dependencies": {
-    "arduino": "file:lib/arduino",
-    "cam": "file:lib/cam",
-    "cmd": "file:lib/cmd",
-    "delay": "file:lib/delay",
-    "devices": "file:lib/devices",
-    "display": "file:lib/display",
-    "filmout": "file:lib/filmout",
-    "form-data": "^3.0.0",
-    "light": "file:lib/light",
-    "log": "file:lib/log",
-    "mscript": "file:lib/mscript",
-    "proj": "file:lib/proj",
-    "sequencer": "file:lib/sequencer",
-    "settings": "file:lib/settings",
-    "system": "file:lib/system"
+    "arduino": "file:app/lib/arduino",
+    "cam": "file:app/lib/cam",
+    "cmd": "file:app/lib/cmd",
+    "delay": "file:app/lib/delay",
+    "devices": "file:app/lib/devices",
+    "display": "file:app/lib/display",
+    "filmout": "file:app/lib/filmout",
+    "light": "file:app/lib/light",
+    "log": "file:app/lib/log",
+    "mscript": "file:app/lib/mscript",
+    "proj": "file:app/lib/proj",
+    "sequencer": "file:app/lib/sequencer",
+    "settings": "file:app/lib/settings",
+    "system": "file:app/lib/system"
   }
 }

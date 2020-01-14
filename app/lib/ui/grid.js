@@ -374,13 +374,14 @@ class Grid {
         if (typeof seq.grid[x].light === 'undefined') {
             return false;
         }
-        //console.log(x)
+        console.log(x);
         if (seq.grid[x].light === '0,0,0') {
             seq.setLight(x, light.color);
         }
         else {
             seq.setLight(x, [0, 0, 0]);
         }
+        grid.state(x);
     }
     /**
      * Change all lights at all camera commands to a specific
@@ -413,7 +414,9 @@ class Grid {
         });
         $('.w2ui-msg-body .swatch').removeClass('default set');
         $(`.w2ui-msg-body .swatch[color="${current}"`).eq(0).addClass('default set');
-        $('#sequencer-cancel').on('click', this.swatchesElem.close);
+        $('#sequencer-cancel').on('click', function () {
+            grid.swatchesElem.close();
+        });
         $('#sequencer-changeall').on('click', function () {
             const doit = confirm('You sure you want to change all light settings?');
             const elem = $('.w2ui-msg-body .default');
@@ -427,12 +430,19 @@ class Grid {
                 gui.warn('Select Color', 'Please select a color to proceed.');
             }
         });
+        $('.w2ui-msg-body .swatch').on('click', function () {
+            var elem = $(this);
+            $('.w2ui-msg-body .swatch').removeClass('default set');
+            elem.addClass('default set');
+        });
         $('#sequencer-ok').on('click', function () {
-            var elem = $('.w2ui-msg-body .default'), rgb;
+            var elem = $('.w2ui-msg-body .default');
+            let rgb;
             if (elem.length > 0) {
-                rgb = elem.attr('color').split(',');
+                rgb = elem.attr('color').split(',').map(el => { return parseInt(el); });
                 seq.setLight(x, rgb);
                 light.color = rgb;
+                grid.state(x);
                 grid.swatchesElem.close();
             }
             else {
@@ -486,7 +496,7 @@ class Grid {
             const title = $(this).attr('title');
             let color;
             if (typeof color !== 'undefined') {
-                color = colorStr.split(',');
+                color = colorStr.split(',').map(el => { return parseInt(el); });
                 $('.w2ui-msg-body .swatch').removeClass('default set');
                 $('#light-swatches .swatch').removeClass('default set');
                 $(this).addClass('default set');

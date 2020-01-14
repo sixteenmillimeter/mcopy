@@ -19,7 +19,7 @@ class Sequence {
     }
     listener(event, arg) {
         let timeStr;
-        console.log(JSON.stringify(arg));
+        //console.log(JSON.stringify(arg))
         if (arg.start) {
             if (typeof arg.loop !== 'undefined' && typeof arg.step !== 'undefined') {
                 this.activeStep(arg.step);
