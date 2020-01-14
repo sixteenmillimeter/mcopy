@@ -61,7 +61,13 @@ module.exports = async function (arg : any) {
 			fileFormat.label = arg.label;
 		}
 		transport = createLogger({
-			format : format.simple(),
+			format : format.combine(
+	    		format.label({ label : arg.label || 'mcopy' }),
+				format.timestamp({
+					format: 'YYYY-MM-DD HH:mm:ss'
+				}),
+				format.printf((info : any ) => `${info.timestamp} [${info.label}] ${info.level}: ${info.message}`+(info.splat!==undefined?`${info.splat}`:" "))
+	  		),
 			transports: [
 				new (transports.Console)(consoleFormat),
 				new (transports.File)(fileFormat)

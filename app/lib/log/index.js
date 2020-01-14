@@ -60,7 +60,9 @@ module.exports = async function (arg) {
             fileFormat.label = arg.label;
         }
         transport = winston_1.createLogger({
-            format: winston_1.format.simple(),
+            format: winston_1.format.combine(winston_1.format.label({ label: arg.label || 'mcopy' }), winston_1.format.timestamp({
+                format: 'YYYY-MM-DD HH:mm:ss'
+            }), winston_1.format.printf((info) => `${info.timestamp} [${info.label}] ${info.level}: ${info.message}` + (info.splat !== undefined ? `${info.splat}` : " "))),
             transports: [
                 new (winston_1.transports.Console)(consoleFormat),
                 new (winston_1.transports.File)(fileFormat)
