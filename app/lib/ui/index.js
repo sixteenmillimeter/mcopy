@@ -136,8 +136,14 @@ gui.updateState = function () {
 	$('#seq_cam_count').val(cpos).change();
 	$('#seq_proj_count').val(ppos).change();
 
-	$('#seq_cam_count_2').val(c2pos).change();
-	$('#seq_proj_count_2').val(p2pos).change();
+	$('#seq_cam_count_2').val(cpos).change();
+	$('#seq_proj_count_2').val(ppos).change();
+
+	$('#seq_cam_2_count').val(c2pos).change();
+	$('#seq_proj_2_count').val(p2pos).change();
+
+	$('#seq_cam_2_count_2').val(c2pos).change();
+	$('#seq_proj_2_count_2').val(p2pos).change();
 };
 gui.spinnerCfg =  {
 	lines: 11, // The number of lines to draw
