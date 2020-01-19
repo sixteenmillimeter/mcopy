@@ -27,7 +27,7 @@ async function dependencies (platform : string )  {
 	let imoutput : ExecOutput;
 	let eogoutput : ExecOutput;
 
-	obj.ffmpeg = ffmpeg.path;
+	obj.ffmpeg = ffmpeg;
 
 	try {
 		imoutput = await exec('which convert');

@@ -54,7 +54,7 @@ gui.notify = function (title, message) {
 		});
 	})
 };
-gui.updateCam = function (t) {
+gui.updateCam = async function (t) {
 	'use strict';
 	const val = t.value;
 	let change;
@@ -62,7 +62,7 @@ gui.updateCam = function (t) {
 	if (parseInt(val) === cam.pos) { 
 		return false; 
 	}
-	change = gui.confirm(`Are you sure you want to set camera counter to ${val}?`);
+	change = await gui.confirm(`Are you sure you want to set camera counter to ${val}?`);
 
 	if (change) {
 		cam.pos = parseInt(val);
@@ -72,7 +72,7 @@ gui.updateCam = function (t) {
 		gui.counterFormat(t);
 	}
 };
-gui.updateCam2 = function (t) {
+gui.updateCam2 = async function (t) {
 	'use strict';
 	const val = t.value;
 	let change;
@@ -80,7 +80,7 @@ gui.updateCam2 = function (t) {
 	if (parseInt(val) === cam.pos) { 
 		return false; 
 	}
-	change = gui.confirm(`Are you sure you want to set second camera counter to ${val}?`);
+	change = await gui.confirm(`Are you sure you want to set second camera counter to ${val}?`);
 
 	if (change) {
 		cam.second.pos = parseInt(val);
@@ -90,14 +90,14 @@ gui.updateCam2 = function (t) {
 		gui.counterFormat(t);
 	}
 };
-gui.updateProj = function (t) {
+gui.updateProj = async function (t) {
 	'use strict';
 	const val = t.value;
 	let change;
 	if (parseInt(val) === proj.pos) { 
 		return false; 
 	}
-	change = gui.confirm(`Are you sure you want to set projector counter to ${val}?`);
+	change = await gui.confirm(`Are you sure you want to set projector counter to ${val}?`);
 	if (change) {
 		proj.pos = parseInt(val);
 		gui.updateState();
@@ -107,14 +107,14 @@ gui.updateProj = function (t) {
 	}
 	proj.setValue(t.value);
 };
-gui.updateProj2 = function (t) {
+gui.updateProj2 = async function (t) {
 	'use strict';
 	const val = t.value;
 	let change;
 	if (parseInt(val) === proj.second.pos) { 
 		return false; 
 	}
-	change = gui.confirm(`Are you sure you want to set second projector counter to ${val}?`);
+	change = await gui.confirm(`Are you sure you want to set second projector counter to ${val}?`);
 	if (change) {
 		proj.second.pos = parseInt(val);
 		gui.updateState();
@@ -199,7 +199,7 @@ gui.overlay = function (state) {
 	}
 };
 
-gui.info = function (title, message) {
+gui.info = async function (title, message) {
 	'use strict';
 	const config = {
 		type : 'info',
@@ -209,15 +209,15 @@ gui.info = function (title, message) {
 	};
 	return dialog.showMessageBox(config);
 };
-gui.confirm = function (message) {
+gui.confirm = async function (message) {
 	const config = {
 		buttons : ['Yes', 'Cancel'],
 		message
 	}
-	const res = dialog.showMessageBox(config);
-	return res === 0;
+	const res = await dialog.showMessageBox(config);
+	return res.response === 0;
 };
-gui.warn = function (title, message) {
+gui.warn = async function (title, message) {
 	'use strict';
 	const config = {
 		type : 'warning',

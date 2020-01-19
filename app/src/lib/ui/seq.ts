@@ -69,7 +69,6 @@ class Sequence {
 				gui.overlay(false);
 				gui.spinner(false);
 				log.info('Sequence stopped', 'SERIAL', true);
-				log.info(typeof arg.ms)
 				timeStr = ( arg.ms < 2000 ) ? `${arg.ms}ms` : humanizeDuration(arg.ms);
 				gui.notify(`SEQUENCE`, `Sequence finished in ${timeStr}`);
 			}

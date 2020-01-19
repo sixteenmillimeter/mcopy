@@ -122,37 +122,47 @@ class FilmOut {
 		this.state.display = id;
 		ipcRenderer.send('display', { display : id });
 	}
-	selectFile () {
+	async selectFile () {
 		const elem : any = $('#digital');
-		dialog.showOpenDialog({
+		const options : any = {
 			title : `Select video or image sequence`,
-	        properties : [`openFile`], // openDirectory, multiSelection, openFile
-	        defaultPath: 'c:/',
-	        filters : [
-	            {
-	                name: 'All Files',
-	                extensions: ['*']
-	            },
-	        ]
-	    }, (files : string[]) => {
-	    	if (!files) return false;
-	    	let valid : boolean = false;
-	    	let pathStr : string = files[0];
-	    	let displayName : string;
-	    	let ext : string;
-			if (pathStr && pathStr !== '') {
-				ext = path.extname(pathStr.toLowerCase());
-				valid = this.extensions.indexOf(ext) === -1 ? false : true;
-				if (!valid) {
-					return false;
-				}
-				log.info(`Selected video ${pathStr.split('/').pop()}`, 'DIGITAL', true);
-				elem.attr('data-file', pathStr);
-				displayName = pathStr.split('/').pop();
-				elem.val(displayName);
-				$('#filmout_file').val(displayName);
+			properties : [`openFile`], // openDirectory, multiSelection, openFile
+			defaultPath: 'c:/',
+			filters : [
+				{
+					name: 'All Files',
+					extensions: ['*']
+				},
+			]
+		};
+		let files :  any;
+
+		try {
+			files = await dialog.showOpenDialog(options)
+		} catch (err) {
+			log.error(err);
+			return false
+		}
+
+    	if (!files) return false;
+    	let valid : boolean = false;
+    	let pathStr : string = files.filePaths[0];
+    	let displayName : string;
+    	let ext : string;
+
+		if (pathStr && pathStr !== '') {
+			ext = path.extname(pathStr.toLowerCase());
+			valid = this.extensions.indexOf(ext) === -1 ? false : true;
+			log.info(pathStr)
+			if (!valid) {
+				return false;
 			}
-	    })
+			log.info(`Selected video ${pathStr.split('/').pop()}`, 'DIGITAL', true);
+			elem.attr('data-file', pathStr);
+			displayName = pathStr.split('/').pop();
+			elem.val(displayName);
+			$('#filmout_file').val(displayName);
+		}
 	}
 	useFile () {
 		const elem : any = $('#digital');

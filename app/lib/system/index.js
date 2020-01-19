@@ -19,7 +19,7 @@ async function dependencies(platform) {
     let ffoutput;
     let imoutput;
     let eogoutput;
-    obj.ffmpeg = ffmpeg.path;
+    obj.ffmpeg = ffmpeg;
     try {
         imoutput = await exec_1.exec('which convert');
     }

@@ -374,7 +374,6 @@ class Grid {
         if (typeof seq.grid[x].light === 'undefined') {
             return false;
         }
-        console.log(x);
         if (seq.grid[x].light === '0,0,0') {
             seq.setLight(x, light.color);
         }
