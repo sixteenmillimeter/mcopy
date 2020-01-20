@@ -52,7 +52,7 @@ gui.notify = function (title, message) {
 				}
 				return resolve(true);
 		});
-	})
+	});
 };
 gui.updateCam = async function (t) {
 	'use strict';

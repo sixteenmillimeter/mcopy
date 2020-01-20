@@ -162,6 +162,8 @@ class FilmOut {
 			displayName = pathStr.split('/').pop();
 			elem.val(displayName);
 			$('#filmout_file').val(displayName);
+
+			this.useFile();
 		}
 	}
 	useFile () {
@@ -188,6 +190,7 @@ class FilmOut {
 			$('#projector_type_digital').prop('checked', 'checked');
 			$('#digital').removeClass('active');
 		}
+		//cancel video
 	}
 	onFilmout (evt : any, args : any) {
 		let state : any;

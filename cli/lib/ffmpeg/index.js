@@ -14,6 +14,7 @@ class FFMPEG {
     constructor(sys) {
         this.id = 'ffmpeg';
         this.bin = sys.deps.ffmpeg;
+        this.convert = sys.deps.convert;
         this.TMPDIR = path_1.join(sys.tmp, 'mcopy_digital');
         this.init();
     }
@@ -75,7 +76,7 @@ class FFMPEG {
         });
         //
         cmd = `${this.bin} -y -i "${video}" -vf "select='gte(n\\,${frameNum})'${scale}" -vframes 1 -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"`;
-        cmd2 = `convert "${tmpoutput}" -resize ${w}x${h} -size ${w}x${h} xc:"rgb(${rgb[0]},${rgb[1]},${rgb[2]})" +swap -compose Darken -composite "${tmpoutput}"`;
+        cmd2 = `${this.convert} "${tmpoutput}" -resize ${w}x${h} -size ${w}x${h} xc:"rgb(${rgb[0]},${rgb[1]},${rgb[2]})" +swap -compose Darken -composite "${tmpoutput}"`;
         //ffmpeg -i "${video}" -ss 00:00:07.000 -vframes 1 "export-${time}.jpg"
         //ffmpeg -i "${video}" -compression_algo raw -pix_fmt rgb24 "export-%05d.tiff"
         //-vf "select=gte(n\,${frame})" -compression_algo raw -pix_fmt rgb24 "export-${padded}.png"
@@ -88,7 +89,7 @@ class FFMPEG {
         }
         if (output && output.stdout)
             this.log.info(`"${output.stdout}"`);
-        if (rgb[0] !== 255 || rgb[1] !== 255 || rgb[2] !== 255) {
+        if (this.convert && (rgb[0] !== 255 || rgb[1] !== 255 || rgb[2] !== 255)) {
             try {
                 this.log.info(cmd2);
                 output2 = await exec_1.exec(cmd2);

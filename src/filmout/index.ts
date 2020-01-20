@@ -202,6 +202,7 @@ class FilmOut {
 		this.state.enabled = true;
 		return await this.ui.send(this.id, { valid : true, state : JSON.stringify(this.state) });
 	}
+
 	/**
 	 * Return true if gif is animated, false if it is a still
 	 *
