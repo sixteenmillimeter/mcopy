@@ -22,12 +22,14 @@ import { exec } from 'exec';
 
 async function dependencies (platform : string )  {
 	let obj : any = {};
-	let ffmpeg : any = require('ffmpeg-static')
+	let ffmpeg : any = require('ffmpeg-static');
+	let ffprobe : any = require('ffprobe-static');
 	let ffoutput : ExecOutput;
 	let imoutput : ExecOutput;
 	let eogoutput : ExecOutput;
 
 	obj.ffmpeg = ffmpeg;
+	obj.ffprobe = ffprobe.path;
 
 	try {
 		imoutput = await exec('which convert');

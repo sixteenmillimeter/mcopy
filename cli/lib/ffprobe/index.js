@@ -8,7 +8,7 @@ const exec_1 = require("exec");
 //const exit = require('exit');
 class FFPROBE {
     constructor(sys) {
-        this.system = sys;
+        this.bin = sys.deps.ffprobe;
     }
     /**
      * Get info on a video in json format. Use for filmout.
@@ -18,7 +18,7 @@ class FFPROBE {
      * @returns {object} Video info in an object
      **/
     async info(video) {
-        const cmd = `ffprobe -v quiet -print_format json -show_format -show_streams "${video}"`;
+        const cmd = `${this.bin} -v quiet -print_format json -show_format -show_streams "${video}"`;
         let fileExists;
         let raw;
         let json;

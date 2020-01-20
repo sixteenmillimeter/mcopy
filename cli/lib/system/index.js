@@ -16,10 +16,12 @@ const exec_1 = require("exec");
 async function dependencies(platform) {
     let obj = {};
     let ffmpeg = require('ffmpeg-static');
+    let ffprobe = require('ffprobe-static');
     let ffoutput;
     let imoutput;
     let eogoutput;
     obj.ffmpeg = ffmpeg;
+    obj.ffprobe = ffprobe.path;
     try {
         imoutput = await exec_1.exec('which convert');
     }

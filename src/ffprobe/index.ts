@@ -9,10 +9,10 @@ import { exec } from 'exec';
 //const exit = require('exit');
 
 class FFPROBE {
-	private system : any;
+	private bin : string;
 	private log : any;
 	constructor (sys : any) {
-		this.system = sys;
+		this.bin = sys.deps.ffprobe;
 	}
 	/**
 	 * Get info on a video in json format. Use for filmout.
@@ -22,7 +22,7 @@ class FFPROBE {
 	 * @returns {object} Video info in an object
 	 **/
 	public async info (video : string) {
-		const cmd : string = `ffprobe -v quiet -print_format json -show_format -show_streams "${video}"`
+		const cmd : string = `${this.bin} -v quiet -print_format json -show_format -show_streams "${video}"`
 		let fileExists : boolean;
 		let raw : any;
 		let json : any;
