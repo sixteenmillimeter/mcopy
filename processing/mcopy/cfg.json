@@ -1,5 +1,5 @@
 {
-  "version": "1.4.21",
+  "version": "1.5.0",
   "ext_port": 1111,
   "profiles": {
     "mcopy": {
@@ -17,7 +17,8 @@
       "black": {
         "before": 0,
         "after": 0
-      }
+      },
+      "light": false
     },
     "jk103": {
       "label": "JK103",
@@ -52,7 +53,8 @@
       "black": {
         "before": 250,
         "after": 250
-      }
+      },
+      "light": false
     },
     "intval3": {
       "label": "INTVAL3",
@@ -60,7 +62,8 @@
         "time": 630,
         "delay": 50,
         "momentary": 0
-      }
+      },
+      "light": false
     },
     "jk_mono": {
       "label": "MONO's JK",
@@ -76,6 +79,15 @@
       },
       "light": false,
       "projector_second": true
+    },
+    "oxberry": {
+      "label": "Oxberry",
+      "cam": {
+        "time": 550,
+        "delay": 50,
+        "momentary": 130
+      },
+      "light": false
     }
   },
   "cmd": {

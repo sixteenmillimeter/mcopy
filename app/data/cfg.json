@@ -1,5 +1,5 @@
 {
-  "version": "1.4.21",
+  "version": "1.5.0",
   "ext_port": 1111,
   "profiles": {
     "mcopy": {
@@ -79,6 +79,15 @@
       },
       "light": false,
       "projector_second": true
+    },
+    "oxberry": {
+      "label": "Oxberry",
+      "cam": {
+        "time": 550,
+        "delay": 50,
+        "momentary": 130
+      },
+      "light": false
     }
   },
   "cmd": {

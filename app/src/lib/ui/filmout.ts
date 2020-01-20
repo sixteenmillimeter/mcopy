@@ -192,6 +192,7 @@ class FilmOut {
 		}
 		//cancel video
 	}
+	//callback after
 	onFilmout (evt : any, args : any) {
 		let state : any;
 		let color : number[] = [255, 255, 255];
@@ -213,7 +214,7 @@ class FilmOut {
 			grid.state(1);
 
 			if (light.disabled) {
-				light.enable();
+				//light.enable();
 			}
 
 			this.state.frame = 0;

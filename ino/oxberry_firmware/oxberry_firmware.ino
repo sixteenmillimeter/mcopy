@@ -1,10 +1,10 @@
 /**
  * This is a customized firmware originally designed to
- * control the Oxberry camera at the . This uses an 8 Solid State Relay
+ * control the Oxberry camera at the . This uses a single 5VDC relay
  * board wired into the "EXPOSE" trigger switch of an Oxberry control box.
  * 
  * Pins 
- * 07 - CH4 - 
+ * 09 - Trigger for relay
  */
 
 boolean debug_state = false;
