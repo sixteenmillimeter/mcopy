@@ -78,8 +78,8 @@ class FFPROBE {
 	 **/
 	public async frames (video : string) {
 		const ext : string = extname(video.toLowerCase());
-		let cmd : string = `ffprobe -v error -select_streams v:0 -show_entries stream=nb_frames -of default=nokey=1:noprint_wrappers=1 "${video}"`;
-		let backup_cmd : string = `ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 "${video}"`;
+		let cmd : string = `${this.bin} -v error -select_streams v:0 -show_entries stream=nb_frames -of default=nokey=1:noprint_wrappers=1 "${video}"`;
+		let backup_cmd : string = `${this.bin} -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 "${video}"`;
 		let gif_cmd : string = `identify -format "%n\n" "${video}" | head -1`
 		let fileExists : boolean;
 		let raw : any;

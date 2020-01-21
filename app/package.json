@@ -1,6 +1,6 @@
 {
   "name": "mcopy-app",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "GUI for the mcopy small gauge film optical printer platform",
   "main": "main.js",
   "scripts": {
