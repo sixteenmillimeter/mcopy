@@ -6,14 +6,13 @@
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
 const electron = require('electron')
-const { Menu, MenuItem, ipcMain, BrowserWindow, app } = electron
+const { Menu, BrowserWindow, app } = electron
 const { EventEmitter } = require('events')
 const { join } = require('path')
 
 const ee = new EventEmitter()
 const settings = require('settings')
 const system = require('system')
-const Server = require('server')
 const { delay } = require('delay')
 
 //Objects
@@ -22,9 +21,7 @@ const mcopy = {}
 let SYSTEM;
 let log;
 let mainWindow;
-let mscript;
 let arduino;
-let server;
 let menu;
 let display;
 let ffmpeg;
@@ -89,7 +86,6 @@ var init = async function () {
 	ffmpeg = require('ffmpeg')(SYSTEM)
 	ffprobe = require('ffprobe')(SYSTEM)
 	arduino = require('arduino')(cfg, ee)
-	mscript = require('mscript')
 
 	dev = require('devices')(arduino, settings, mainWindow)
 

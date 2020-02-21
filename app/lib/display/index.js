@@ -20,6 +20,7 @@ class WebView {
     constructor(platform, display) {
         this.opened = false;
         this.showing = false;
+        this.loadWait = {};
         const prefs = {
             webPreferences: {
                 nodeIntegration: true,
@@ -47,6 +48,8 @@ class WebView {
         //this.digitalWindow.hide();
         this.platform = platform;
         this.display = display;
+        this.ipc = require('electron').ipcMain;
+        this.ipc.on('display_load', this.onLoad.bind(this));
     }
     async open() {
         this.digitalWindow.show();
@@ -70,8 +73,14 @@ class WebView {
             console.error(err);
         }
         this.showing = true;
-        await delay_1.delay(200);
-        return true;
+        return new Promise(function (resolve) {
+            this.loadWait[src] = resolve;
+        }.bind(this));
+    }
+    onLoad(evt, arg) {
+        console.dir(arg);
+        this.loadWait[arg.src]();
+        delete this.loadWait[arg.src];
     }
     async focus() {
         if (!this.digitalWindow) {

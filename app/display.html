@@ -47,17 +47,20 @@
 	<script>
 		'use strict';
 		const { remote, ipcRenderer } = require('electron')
-		
+		let imgTmp; 
 		async function setImage (src) {
 			return new Promise(async (resolve, reject) => {
-				//let img = new Image()
+				imgTmp = new Image()
 				let img = document.getElementById('img')
 				let body = document.querySelector('body')
 				if (body.classList.contains('meter')) {
 					body.classList.remove('meter')
 				}
-
-				img.style.backgroundImage = `url('${src}')`;
+				imgTmp.onload = function () {
+					img.style.backgroundImage = `url('${src}')`;
+					return resolve(src);
+				};
+				imgTmp.src = src;
 			});
 		}
 		async function onMeter () {
@@ -104,7 +107,7 @@
 			//console.log(`o: ${opp}`)
       
 			for (let i = 0; i < count; i++) {
-				  ctx.beginPath()
+				ctx.beginPath()
 			    ctx.moveTo(w / 2, h / 2)
 			    ctx.lineTo((w / 2) + opp, longest)
 			    ctx.lineTo((w / 2) - opp, longest)
@@ -210,6 +213,7 @@
 				} catch (err) {
 					console.error(err)
 				}
+				ipcRenderer.send('display_load', { src : arg.src });
 			}
 			return event.returnValue = true
 		}

@@ -8,6 +8,7 @@
 import spawn = require('spawn');
 import { join as pathJoin } from 'path';
 import { delay } from 'delay';
+import { IpcMain } from 'electron';
 
 const { BrowserWindow } = require('electron');
 
@@ -26,6 +27,8 @@ class WebView {
 	public showing : boolean = false;
 	private platform : string;
 	public display : any;
+	private loadWait : any = {};
+	private ipc : any;
 
 	constructor (platform : string, display : any) {
 		const prefs : any = {
@@ -55,6 +58,10 @@ class WebView {
 		//this.digitalWindow.hide();
 		this.platform = platform;
 		this.display = display;
+
+		this.ipc = require('electron').ipcMain;
+
+		this.ipc.on('display_load', this.onLoad.bind(this));
 	}
 	async open () {
 		this.digitalWindow.show();
@@ -77,8 +84,15 @@ class WebView {
 			console.error(err);
 		}
 		this.showing = true;
-		await delay(200);
-		return true;
+
+		return new Promise(function (resolve : Function) {
+			this.loadWait[src] = resolve;
+		}.bind(this));
+	}
+
+	onLoad (evt : Event, arg : any) {
+		this.loadWait[arg.src]();
+		delete this.loadWait[arg.src];
 	}
 	async focus () {
 		if (!this.digitalWindow) {
