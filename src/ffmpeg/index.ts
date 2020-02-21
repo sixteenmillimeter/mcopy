@@ -49,7 +49,7 @@ class FFMPEG {
 	private padded_frame (i : number) {
 		let len = (i + '').length;
 		let str = i + '';
-		for (let x = 0; x < 5 - len; x++) {
+		for (let x = 0; x < 8 - len; x++) {
 			str = '0' + str;
 		}
 		return str;
@@ -140,7 +140,8 @@ class FFMPEG {
 			ext = 'png';
 		//}
 
-		tmpoutput = join(tmppath, `export-%05d.${ext}`);
+		tmpoutput = join(tmppath, `export-%08d.${ext}`);
+		
 		try {
 			await mkdir(tmppath);
 		} catch (err) {
@@ -190,7 +191,7 @@ class FFMPEG {
 	}
 
 	/**
-	 * Delete all frames in temp directory.
+	 * Deletes all frames in temp directory.
 	 *
 	 **/
 	public async clearAll () {
@@ -214,7 +215,7 @@ class FFMPEG {
 
 	/**
 	 * Checks if mcopy temp directory exists. If it doesn't,
-	 * create it.
+	 * creates it.
 	 **/
 	private async checkDir () {
 		let fileExists : boolean;

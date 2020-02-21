@@ -11,7 +11,7 @@ const { BrowserWindow } = require('electron');
 function padded_frame(i) {
     let len = (i + '').length;
     let str = i + '';
-    for (let x = 0; x < 5 - len; x++) {
+    for (let x = 0; x < 8 - len; x++) {
         str = '0' + str;
     }
     return str;

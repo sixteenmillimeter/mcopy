@@ -8,14 +8,13 @@
 import spawn = require('spawn');
 import { join as pathJoin } from 'path';
 import { delay } from 'delay';
-import { exec } from 'exec';
 
 const { BrowserWindow } = require('electron');
 
 function padded_frame (i : number) {
 	let len = (i + '').length;
 	let str = i + '';
-	for (let x = 0; x < 5 - len; x++) {
+	for (let x = 0; x < 8 - len; x++) {
 		str = '0' + str;
 	}
 	return str;
