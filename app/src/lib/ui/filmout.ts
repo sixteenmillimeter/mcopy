@@ -167,7 +167,7 @@ class FilmOut {
 			this.useFile();
 		}
 	}
-	useFile () {
+	async useFile () {
 		const elem : any = $('#digital');
 		const filePath : string = elem.attr('data-file');
 		const fileName : string = elem.val();
@@ -178,7 +178,7 @@ class FilmOut {
 		};
 
 		if (filePath && filePath !== '') {
-			proceed = confirm(`Are you sure you want to use ${fileName}?`);
+			proceed = await gui.confirm(`Are you sure you want to use ${fileName}?`);
 		} else {
 			this.selectFile();
 		}
@@ -249,11 +249,11 @@ class FilmOut {
 		elem[0].style.backgroundImage = `url('${args.path}')`;
 		elem.addClass('on');
 	}
-	preExport () {
+	async preExport () {
 		let proceed = false;
 
 		if (this.state.path && this.state.path !== '') {
-			proceed = confirm(`Export all frames for ${this.state.name}? This may take a while, but will allow filmout sequences to run faster.`);
+			proceed = await gui.confirm(`Export all frames for ${this.state.name}? This may take a while, but will allow filmout sequences to run faster.`);
 		}
 		
 		if (proceed) {

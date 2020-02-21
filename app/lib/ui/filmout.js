@@ -164,30 +164,32 @@ class FilmOut {
         });
     }
     useFile() {
-        const elem = $('#digital');
-        const filePath = elem.attr('data-file');
-        const fileName = elem.val();
-        let proceed = false;
-        let obj = {
-            path: filePath,
-            fileName
-        };
-        if (filePath && filePath !== '') {
-            proceed = confirm(`Are you sure you want to use ${fileName}?`);
-        }
-        else {
-            this.selectFile();
-        }
-        if (proceed) {
-            gui.overlay(true);
-            gui.spinner(true, `Getting info about ${fileName}`);
-            ipcRenderer.send('filmout', obj);
-        }
-        else {
-            $('#projector_type_digital').prop('checked', 'checked');
-            $('#digital').removeClass('active');
-        }
-        //cancel video
+        return __awaiter(this, void 0, void 0, function* () {
+            const elem = $('#digital');
+            const filePath = elem.attr('data-file');
+            const fileName = elem.val();
+            let proceed = false;
+            let obj = {
+                path: filePath,
+                fileName
+            };
+            if (filePath && filePath !== '') {
+                proceed = yield gui.confirm(`Are you sure you want to use ${fileName}?`);
+            }
+            else {
+                this.selectFile();
+            }
+            if (proceed) {
+                gui.overlay(true);
+                gui.spinner(true, `Getting info about ${fileName}`);
+                ipcRenderer.send('filmout', obj);
+            }
+            else {
+                $('#projector_type_digital').prop('checked', 'checked');
+                $('#digital').removeClass('active');
+            }
+            //cancel video
+        });
     }
     //callback after
     onFilmout(evt, args) {
@@ -240,15 +242,17 @@ class FilmOut {
         elem.addClass('on');
     }
     preExport() {
-        let proceed = false;
-        if (this.state.path && this.state.path !== '') {
-            proceed = confirm(`Export all frames for ${this.state.name}? This may take a while, but will allow filmout sequences to run faster.`);
-        }
-        if (proceed) {
-            gui.overlay(true);
-            gui.spinner(true, `Exporting frames for ${this.state.name}`);
-            ipcRenderer.send('pre_export', {});
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+            let proceed = false;
+            if (this.state.path && this.state.path !== '') {
+                proceed = yield gui.confirm(`Export all frames for ${this.state.name}? This may take a while, but will allow filmout sequences to run faster.`);
+            }
+            if (proceed) {
+                gui.overlay(true);
+                gui.spinner(true, `Exporting frames for ${this.state.name}`);
+                ipcRenderer.send('pre_export', {});
+            }
+        });
     }
     onPreExport(evt, args) {
         log.info('onPreExport');
