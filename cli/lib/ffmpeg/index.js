@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+/** @module ffmpeg **/
 const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
 const exec_1 = require("exec");
@@ -55,28 +56,35 @@ class FFMPEG {
         const w = state.info.width;
         const h = state.info.height;
         const padded = this.padded_frame(frameNum);
-        let ext = 'tif';
-        let rgb = light.color;
+        let ext = 'png';
+        //let rgb : any[] = light.color;
         let tmpoutput;
         let cmd;
         let output;
-        let cmd2;
-        let output2;
+        //let cmd2 : string;
+        //let output2 : any;
+        let fileExists = false;
         let scale = '';
         if (w && h) {
             scale = `,scale=${w}:${h}`;
         }
-        //console.dir(state)
-        //if (system.platform !== 'nix') {
-        ext = 'png';
-        //}
-        tmpoutput = path_1.join(this.TMPDIR, `export-${padded}.${ext}`);
-        rgb = rgb.map((e) => {
-            return parseInt(e);
-        });
+        tmpoutput = path_1.join(this.TMPDIR, `${state.hash}-export-${padded}.${ext}`);
+        try {
+            fileExists = await fs_extra_1.exists(tmpoutput);
+        }
+        catch (err) {
+            //
+        }
+        if (fileExists) {
+            this.log.info(`File ${tmpoutput} exists`);
+            return tmpoutput;
+        }
+        //rgb = rgb.map((e : string) => {
+        //	return parseInt(e);
+        //});
         //
-        cmd = `${this.bin} -y -i "${video}" -vf "select='gte(n\\,${frameNum})'${scale}" -vframes 1 -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"`;
-        cmd2 = `${this.convert} "${tmpoutput}" -resize ${w}x${h} -size ${w}x${h} xc:"rgb(${rgb[0]},${rgb[1]},${rgb[2]})" +swap -compose Darken -composite "${tmpoutput}"`;
+        cmd = `${this.bin} -y -i "${video}" -vf "select='gte(n\\,${frameNum})'${scale}" -vframes 1 -compression_algo raw -pix_fmt rgb24 -crf 0 "${tmpoutput}"`;
+        //cmd2 = `${this.convert} "${tmpoutput}" -resize ${w}x${h} -size ${w}x${h} xc:"rgb(${rgb[0]},${rgb[1]},${rgb[2]})" +swap -compose Darken -composite "${tmpoutput}"`;
         //ffmpeg -i "${video}" -ss 00:00:07.000 -vframes 1 "export-${time}.jpg"
         //ffmpeg -i "${video}" -compression_algo raw -pix_fmt rgb24 "export-%05d.tiff"
         //-vf "select=gte(n\,${frame})" -compression_algo raw -pix_fmt rgb24 "export-${padded}.png"
@@ -89,17 +97,16 @@ class FFMPEG {
         }
         if (output && output.stdout)
             this.log.info(`"${output.stdout}"`);
-        if (this.convert && (rgb[0] !== 255 || rgb[1] !== 255 || rgb[2] !== 255)) {
+        /*if (this.convert && (rgb[0] !== 255 || rgb[1] !== 255 || rgb[2] !== 255)) {
             try {
                 this.log.info(cmd2);
-                output2 = await exec_1.exec(cmd2);
-            }
-            catch (err) {
+                output2 = await exec(cmd2);
+            } catch (err) {
                 this.log.error(err);
             }
         }
-        if (output2 && output2.stdout)
-            this.log.info(`"${output2.stdout}"`);
+        
+        if (output2 && output2.stdout) this.log.info(`"${output2.stdout}"`);*/
         return tmpoutput;
     }
     /**
@@ -111,14 +118,20 @@ class FFMPEG {
      *
      * @returns {?}
      **/
-    async frames(video, obj) {
+    async frames(state) {
+        const video = state.path;
+        const w = state.info.width;
+        const h = state.info.height;
         const tmppath = this.TMPDIR;
-        let ext = 'tif';
-        let tmpoutput;
-        //if (system.platform !== 'nix') {
-        ext = 'png';
-        //}
-        tmpoutput = path_1.join(tmppath, `export-%08d.${ext}`);
+        let ext = 'png';
+        let tmpoutput = path_1.join(tmppath, `${state.hash}-export-%08d.${ext}`);
+        let cmd;
+        let output;
+        let scale = '';
+        if (w && h) {
+            scale = `scale=${w}:${h}`;
+        }
+        cmd = `${this.bin} -y -i "${video}" -vf "${scale}" -compression_algo raw -pix_fmt rgb24 -crf 0 "${tmpoutput}"`;
         try {
             await fs_extra_1.mkdir(tmppath);
         }
@@ -126,6 +139,15 @@ class FFMPEG {
             this.log.error(err);
         }
         //ffmpeg -i "${video}" -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"
+        try {
+            this.log.info(cmd);
+            output = await exec_1.exec(cmd);
+        }
+        catch (err) {
+            this.log.error(err);
+            throw err;
+        }
+        return true;
     }
     /**
      * Clears a specific frame from the tmp directory
@@ -134,24 +156,19 @@ class FFMPEG {
      *
      * @returns {boolean} True if successful, false if not
      **/
-    async clear(frame) {
-        const padded = this.padded_frame(frame);
-        let ext = 'tif';
+    async clear(state) {
+        const padded = this.padded_frame(state.frame);
+        let ext = 'png';
         let tmppath;
-        let tmpoutput;
-        let cmd;
         let fileExists;
-        //if (system.platform !== 'nix') {
-        ext = 'png';
-        //}
-        tmppath = path_1.join(this.TMPDIR, `export-${padded}.${ext}`);
+        tmppath = path_1.join(this.TMPDIR, `${state.hash}-export-${padded}.${ext}`);
         try {
             fileExists = await fs_extra_1.exists(tmppath);
         }
         catch (err) {
             this.log.error(err);
         }
-        if (!fs_extra_1.exists)
+        if (!fileExists)
             return false;
         try {
             await fs_extra_1.unlink(tmppath);
@@ -175,6 +192,12 @@ class FFMPEG {
         catch (err) {
             this.log.error(err);
         }
+        files = files.filter((file) => {
+            if (file.indexOf('-export-') !== -1) {
+                return true;
+            }
+            return false;
+        });
         if (files) {
             files.forEach(async (file, index) => {
                 try {

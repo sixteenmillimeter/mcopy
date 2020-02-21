@@ -4,18 +4,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @module display
  * Provides features for displaying a full screen display of images for the digital module.
  **/
-const spawn = require("spawn");
 const path_1 = require("path");
 const delay_1 = require("delay");
 const { BrowserWindow } = require('electron');
-function padded_frame(i) {
-    let len = (i + '').length;
-    let str = i + '';
-    for (let x = 0; x < 8 - len; x++) {
-        str = '0' + str;
-    }
-    return str;
-}
 class WebView {
     constructor(platform, display) {
         this.opened = false;
@@ -78,9 +69,10 @@ class WebView {
         }.bind(this));
     }
     onLoad(evt, arg) {
-        console.dir(arg);
-        this.loadWait[arg.src]();
-        delete this.loadWait[arg.src];
+        if (this.loadWait[arg.src]) {
+            this.loadWait[arg.src]();
+            delete this.loadWait[arg.src];
+        }
     }
     async focus() {
         if (!this.digitalWindow) {
@@ -139,28 +131,6 @@ class WebView {
         return true;
     }
 }
-class EOG {
-    constructor() {
-    }
-    open() {
-        this.hide();
-    }
-    async show(src) {
-        //timeout 3 eog --fullscreen ${src}
-        this.cp = spawn('eog', ['--fullscreen', src]);
-        await delay_1.delay(200);
-        return true;
-    }
-    hide() {
-        if (this.cp) {
-            this.cp.kill();
-            this.cp = null;
-        }
-    }
-    close() {
-        this.hide();
-    }
-}
 class Display {
     constructor(sys) {
         this.platform = sys.platform;
@@ -180,12 +150,8 @@ class Display {
             await this.wv.open();
         }
     }
-    async show(frame) {
-        let padded = padded_frame(frame);
-        let ext = 'png';
-        let tmppath;
-        tmppath = path_1.join(this.tmpdir, `export-${padded}.${ext}`);
-        await this.wv.show(tmppath);
+    async show(src) {
+        await this.wv.show(src);
     }
     async showPath(pathStr) {
         return await this.wv.show(pathStr);

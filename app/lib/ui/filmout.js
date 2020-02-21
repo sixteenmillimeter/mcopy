@@ -62,6 +62,7 @@ class FilmOut {
         ipcRenderer.on(this.id, this.onFilmout.bind(this));
         ipcRenderer.on('system', this.onSystem.bind(this));
         ipcRenderer.on('preview_frame', this.onFrame.bind(this));
+        ipcRenderer.on('pre_export', this.onPreExport.bind(this));
     }
     onSystem(evt, args) {
         let option;
@@ -153,7 +154,7 @@ class FilmOut {
                 if (!valid) {
                     return false;
                 }
-                log.info(`Selected video ${pathStr.split('/').pop()}`, 'DIGITAL', true);
+                log.info(`Selected video ${pathStr.split('/').pop()}`, 'FILMOUT', true);
                 elem.attr('data-file', pathStr);
                 displayName = pathStr.split('/').pop();
                 elem.val(displayName);
@@ -198,7 +199,7 @@ class FilmOut {
             state = JSON.parse(args.state);
             $('#digital').addClass('active');
             $('#projector_type_digital').prop('checked', 'checked');
-            gui.notify('DEVICES', `Using video ${state.fileName}`);
+            gui.notify('FILMOUT', `Using video ${state.fileName}`);
             seq.set(0, 'PF');
             grid.state(0);
             seq.set(1, 'CF');
@@ -207,17 +208,20 @@ class FilmOut {
             if (light.disabled) {
                 //light.enable();
             }
+            console.dir(state);
             this.state.frame = 0;
             this.state.frames = state.frames;
             this.state.width = state.info.width;
             this.state.height = state.info.height;
             this.state.name = state.fileName;
+            this.state.path = state.path;
             $('#seq_loop').val(`${state.frames - 1}`).trigger('change');
             $('#filmout_stats_video_name').text(state.fileName);
             $('#filmout_stats_video_size').text(`${state.info.width} x ${state.info.height}`);
             $('#filmout_stats_video_frames').text(`${state.frames} frames`);
             gui.updateState();
             this.previewFrame();
+            this.preExport();
         }
         else {
             $('#projector_type_digital').prop('checked', 'checked');
@@ -234,6 +238,29 @@ class FilmOut {
         const elem = $('#filmout');
         elem[0].style.backgroundImage = `url('${args.path}')`;
         elem.addClass('on');
+    }
+    preExport() {
+        let proceed = false;
+        if (this.state.path && this.state.path !== '') {
+            proceed = confirm(`Export all frames for ${this.state.name}? This may take a while, but will allow filmout sequences to run faster.`);
+        }
+        if (proceed) {
+            gui.overlay(true);
+            gui.spinner(true, `Exporting frames for ${this.state.name}`);
+            ipcRenderer.send('pre_export', {});
+        }
+    }
+    onPreExport(evt, args) {
+        log.info('onPreExport');
+        if (args.completed) {
+            gui.notify('FILMOUT', `Exported frames for ${this.state.name}`);
+            log.info(`Exported frames for ${this.state.name}`, 'FILMOUT', true);
+        }
+        else {
+            log.error(args.err);
+        }
+        gui.overlay(false);
+        gui.spinner(false);
     }
     advance() {
         this.state.frame++;

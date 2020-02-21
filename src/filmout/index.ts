@@ -5,6 +5,7 @@ import { default as  animated } from 'animated-gif-detector';
 import { extname } from 'path';
 import { readFile } from 'fs-extra';
 import { delay } from 'delay';
+import { createHash } from 'crypto';
 
 /**
  * @module FilmOut
@@ -71,7 +72,16 @@ class FilmOut {
 	 	this.ipc.on('filmout_close', this.close.bind(this));
 	 	this.ipc.on('preview', this.preview.bind(this));
 	 	this.ipc.on('preview_frame', this.previewFrame.bind(this));
-	 	this.ipc.on('display', this.onDisplay.bind(this));
+		this.ipc.on('display', this.onDisplay.bind(this));
+		this.ipc.on('pre_export', this.onPreExport.bind(this)); 
+	 }
+	 /**
+	  * Create a hash of a string.
+	  * 
+	  * @param {string} data Data to produce hash of
+	  */
+	 private hash (data : string) {
+		return createHash('sha1').update(data).digest('hex');
 	 }
 	/**
 	 * Sets filmout direction.
@@ -102,21 +112,17 @@ class FilmOut {
 	 /**
 	 * Begin the process of exporting single frames from the video for display.
 	 **/
-	async start () {
+	async start () {	
+		let path;	
+
 		try {
-			await this.ffmpeg.clearAll();
+			path = await this.ffmpeg.frame(this.state, this.light.state);
 		} catch (err) {
 			this.log.error(err, 'FILMOUT', true, true);
 			throw err;
 		}
-		
-		try {
-			await this.ffmpeg.frame(this.state, this.light.state);
-		} catch (err) {
-			this.log.error(err, 'FILMOUT', true, true);
-			throw err;
-		}
-		await this.display.show(this.state.frame);
+
+		await this.display.show(path);
 		await delay(20);
 	}
 	/**
@@ -161,6 +167,13 @@ class FilmOut {
 			return false;
 		}
 
+		try {
+			await this.ffmpeg.clearAll();
+		} catch (err) {
+			this.log.error(err, 'FILMOUT', true, true);
+			throw err;
+		}
+
 		if (this.state.still) {
 			try {
 				info = await this.stillInfo(arg.path);
@@ -196,11 +209,32 @@ class FilmOut {
 		this.state.fileName = arg.fileName;
 		this.state.frames = frames;
 		this.state.info = info;
+		this.state.hash = this.hash(arg.path);
 
 		this.log.info(`Opened ${this.state.fileName}`, 'FILMOUT', true, true);
 		this.log.info(`Frames : ${frames}`, 'FILMOUT', true, true);
 		this.state.enabled = true;
 		return await this.ui.send(this.id, { valid : true, state : JSON.stringify(this.state) });
+	}
+
+	/**
+	 * Pre-export all frames from video for display.
+	 * 
+	 * @param {object} evt IPC event
+	 * @param {object} arg IPC args
+	 */
+	async onPreExport (evt : Event, arg : any) {
+		if (!this.state.path) {
+			return await this.ui.send('pre_export', { complete : false, err : 'No file to pre export.' });
+		}
+
+		try {
+			await this.ffmpeg.frames(this.state);
+		} catch (err) {
+			return await this.ui.send('pre_export', { complete : false, err });
+		}
+
+		return await this.ui.send('pre_export', { complete : true });
 	}
 
 	/**
@@ -248,10 +282,11 @@ class FilmOut {
 			this.log.error(err, 'FILMOUT', true, true);;
 			throw err;
 		}
+
 		this.ui.send('preview_frame', { path, frame : arg.frame })
 	}
 	/**
-	 * 
+	 * Open a single frame in a display window to preview filmout.
 	 *
 	 * @param {object} evt Original event
 	 * @param {object} arg Arguments from message
@@ -263,6 +298,7 @@ class FilmOut {
 		state.frame = arg.frame;
 
 		this.log.info(`Previewing frame ${state.frame} of ${state.fileName}`);
+
 		try {
 			path = await this.ffmpeg.frame(state, { color : [255, 255, 255] });
 		} catch (err) {
@@ -272,7 +308,7 @@ class FilmOut {
 
 		try {
 			await this.display.open();
-			await this.display.show(arg.frame);
+			await this.display.show(path);
 		} catch (err) {
 			this.log.error(err, 'FILMOUT', true, true);
 		}

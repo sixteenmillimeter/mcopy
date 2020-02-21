@@ -8,6 +8,7 @@ const animated_gif_detector_1 = __importDefault(require("animated-gif-detector")
 const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
 const delay_1 = require("delay");
+const crypto_1 = require("crypto");
 /**
  * @module FilmOut
  **/
@@ -65,6 +66,15 @@ class FilmOut {
         this.ipc.on('preview', this.preview.bind(this));
         this.ipc.on('preview_frame', this.previewFrame.bind(this));
         this.ipc.on('display', this.onDisplay.bind(this));
+        this.ipc.on('pre_export', this.onPreExport.bind(this));
+    }
+    /**
+     * Create a hash of a string.
+     *
+     * @param {string} data Data to produce hash of
+     */
+    hash(data) {
+        return crypto_1.createHash('sha1').update(data).digest('hex');
     }
     /**
      * Sets filmout direction.
@@ -97,21 +107,15 @@ class FilmOut {
     * Begin the process of exporting single frames from the video for display.
     **/
     async start() {
+        let path;
         try {
-            await this.ffmpeg.clearAll();
+            path = await this.ffmpeg.frame(this.state, this.light.state);
         }
         catch (err) {
             this.log.error(err, 'FILMOUT', true, true);
             throw err;
         }
-        try {
-            await this.ffmpeg.frame(this.state, this.light.state);
-        }
-        catch (err) {
-            this.log.error(err, 'FILMOUT', true, true);
-            throw err;
-        }
-        await this.display.show(this.state.frame);
+        await this.display.show(path);
         await delay_1.delay(20);
     }
     /**
@@ -156,6 +160,13 @@ class FilmOut {
             this.log.error(`File is not of a valid file type`, 'FILMOUT', true, true);
             return false;
         }
+        try {
+            await this.ffmpeg.clearAll();
+        }
+        catch (err) {
+            this.log.error(err, 'FILMOUT', true, true);
+            throw err;
+        }
         if (this.state.still) {
             try {
                 info = await this.stillInfo(arg.path);
@@ -194,10 +205,29 @@ class FilmOut {
         this.state.fileName = arg.fileName;
         this.state.frames = frames;
         this.state.info = info;
+        this.state.hash = this.hash(arg.path);
         this.log.info(`Opened ${this.state.fileName}`, 'FILMOUT', true, true);
         this.log.info(`Frames : ${frames}`, 'FILMOUT', true, true);
         this.state.enabled = true;
         return await this.ui.send(this.id, { valid: true, state: JSON.stringify(this.state) });
+    }
+    /**
+     * Pre-export all frames from video for display.
+     *
+     * @param {object} evt IPC event
+     * @param {object} arg IPC args
+     */
+    async onPreExport(evt, arg) {
+        if (!this.state.path) {
+            return await this.ui.send('pre_export', { complete: false, err: 'No file to pre export.' });
+        }
+        try {
+            await this.ffmpeg.frames(this.state);
+        }
+        catch (err) {
+            return await this.ui.send('pre_export', { complete: false, err });
+        }
+        return await this.ui.send('pre_export', { complete: true });
     }
     /**
      * Return true if gif is animated, false if it is a still
@@ -248,7 +278,7 @@ class FilmOut {
         this.ui.send('preview_frame', { path, frame: arg.frame });
     }
     /**
-     *
+     * Open a single frame in a display window to preview filmout.
      *
      * @param {object} evt Original event
      * @param {object} arg Arguments from message
@@ -267,7 +297,7 @@ class FilmOut {
         }
         try {
             await this.display.open();
-            await this.display.show(arg.frame);
+            await this.display.show(path);
         }
         catch (err) {
             this.log.error(err, 'FILMOUT', true, true);

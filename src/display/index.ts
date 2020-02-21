@@ -5,21 +5,10 @@
  * Provides features for displaying a full screen display of images for the digital module.
  **/
 
-import spawn = require('spawn');
 import { join as pathJoin } from 'path';
 import { delay } from 'delay';
-import { IpcMain } from 'electron';
 
 const { BrowserWindow } = require('electron');
-
-function padded_frame (i : number) {
-	let len = (i + '').length;
-	let str = i + '';
-	for (let x = 0; x < 8 - len; x++) {
-		str = '0' + str;
-	}
-	return str;
-}
 
 class WebView {
 	private digitalWindow : any;
@@ -91,8 +80,10 @@ class WebView {
 	}
 
 	onLoad (evt : Event, arg : any) {
-		this.loadWait[arg.src]();
-		delete this.loadWait[arg.src];
+		if (this.loadWait[arg.src]) {
+			this.loadWait[arg.src]();
+			delete this.loadWait[arg.src];
+		}
 	}
 	async focus () {
 		if (!this.digitalWindow) {
@@ -149,41 +140,12 @@ class WebView {
 	}
 }
 
-class EOG {
-	private cp : any;
-	constructor () {
-
-	}
-
-	public open () {
-		this.hide();
-	}
-
-	public async show (src :  string) {
-		//timeout 3 eog --fullscreen ${src}
-		this.cp = spawn('eog', ['--fullscreen', src]);
-		await delay(200)
-		return true
-	}
-
-	public hide () {
-		if (this.cp) {
-			this.cp.kill();
-			this.cp = null;
-		}
-	}
-	public close () {
-		this.hide();
-	}
-} 
-
 class Display {
 	private platform : string;
 	private displays : any[];
 	private display : any;
 	private tmpdir : string;
 	private wv : WebView;
-	private eog : EOG;
 
 	constructor (sys : any) {
 		this.platform = sys.platform;
@@ -202,14 +164,8 @@ class Display {
 			await this.wv.open();
 		}
 	}
-	public async show (frame : number) {
-		let padded : string = padded_frame(frame);
-		let ext : string = 'png';
-		let tmppath : string;
-
-		tmppath = pathJoin(this.tmpdir, `export-${padded}.${ext}`);
-
-		await this.wv.show(tmppath);
+	public async show (src : string) {
+		await this.wv.show(src);
 	}
 	public async showPath (pathStr : string) {
 		return await this.wv.show(pathStr);
