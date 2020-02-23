@@ -24,14 +24,18 @@ The `mcopy` project is comprised of software and hardware for optical printers, 
 * Arduino firmware for projectors, cameras, lights and existing printers
 * 3D models of parts used for modifying projectors and printers
 * Schematics for simple Arduino-based electronics
+* Filmout feature for digitally transferring video and images to analog film
+* Interoperability with the [intval3](https://github.com/sixteenmillimeter/intval3) intervalometer
 
 ## Downloads <a name="downloads"></a>
 
 ### Latest Installers
+* [1.6.1](https://github.com/sixteenmillimeter/mcopy/releases/tag/1.6.1) for macOS
 
-* [1.4.9](https://github.com/sixteenmillimeter/mcopy/releases/tag/1.4.9) for macOS and Linux (.deb)
 
 ### Older Versions
+* [1.5.2](https://github.com/sixteenmillimeter/mcopy/releases/tag/1.4.9) for macOS
+* [1.4.9](https://github.com/sixteenmillimeter/mcopy/releases/tag/1.4.9) for macOS and Linux (.deb)
 * [1.2.0](https://github.com/sixteenmillimeter/mcopy/releases/tag/1.2.0) for macOS and Linux (.deb)
 * [1.0.3](https://github.com/sixteenmillimeter/mcopy/releases/tag/1.0.3) for macOS and Linux (.deb)
 
