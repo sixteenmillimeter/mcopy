@@ -419,7 +419,7 @@ cmd.camera_to = function (t) {
 		cont = confirm(`Do you want to ${(total > 0 ? 'advance' : 'rewind')} the camera ${total} frame${(total === 1 ? '' : 's')} to frame ${val}?`)
 		if (cont) {
 			gui.overlay(true);
-			gui.spinner(true, `Camera ${(total > 0 ? 'advancing' : 'rewinding')} ${total} frame${(total === 1 ? '' : 's')} `, true, true);
+			gui.spinner(true, `Camera ${(total > 0 ? 'advancing' : 'rewinding')} ${total} frame${(total === 1 ? '' : 's')} `, true, false);
 			seq.exec(steps, Math.abs(total));
 		}
 	}

@@ -4,6 +4,31 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
 const exec_1 = require("exec");
+const child_process_1 = require("child_process");
+async function spawnAsync(bin, args) {
+    return new Promise((resolve, reject) => {
+        const child = child_process_1.spawn(bin, args);
+        let stdout = '';
+        let stderr = '';
+        child.on('exit', (code) => {
+            if (code === 0) {
+                return resolve({ stdout, stderr });
+            }
+            else {
+                console.error(`Process exited with code: ${code}`);
+                console.error(stderr);
+                return reject(stderr);
+            }
+        });
+        child.stdout.on('data', (data) => {
+            stdout += data;
+        });
+        child.stderr.on('data', (data) => {
+            stderr += data;
+        });
+        return child;
+    });
+}
 /** @class FFMPEG **/
 class FFMPEG {
     /**
@@ -14,6 +39,7 @@ class FFMPEG {
      **/
     constructor(sys) {
         this.id = 'ffmpeg';
+        this.onProgress = () => { };
         this.bin = sys.deps.ffmpeg;
         this.convert = sys.deps.convert;
         this.TMPDIR = path_1.join(sys.tmp, 'mcopy_digital');
@@ -41,6 +67,35 @@ class FFMPEG {
             str = '0' + str;
         }
         return str;
+    }
+    /**
+     * Parse the stderr output of ffmpeg
+     *
+     * @param {string} line		Stderr line
+     **/
+    parseStderr(line) {
+        //frame= 6416 fps= 30 q=31.0 size=   10251kB time=00:03:34.32 bitrate= 391.8kbits/s speed=   1x
+        let obj = {};
+        if (line.substring(0, 'frame='.length) === 'frame=') {
+            try {
+                obj.frame = line.split('frame=')[1].split('fps=')[0];
+                obj.frame = parseInt(obj.frame);
+                obj.fps = line.split('fps=')[1].split('q=')[0];
+                obj.fps = parseFloat(obj.fps);
+                obj.time = line.split('time=')[1].split('bitrate=')[0];
+                obj.speed = line.split('speed=')[1].trim().replace('x', '');
+                obj.speed = parseFloat(obj.speed);
+                obj.size = line.split('size=')[1].split('time=')[0].trim();
+            }
+            catch (err) {
+                console.error(err);
+                console.log(line);
+                process.exit();
+            }
+        }
+        else {
+        }
+        return obj;
     }
     /**
      * Render a single frame from a video or image to a png.
@@ -125,13 +180,26 @@ class FFMPEG {
         const tmppath = this.TMPDIR;
         let ext = 'png';
         let tmpoutput = path_1.join(tmppath, `${state.hash}-export-%08d.${ext}`);
-        let cmd;
+        let args;
         let output;
-        let scale = '';
+        let estimated = -1;
+        //cmd = `${this.bin} -y -i "${video}" -vf "${scale}" -compression_algo raw -pix_fmt rgb24 -crf 0 "${tmpoutput}"`;
+        args = [
+            '-y',
+            '-i', video
+        ];
         if (w && h) {
-            scale = `scale=${w}:${h}`;
+            args.push('-vf');
+            args.push(`scale=${w}:${h}`);
         }
-        cmd = `${this.bin} -y -i "${video}" -vf "${scale}" -compression_algo raw -pix_fmt rgb24 -crf 0 "${tmpoutput}"`;
+        args = args.concat([
+            '-compression_algo', 'raw',
+            '-pix_fmt', 'rgb24',
+            '-crf', '0',
+            tmpoutput
+        ]);
+        console.dir(args);
+        console.dir(state);
         try {
             await fs_extra_1.mkdir(tmppath);
         }
@@ -139,15 +207,54 @@ class FFMPEG {
             this.log.error(err);
         }
         //ffmpeg -i "${video}" -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"
-        try {
-            this.log.info(cmd);
-            output = await exec_1.exec(cmd);
+        return new Promise((resolve, reject) => {
+            let stdout = '';
+            let stderr = '';
+            this.log.info(`${this.bin} ${args.join(' ')}`);
+            this.child = child_process_1.spawn(this.bin, args);
+            this.child.on('exit', (code) => {
+                console.log('GOT TO EXIT');
+                if (code === 0) {
+                    console.log(stderr);
+                    console.log(stdout);
+                    return resolve(true);
+                }
+                else {
+                    console.error(`Process exited with code: ${code}`);
+                    console.error(stderr);
+                    return reject(stderr + stdout);
+                }
+            });
+            this.child.stdout.on('data', (data) => {
+                const line = data.toString();
+                stdout += line;
+            });
+            this.child.stderr.on('data', (data) => {
+                const line = data.toString();
+                const obj = this.parseStderr(line);
+                if (obj.frame && state.frames) {
+                    obj.progress = obj.frame / state.frames;
+                }
+                if (obj.frame && obj.speed && state.frames && state.info.fps) {
+                    //scale by speed
+                    obj.remaining = ((state.frames - obj.frame) / state.info.fps) / obj.speed;
+                    obj.estimated = state.info.seconds / obj.speed;
+                    if (obj.estimated > estimated) {
+                        estimated = obj.estimated;
+                    }
+                }
+                if (obj.frame) {
+                    //log.info(`${input.name} ${obj.frame}/${input.frames} ${Math.round(obj.progress * 1000) / 10}% ${Math.round(obj.remaining)} seconds remaining of ${Math.round(obj.estimated)}`);
+                    this.onProgress(obj);
+                }
+            });
+        });
+    }
+    cancel() {
+        if (this.child) {
+            this.child.kill();
+            this.log.info(`Stopped exporting sequence with ffmpeg`);
         }
-        catch (err) {
-            this.log.error(err);
-            throw err;
-        }
-        return true;
     }
     /**
      * Clears a specific frame from the tmp directory

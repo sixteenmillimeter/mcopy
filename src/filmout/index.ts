@@ -73,7 +73,12 @@ class FilmOut {
 	 	this.ipc.on('preview', this.preview.bind(this));
 	 	this.ipc.on('preview_frame', this.previewFrame.bind(this));
 		this.ipc.on('display', this.onDisplay.bind(this));
-		this.ipc.on('pre_export', this.onPreExport.bind(this)); 
+		this.ipc.on('pre_export', this.onPreExport.bind(this));
+
+		this.ffmpeg.onProgress = (obj : any) => {
+			this.ui.send('pre_export_progress', { progress: obj });
+		}
+
 	 }
 	 /**
 	  * Create a hash of a string.
@@ -210,6 +215,12 @@ class FilmOut {
 		this.state.frames = frames;
 		this.state.info = info;
 		this.state.hash = this.hash(arg.path);
+
+		if (info.seconds) {
+			this.state.seconds = info.seconds;
+		} else if (info.fps && frames) {
+			this.state.seconds = frames / info.fps;
+		}
 
 		this.log.info(`Opened ${this.state.fileName}`, 'FILMOUT', true, true);
 		this.log.info(`Frames : ${frames}`, 'FILMOUT', true, true);

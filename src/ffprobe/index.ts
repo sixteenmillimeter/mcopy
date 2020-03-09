@@ -14,6 +14,21 @@ class FFPROBE {
 	constructor (sys : any) {
 		this.bin = sys.deps.ffprobe;
 	}
+
+	/**
+	 * Parse the fps entry into a float representing the fps of a video
+	 **/
+	private parseFps (fpsStr : string) {
+		let fps : number = 30.0;
+		let parts : string[];
+		if (fpsStr.indexOf('/') !== -1) {
+			parts = fpsStr.split('/');
+			fps = parseFloat(parts[0]) / parseFloat(parts[1]);
+		} else {
+			fps = parseFloat(fpsStr);
+		}
+		return fps
+	}
 	/**
 	 * Get info on a video in json format. Use for filmout.
 	 *
@@ -54,6 +69,10 @@ class FFPROBE {
 			return raw.stdout;
 		}
 
+		if (json.format && json.format.duration) {
+			json.seconds = parseFloat(json.format.duration);
+		}
+
 		if (json && json.streams) {
 			vid = json.streams.find((stream : any) => {
 				if (stream.width && stream.height) return stream;
@@ -63,6 +82,7 @@ class FFPROBE {
 		if (vid) {
 			json.width = vid.width;
 			json.height = vid.height;
+			json.fps = this.parseFps(vid.r_frame_rate)
 		}
 
 		return json;

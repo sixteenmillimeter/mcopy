@@ -62,6 +62,7 @@ class FilmOut {
 		ipcRenderer.on('system', this.onSystem.bind(this));
 		ipcRenderer.on('preview_frame', this.onFrame.bind(this));
 		ipcRenderer.on('pre_export', this.onPreExport.bind(this));
+		ipcRenderer.on('pre_export_progress', this.onPreExportProgress.bind(this));
 	}
 	onSystem (evt : Event, args : any) {
 		let option : any;
@@ -217,9 +218,11 @@ class FilmOut {
 			if (light.disabled) {
 				//light.enable();
 			}
-			console.dir(state);
+			//console.dir(state);
 			this.state.frame = 0;
 			this.state.frames = state.frames;
+			this.state.seconds = state.seconds;
+			this.state.fps = state.fps;
 			this.state.width = state.info.width;
 			this.state.height = state.info.height;
 			this.state.name = state.fileName;
@@ -253,26 +256,45 @@ class FilmOut {
 		let proceed = false;
 
 		if (this.state.path && this.state.path !== '') {
-			proceed = await gui.confirm(`Export all frames for ${this.state.name}? This may take a while, but will allow filmout sequences to run faster.`);
+			proceed = await gui.confirm(`Export all frames of ${this.state.name}? This may take a while, but will allow filmout sequences to run faster.`);
 		}
 		
 		if (proceed) {
 			gui.overlay(true);
-			gui.spinner(true, `Exporting frames for ${this.state.name}`);
-			ipcRenderer.send('pre_export', { });
+			gui.spinner(true, `Exporting frames of ${this.state.name}`, true, false);
+			ipcRenderer.send('pre_export', { state : this.state });
 		}
 	}
+
 	onPreExport (evt : Event, args : any) {
-		log.info('onPreExport');
-		if (args.completed) {
-			gui.notify('FILMOUT', `Exported frames for ${this.state.name}`);
-			log.info(`Exported frames for ${this.state.name}`, 'FILMOUT', true);
+		
+		if (args.completed && args.completed === true) {
+			gui.notify('FILMOUT', `Exported frames of ${this.state.name}`);
+			log.info(`Exported frames of ${this.state.name}`, 'FILMOUT', true);
 		} else {
-			log.error(args.err);
+			log.info('onPreExport Error');
+			log.error(JSON.stringify(args));
 		}
+
 		gui.overlay(false);
 		gui.spinner(false);
 	}
+
+	onPreExportProgress (evt : Event, args : any) {
+		console.dir(args);
+		const elem : any = $('.progress-bar');
+		let progress : number = 0;
+
+		if (args.progress.progress) {
+			progress = args.progress.progress * 100;
+		}
+		
+		elem.attr('aria-valuenow', progress);
+		elem.css('width', `${progress}%`);
+		gui.spinner(true, `Exporting frames of ${this.state.name} in ${humanizeDuration(Math.round(args.progress.estimated) * 1000)}`, true, false);
+
+	}
+
 	advance () {
 		this.state.frame++;
 		if (this.state.frame >= this.state.frames) {
@@ -280,6 +302,7 @@ class FilmOut {
 		}
 		$('#filmout_position').val(this.state.frame).trigger('change');
 	}
+
 	rewind () {
 		this.state.frame--;
 		if (this.state.frame < 0) {

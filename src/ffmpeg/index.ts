@@ -5,12 +5,49 @@
 import { join } from 'path';
 import { exists, mkdir, readdir, unlink } from 'fs-extra';
 import { exec } from 'exec';
+import { spawn } from 'child_process';
 
 interface FilmoutState {
 	frame : number;
 	path : string;
 	hash : string;
 	info : any;
+	frames?: number;
+}
+
+interface StdErr {
+    frame : number;
+    fps : number;
+    time : string;
+    speed : number;
+    size : string;
+    remaining? : number;
+    progress? : number;
+    estimated? : number;
+}
+
+async function spawnAsync (bin : string, args : string[]) {
+	return new Promise((resolve : Function, reject : Function) => {
+        const child = spawn(bin, args);
+        let stdout = '';
+        let stderr = '';
+        child.on('exit', (code : number) => {
+            if (code === 0) {
+                return resolve({ stdout, stderr });
+            } else {
+                console.error(`Process exited with code: ${code}`);
+                console.error(stderr);
+                return reject(stderr);
+            }
+        });
+        child.stdout.on('data', (data : string) => {
+            stdout += data;
+        });
+        child.stderr.on('data', (data : string) => {
+            stderr += data;
+        });
+        return child;
+	});
 }
 
 /** @class FFMPEG **/
@@ -21,6 +58,8 @@ class FFMPEG {
 	private log : any;
 	private id : string = 'ffmpeg';
 	private TMPDIR : string;
+	private child : any;
+	public onProgress : Function = () => {};
 
 	/**
 	 * @constructor
@@ -58,6 +97,37 @@ class FFMPEG {
 		}
 		return str;
 	}
+
+	/**
+	 * Parse the stderr output of ffmpeg
+	 *
+	 * @param {string} line		Stderr line 
+	 **/
+	private parseStderr (line : string) : StdErr {
+        //frame= 6416 fps= 30 q=31.0 size=   10251kB time=00:03:34.32 bitrate= 391.8kbits/s speed=   1x
+        let obj : any = {};
+
+        if (line.substring(0, 'frame='.length) === 'frame=') {
+            try {
+                obj.frame = line.split('frame=')[1].split('fps=')[0];
+                obj.frame = parseInt(obj.frame);
+                obj.fps = line.split('fps=')[1].split('q=')[0];
+                obj.fps = parseFloat(obj.fps);
+                obj.time = line.split('time=')[1].split('bitrate=')[0];
+                obj.speed = line.split('speed=')[1].trim().replace('x', '');
+                obj.speed = parseFloat(obj.speed);
+                obj.size = line.split('size=')[1].split('time=')[0].trim();
+            } catch (err) {
+                console.error(err);
+                console.log(line);
+                process.exit();
+            }
+        } else {
+
+        }
+
+        return obj;
+    }
 
 	/**
 	 * Render a single frame from a video or image to a png.
@@ -149,15 +219,31 @@ class FFMPEG {
 		const tmppath : string = this.TMPDIR;
 		let ext : string = 'png';
 		let tmpoutput : string = join(tmppath, `${state.hash}-export-%08d.${ext}`);
-		let cmd : string;
+		let args : string[];
 		let output : any;
-		let scale : string = '';
+		let estimated : number = -1;
+		
+		//cmd = `${this.bin} -y -i "${video}" -vf "${scale}" -compression_algo raw -pix_fmt rgb24 -crf 0 "${tmpoutput}"`;
+		
+		args = [
+			'-y', 
+			'-i', video
+		];
 
 		if (w && h) {
-			scale = `scale=${w}:${h}`;
+			args.push('-vf');
+			args.push(`scale=${w}:${h}`);
 		}
-		
-		cmd = `${this.bin} -y -i "${video}" -vf "${scale}" -compression_algo raw -pix_fmt rgb24 -crf 0 "${tmpoutput}"`;
+
+		args = args.concat([
+			'-compression_algo', 'raw', 
+			'-pix_fmt', 'rgb24', 
+			'-crf', '0', 
+			tmpoutput
+		]);
+
+		console.dir(args)
+		console.dir(state)
 
 		try {
 			await mkdir(tmppath);
@@ -167,15 +253,61 @@ class FFMPEG {
 
 		//ffmpeg -i "${video}" -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"
 
-		try {
-			this.log.info(cmd);
-			output = await exec(cmd);
-		} catch (err) {
-			this.log.error(err);
-			throw err;
+		return new Promise((resolve : Function, reject : Function) => {
+			let stdout = '';
+            let stderr = '';
+
+			this.log.info(`${this.bin} ${args.join(' ')}`);
+			this.child = spawn(this.bin, args);
+
+            this.child.on('exit', (code : number) => {
+            	console.log('GOT TO EXIT');
+                if (code === 0) {
+                	console.log(stderr);
+                	console.log(stdout);
+                    return resolve(true);
+                } else {
+                    console.error(`Process exited with code: ${code}`);
+                    console.error(stderr);
+                    return reject(stderr + stdout);
+                }
+            });
+
+            this.child.stdout.on('data', (data : any) => {
+            	const line : string = data.toString();
+                stdout += line;
+            });
+
+            this.child.stderr.on('data', (data : any) => {
+                const line : string = data.toString();
+                const obj : StdErr = this.parseStderr(line);
+
+                if (obj.frame && state.frames) {
+                    obj.progress = obj.frame / state.frames;
+                }
+
+                if (obj.frame && obj.speed && state.frames && state.info.fps) {
+                    //scale by speed
+                    obj.remaining = ((state.frames - obj.frame) / state.info.fps) / obj.speed;
+                    obj.estimated = state.info.seconds / obj.speed;
+                    if (obj.estimated > estimated) {
+                        estimated = obj.estimated;
+                    }
+                }
+
+                if (obj.frame) {
+                    //log.info(`${input.name} ${obj.frame}/${input.frames} ${Math.round(obj.progress * 1000) / 10}% ${Math.round(obj.remaining)} seconds remaining of ${Math.round(obj.estimated)}`);
+                    this.onProgress(obj);
+                }
+            });
+		});
+	}
+
+	public cancel () {
+		if (this.child) {
+			this.child.kill();
+			this.log.info(`Stopped exporting sequence with ffmpeg`);
 		}
-		
-		return true;
 	}
 
 	/**
