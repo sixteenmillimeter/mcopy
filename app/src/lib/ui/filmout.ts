@@ -266,8 +266,7 @@ class FilmOut {
 		}
 	}
 
-	onPreExport (evt : Event, args : any) {
-		
+	onPreExport (evt : Event, args : any) {	
 		if (args.completed && args.completed === true) {
 			gui.notify('FILMOUT', `Exported frames of ${this.state.name}`);
 			log.info(`Exported frames of ${this.state.name}`, 'FILMOUT', true);
@@ -281,7 +280,6 @@ class FilmOut {
 	}
 
 	onPreExportProgress (evt : Event, args : any) {
-		console.dir(args);
 		const elem : any = $('.progress-bar');
 		let progress : number = 0;
 

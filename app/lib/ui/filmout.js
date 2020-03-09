@@ -270,7 +270,6 @@ class FilmOut {
         gui.spinner(false);
     }
     onPreExportProgress(evt, args) {
-        console.dir(args);
         const elem = $('.progress-bar');
         let progress = 0;
         if (args.progress.progress) {
@@ -278,7 +277,7 @@ class FilmOut {
         }
         elem.attr('aria-valuenow', progress);
         elem.css('width', `${progress}%`);
-        gui.spinner(true, `Exporting frames of ${this.state.name} in ${humanizeDuration(Math.round(args.progress.estimated) * 1000)}`, true, true);
+        gui.spinner(true, `Exporting frames of ${this.state.name} in ${humanizeDuration(Math.round(args.progress.estimated) * 1000)}`, true, false);
     }
     advance() {
         this.state.frame++;
