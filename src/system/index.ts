@@ -28,8 +28,8 @@ async function dependencies (platform : string )  {
 	//let imoutput : ExecOutput;
 	let eogoutput : ExecOutput;
 
-	obj.ffmpeg = ffmpeg;
-	obj.ffprobe = ffprobe.path;
+	obj.ffmpeg = ffmpeg.replace('app.asar', 'app.asar.unpacked');
+	obj.ffprobe = ffprobe.path.replace('app.asar', 'app.asar.unpacked');
 
 	try {
 		//imoutput = await exec('which convert');

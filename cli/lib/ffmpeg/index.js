@@ -195,8 +195,8 @@ class FFMPEG {
             '-crf', '0',
             tmpoutput
         ]);
-        console.dir(args);
-        console.dir(state);
+        //console.dir(args)
+        //console.dir(state)
         try {
             await fs_extra_1.mkdir(tmppath);
         }
@@ -210,7 +210,7 @@ class FFMPEG {
             this.log.info(`${this.bin} ${args.join(' ')}`);
             this.child = child_process_1.spawn(this.bin, args);
             this.child.on('exit', (code) => {
-                console.log('GOT TO EXIT');
+                //console.log('GOT TO EXIT');
                 if (code === 0) {
                     console.log(stderr);
                     console.log(stdout);

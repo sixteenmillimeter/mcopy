@@ -243,8 +243,8 @@ class FFMPEG {
 			tmpoutput
 		]);
 
-		console.dir(args)
-		console.dir(state)
+		//console.dir(args)
+		//console.dir(state)
 
 		try {
 			await mkdir(tmppath);
@@ -262,7 +262,7 @@ class FFMPEG {
 			this.child = spawn(this.bin, args);
 
             this.child.on('exit', (code : number) => {
-            	console.log('GOT TO EXIT');
+            	//console.log('GOT TO EXIT');
                 if (code === 0) {
                 	console.log(stderr);
                 	console.log(stdout);
