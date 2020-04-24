@@ -11,6 +11,7 @@ declare module 'exit';
 declare module 'request';
 declare module 'animated-gif-detector';
 declare module 'winston';
+declare module 'frame';
 
 interface Device {
 	arduino : string;

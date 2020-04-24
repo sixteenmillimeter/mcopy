@@ -27,7 +27,12 @@ async function logFile() {
     }
     dirExists = await fs_extra_1.exists(logPath);
     if (!dirExists) {
-        await fs_extra_1.mkdir(logPath);
+        try {
+            await fs_extra_1.mkdir(logPath);
+        }
+        catch (err) {
+            console.error(`Error creating directory for mcopy log file, ${logPath}`);
+        }
     }
     return path_1.join(logPath, 'mcopy.log');
 }

@@ -18,22 +18,21 @@ async function dependencies(platform) {
     let ffmpeg = require('ffmpeg-static');
     let ffprobe = require('ffprobe-static');
     let ffoutput;
-    let imoutput;
+    //let imoutput : ExecOutput;
     let eogoutput;
     obj.ffmpeg = ffmpeg;
     obj.ffprobe = ffprobe.path;
     try {
-        imoutput = await exec_1.exec('which convert');
+        //imoutput = await exec('which convert');
     }
     catch (err) {
         console.error('imagemagick is not installed', err);
     }
-    if (!imoutput || imoutput.stdout.trim() === '') {
+    /*if (!imoutput || imoutput.stdout.trim() === '') {
         console.error('imagemagick is not installed');
-    }
-    else {
+    } else {
         obj.convert = imoutput.stdout.trim();
-    }
+    }*/
     //if linux
     if (platform === 'nix') {
         try {

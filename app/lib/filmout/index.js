@@ -3,12 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const sharp_1 = __importDefault(require("sharp"));
 const animated_gif_detector_1 = __importDefault(require("animated-gif-detector"));
 const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
 const delay_1 = require("delay");
 const crypto_1 = require("crypto");
+const frame_1 = __importDefault(require("frame"));
 /**
  * @module FilmOut
  **/
@@ -140,8 +140,6 @@ class FilmOut {
         let info;
         let ext;
         ext = path_1.extname(arg.fileName.toLowerCase());
-        //console.dir(arg)
-        //console.log(ext)
         if (ext === this.gifExtension) {
             try {
                 isAnimated = await this.isGifAnimated(arg.path);
@@ -202,7 +200,6 @@ class FilmOut {
                 return false;
             }
         }
-        //console.dir(info)
         this.state.frame = 0;
         this.state.path = arg.path;
         this.state.fileName = arg.fileName;
@@ -264,7 +261,14 @@ class FilmOut {
      * @returns {object} Info about still from sharp
      **/
     async stillInfo(pathStr) {
-        return sharp_1.default(pathStr).metadata();
+        let info;
+        try {
+            info = await frame_1.default.info(pathStr);
+        }
+        catch (err) {
+            this.log.error(err, 'FILMOUT', true, true);
+        }
+        return info;
     }
     /**
      * Preview a frame from the selected video.

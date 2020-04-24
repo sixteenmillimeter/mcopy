@@ -27,10 +27,17 @@ async function logFile () {
 	} else if (process.platform === 'win32') {
 		logPath = join(homeDir, winDir);
 	}
+
 	dirExists = await exists(logPath);
+	
 	if (!dirExists) {
-		await mkdir(logPath);
+		try {
+			await mkdir(logPath);
+		} catch (err) {
+			console.error(`Error creating directory for mcopy log file, ${logPath}`);
+		}
 	}
+
 	return join(logPath, 'mcopy.log');
 }
 /**

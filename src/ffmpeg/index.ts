@@ -7,6 +7,8 @@ import { exists, mkdir, readdir, unlink } from 'fs-extra';
 import { exec } from 'exec';
 import { spawn } from 'child_process';
 
+import Frame from 'frame';
+
 interface FilmoutState {
 	frame : number;
 	path : string;
@@ -54,7 +56,6 @@ async function spawnAsync (bin : string, args : string[]) {
 
 class FFMPEG {
 	private bin : string;
-	private convert : string;
 	private log : any;
 	private id : string = 'ffmpeg';
 	private TMPDIR : string;
@@ -69,7 +70,6 @@ class FFMPEG {
 	 **/
 	constructor (sys : any) {
 		this.bin = sys.deps.ffmpeg;
-		this.convert = sys.deps.convert;
 		this.TMPDIR = join(sys.tmp, 'mcopy_digital');
 		this.init();
 	}
@@ -144,12 +144,11 @@ class FFMPEG {
 		const h : number = state.info.height;
 		const padded : string = this.padded_frame(frameNum);
 		let ext : string = 'png';
-		//let rgb : any[] = light.color;
+		let rgb : any[] = light.color;
+		let rgba : any = {};
 		let tmpoutput : string;
 		let cmd : string;
 		let output : any;
-		//let cmd2 : string;
-		//let output2 : any;
 		let fileExists = false;
 
 		let scale : string = '';
@@ -169,10 +168,6 @@ class FFMPEG {
 			this.log.info(`File ${tmpoutput} exists`);
 			return tmpoutput;
 		}
-
-		//rgb = rgb.map((e : string) => {
-		//	return parseInt(e);
-		//});
 		
 		//
 		cmd = `${this.bin} -y -i "${video}" -vf "select='gte(n\\,${frameNum})'${scale}" -vframes 1 -compression_algo raw -pix_fmt rgb24 -crf 0 "${tmpoutput}"`;
@@ -188,18 +183,23 @@ class FFMPEG {
 		} catch (err) {
 			this.log.error(err);
 		}
+
 		if (output && output.stdout) this.log.info(`"${output.stdout}"`);
 
-		/*if (this.convert && (rgb[0] !== 255 || rgb[1] !== 255 || rgb[2] !== 255)) {
+		if ( rgb[0] !== 255 || rgb[1] !== 255 || rgb[2] !== 255 ) {
+			rgb = rgb.map((e : string) => {
+				return parseInt(e);
+			});
+
+			rgba = { r : rgb[0], g : rgb[1], b : rgb[2], a : 255 };
+
 			try {
-				this.log.info(cmd2);
-				output2 = await exec(cmd2);
+				//await Frame.blend(tmpoutput, rgba, tmpoutput);
 			} catch (err) {
 				this.log.error(err);
 			}
 		}
 		
-		if (output2 && output2.stdout) this.log.info(`"${output2.stdout}"`);*/
 		return tmpoutput;
 	}
 
@@ -212,6 +212,7 @@ class FFMPEG {
 	 *
 	 * @returns {?}
 	 **/
+
 	public async frames (state : FilmoutState) {
 		const video : string = state.path;
 		const w : number = state.info.width;

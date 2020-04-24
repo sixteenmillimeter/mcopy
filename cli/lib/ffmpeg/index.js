@@ -41,7 +41,6 @@ class FFMPEG {
         this.id = 'ffmpeg';
         this.onProgress = () => { };
         this.bin = sys.deps.ffmpeg;
-        this.convert = sys.deps.convert;
         this.TMPDIR = path_1.join(sys.tmp, 'mcopy_digital');
         this.init();
     }
@@ -112,12 +111,11 @@ class FFMPEG {
         const h = state.info.height;
         const padded = this.padded_frame(frameNum);
         let ext = 'png';
-        //let rgb : any[] = light.color;
+        let rgb = light.color;
+        let rgba = {};
         let tmpoutput;
         let cmd;
         let output;
-        //let cmd2 : string;
-        //let output2 : any;
         let fileExists = false;
         let scale = '';
         if (w && h) {
@@ -134,9 +132,6 @@ class FFMPEG {
             this.log.info(`File ${tmpoutput} exists`);
             return tmpoutput;
         }
-        //rgb = rgb.map((e : string) => {
-        //	return parseInt(e);
-        //});
         //
         cmd = `${this.bin} -y -i "${video}" -vf "select='gte(n\\,${frameNum})'${scale}" -vframes 1 -compression_algo raw -pix_fmt rgb24 -crf 0 "${tmpoutput}"`;
         //cmd2 = `${this.convert} "${tmpoutput}" -resize ${w}x${h} -size ${w}x${h} xc:"rgb(${rgb[0]},${rgb[1]},${rgb[2]})" +swap -compose Darken -composite "${tmpoutput}"`;
@@ -152,16 +147,18 @@ class FFMPEG {
         }
         if (output && output.stdout)
             this.log.info(`"${output.stdout}"`);
-        /*if (this.convert && (rgb[0] !== 255 || rgb[1] !== 255 || rgb[2] !== 255)) {
+        if (rgb[0] !== 255 || rgb[1] !== 255 || rgb[2] !== 255) {
+            rgb = rgb.map((e) => {
+                return parseInt(e);
+            });
+            rgba = { r: rgb[0], g: rgb[1], b: rgb[2], a: 255 };
             try {
-                this.log.info(cmd2);
-                output2 = await exec(cmd2);
-            } catch (err) {
+                //await Frame.blend(tmpoutput, rgba, tmpoutput);
+            }
+            catch (err) {
                 this.log.error(err);
             }
         }
-        
-        if (output2 && output2.stdout) this.log.info(`"${output2.stdout}"`);*/
         return tmpoutput;
     }
     /**

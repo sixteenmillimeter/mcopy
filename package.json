@@ -1,6 +1,6 @@
 {
   "name": "mcopy",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Small gauge film optical printer platform",
   "main": "build.js",
   "directories": {
@@ -27,6 +27,7 @@
   "devDependencies": {
     "@types/electron": "^1.6.10",
     "@types/fs-extra": "^8.0.1",
+    "@types/jimp": "^0.2.28",
     "@types/node": "^13.1.6",
     "@types/request": "^2.48.4",
     "@types/sharp": "^0.23.1",
@@ -42,6 +43,7 @@
     "devices": "file:app/lib/devices",
     "display": "file:app/lib/display",
     "filmout": "file:app/lib/filmout",
+    "frame": "file:app/lib/frame",
     "light": "file:app/lib/light",
     "log": "file:app/lib/log",
     "mscript": "file:app/lib/mscript",

@@ -1,11 +1,12 @@
 'use strict';
 
-import sharp from 'sharp';
 import { default as  animated } from 'animated-gif-detector';
 import { extname } from 'path';
 import { readFile } from 'fs-extra';
 import { delay } from 'delay';
 import { createHash } from 'crypto';
+import Jimp from 'jimp';
+import Frame from 'frame';
 
 /**
  * @module FilmOut
@@ -151,9 +152,6 @@ class FilmOut {
 
 		ext = extname(arg.fileName.toLowerCase());
 
-		//console.dir(arg)
-		//console.log(ext)
-
 		if (ext === this.gifExtension) {
 			try {
 				isAnimated = await this.isGifAnimated(arg.path);
@@ -208,7 +206,7 @@ class FilmOut {
 				return false;
 			}
 		}
-		//console.dir(info)
+
 		this.state.frame = 0;
 		this.state.path = arg.path;
 		this.state.fileName = arg.fileName;
@@ -273,7 +271,15 @@ class FilmOut {
 	 * @returns {object} Info about still from sharp
 	 **/
 	async stillInfo (pathStr : string) {
-		return sharp(pathStr).metadata();
+		let info : any;
+
+		try {
+			info = await Frame.info(pathStr);
+		} catch (err) {
+			this.log.error(err, 'FILMOUT', true, true);
+		}
+		
+		return info;
 	}
 	/**
 	 * Preview a frame from the selected video.
