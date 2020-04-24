@@ -22,14 +22,14 @@ import { exec } from 'exec';
 
 async function dependencies (platform : string )  {
 	let obj : any = {};
-	let ffmpeg : any = require('ffmpeg-static');
-	let ffprobe : any = require('ffprobe-static');
+	let ffmpeg : any = require('ffmpeg-static-electron');
+	let ffprobe : any = require('ffprobe-static-electron');
 	let ffoutput : ExecOutput;
 	//let imoutput : ExecOutput;
 	let eogoutput : ExecOutput;
 
-	obj.ffmpeg = ffmpeg.replace('app.asar', 'app.asar.unpacked');
-	obj.ffprobe = ffprobe.path.replace('app.asar', 'app.asar.unpacked');
+	obj.ffmpeg = ffmpeg.path;
+	obj.ffprobe = ffprobe.path;
 
 	try {
 		//imoutput = await exec('which convert');

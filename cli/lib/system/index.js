@@ -15,13 +15,13 @@ const exec_1 = require("exec");
  **/
 async function dependencies(platform) {
     let obj = {};
-    let ffmpeg = require('ffmpeg-static');
-    let ffprobe = require('ffprobe-static');
+    let ffmpeg = require('ffmpeg-static-electron');
+    let ffprobe = require('ffprobe-static-electron');
     let ffoutput;
     //let imoutput : ExecOutput;
     let eogoutput;
-    obj.ffmpeg = ffmpeg.replace('app.asar', 'app.asar.unpacked');
-    obj.ffprobe = ffprobe.path.replace('app.asar', 'app.asar.unpacked');
+    obj.ffmpeg = ffmpeg.path;
+    obj.ffprobe = ffprobe.path;
     try {
         //imoutput = await exec('which convert');
     }
