@@ -59,6 +59,7 @@
     "ffprobe": "file:lib/ffprobe",
     "ffprobe-static": "^3.0.0",
     "filmout": "file:lib/filmout",
+    "frame": "file:lib/frame",
     "fs-extra": "^8.1.0",
     "humanize-duration": "^3.21.0",
     "intval": "file:lib/intval",
