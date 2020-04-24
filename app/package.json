@@ -21,6 +21,32 @@
     "printer",
     "gui"
   ],
+  "build": {
+    "appId" : "com.sixteenmillimeter.mcopy",
+    "files": [
+      "**/*",
+      "!config/",
+      "!src/",
+      "!test/",
+      "!test_old/",
+      "node_modules/ffmpeg-static/bin/${os}/${arch}/ffmpeg",
+      "node_modules/ffmpeg-static/index.js",
+      "node_modules/ffmpeg-static/package.json",
+      "node_modules/ffprobe-static/bin/${os}/${arch}/ffprobe",
+      "node_modules/ffprobe-static/index.js",
+      "node_modules/ffprobe-static/package.json"
+    ],
+    "copyright": "2020 Matthew McWilliams",
+    "mac": {
+      "category": "public.app-category.video",
+      "files": [
+        "!node_modules/ffmpeg-static/bin/win${/*}",
+        "!node_modules/ffmpeg-static/bin/linux${/*}",
+        "!node_modules/ffprobe-static/bin/win${/*}",
+        "!node_modules/ffprobe-static/bin/linux${/*}"
+      ]
+    }
+  },
   "author": "mmcwilliams",
   "license": "MIT",
   "bugs": {
@@ -55,9 +81,9 @@
     "exec": "file:lib/exec",
     "exit": "file:lib/exit",
     "ffmpeg": "file:lib/ffmpeg",
-    "ffmpeg-static-electron": "^2.0.1",
+    "ffmpeg-static": "^4.1.1",
     "ffprobe": "file:lib/ffprobe",
-    "ffprobe-static-electron": "^2.0.0",
+    "ffprobe-static": "^3.0.0",
     "filmout": "file:lib/filmout",
     "frame": "file:lib/frame",
     "fs-extra": "^8.1.0",

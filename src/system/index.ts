@@ -22,13 +22,13 @@ import { exec } from 'exec';
 
 async function dependencies (platform : string )  {
 	let obj : any = {};
-	let ffmpeg : any = require('ffmpeg-static-electron');
-	let ffprobe : any = require('ffprobe-static-electron');
+	let ffmpeg : any = require('ffmpeg-static');
+	let ffprobe : any = require('ffprobe-static');
 	let ffoutput : ExecOutput;
 	//let imoutput : ExecOutput;
 	let eogoutput : ExecOutput;
 
-	obj.ffmpeg = ffmpeg.path;
+	obj.ffmpeg = ffmpeg;
 	obj.ffprobe = ffprobe.path;
 
 	try {

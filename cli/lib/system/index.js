@@ -15,12 +15,12 @@ const exec_1 = require("exec");
  **/
 async function dependencies(platform) {
     let obj = {};
-    let ffmpeg = require('ffmpeg-static-electron');
-    let ffprobe = require('ffprobe-static-electron');
+    let ffmpeg = require('ffmpeg-static');
+    let ffprobe = require('ffprobe-static');
     let ffoutput;
     //let imoutput : ExecOutput;
     let eogoutput;
-    obj.ffmpeg = ffmpeg.path;
+    obj.ffmpeg = ffmpeg;
     obj.ffprobe = ffprobe.path;
     try {
         //imoutput = await exec('which convert');
