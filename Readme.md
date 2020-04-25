@@ -31,10 +31,10 @@ The `mcopy` project is comprised of software and hardware for optical printers, 
 
 ### Latest Installers
 * [1.6.2](https://github.com/sixteenmillimeter/mcopy/releases/tag/1.6.2) for macOS and Linux (.deb)
-* [1.6.1](https://github.com/sixteenmillimeter/mcopy/releases/tag/1.6.1) for macOS
 
 
 ### Older Versions
+* [1.6.1](https://github.com/sixteenmillimeter/mcopy/releases/tag/1.6.1) for macOS
 * [1.5.2](https://github.com/sixteenmillimeter/mcopy/releases/tag/1.5.2) for macOS
 * [1.4.9](https://github.com/sixteenmillimeter/mcopy/releases/tag/1.4.9) for macOS and Linux (.deb)
 * [1.2.0](https://github.com/sixteenmillimeter/mcopy/releases/tag/1.2.0) for macOS and Linux (.deb)
@@ -75,6 +75,7 @@ The desktop app can connect to multiple serial devices, so your mcopy optical pr
 
 All non-electronic hardware for this project is available as plaintext OpenSCAD files and 3D print-able .STL files. 
 The hardware component of this project is aimed at modifying broken Bell & Howell projectors into USB serial-controlled projectors to be used in optical printing.
+
 As a secondary capability, this desktop software and firmware package can be used to replace the sequencers for early-model JK optical printers, with some modification.
 
 
