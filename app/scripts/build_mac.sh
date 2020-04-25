@@ -3,7 +3,7 @@
 ./node_modules/.bin/electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/icon.icns --prune=true --out=../dist
 #build dmg for mac install
 sleep 5s
-mkdir ../dist/installers
+mkdir -p ../dist/installers
 ./node_modules/.bin/electron-installer-dmg ../dist/mcopy-app-darwin-x64/mcopy-app.app mcopy-app --out=../dist/installers  --icon=assets/icons/icon.icns  --overwrite    
 # Path to the icon file that will be the app icon in the DMG window.
 #  --icon-size=<px>     How big to make the icon for the app in the DMG. [Default: `80`].

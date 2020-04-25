@@ -2,7 +2,7 @@
   "dest": "../dist/installers/",
   "icon": "./assets/icons/icon.png",
   "categories": [
-    "Video"
+    "AudioVideo"
   ],
   "lintianOverrides": [
     "changelog-file-missing-in-native-package"
