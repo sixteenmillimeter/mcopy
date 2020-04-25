@@ -22,29 +22,28 @@
     "gui"
   ],
   "build": {
-    "appId" : "com.sixteenmillimeter.mcopy",
+    "appId": "com.sixteenmillimeter.mcopy",
+    "asarUnpack": [
+      "node_modules/ffmpeg-static/bin/${os}/${arch}/ffmpeg",
+      "node_modules/ffmpeg-static/index.js",
+      "node_modules/ffmpeg-static/package.json"
+    ],
     "files": [
       "**/*",
       "!config/",
       "!src/",
       "!test/",
       "!test_old/",
-      "node_modules/ffmpeg-static/bin/${os}/${arch}/ffmpeg",
+      "node_modules/ffmpeg-static/ffmpeg",
       "node_modules/ffmpeg-static/index.js",
       "node_modules/ffmpeg-static/package.json",
-      "node_modules/ffprobe-static/bin/${os}/${arch}/ffprobe",
+      "node_modules/ffprobe-static/ffprobe",
       "node_modules/ffprobe-static/index.js",
       "node_modules/ffprobe-static/package.json"
     ],
     "copyright": "2020 Matthew McWilliams",
     "mac": {
-      "category": "public.app-category.video",
-      "files": [
-        "!node_modules/ffmpeg-static/bin/win${/*}",
-        "!node_modules/ffmpeg-static/bin/linux${/*}",
-        "!node_modules/ffprobe-static/bin/win${/*}",
-        "!node_modules/ffprobe-static/bin/linux${/*}"
-      ]
+      "category": "public.app-category.video"
     }
   },
   "author": "mmcwilliams",
