@@ -1,4 +1,5 @@
 const { MSICreator } = require('electron-wix-msi');
+const package = require('package.json')
 
 // Step 1: Instantiate the MSICreator
 const msiCreator = new MSICreator({
@@ -7,7 +8,7 @@ const msiCreator = new MSICreator({
   exe: 'mcopy',
   name: 'mcopy',
   manufacturer: 'sixteenmillimeter.com',
-  version: '2.0.0',
+  version: package.version,
   outputDirectory: '../dist/'
 });
 
