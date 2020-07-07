@@ -17,7 +17,7 @@ module notched_shaft (H = 10) {
     D = 5;
     difference () {
         cylinder(r = D / 2, h = H, center = true, $fn = 50);
-        translate([4, 0, 0]) cube([D, D, H + 1], center = true);
+        translate([4.25, 0, 0]) cube([D, D, H + 1], center = true);
     }
 }
 
