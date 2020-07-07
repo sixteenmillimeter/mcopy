@@ -4,13 +4,13 @@ const package = require('../package.json')
 
 // Step 1: Instantiate the MSICreator
 const msiCreator = new MSICreator({
-  appDirectory: path.resolve(__dirname, '..', 'dist', 'mcopy-win32-x64'),
+  appDirectory: path.resolve(__dirname, '..', '..', 'dist', 'mcopy-win32-x64'),
   description: 'mcopy optical printer GUI',
   exe: 'mcopy',
   name: 'mcopy',
   manufacturer: 'sixteenmillimeter.com',
   version: package.version,
-  outputDirectory: path.resolve(__dirname, '..', 'dist')
+  outputDirectory: path.resolve(__dirname, '..', '..', 'dist')
 });
 
 async function build () {
