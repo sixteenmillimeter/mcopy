@@ -1,3 +1,5 @@
+PART = "";
+
 MOUNT_DIST = 28 - .5;
 MOUNT_ANGLE = 125;
 MOUNT_W = 12;
@@ -258,10 +260,34 @@ module sizing() {
   }
  }
  
+module nano_mount () {
+   X = 17.6;
+   Y = 43.3;
+   Z = 5;
+   difference () {
+       cube([X + 6, Y + 6, Z + 3], center = true);
+       //center void
+       cube([X, Y, Z + 4], center = true);
+       //usb
+       translate([0, (Y / 2) + 1.5, Z / 2]) {
+           cube([7.5, 4, 3], center = true);
+       }
+   }
+   
+   translate([(X / 2) - 1, (Y / 2) - 1, -1.5]) cube([3, 3, Z], center = true);
+   translate([-(X / 2) + 1, (Y / 2) - 1, -1.5]) cube([3, 3, Z], center = true);
+   translate([(X / 2) - 1, -(Y / 2) + 1, -1.5]) cube([3, 3, Z], center = true);
+   translate([-(X / 2) + 1, -(Y / 2) + 1, -1.5]) cube([3, 3, Z], center = true);
+}
+
+if (PART == "") {
+    nano_mount();
+}
+ 
 //sizing();
 //l289N_mount();
  
-translate([-one_to_one_x, -one_to_one_y, -27]) motor_key_120();
+//translate([-one_to_one_x, -one_to_one_y, -27]) //motor_key_120();
 //geared_motor_mount_120();
 
 difference () {
