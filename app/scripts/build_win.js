@@ -1,5 +1,5 @@
 const { MSICreator } = require('electron-wix-msi');
-const package = require('package.json')
+const package = require('../package.json')
 
 // Step 1: Instantiate the MSICreator
 const msiCreator = new MSICreator({
