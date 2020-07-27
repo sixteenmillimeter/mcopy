@@ -184,7 +184,7 @@ class FFMPEG {
 			this.log.error(err);
 		}
 
-		if (output && output.stdout) this.log.info(`"${output.stdout}"`);
+		if (output && output.stdout) this.log.info(`"${output.stdout.trim()}"`);
 
 		if ( rgb[0] !== 255 || rgb[1] !== 255 || rgb[2] !== 255 ) {
 			rgb = rgb.map((e : string) => {

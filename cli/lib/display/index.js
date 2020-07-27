@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * Provides features for displaying a full screen display of images for the digital module.
  **/
 const path_1 = require("path");
+const url_1 = require("url");
 const delay_1 = require("delay");
 const { BrowserWindow } = require('electron');
 class WebView {
@@ -23,12 +24,17 @@ class WebView {
             minHeight: 600 //,
             //icon: path.join(__dirname, '../../assets/icons/icon.png')
         };
+        const pagePath = path_1.normalize(path_1.join(__dirname, '../../display.html'));
+        const pageUrl = url_1.format({
+            pathname: pagePath,
+            protocol: 'file:'
+        });
         if (!display.primary) {
             prefs.x = display.x + 50;
             prefs.y = display.y + 50;
         }
         this.digitalWindow = new BrowserWindow(prefs);
-        this.digitalWindow.loadURL('file://' + __dirname + '../../../display.html');
+        this.digitalWindow.loadURL(pageUrl);
         if (process.argv.indexOf('-d') !== -1 || process.argv.indexOf('--dev') !== -1) {
             this.digitalWindow.webContents.openDevTools();
         }
@@ -53,12 +59,13 @@ class WebView {
         }
     }
     async show(src) {
+        const normalSrc = path_1.normalize(path_1.join(src));
         if (!this.digitalWindow) {
             console.warn(`Cannot show "${src}" because window does not exist`);
             return false;
         }
         try {
-            this.digitalWindow.webContents.send('display', { src });
+            this.digitalWindow.webContents.send('display', { src: normalSrc });
         }
         catch (err) {
             console.error(err);
