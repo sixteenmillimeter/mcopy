@@ -52,12 +52,12 @@ class Light {
     /**
      *
      **/
-    async set(rgb, id, on) {
+    async set(rgb, id, on = true) {
         const str = rgb.join(',');
         let ms;
         this.state.color = rgb;
         try {
-            ms = this.arduino.send(this.id, this.cfg.arduino.cmd.light);
+            ms = await this.arduino.send(this.id, this.cfg.arduino.cmd.light);
         }
         catch (err) {
             this.log.error('Error sending light command', err);
@@ -77,8 +77,18 @@ class Light {
      *
      **/
     async end(rgb, id, ms) {
+        let res;
+        //console.trace()
         this.log.info(`Light set to ${rgb.join(',')}`, 'LIGHT', true, true);
-        return await this.ui.send(this.id, { rgb: rgb, id: id, ms: ms });
+        try {
+            //console.dir({ rgb, id, ms })
+            res = await this.ui.send(this.id, { rgb, id, ms });
+        }
+        catch (err) {
+            console.error(err);
+            throw err;
+        }
+        return res;
     }
 }
 module.exports = function (arduino, cfg, ui) {

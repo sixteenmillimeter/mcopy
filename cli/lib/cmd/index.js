@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+const uuid_1 = require("uuid");
 const delay_1 = require("delay");
 class Commands {
     /**
@@ -72,6 +73,7 @@ class Commands {
      * @returns {integer} Length of action in ms
      **/
     async camera_forward(rgb = [255, 255, 255]) {
+        const id = uuid_1.v4();
         const off = [0, 0, 0];
         let ms;
         try {
@@ -80,11 +82,11 @@ class Commands {
                 await this.cam.set(true);
             }
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(rgb);
+            await this.light.set(rgb, id);
             await delay_1.delay(this.cfg.arduino.serialDelay);
             ms = await this.cam.move();
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(off);
+            await this.light.set(off, id);
         }
         catch (err) {
             throw err;
@@ -97,6 +99,7 @@ class Commands {
      * @returns {integer} Length of action in ms
      **/
     async black_forward() {
+        const id = uuid_1.v4();
         const off = [0, 0, 0];
         let ms;
         try {
@@ -105,11 +108,11 @@ class Commands {
                 await this.cam.set(true);
             }
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(off); //make sure set to off
+            await this.light.set(off, id); //make sure set to off
             await delay_1.delay(this.cfg.arduino.serialDelay);
             ms = await this.cam.move();
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(off);
+            await this.light.set(off, id);
         }
         catch (err) {
             throw err;
@@ -124,6 +127,7 @@ class Commands {
      * @returns {integer} Length of action in ms
      **/
     async camera_backward(rgb = [255, 255, 255]) {
+        const id = uuid_1.v4();
         const off = [0, 0, 0];
         let ms;
         try {
@@ -132,11 +136,11 @@ class Commands {
                 await this.cam.set(false);
             }
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(rgb);
+            await this.light.set(rgb, id);
             await delay_1.delay(this.cfg.arduino.serialDelay);
             ms = await this.cam.move();
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(off);
+            await this.light.set(off, id);
         }
         catch (err) {
             throw err;
@@ -149,6 +153,7 @@ class Commands {
      * @returns {integer} Length of action in ms
      **/
     async black_backward() {
+        const id = uuid_1.v4();
         const off = [0, 0, 0];
         let ms;
         try {
@@ -157,11 +162,11 @@ class Commands {
                 await this.cam.set(false);
             }
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(off); //make sure set to off
+            await this.light.set(off, id); //make sure set to off
             await delay_1.delay(this.cfg.arduino.serialDelay);
             ms = await this.cam.move();
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(off);
+            await this.light.set(off, id);
         }
         catch (err) {
             throw err;
@@ -176,6 +181,7 @@ class Commands {
      * @returns {integer} Length of action in ms
      **/
     async camera_second_forward(rgb = [255, 255, 255]) {
+        const id = uuid_1.v4();
         const off = [0, 0, 0];
         let ms;
         try {
@@ -184,11 +190,11 @@ class Commands {
                 await this.cam2.set(true);
             }
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(rgb);
+            await this.light.set(rgb, id);
             await delay_1.delay(this.cfg.arduino.serialDelay);
             ms = await this.cam2.move();
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(off);
+            await this.light.set(off, id);
         }
         catch (err) {
             throw err;
@@ -203,6 +209,7 @@ class Commands {
      * @returns {integer} Length of action in ms
      **/
     async camera_second_backward(rgb = [255, 255, 255]) {
+        const id = uuid_1.v4();
         const off = [0, 0, 0];
         let ms;
         try {
@@ -211,11 +218,11 @@ class Commands {
                 await this.cam2.set(false);
             }
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(rgb);
+            await this.light.set(rgb, id);
             await delay_1.delay(this.cfg.arduino.serialDelay);
             ms = await this.cam2.move();
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(off);
+            await this.light.set(off, id);
         }
         catch (err) {
             throw err;
@@ -230,6 +237,7 @@ class Commands {
      * @returns {integer} Length of action in ms
      **/
     async cameras_forward(rgb = [255, 255, 255]) {
+        const id = uuid_1.v4();
         const off = [0, 0, 0];
         let both;
         let ms;
@@ -243,7 +251,7 @@ class Commands {
                 await this.cam2.set(true);
             }
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(rgb);
+            await this.light.set(rgb, id);
             await delay_1.delay(this.cfg.arduino.serialDelay);
             if (this.cam && this.cam2 && this.cam.arduino.alias.camera === this.cam.arduino.alias.camera_second) {
                 ms = await this.cam.both();
@@ -255,7 +263,7 @@ class Commands {
                 ms = Math.max(...both);
             }
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(off);
+            await this.light.set(off, id);
         }
         catch (err) {
             throw err;
@@ -270,6 +278,7 @@ class Commands {
      * @returns {integer} Length of action in ms
      **/
     async cameras_backward(rgb = [255, 255, 255]) {
+        const id = uuid_1.v4();
         const off = [0, 0, 0];
         let both;
         let ms;
@@ -283,7 +292,7 @@ class Commands {
                 await this.cam2.set(false);
             }
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(rgb);
+            await this.light.set(rgb, id);
             await delay_1.delay(this.cfg.arduino.serialDelay);
             if (this.cam && this.cam2 && this.cam.arduino.alias.camera === this.cam.arduino.alias.camera_second) {
                 ms = await this.cam.both();
@@ -295,7 +304,7 @@ class Commands {
                 ms = Math.max(...both);
             }
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(off);
+            await this.light.set(off, id);
         }
         catch (err) {
             throw err;
@@ -310,6 +319,7 @@ class Commands {
      * @returns {integer} Length of action in ms
      **/
     async camera_forward_camera_second_backward(rgb = [255, 255, 255]) {
+        const id = uuid_1.v4();
         const off = [0, 0, 0];
         let both;
         let ms;
@@ -323,7 +333,7 @@ class Commands {
                 await this.cam2.set(false);
             }
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(rgb);
+            await this.light.set(rgb, id);
             await delay_1.delay(this.cfg.arduino.serialDelay);
             if (this.cam && this.cam2 && this.cam.arduino.alias.camera === this.cam.arduino.alias.camera_second) {
                 ms = await this.cam.both();
@@ -335,7 +345,7 @@ class Commands {
                 ms = Math.max(...both);
             }
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(off);
+            await this.light.set(off, id);
         }
         catch (err) {
             throw err;
@@ -350,6 +360,7 @@ class Commands {
      * @returns {integer} Length of action in ms
      **/
     async camera_backward_camera_second_forward(rgb = [255, 255, 255]) {
+        const id = uuid_1.v4();
         const off = [0, 0, 0];
         let both;
         let ms;
@@ -363,7 +374,7 @@ class Commands {
                 await this.cam2.set(true);
             }
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(rgb);
+            await this.light.set(rgb, id);
             await delay_1.delay(this.cfg.arduino.serialDelay);
             if (this.cam && this.cam2 && this.cam.arduino.alias.camera === this.cam.arduino.alias.camera_second) {
                 ms = await this.cam.both();
@@ -375,7 +386,7 @@ class Commands {
                 ms = Math.max(...both);
             }
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            await this.light.set(off);
+            await this.light.set(off, id);
         }
         catch (err) {
             throw err;

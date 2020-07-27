@@ -63,13 +63,13 @@ class Light {
 	/**
 	 *
 	 **/
-	public async set (rgb : number[], id : string, on : boolean) {
+	public async set (rgb : number[], id : string, on : boolean = true) {
 		const str : string = rgb.join(',');
 		let ms : any;
 		
 		this.state.color = rgb;
 		try {
-			ms = this.arduino.send(this.id, this.cfg.arduino.cmd.light);
+			ms = await this.arduino.send(this.id, this.cfg.arduino.cmd.light);
 		} catch (err) {
 			this.log.error('Error sending light command', err);
 		}
@@ -88,8 +88,17 @@ class Light {
 	 *
 	 **/
 	private async end (rgb : number[], id : string, ms : number) {
+		let res;
+		//console.trace()
 		this.log.info(`Light set to ${rgb.join(',')}`, 'LIGHT', true, true);
-		return await this.ui.send(this.id, { rgb: rgb, id : id, ms: ms });
+		try {
+			//console.dir({ rgb, id, ms })
+			res = await this.ui.send(this.id, { rgb, id, ms });
+		} catch (err) {
+			console.error(err);
+			throw err
+		}
+		return res;
 	}
 }
 
