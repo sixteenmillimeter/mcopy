@@ -1,7 +1,7 @@
 'use strict'
 
 import { createLogger, transports, format } from 'winston';
-import { join } from 'path';
+import { join, normalize } from 'path';
 import { mkdir, exists } from 'fs-extra';
 import { homedir } from 'os';
 
@@ -16,17 +16,19 @@ let transport : any
  **/
 async function logFile () {
 	const homeDir : string = homedir();
-	const linuxDir : string = `/.config/mcopy/`;
+	const linuxDir : string = `/.mcopy/`;
 	const macDir : string = `/Library/Logs/mcopy/`;
 	const winDir : string = `/AppData/Roaming/mcopy/`;
-	let logPath : string = join(homeDir, linuxDir);
+	let logPath : string = normalize(join(homeDir, linuxDir));
 	let dirExists : boolean;
 
 	if (process.platform === 'darwin') {
-		logPath = join(homeDir, macDir);
+		logPath = normalize(join(homeDir, macDir));
 	} else if (process.platform === 'win32') {
-		logPath = join(homeDir, winDir);
+		logPath = normalize(join(homeDir, winDir));
 	}
+	
+	console.log(logPath)
 
 	dirExists = await exists(logPath);
 	

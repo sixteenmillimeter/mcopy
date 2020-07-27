@@ -145,10 +145,9 @@ class Sequencer {
 	 * @param {object} arg Arguments from ipc message
 	 **/
 	public async start (arg : any) {
+		const psbId : number = powerSaveBlocker.start('prevent-display-sleep');
 		let startTime : number = +new Date();
 		let ms : number;
-
-		this.psbId = powerSaveBlocker.start('prevent-display-sleep');
 
 		if (arg && arg.arr) {
 			this.arr = arg.arr; //overwrite sequence
@@ -214,7 +213,7 @@ class Sequencer {
 			await this.cmd.proj.filmout.display.close();
 		}
 
-		powerSaveBlocker.stop(this.psbId)
+		powerSaveBlocker.stop(psbId)
 		this.psbId = null
 
 		ms = ( +new Date() ) - startTime;

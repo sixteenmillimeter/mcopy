@@ -14,17 +14,18 @@ let transport;
  **/
 async function logFile() {
     const homeDir = os_1.homedir();
-    const linuxDir = `/.config/mcopy/`;
+    const linuxDir = `/.mcopy/`;
     const macDir = `/Library/Logs/mcopy/`;
     const winDir = `/AppData/Roaming/mcopy/`;
-    let logPath = path_1.join(homeDir, linuxDir);
+    let logPath = path_1.normalize(path_1.join(homeDir, linuxDir));
     let dirExists;
     if (process.platform === 'darwin') {
-        logPath = path_1.join(homeDir, macDir);
+        logPath = path_1.normalize(path_1.join(homeDir, macDir));
     }
     else if (process.platform === 'win32') {
-        logPath = path_1.join(homeDir, winDir);
+        logPath = path_1.normalize(path_1.join(homeDir, winDir));
     }
+    console.log(logPath);
     dirExists = await fs_extra_1.exists(logPath);
     if (!dirExists) {
         try {

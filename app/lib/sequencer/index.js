@@ -126,9 +126,9 @@ class Sequencer {
      * @param {object} arg Arguments from ipc message
      **/
     async start(arg) {
+        const psbId = electron_1.powerSaveBlocker.start('prevent-display-sleep');
         let startTime = +new Date();
         let ms;
-        this.psbId = electron_1.powerSaveBlocker.start('prevent-display-sleep');
         if (arg && arg.arr) {
             this.arr = arg.arr; //overwrite sequence
         }
@@ -182,7 +182,7 @@ class Sequencer {
         if (this.cmd.proj.filmout.state.enabled === true) {
             await this.cmd.proj.filmout.display.close();
         }
-        electron_1.powerSaveBlocker.stop(this.psbId);
+        electron_1.powerSaveBlocker.stop(psbId);
         this.psbId = null;
         ms = (+new Date()) - startTime;
         //end sequence
