@@ -1,6 +1,6 @@
 'use strict';
 
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import Log = require('log');
 import { powerSaveBlocker } from 'electron'
 
