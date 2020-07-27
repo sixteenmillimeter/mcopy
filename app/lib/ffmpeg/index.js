@@ -201,7 +201,12 @@ class FFMPEG {
             await fs_extra_1.mkdir(tmppath);
         }
         catch (err) {
-            this.log.error(err);
+            if (err.code && err.code === 'EEXIST') {
+                //directory exists
+            }
+            else {
+                this.log.error(err);
+            }
         }
         //ffmpeg -i "${video}" -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"
         return new Promise((resolve, reject) => {

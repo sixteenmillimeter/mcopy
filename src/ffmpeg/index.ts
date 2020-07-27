@@ -249,7 +249,11 @@ class FFMPEG {
 		try {
 			await mkdir(tmppath);
 		} catch (err) {
-			this.log.error(err);
+			if (err.code && err.code === 'EEXIST') {
+				//directory exists
+			} else {
+				this.log.error(err);
+			}
 		}
 
 		//ffmpeg -i "${video}" -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"
