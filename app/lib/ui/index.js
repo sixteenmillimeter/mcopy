@@ -35,23 +35,33 @@ gui.counterUpdate = function (which, raw) {
 	const formattedVal = gui.fmtZero(raw, 6);
 	$(`.${which} .count`).val(formattedVal);
 };
+gui.notifierWorking = true;
 gui.notify = function (title, message) {
 	'use strict';
+	if (!gui.notifierWorking) {
+		return true;
+	}
 	return new Promise((resolve, reject) => {
-		notifier.notify({
-			title: title,
-			message: message,
-			//icon: path.join(__dirname, 'coulson.jpg'), // Absolute path (doesn't work on balloons) 
-			sound: true, // Only Notification Center or Windows Toasters 
-			wait: true // Wait with callback, until user action is taken against notification 
-			}, function (err, response) {
-				// Response is response from notification 
-				if (err) {
-					log.error(`Error with notification`, err);
-					return reject(err);
-				}
-				return resolve(true);
-		});
+		try {
+			notifier.notify({
+				title: title,
+				message: message,
+				//icon: path.join(__dirname, 'coulson.jpg'), // Absolute path (doesn't work on balloons) 
+				sound: true, // Only Notification Center or Windows Toasters 
+				wait: true // Wait with callback, until user action is taken against notification 
+				}, function (err, response) {
+					// Response is response from notification 
+					if (err) {
+						log.error(`Error with notification`, err);
+						return reject(err);
+					}
+					return resolve(true);
+			});
+		} catch (err) {
+			//notify-send is not found
+			//determine an alternate for raspian
+			//this feels like a hack
+		}
 	});
 };
 gui.updateCam = async function (t) {
