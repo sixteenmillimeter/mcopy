@@ -52,12 +52,14 @@ gui.notify = function (title, message) {
 				}, function (err, response) {
 					// Response is response from notification 
 					if (err) {
+						gui.notifierWorking = false;
 						log.error(`Error with notification`, err);
 						return reject(err);
 					}
 					return resolve(true);
 			});
 		} catch (err) {
+			gui.notifierWorking = false;
 			//notify-send is not found
 			//determine an alternate for raspian
 			//this feels like a hack
