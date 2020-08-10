@@ -59,6 +59,7 @@ class Arduino {
 		} catch (err) {
 			throw err
 		}
+		//console.dir(ports)
 		ports.forEach((port : any) => {
 			if (this.known.indexOf(port.path) !== -1) {
 				matches.push(port.path)
