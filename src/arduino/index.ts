@@ -32,6 +32,7 @@ const KNOWN : string[] = [
 
 class Arduino {
 
+	private log : any;
 	private path : any = {}
 	private known : string[] = KNOWN
 	private alias : any = {}
@@ -44,8 +45,14 @@ class Arduino {
 	private confirmExec : any
 
 	constructor () {
-		
+		this.init()
 	}
+
+	async init () {
+		const Log = require('log');
+		this.log = await Log({ label : 'arduino' });
+	}
+
 	/**
 	 * Enumerate all connected devices that might be Arduinos
 	 *
@@ -59,7 +66,8 @@ class Arduino {
 		} catch (err) {
 			throw err
 		}
-		//console.dir(ports)
+		this.log.info('Available ports:')
+		this.log.info(ports.map((port : any) => { return port.path }).join(','))
 		ports.forEach((port : any) => {
 			if (this.known.indexOf(port.path) !== -1) {
 				matches.push(port.path)
@@ -106,6 +114,7 @@ class Arduino {
 	async send (serial : string, cmd : string) {
 		const device : any = this.alias[serial]
 		let results : any
+		console.log(`${cmd} -> ${serial}`)
 		if (this.locks[serial]) {
 			return false
 		}

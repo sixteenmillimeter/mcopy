@@ -35,6 +35,11 @@ class Arduino {
         this.timer = 0;
         this.lock = false;
         this.locks = {};
+        this.init();
+    }
+    async init() {
+        const Log = require('log');
+        this.log = await Log({ label: 'arduino' });
     }
     /**
      * Enumerate all connected devices that might be Arduinos
@@ -50,7 +55,8 @@ class Arduino {
         catch (err) {
             throw err;
         }
-        //console.dir(ports)
+        this.log.info('Available ports:');
+        this.log.info(ports.map((port) => { return port.path; }).join(','));
         ports.forEach((port) => {
             if (this.known.indexOf(port.path) !== -1) {
                 matches.push(port.path);
@@ -100,6 +106,7 @@ class Arduino {
     async send(serial, cmd) {
         const device = this.alias[serial];
         let results;
+        console.log(`${cmd} -> ${serial}`);
         if (this.locks[serial]) {
             return false;
         }
