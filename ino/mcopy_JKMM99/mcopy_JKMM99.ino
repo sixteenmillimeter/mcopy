@@ -57,8 +57,8 @@ boolean debug_state = false;
 //unsigned long now; //to be compared to stored values every loop
 
 //CAMERA CONSTANTS
-const int CAMERA = 2;
-const int CAMERA_DIR = 3;
+const int CAMERA = 2;      //IN1
+const int CAMERA_DIR = 3;  //IN2
 
 const int CAMERA_MOMENT = 240;
 const int CAMERA_FRAME = 600;
@@ -67,13 +67,16 @@ const int CAMERA_FRAME = 600;
 //PROJECTOR CONSTANTS
 const int PROJECTOR_MICROSWITCH = 8;
 
-const int PROJECTOR_FWD = 9;
-const int PROJECTOR_BWD = 10;
+const int PROJECTOR_FWD = 9; //
+const int PROJECTOR_BWD = 10; //
+const int PROJECTOR_ON = 11;
 
 
 const int PROJECTOR_MOMENT = 240;
 const int PROJECTOR_FRAME = 600;
-
+const int PROJECTOR_MICROSWITCH_CLOSED = 0;
+const int PROJECTOR_MICROSWITCH_OPENED = 1;
+const int PROJECTOR_HALF_TIME = 450;
 
 //CAMERA VARIABLES
 boolean cam_dir = true; 
@@ -82,6 +85,7 @@ volatile long cam_time = 0;
 //PROJECTOR VARIABLES
 boolean proj_dir = true; 
 boolean proj_running = false;
+boolean proj_primed = false;
 volatile int proj_micro_state = 0;
 volatile long proj_time = 0;
 
@@ -134,6 +138,7 @@ void pins () {
   pinMode(PROJECTOR_MICROSWITCH, INPUT_PULLUP);
   pinMode(PROJECTOR_FWD, OUTPUT);
   pinMode(PROJECTOR_BWD, OUTPUT);
+  pinMode(PROJECTOR_ON, OUTPUT);
 
   //SET LOW
   digitalWrite(CAMERA, HIGH);
@@ -141,6 +146,7 @@ void pins () {
 
   digitalWrite(PROJECTOR_FWD, LOW);
   digitalWrite(PROJECTOR_FWD, LOW);
+  digitalWrite(PROJECTOR_ON, LOW);
 }
 
 void cmd (char val) {
@@ -204,11 +210,11 @@ void cam_stop () {
 void cam_direction (boolean state) {
   cam_dir = state;
   if (state) {
-    digitalWrite(CAMERA_DIR, LOW);
+    digitalWrite(CAMERA_DIR, HIGH);
     Serial.println(cmd_cam_forward);
     log("cam_direction -> true");
   } else {
-    digitalWrite(CAMERA_DIR, HIGH);
+    digitalWrite(CAMERA_DIR, LOW);
     Serial.println(cmd_cam_backward);
     log("cam_direction -> false");
   }
@@ -218,7 +224,7 @@ void proj_start () {
   if (debug_state) {
     proj_time = millis();
   }
-
+  digitalWrite(PROJECTOR_ON, HIGH);
   if (proj_dir) {
     digitalWrite(PROJECTOR_FWD, HIGH);
   } else {
@@ -230,6 +236,8 @@ void proj_start () {
 
 void proj_stop () {
   //stop both directions
+  delay(10);
+  digitalWrite(PROJECTOR_ON, LOW);
   digitalWrite(PROJECTOR_FWD, LOW);
   digitalWrite(PROJECTOR_BWD, LOW);
 
@@ -245,31 +253,33 @@ void proj_stop () {
 void proj_direction (boolean state) {
   proj_dir = state;
   if (state) {
+    Serial.println(cmd_proj_forward);
     log("proj_direction -> true");
   } else {
+    Serial.println(cmd_proj_backward);
     log("proj_direction -> false");
   }
 }
 
+//LOW=0=CLOSED
+//HIGH=1=OPEN
 void proj_microswitch () {
   int val = digitalRead(PROJECTOR_MICROSWITCH);
-  if (val != proj_micro_state && val == LOW) {
+  long now = millis();
+  if (!proj_primed && val != proj_micro_state && val == PROJECTOR_MICROSWITCH_OPENED) {
     //prime
-    Serial.print("[1] ");
-    Serial.print(val);
-    Serial.print("!=");
-    Serial.println(proj_micro_state);
+    log("projector primed to stop");
     proj_micro_state = val;
-  } else if (val != proj_micro_state && val == HIGH) {
+    proj_primed = true;
+  } else if (proj_primed && val != proj_micro_state 
+        && val == PROJECTOR_MICROSWITCH_CLOSED 
+        && now - proj_time > PROJECTOR_HALF_TIME) {
     //turn off
-    Serial.print("[2] ");
-    Serial.print(val);
-    Serial.print("!=");
-    Serial.println(proj_micro_state);
+    proj_primed = false;
     proj_micro_state = val;
     proj_stop();
   } else {
-    delay(2); //some smothing value
+    //delay(1); //some smothing value
   }
 }
 
