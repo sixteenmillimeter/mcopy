@@ -1,5 +1,5 @@
 {
-  "version": "1.6.4",
+  "version": "1.6.5",
   "ext_port": 1111,
   "profiles": {
     "mcopy": {
@@ -84,6 +84,20 @@
       "label": "Oxberry",
       "cam": {
         "time": 550,
+        "delay": 50,
+        "momentary": 130
+      },
+      "proj": {
+        "time": 1340,
+        "delay": 50,
+        "momentary": 300
+      },
+      "light": false
+    },
+    "norris": {
+      "label": "Norris",
+      "cam": {
+        "time": 650,
         "delay": 50,
         "momentary": 130
       },
