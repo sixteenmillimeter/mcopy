@@ -140,12 +140,12 @@ void pins () {
   pinMode(PROJECTOR_BWD, OUTPUT);
   pinMode(PROJECTOR_ON, OUTPUT);
 
-  //SET LOW
+  //SET DEFAULT
   digitalWrite(CAMERA, HIGH);
   digitalWrite(CAMERA_DIR, HIGH);
 
   digitalWrite(PROJECTOR_FWD, LOW);
-  digitalWrite(PROJECTOR_FWD, LOW);
+  digitalWrite(PROJECTOR_BWD, LOW);
   digitalWrite(PROJECTOR_ON, LOW);
 }
 
@@ -268,7 +268,7 @@ void proj_microswitch () {
   long now = millis();
   if (!proj_primed && val != proj_micro_state && val == PROJECTOR_MICROSWITCH_OPENED) {
     //prime
-    log("projector primed to stop");
+    log("proj_primed => true");
     proj_micro_state = val;
     proj_primed = true;
   } else if (proj_primed && val != proj_micro_state 
