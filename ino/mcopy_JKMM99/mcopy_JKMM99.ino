@@ -285,7 +285,7 @@ void proj_microswitch () {
     proj_micro_state = val; //unneeded?
     proj_stop();
   } else {
-    //delay(1); //some smothing value
+    //delay(2); //some smothing value
   }
 }
 

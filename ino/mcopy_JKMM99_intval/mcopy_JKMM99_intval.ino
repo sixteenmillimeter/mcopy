@@ -310,20 +310,24 @@ void proj_direction (boolean state) {
 void proj_microswitch () {
   int val = digitalRead(PROJECTOR_MICROSWITCH);
   long now = millis();
-  if (!proj_primed && val != proj_micro_state && val == PROJECTOR_MICROSWITCH_OPENED) {
+  if (!proj_primed                            // if not primed
+    && val != proj_micro_state                // AND if state changes
+    && val == PROJECTOR_MICROSWITCH_OPENED    // AND state changes to open
+    && now - proj_time > PROJECTOR_HALF_TIME) { 
     //prime
-    log("projector primed to stop");
+    log("proj_primed => true");
     proj_micro_state = val;
     proj_primed = true;
-  } else if (proj_primed && val != proj_micro_state 
-        && val == PROJECTOR_MICROSWITCH_CLOSED 
-        && now - proj_time > PROJECTOR_HALF_TIME) {
-    //turn off
+  } else if (proj_primed                              //if primed
+        && val != proj_micro_state                    //AND if state changes
+        && val == PROJECTOR_MICROSWITCH_CLOSED        //AND state changes to open
+        && now - proj_time > PROJECTOR_HALF_TIME) {   //AND total elapsed time is greater than half frame time
+    //stop
     proj_primed = false;
-    proj_micro_state = val;
+    proj_micro_state = val; //unneeded?
     proj_stop();
   } else {
-    //delay(1); //some smothing value
+    //delay(2); //some smothing value
   }
 }
 
