@@ -25,7 +25,7 @@ const KNOWN = [
  * Class representing the arduino communication features
  **/
 class Arduino {
-    constructor() {
+    constructor(errorState) {
         this.path = {};
         this.known = KNOWN;
         this.alias = {};
@@ -35,6 +35,7 @@ class Arduino {
         this.timer = 0;
         this.lock = false;
         this.locks = {};
+        this.errorState = errorState;
         this.init();
     }
     async init() {
@@ -168,6 +169,11 @@ class Arduino {
             complete = this.queue[data](ms); //execute callback
             eventEmitter.emit('arduino_end', data);
             delete this.queue[data];
+        }
+        else if (data === 'E') {
+            //error state
+            //stop sequence
+            //throw error in ui
         }
         else {
             //console.log('Received stray "' + data + '"'); //silent to user
@@ -391,10 +397,10 @@ class Arduino {
     }
 }
 if (typeof module !== 'undefined' && module.parent) {
-    module.exports = function (c, ee) {
+    module.exports = function (c, ee, errorState) {
         eventEmitter = ee;
         cfg = c;
-        arduino = new Arduino();
+        arduino = new Arduino(errorState);
         return arduino;
     };
 }
