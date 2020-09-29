@@ -68,6 +68,14 @@ var createWindow = function () {
 	})
 }
 
+var errorState = function () {
+	if (seq && seq.running) {
+		//pause sequence if running
+		seq.pause();
+	}
+	mainWindow.webContents.send('error_state', { stop : true });
+}
+
 var init = async function () {
 	log = await require('log')({})
 
@@ -85,7 +93,7 @@ var init = async function () {
 	display = require('display')(SYSTEM)
 	ffmpeg = require('ffmpeg')(SYSTEM)
 	ffprobe = require('ffprobe')(SYSTEM)
-	arduino = require('arduino')(cfg, ee)
+	arduino = require('arduino')(cfg, ee, errorState)
 
 	dev = require('devices')(arduino, settings, mainWindow)
 

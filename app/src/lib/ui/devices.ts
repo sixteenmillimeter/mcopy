@@ -19,6 +19,7 @@ class Devices {
 	listen () {
 		ipcRenderer.on('ready', this.ready.bind(this));
 		ipcRenderer.on('intval', this.intvalCb.bind(this));
+		ipcRenderer.on('error_state', this.errorState.bind(this));
 	}
 
 	async ready (event : any, arg : any) {
@@ -171,6 +172,13 @@ class Devices {
 			$('#camera_type_arduino').prop('checked', 'checked');
 			$('#intval').removeClass('active');
 		}
+	}
+
+	errorState () {
+		gui.spinner(false);
+		gui.overlay(false);
+		gui.notify('DEVICES', `Hardware error detected`);
+		gui.warn('Error', 'Hardware error detected. Please address before continuing.');
 	}
 }
 

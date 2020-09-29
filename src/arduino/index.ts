@@ -33,18 +33,20 @@ const KNOWN : string[] = [
 class Arduino {
 
 	private log : any;
-	private path : any = {}
-	private known : string[] = KNOWN
-	private alias : any = {}
-	private serial : any = { connect : {}, projector : {}, camera : {}, light : {} }
-	private baud : number = 57600
-	private queue : any = {}
-	private timer : number = 0
-	private lock : boolean = false
-	private locks : any = {}
-	private confirmExec : any
+	private path : any = {};
+	private known : string[] = KNOWN;
+	private alias : any = {};
+	private serial : any = { connect : {}, projector : {}, camera : {}, light : {} };
+	private baud : number = 57600;
+	private queue : any = {};
+	private timer : number = 0;
+	private lock : boolean = false;
+	private locks : any = {};
+	private confirmExec : any;
+	private errorState : Function;
 
-	constructor () {
+	constructor (errorState : Function) {
+		this.errorState = errorState;
 		this.init()
 	}
 
@@ -169,14 +171,18 @@ class Arduino {
 	}
 
 	end (serial : string, data : string) {
-		const end = new Date().getTime();
-		const ms = end - this.timer;
-		let complete;
+		const end : number = new Date().getTime();
+		const ms : number = end - this.timer;
+		let complete : any;
 		if (this.queue[data] !== undefined) {
 			this.locks[serial] = false; 
 			complete = this.queue[data](ms); //execute callback
 			eventEmitter.emit('arduino_end', data);
 			delete this.queue[data];
+		} else if (data === 'E') {
+			//error state
+			//stop sequence
+			//throw error in ui
 		} else {
 			//console.log('Received stray "' + data + '"'); //silent to user
 		}
@@ -397,10 +403,10 @@ class Arduino {
 }
 
 if (typeof module !== 'undefined' && module.parent) {
-	module.exports = function (c : any, ee : any) {
+	module.exports = function (c : any, ee : any, errorState : Function) {
 		eventEmitter = ee
 		cfg = c
-		arduino = new Arduino()
+		arduino = new Arduino(errorState)
 		return arduino
 	}
 }
