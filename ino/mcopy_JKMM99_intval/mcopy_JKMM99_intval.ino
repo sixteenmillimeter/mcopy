@@ -280,7 +280,7 @@ void proj_start () {
 
 void proj_stop () {
   //stop both directions
-  delay(10);
+  //delay(10);
   digitalWrite(PROJECTOR_ON, LOW);
   digitalWrite(PROJECTOR_FWD, LOW);
   digitalWrite(PROJECTOR_BWD, LOW);
@@ -288,7 +288,7 @@ void proj_stop () {
   Serial.println(cmd_projector);
   log("projector()");
   proj_running = false;
-
+  delay(20);
   if (debug_state) {
     Serial.println(millis() - proj_time);
   }
@@ -310,6 +310,7 @@ void proj_direction (boolean state) {
 void proj_microswitch () {
   int val = digitalRead(PROJECTOR_MICROSWITCH);
   long now = millis();
+  
   if (!proj_primed                            // if not primed
     && val != proj_micro_state                // AND if state changes
     && val == PROJECTOR_MICROSWITCH_OPENED    // AND state changes to open
@@ -327,7 +328,7 @@ void proj_microswitch () {
     proj_micro_state = val; //unneeded?
     proj_stop();
   } else {
-    //delay(2); //some smothing value
+    delay(2); //some smothing value
   }
 }
 
