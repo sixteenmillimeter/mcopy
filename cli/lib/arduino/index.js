@@ -164,6 +164,7 @@ class Arduino {
         const end = new Date().getTime();
         const ms = end - this.timer;
         let complete;
+        console.log(`${serial} -> ${data}`);
         if (this.queue[data] !== undefined) {
             this.locks[serial] = false;
             complete = this.queue[data](ms); //execute callback
