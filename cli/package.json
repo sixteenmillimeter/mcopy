@@ -41,7 +41,7 @@
     "serialport": "^8.0.5",
     "settings": "file:lib/settings",
     "spawn": "file:lib/spawn",
-    "systeminformation": "^4.16.0",
+    "systeminformation": "^4.27.11",
     "uuid": "^3.3.3",
     "winston": "^3.2.1"
   },
