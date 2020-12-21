@@ -75,7 +75,7 @@
     "log": "file:lib/log",
     "moment": "^2.27.0",
     "mscript": "file:lib/mscript",
-    "node-notifier": "^7.0.2",
+    "node-notifier": "^8.0.1",
     "proj": "file:lib/proj",
     "request": "^2.88.2",
     "sequencer": "file:lib/sequencer",
