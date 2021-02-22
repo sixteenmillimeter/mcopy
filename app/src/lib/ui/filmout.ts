@@ -138,6 +138,10 @@ class FilmOut {
 			]
 		};
 		let files :  any;
+		let valid : boolean = false;
+		let pathStr : string;
+		let displayName : string;
+    	let ext : string;
 
 		try {
 			files = await dialog.showOpenDialog(options)
@@ -147,11 +151,9 @@ class FilmOut {
 		}
 
     	if (!files) return false;
-    	let valid : boolean = false;
-    	let pathStr : string = files.filePaths[0];
-    	let displayName : string;
-    	let ext : string;
-
+    	
+    	pathStr = files.filePaths[0];
+    	
 		if (pathStr && pathStr !== '') {
 			ext = path.extname(pathStr.toLowerCase());
 			valid = this.extensions.indexOf(ext) === -1 ? false : true;

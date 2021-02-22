@@ -135,6 +135,10 @@ class FilmOut {
                 ]
             };
             let files;
+            let valid = false;
+            let pathStr;
+            let displayName;
+            let ext;
             try {
                 files = yield dialog.showOpenDialog(options);
             }
@@ -144,10 +148,7 @@ class FilmOut {
             }
             if (!files)
                 return false;
-            let valid = false;
-            let pathStr = files.filePaths[0];
-            let displayName;
-            let ext;
+            pathStr = files.filePaths[0];
             if (pathStr && pathStr !== '') {
                 ext = path.extname(pathStr.toLowerCase());
                 valid = this.extensions.indexOf(ext) === -1 ? false : true;
