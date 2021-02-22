@@ -26,14 +26,14 @@
   "homepage": "https://github.com/sixteenmillimeter/mcopy#readme",
   "devDependencies": {
     "@types/electron": "^1.6.10",
-    "@types/fs-extra": "^9.0.1",
+    "@types/fs-extra": "^9.0.7",
     "@types/jimp": "^0.2.28",
-    "@types/node": "^12.12.53",
+    "@types/node": "^14.14.31",
     "@types/request": "^2.48.5",
-    "@types/sharp": "^0.25.1",
-    "@types/uuid": "^8.0.0",
+    "@types/sharp": "^0.27.1",
+    "@types/uuid": "^8.3.0",
     "jsdoc-to-markdown": "^6.0.1",
-    "typescript": "^3.9.7"
+    "typescript": "^4.1.5"
   },
   "dependencies": {
     "arduino": "file:app/lib/arduino",
