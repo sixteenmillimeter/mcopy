@@ -10,7 +10,7 @@
   "scripts": {
     "test": "sh ./scripts/test.sh",
     "docs": "sh ./scripts/docs.sh",
-    "build": "sh ./scripts/build.sh",
+    "compile": "sh ./scripts/compile.sh",
     "patch": "bash ./scripts/version.sh patch",
     "minor": "bash ./scripts/version.sh minor"
   },
