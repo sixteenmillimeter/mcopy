@@ -54,7 +54,8 @@ var createWindow = function () {
 		skipTaskbar: true,
     	toolbar: false,	
 		webPreferences : {
-			nodeIntegration: true
+			nodeIntegration: true,
+			enableRemoteModule: true
 		}
 	})
 	mainWindow.setMenu(null)

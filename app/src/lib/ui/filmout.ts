@@ -153,6 +153,8 @@ class FilmOut {
     	if (!files) return false;
     	
     	pathStr = files.filePaths[0];
+
+    	console.dir(pathStr)
     	
 		if (pathStr && pathStr !== '') {
 			ext = path.extname(pathStr.toLowerCase());
