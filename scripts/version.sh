@@ -6,7 +6,7 @@ npm version --no-git-tag-version ${1}
 version=$(jq -r  '.version' ./package.json)
 echo "VERSION: $version"
 
-declare -a fileArr=("./data/cfg.json" "./app/package.json" "./cli/package.json")
+declare -a fileArr=("./data/cfg.json" "./app/package.json")
 
 for i in "${fileArr[@]}"
 do 
