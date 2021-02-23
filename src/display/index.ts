@@ -24,7 +24,8 @@ class WebView {
 		const prefs : any = {
 			webPreferences: {
       			nodeIntegration: true,
-      			allowRunningInsecureContent: false
+      			allowRunningInsecureContent: false,
+      			enableRemoteModule: true
     		},
 			width: 800, 
 			height: 600,
