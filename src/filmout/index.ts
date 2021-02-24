@@ -178,8 +178,10 @@ class FilmOut {
 			this.state.still = !isAnimated;
 		} else if (this.stillExtensions.indexOf(ext) !== -1) {
 			this.state.still = true;
+			this.state.directory = false;
 		} else if (this.videoExtensions.indexOf(ext) !== -1) {
 			this.state.still = false;
+			this.state.directory = false;
 		} else {
 			this.log.error(`File is not of a valid file type`, 'FILMOUT', true, true);
 			return false;

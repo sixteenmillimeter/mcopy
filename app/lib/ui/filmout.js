@@ -150,7 +150,6 @@ class FilmOut {
             let linuxChoice = 0;
             if (process.platform === 'linux') {
                 linuxChoice = yield gui.choice(linuxMessage, linuxChoices);
-                console.log(linuxChoice);
                 if (linuxChoice === 0) {
                     options.properties = ['openFile'];
                 }
@@ -174,11 +173,13 @@ class FilmOut {
                 pathStr = files.filePaths[0];
                 displayName = path.basename(pathStr);
                 valid = this.validateSelection(files);
-                log.info(`Selected "${displayName}"`, 'FILMOUT', true);
-                elem.attr('data-file', pathStr);
-                elem.val(displayName);
-                $('#filmout_file').val(displayName);
-                this.useFile();
+                if (valid) {
+                    log.info(`Selected "${displayName}"`, 'FILMOUT', true);
+                    elem.attr('data-file', pathStr);
+                    elem.val(displayName);
+                    $('#filmout_file').val(displayName);
+                    this.useFile();
+                }
             }
             if (!valid) {
                 gui.warn('Invalid selection', `The selection "${displayName}" is not an accepted video, image or folder containing an image sequence.`);
@@ -208,7 +209,7 @@ class FilmOut {
                 fileList = fs.readdirSync(pathStr);
                 fileList = fileList.filter((file) => {
                     let ext = path.extname(file).toLowerCase();
-                    if (this.sequenceExtensions.indexOf(ext)) {
+                    if (this.sequenceExtensions.indexOf(ext) !== -1) {
                         return true;
                     }
                     return false;
@@ -216,11 +217,16 @@ class FilmOut {
                 if (fileList.length > 0) {
                     valid = true;
                 }
+                else {
+                    valid = false;
+                }
             }
-            ext = path.extname(pathStr.toLowerCase());
-            valid = this.videoExtensions.indexOf(ext) === -1;
-            if (!valid) {
-                valid = this.stillExtensions.indexOf(ext) === -1;
+            else {
+                ext = path.extname(pathStr.toLowerCase());
+                valid = this.videoExtensions.indexOf(ext) === -1;
+                if (!valid) {
+                    valid = this.stillExtensions.indexOf(ext) === -1;
+                }
             }
         }
         return valid;
@@ -288,6 +294,7 @@ class FilmOut {
             $('#filmout_stats_video_name').text(state.fileName);
             $('#filmout_stats_video_size').text(`${state.info.width} x ${state.info.height}`);
             $('#filmout_stats_video_frames').text(`${state.frames} frames`);
+            this.reset();
             gui.updateState();
             this.previewFrame();
             if (!this.state.directory) {
@@ -357,6 +364,10 @@ class FilmOut {
         if (this.state.frame < 0) {
             this.state.frame = this.state.frames - 1;
         }
+        $('#filmout_position').val(this.state.frame).trigger('change');
+    }
+    reset() {
+        this.state.frame = 0;
         $('#filmout_position').val(this.state.frame).trigger('change');
     }
     preview() {
