@@ -46,9 +46,9 @@ let filmout;
 class FilmOut {
     constructor() {
         this.id = 'filmout';
-        this.extensions = ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4',
-            '.gif',
-            '.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
+        this.videoExtensions = ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4',
+            '.gif'];
+        this.imageExtensions = ['.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
         this.displays = [];
         this.state = {
             frame: 0,
@@ -120,12 +120,16 @@ class FilmOut {
         this.state.display = id;
         ipcRenderer.send('display', { display: id });
     }
+    /**
+     * Select a file from the showOpenDialog method. Save the file
+     * to an <input type=file> element if the selection is valid.
+     **/
     selectFile() {
         return __awaiter(this, void 0, void 0, function* () {
             const elem = $('#digital');
             const options = {
                 title: `Select video or image sequence`,
-                properties: [`openFile`],
+                properties: [`multiSelection`],
                 defaultPath: 'c:/',
                 filters: [
                     {
@@ -148,24 +152,61 @@ class FilmOut {
             }
             if (!files)
                 return false;
-            pathStr = files.filePaths[0];
-            console.dir(pathStr);
-            if (pathStr && pathStr !== '') {
-                ext = path.extname(pathStr.toLowerCase());
-                valid = this.extensions.indexOf(ext) === -1 ? false : true;
-                log.info(pathStr);
-                if (!valid) {
-                    return false;
-                }
-                log.info(`Selected video ${pathStr.split('/').pop()}`, 'FILMOUT', true);
+            if (files.filePaths.length > 0) {
+                pathStr = files.filePaths[0];
+                displayName = path.basename(pathStr);
+                valid = this.validateSelection(files);
+                log.info(`Selected "${displayName}"`, 'FILMOUT', true);
                 elem.attr('data-file', pathStr);
-                displayName = pathStr.split('/').pop();
                 elem.val(displayName);
                 $('#filmout_file').val(displayName);
                 this.useFile();
             }
+            if (!valid) {
+                gui.warn('Invalid selection', `The selection "${displayName}" is not an accepted video, image or folder containing an image sequence.`);
+                return false;
+            }
         });
     }
+    /**
+     * Validate the selection to be of an approved selection or a directory
+     * containing images of an approved extension.
+     **/
+    validateSelection(files) {
+        let ext;
+        let pathStr;
+        let dir = false;
+        let valid = false;
+        let fileList = [];
+        if (files.filePaths.length === 1) {
+            pathStr = files.filePaths[0];
+            dir = fs.lstatSync(pathStr).isDirectory();
+            if (dir) {
+                log.info('The selection is a directory');
+                fileList = fs.readdirSync(pathStr);
+                fileList = fileList.filter((file) => {
+                    let ext = path.extname(file).toLowerCase();
+                    if (this.imageExtensions.indexOf(ext)) {
+                        return true;
+                    }
+                    return false;
+                });
+                if (fileList.length > 0) {
+                    valid = true;
+                }
+            }
+            ext = path.extname(pathStr.toLowerCase());
+            valid = this.videoExtensions.indexOf(ext) === -1;
+            if (!valid) {
+                valid = this.imageExtensions.indexOf(ext) === -1;
+            }
+            return valid;
+        }
+        return false;
+    }
+    /**
+     * Prompt the user to use the selected file/files or cancel
+     **/
     useFile() {
         return __awaiter(this, void 0, void 0, function* () {
             const elem = $('#digital');

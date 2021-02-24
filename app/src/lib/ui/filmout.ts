@@ -4,6 +4,7 @@
 
 declare var dialog : any;
 declare var path : any;
+declare var fs : any;
 
 /**
  * Determine the greatest common denominator
@@ -43,9 +44,9 @@ let filmout : FilmOut;
 
 class FilmOut {
 	private id : string = 'filmout';
-	private extensions : string[] =  ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4', 
-									  '.gif',
-									  '.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
+	private videoExtensions : string[] =  ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4', 
+									  '.gif'];
+	private imageExtensions : string[] = ['.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
 	private displays : any[] = [];
 	private state : any = {
 		frame : 0,
@@ -124,11 +125,15 @@ class FilmOut {
 		this.state.display = id;
 		ipcRenderer.send('display', { display : id });
 	}
+	/**
+	 * Select a file from the showOpenDialog method. Save the file
+	 * to an <input type=file> element if the selection is valid.
+	 **/
 	async selectFile () {
 		const elem : any = $('#digital');
 		const options : any = {
 			title : `Select video or image sequence`,
-			properties : [`openFile`], // openDirectory, multiSelection, openFile
+			properties : [`multiSelection`], // openDirectory, multiSelection, openFile
 			defaultPath: 'c:/',
 			filters : [
 				{
@@ -144,34 +149,70 @@ class FilmOut {
     	let ext : string;
 
 		try {
-			files = await dialog.showOpenDialog(options)
+			files = await dialog.showOpenDialog(options);
 		} catch (err) {
 			log.error(err);
-			return false
+			return false;
 		}
-
     	if (!files) return false;
     	
-    	pathStr = files.filePaths[0];
-
-    	console.dir(pathStr)
-    	
-		if (pathStr && pathStr !== '') {
-			ext = path.extname(pathStr.toLowerCase());
-			valid = this.extensions.indexOf(ext) === -1 ? false : true;
-			log.info(pathStr)
-			if (!valid) {
-				return false;
-			}
-			log.info(`Selected video ${pathStr.split('/').pop()}`, 'FILMOUT', true);
+		if (files.filePaths.length > 0) {
+			pathStr = files.filePaths[0];
+			displayName = path.basename(pathStr);
+			valid = this.validateSelection(files);
+			log.info(`Selected "${displayName}"`, 'FILMOUT', true);
 			elem.attr('data-file', pathStr);
-			displayName = pathStr.split('/').pop();
 			elem.val(displayName);
 			$('#filmout_file').val(displayName);
-
 			this.useFile();
 		}
+
+		if (!valid) {
+			gui.warn('Invalid selection', `The selection "${displayName}" is not an accepted video, image or folder containing an image sequence.`);
+			return false;
+		}
 	}
+
+	/**
+	 * Validate the selection to be of an approved selection or a directory
+	 * containing images of an approved extension.
+	 **/
+	validateSelection (files : any) {
+		let ext : string;
+		let pathStr : string;
+		let dir : boolean = false;
+		let valid : boolean = false;
+		let fileList : string[] = [];
+		if (files.filePaths.length === 1) {
+			pathStr = files.filePaths[0];
+			dir = fs.lstatSync(pathStr).isDirectory();
+			if (dir) {
+				log.info('The selection is a directory');
+				fileList = fs.readdirSync(pathStr);
+				fileList = fileList.filter((file : string) => {
+					let ext : string = path.extname(file).toLowerCase();
+					if (this.imageExtensions.indexOf(ext)) {
+						return true;
+					}
+					return false;
+				});
+				if (fileList.length > 0) {
+					valid = true;
+				}
+			}
+			ext = path.extname(pathStr.toLowerCase());
+			valid = this.videoExtensions.indexOf(ext) === -1;
+			if (!valid) {
+				valid = this.imageExtensions.indexOf(ext) === -1;
+			}
+			return valid;
+		}
+		return false;
+	}
+
+	/**
+	 * Prompt the user to use the selected file/files or cancel
+	 **/
 	async useFile () {
 		const elem : any = $('#digital');
 		const filePath : string = elem.attr('data-file');
