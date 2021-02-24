@@ -795,9 +795,11 @@ button:focus {
 }
 #path_bar select {
   line-height: 41px;
-  height: 41px;
+  height: 37px;
   margin-right: 5px;
   float: right;
+  box-sizing: content-box;
+  padding: 0 0 0 8px;
 }
 #filmout_monitor {
   display: none;
