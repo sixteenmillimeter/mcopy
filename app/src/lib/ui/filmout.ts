@@ -47,6 +47,7 @@ class FilmOut {
 	private videoExtensions : string[] =  ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4', 
 									  '.gif'];
 	private stillExtensions : string[] = ['.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
+	private sequenceExtensions : string[] = ['.png', '.jpg', '.jpeg'];
 	private displays : any[] = [];
 	private state : any = {
 		frame : 0,
@@ -131,9 +132,10 @@ class FilmOut {
 	 **/
 	async selectFile () {
 		const elem : any = $('#digital');
+		const properties : string[] = [`openFile`, `openDirectory`];
 		const options : any = {
 			title : `Select video or image sequence`,
-			properties : [`openFile`, `openDirectory`], // openDirectory, multiSelection, openFile
+			properties, // openDirectory, multiSelection, openFile
 			defaultPath: 'c:/',
 			filters : [
 				{
@@ -147,6 +149,20 @@ class FilmOut {
 		let pathStr : string;
 		let displayName : string;
     	let ext : string;
+    	const linuxMessage : string = `Do you want to use a single file (video or still image) or a folder containing an image sequence?`;
+    	const linuxChoices : string[] = ['File', 'Folder', 'Cancel'];
+    	let linuxChoice : number = 0;
+
+    	if (process.platform === 'linux') {
+    		linuxChoice = await gui.choice(linuxMessage, linuxChoices);
+    		if (linuxChoice === 0) {
+    			options.properties = ['openFile'];
+    		} else if (linuxChoice === 1) {
+    			options.properties = ['openDirectory'];
+    		} else {
+    			return false;
+    		}
+	    }
 
 		try {
 			files = await dialog.showOpenDialog(options);
@@ -195,7 +211,7 @@ class FilmOut {
 				fileList = fs.readdirSync(pathStr);
 				fileList = fileList.filter((file : string) => {
 					let ext : string = path.extname(file).toLowerCase();
-					if (this.stillExtensions.indexOf(ext)) {
+					if (this.sequenceExtensions.indexOf(ext)) {
 						return true;
 					}
 					return false;
@@ -227,7 +243,7 @@ class FilmOut {
 		};
 
 		if (filePath && filePath !== '') {
-			proceed = await gui.confirm(`Are you sure you want to use ${fileName}?`);
+			proceed = await gui.confirm(`Are you sure you want to use ${fileName}?`, 'No');
 		} else {
 			this.selectFile();
 		}
@@ -306,7 +322,7 @@ class FilmOut {
 		let proceed = false;
 
 		if (this.state.path && this.state.path !== '') {
-			proceed = await gui.confirm(`Export all frames of ${this.state.name}? This may take a while, but will allow filmout sequences to run faster.`);
+			proceed = await gui.confirm(`Export all frames of ${this.state.name}? This may take a while, but will allow filmout sequences to run faster.`, 'No');
 		}
 		
 		if (proceed) {

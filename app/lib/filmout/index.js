@@ -27,6 +27,7 @@ class FilmOut {
         this.id = 'filmout';
         this.videoExtensions = ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4'];
         this.stillExtensions = ['.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
+        this.sequenceExtensions = ['.png', '.jpg', '.jpeg'];
         this.gifExtension = '.gif';
         this.state = {
             frame: 0,
@@ -346,7 +347,7 @@ class FilmOut {
         }
         frameList = frameList.filter((fileName) => {
             let ext = path_1.extname(fileName);
-            if (this.stillExtensions.indexOf(ext) !== -1) {
+            if (this.sequenceExtensions.indexOf(ext) !== -1) {
                 return true;
             }
             return false;

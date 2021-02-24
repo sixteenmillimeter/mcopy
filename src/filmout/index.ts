@@ -16,6 +16,7 @@ class FilmOut {
 	private id : string = 'filmout';
 	private videoExtensions : string[] =  ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4']; 
 	private stillExtensions : string[] = ['.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
+	private sequenceExtensions : string[] = ['.png', '.jpg', '.jpeg'];
 	private gifExtension : string = '.gif';
 	public state : any = {
 		frame : 0,
@@ -356,7 +357,7 @@ class FilmOut {
 
 		frameList = frameList.filter((fileName : string) => {
 			let ext : string = extname(fileName);
-			if (this.stillExtensions.indexOf(ext) !== -1) {
+			if (this.sequenceExtensions.indexOf(ext) !== -1) {
 				return true;
 			}
 			return false;

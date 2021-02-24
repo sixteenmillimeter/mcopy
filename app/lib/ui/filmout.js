@@ -49,6 +49,7 @@ class FilmOut {
         this.videoExtensions = ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4',
             '.gif'];
         this.stillExtensions = ['.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
+        this.sequenceExtensions = ['.png', '.jpg', '.jpeg'];
         this.displays = [];
         this.state = {
             frame: 0,
@@ -127,9 +128,10 @@ class FilmOut {
     selectFile() {
         return __awaiter(this, void 0, void 0, function* () {
             const elem = $('#digital');
+            const properties = [`openFile`, `openDirectory`];
             const options = {
                 title: `Select video or image sequence`,
-                properties: [`openFile`, `openDirectory`],
+                properties,
                 defaultPath: 'c:/',
                 filters: [
                     {
@@ -143,6 +145,22 @@ class FilmOut {
             let pathStr;
             let displayName;
             let ext;
+            const linuxMessage = `Do you want to use a single file (video or still image) or a folder containing an image sequence?`;
+            const linuxChoices = ['File', 'Folder', 'Cancel'];
+            let linuxChoice = 0;
+            if (process.platform === 'linux') {
+                linuxChoice = yield gui.choice(linuxMessage, linuxChoices);
+                console.log(linuxChoice);
+                if (linuxChoice === 0) {
+                    options.properties = ['openFile'];
+                }
+                else if (linuxChoice === 1) {
+                    options.properties = ['openDirectory'];
+                }
+                else {
+                    return false;
+                }
+            }
             try {
                 files = yield dialog.showOpenDialog(options);
             }
@@ -190,7 +208,7 @@ class FilmOut {
                 fileList = fs.readdirSync(pathStr);
                 fileList = fileList.filter((file) => {
                     let ext = path.extname(file).toLowerCase();
-                    if (this.stillExtensions.indexOf(ext)) {
+                    if (this.sequenceExtensions.indexOf(ext)) {
                         return true;
                     }
                     return false;
@@ -221,7 +239,7 @@ class FilmOut {
                 fileName
             };
             if (filePath && filePath !== '') {
-                proceed = yield gui.confirm(`Are you sure you want to use ${fileName}?`);
+                proceed = yield gui.confirm(`Are you sure you want to use ${fileName}?`, 'No');
             }
             else {
                 this.selectFile();
@@ -296,7 +314,7 @@ class FilmOut {
         return __awaiter(this, void 0, void 0, function* () {
             let proceed = false;
             if (this.state.path && this.state.path !== '') {
-                proceed = yield gui.confirm(`Export all frames of ${this.state.name}? This may take a while, but will allow filmout sequences to run faster.`);
+                proceed = yield gui.confirm(`Export all frames of ${this.state.name}? This may take a while, but will allow filmout sequences to run faster.`, 'No');
             }
             if (proceed) {
                 gui.overlay(true);

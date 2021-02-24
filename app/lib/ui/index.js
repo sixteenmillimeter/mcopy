@@ -227,13 +227,22 @@ gui.info = async function (title, message) {
 	};
 	return dialog.showMessageBox(config);
 };
-gui.confirm = async function (message) {
+gui.confirm = async function (message, cancel = 'Cancel') {
 	const config = {
-		buttons : ['Yes', 'Cancel'],
+		buttons : ['Yes', cancel],
 		message
 	}
 	const res = await dialog.showMessageBox(config);
 	return res.response === 0;
+};
+gui.choice = async function (message, choices) {
+	const config = {
+		buttons : choices,
+		defaultId : 0,
+		message
+	}
+	const res = await dialog.showMessageBox(config);
+	return res.response;
 };
 gui.warn = async function (title, message) {
 	'use strict';
