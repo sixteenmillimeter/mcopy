@@ -48,7 +48,7 @@ class FilmOut {
         this.id = 'filmout';
         this.videoExtensions = ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4',
             '.gif'];
-        this.imageExtensions = ['.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
+        this.stillExtensions = ['.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
         this.displays = [];
         this.state = {
             frame: 0,
@@ -129,7 +129,7 @@ class FilmOut {
             const elem = $('#digital');
             const options = {
                 title: `Select video or image sequence`,
-                properties: [`multiSelection`],
+                properties: [`openFile`, `openDirectory`],
                 defaultPath: 'c:/',
                 filters: [
                     {
@@ -171,6 +171,10 @@ class FilmOut {
     /**
      * Validate the selection to be of an approved selection or a directory
      * containing images of an approved extension.
+     *
+     * @param {array} files List of files to validate their types
+     *
+     * @returns {boolean} Whether or not the selection is valid
      **/
     validateSelection(files) {
         let ext;
@@ -186,7 +190,7 @@ class FilmOut {
                 fileList = fs.readdirSync(pathStr);
                 fileList = fileList.filter((file) => {
                     let ext = path.extname(file).toLowerCase();
-                    if (this.imageExtensions.indexOf(ext)) {
+                    if (this.stillExtensions.indexOf(ext)) {
                         return true;
                     }
                     return false;
@@ -198,11 +202,10 @@ class FilmOut {
             ext = path.extname(pathStr.toLowerCase());
             valid = this.videoExtensions.indexOf(ext) === -1;
             if (!valid) {
-                valid = this.imageExtensions.indexOf(ext) === -1;
+                valid = this.stillExtensions.indexOf(ext) === -1;
             }
-            return valid;
         }
-        return false;
+        return valid;
     }
     /**
      * Prompt the user to use the selected file/files or cancel
@@ -254,7 +257,6 @@ class FilmOut {
             if (light.disabled) {
                 //light.enable();
             }
-            //console.dir(state);
             this.state.frame = 0;
             this.state.frames = state.frames;
             this.state.seconds = state.seconds;
@@ -263,13 +265,16 @@ class FilmOut {
             this.state.height = state.info.height;
             this.state.name = state.fileName;
             this.state.path = state.path;
+            this.state.directory = state.directory;
             $('#seq_loop').val(`${state.frames - 1}`).trigger('change');
             $('#filmout_stats_video_name').text(state.fileName);
             $('#filmout_stats_video_size').text(`${state.info.width} x ${state.info.height}`);
             $('#filmout_stats_video_frames').text(`${state.frames} frames`);
             gui.updateState();
             this.previewFrame();
-            this.preExport();
+            if (!this.state.directory) {
+                this.preExport();
+            }
         }
         else {
             $('#projector_type_digital').prop('checked', 'checked');

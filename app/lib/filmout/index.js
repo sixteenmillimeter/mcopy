@@ -37,7 +37,8 @@ class FilmOut {
             directory: false,
             info: {},
             dir: true,
-            enabled: false
+            enabled: false,
+            files: []
         };
         this.display = display;
         this.ffmpeg = ffmpeg;
@@ -140,8 +141,21 @@ class FilmOut {
         let isAnimated = false;
         let info;
         let ext;
+        let stats;
+        let frameList;
+        try {
+            stats = await fs_extra_1.lstat(arg.path);
+        }
+        catch (err) {
+            this.log.error(err, 'FILMOUT', true, true);
+            return false;
+        }
         ext = path_1.extname(arg.fileName.toLowerCase());
-        if (ext === this.gifExtension) {
+        if (stats.isDirectory()) {
+            this.state.directory = true;
+            this.state.still = false;
+        }
+        else if (ext === this.gifExtension) {
             try {
                 isAnimated = await this.isGifAnimated(arg.path);
             }
@@ -169,7 +183,29 @@ class FilmOut {
             this.log.error(err, 'FILMOUT', true, true);
             throw err;
         }
-        if (this.state.still) {
+        if (this.state.directory) {
+            try {
+                frameList = await this.dirList(arg.path);
+            }
+            catch (err) {
+                this.log.error(err, 'FILMOUT', true, true);
+                this.state.enabled = false;
+                await this.ui.send(this.id, { valid: false });
+                return false;
+            }
+            try {
+                info = await this.dirInfo(frameList);
+            }
+            catch (err) {
+                this.log.error(err, 'FILMOUT', true, true);
+                this.state.enabled = false;
+                await this.ui.send(this.id, { valid: false });
+                return false;
+            }
+            frames = frameList.length;
+            this.state.files = frameList;
+        }
+        else if (this.state.still) {
             try {
                 info = await this.stillInfo(arg.path);
             }
@@ -206,12 +242,15 @@ class FilmOut {
         this.state.fileName = arg.fileName;
         this.state.frames = frames;
         this.state.info = info;
-        //this.state.hash = this.hash(arg.path);
+        this.state.hash = this.hash(arg.path);
         if (info.seconds) {
             this.state.seconds = info.seconds;
         }
         else if (info.fps && frames) {
             this.state.seconds = frames / info.fps;
+        }
+        else if (this.state.directory) {
+            this.state.seconds = frames / 24;
         }
         this.log.info(`Opened ${this.state.fileName}`, 'FILMOUT', true, true);
         this.log.info(`Frames : ${frames}`, 'FILMOUT', true, true);
@@ -255,7 +294,7 @@ class FilmOut {
         return animated_gif_detector_1.default(gifBuffer);
     }
     /**
-     * Return information on a still image using the sharp module
+     * Return information on a still image using the Jimp module
      *
      * @param {string} pathStr Path to gif to check
      *
@@ -270,6 +309,53 @@ class FilmOut {
             this.log.error(err, 'FILMOUT', true, true);
         }
         return info;
+    }
+    /**
+     * Return information on the first still image found in a
+     * directory using the Jimp module.
+     *
+     * @param {array} images List of image paths
+     *
+     * @returns {object} Info about first image
+     **/
+    async dirInfo(images) {
+        let info;
+        try {
+            info = await this.stillInfo(images[0]);
+        }
+        catch (err) {
+            this.log.error(err, 'FILMOUT', true, true);
+        }
+        return info;
+    }
+    /**
+     * Returns a list of images within a directory, filtered
+     * for supported types and sorted.
+     *
+     * @param {string} pathStr Path to directory
+     *
+     * @returns {array} Array of image paths
+     **/
+    async dirList(pathStr) {
+        let frameList = [];
+        try {
+            frameList = await fs_extra_1.readdir(pathStr);
+        }
+        catch (err) {
+            this.log.error(err, 'FILMOUT', true, true);
+        }
+        frameList = frameList.filter((fileName) => {
+            let ext = path_1.extname(fileName);
+            if (this.stillExtensions.indexOf(ext) !== -1) {
+                return true;
+            }
+            return false;
+        });
+        frameList.sort();
+        frameList = frameList.map((fileName) => {
+            return path_1.join(pathStr, fileName);
+        });
+        return frameList;
     }
     /**
      * Preview a frame from the selected video.

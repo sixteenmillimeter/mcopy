@@ -106,7 +106,7 @@ class FFMPEG {
      **/
     async frame(state, light) {
         const frameNum = state.frame;
-        const video = state.path;
+        const video = state.directory ? state.files[frameNum] : state.path;
         const w = state.info.width;
         const h = state.info.height;
         const padded = this.padded_frame(frameNum);
@@ -118,8 +118,12 @@ class FFMPEG {
         let output;
         let fileExists = false;
         let scale = '';
+        if (state.directory) {
+            return video;
+        }
         if (w && h) {
             scale = `,scale=${w}:${h}`;
+            [];
         }
         tmpoutput = path_1.join(this.TMPDIR, `${state.hash}-export-${padded}.${ext}`);
         try {

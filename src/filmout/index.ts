@@ -1,8 +1,8 @@
 'use strict';
 
 import { default as  animated } from 'animated-gif-detector';
-import { extname } from 'path';
-import { readFile, lstat } from 'fs-extra';
+import { extname, join } from 'path';
+import { readFile, lstat, readdir } from 'fs-extra';
 import { delay } from 'delay';
 import { createHash } from 'crypto';
 import Jimp from 'jimp';
@@ -26,7 +26,8 @@ class FilmOut {
 		directory : false,
 		info : {},
 		dir : true,
-		enabled : false
+		enabled : false,
+		files : []
 	};
 	private display : any;
 	private ffmpeg : any;
@@ -150,10 +151,22 @@ class FilmOut {
 		let isAnimated : boolean = false;
 		let info : any;
 		let ext : string;
+		let stats : any;
+		let frameList : string[];
+
+		try {
+			stats = await lstat(arg.path);
+		} catch (err) {
+			this.log.error(err, 'FILMOUT', true, true);
+			return false;
+		}
 
 		ext = extname(arg.fileName.toLowerCase());
 
-		if (ext === this.gifExtension) {
+		if (stats.isDirectory()) {
+			this.state.directory = true;
+			this.state.still = false;
+		} else if (ext === this.gifExtension) {
 			try {
 				isAnimated = await this.isGifAnimated(arg.path);
 			} catch (err) {
@@ -178,7 +191,27 @@ class FilmOut {
 			throw err;
 		}
 
-		if (this.state.still) {
+		if (this.state.directory) {
+			try {
+				frameList = await this.dirList(arg.path);
+			} catch (err) {
+				this.log.error(err, 'FILMOUT', true, true);
+				this.state.enabled = false;
+				await this.ui.send(this.id, { valid : false });
+				return false;
+			}
+
+			try {
+				info = await this.dirInfo(frameList);
+			} catch (err) {
+				this.log.error(err, 'FILMOUT', true, true);
+				this.state.enabled = false;
+				await this.ui.send(this.id, { valid : false });
+				return false;
+			}
+			frames = frameList.length;
+			this.state.files = frameList;
+		} else if (this.state.still) {
 			try {
 				info = await this.stillInfo(arg.path);
 			} catch (err) {
@@ -213,12 +246,14 @@ class FilmOut {
 		this.state.fileName = arg.fileName;
 		this.state.frames = frames;
 		this.state.info = info;
-		//this.state.hash = this.hash(arg.path);
+		this.state.hash = this.hash(arg.path);
 
 		if (info.seconds) {
 			this.state.seconds = info.seconds;
 		} else if (info.fps && frames) {
 			this.state.seconds = frames / info.fps;
+		} else if (this.state.directory) {
+			this.state.seconds = frames / 24;
 		}
 
 		this.log.info(`Opened ${this.state.fileName}`, 'FILMOUT', true, true);
@@ -265,7 +300,7 @@ class FilmOut {
 		return animated(gifBuffer);
 	}
 	/**
-	 * Return information on a still image using the sharp module
+	 * Return information on a still image using the Jimp module
 	 *
 	 * @param {string} pathStr Path to gif to check
 	 *
@@ -282,6 +317,60 @@ class FilmOut {
 		
 		return info;
 	}
+
+	/**
+	 * Return information on the first still image found in a
+	 * directory using the Jimp module.
+	 *
+	 * @param {array} images List of image paths
+	 *
+	 * @returns {object} Info about first image
+	 **/
+	async dirInfo (images : string[]) {
+		let info : any;
+
+		try {
+			info = await this.stillInfo(images[0]);
+		} catch (err) {
+			this.log.error(err, 'FILMOUT', true, true);
+		}
+
+		return info;
+	}
+
+	/**
+	 * Returns a list of images within a directory, filtered
+	 * for supported types and sorted.
+	 *
+	 * @param {string} pathStr Path to directory
+	 *
+	 * @returns {array} Array of image paths
+	 **/
+	async dirList (pathStr : string) {
+		let frameList : string[] = [];
+		try {
+			frameList = await readdir(pathStr)
+		} catch (err) {
+			this.log.error(err, 'FILMOUT', true, true);
+		}
+
+		frameList = frameList.filter((fileName : string) => {
+			let ext : string = extname(fileName);
+			if (this.stillExtensions.indexOf(ext) !== -1) {
+				return true;
+			}
+			return false;
+		});
+
+		frameList.sort();
+
+		frameList = frameList.map((fileName : string) => {
+			return join(pathStr, fileName);
+		});
+
+		return frameList;
+	}
+
 	/**
 	 * Preview a frame from the selected video.
 	 *

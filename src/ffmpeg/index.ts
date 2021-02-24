@@ -15,6 +15,8 @@ interface FilmoutState {
 	hash : string;
 	info : any;
 	frames?: number;
+	directory?: boolean;
+	files?: string[];
 }
 
 interface StdErr {
@@ -139,7 +141,7 @@ class FFMPEG {
 	 **/
 	public async frame (state : FilmoutState, light : any) {
 		const frameNum : number = state.frame;
-		const video : string = state.path;
+		const video : string = state.directory ? state.files[frameNum] : state.path;
 		const w : number = state.info.width;
 		const h : number = state.info.height;
 		const padded : string = this.padded_frame(frameNum);
@@ -149,11 +151,15 @@ class FFMPEG {
 		let tmpoutput : string;
 		let cmd : string;
 		let output : any;
-		let fileExists = false;
-
+		let fileExists : boolean = false;
 		let scale : string = '';
+
+		if (state.directory) {
+			return video;
+		}
+
 		if (w && h) {
-			scale = `,scale=${w}:${h}`;
+			scale = `,scale=${w}:${h}`;[]
 		}
 
 		tmpoutput = join(this.TMPDIR, `${state.hash}-export-${padded}.${ext}`);
