@@ -34,6 +34,7 @@ class FilmOut {
             still: false,
             path: null,
             fileName: null,
+            directory: false,
             info: {},
             dir: true,
             enabled: false
@@ -205,7 +206,7 @@ class FilmOut {
         this.state.fileName = arg.fileName;
         this.state.frames = frames;
         this.state.info = info;
-        this.state.hash = this.hash(arg.path);
+        //this.state.hash = this.hash(arg.path);
         if (info.seconds) {
             this.state.seconds = info.seconds;
         }
