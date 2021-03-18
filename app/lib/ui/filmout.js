@@ -181,7 +181,7 @@ class FilmOut {
                     this.useFile();
                 }
             }
-            if (!valid) {
+            if (!valid && typeof files.cancelled !== 'undefined') {
                 gui.warn('Invalid selection', `The selection "${displayName}" is not an accepted video, image or folder containing an image sequence.`);
                 return false;
             }
@@ -253,7 +253,7 @@ class FilmOut {
             if (proceed) {
                 gui.overlay(true);
                 gui.spinner(true, `Getting info about ${fileName}`);
-                ipcRenderer.send('filmout', obj);
+                ipcRenderer.send(this.id, obj);
             }
             else {
                 $('#projector_type_digital').prop('checked', 'checked');
@@ -310,7 +310,7 @@ class FilmOut {
         const frameStr = $('#filmout_position').val();
         const frame = parseInt(frameStr, 10);
         this.state.frame = frame;
-        ipcRenderer.send('preview_frame', { state: this.state });
+        ipcRenderer.send('preview_frame', { frame });
     }
     onFrame(evt, args) {
         const elem = $('#filmout');

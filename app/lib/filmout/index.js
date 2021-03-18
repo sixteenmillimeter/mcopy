@@ -240,12 +240,19 @@ class FilmOut {
                 return false;
             }
         }
+        console.dir(info);
         this.state.frame = 0;
         this.state.path = arg.path;
         this.state.fileName = arg.fileName;
         this.state.frames = frames;
         this.state.info = info;
         this.state.hash = this.hash(arg.path);
+        if (info.fps) {
+            this.state.fps = info.fps;
+        }
+        else {
+            this.state.fps = 24; //default
+        }
         if (info.seconds) {
             this.state.seconds = info.seconds;
         }
@@ -370,7 +377,6 @@ class FilmOut {
         const state = JSON.parse(JSON.stringify(this.state));
         let path;
         state.frame = arg.frame;
-        console.dir(state);
         try {
             path = await this.ffmpeg.frame(state, { color: [255, 255, 255] });
         }

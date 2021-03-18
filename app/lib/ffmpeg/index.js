@@ -122,8 +122,7 @@ class FFMPEG {
             return video;
         }
         if (w && h) {
-            scale = `,scale=${w}:${h}`;
-            [];
+            scale = `,scale=trunc(ih*dar):${h}`; //:force_original_aspect_ratio=decrease,pad=${w}:${h}:(ow-iw)/2:(oh-ih)/2
         }
         tmpoutput = path_1.join(this.TMPDIR, `${state.hash}-export-${padded}.${ext}`);
         try {
