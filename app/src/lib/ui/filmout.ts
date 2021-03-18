@@ -317,7 +317,7 @@ class FilmOut {
 		const frameStr : string = $('#filmout_position').val() as string;
 		const frame : number = parseInt(frameStr, 10);
 		this.state.frame = frame;
-		ipcRenderer.send('preview_frame', { frame });
+		ipcRenderer.send('preview_frame', { state : this.state });
 	}
 	onFrame (evt : any, args : any) {
 		const elem : any = $('#filmout');

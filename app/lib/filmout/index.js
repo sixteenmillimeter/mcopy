@@ -370,12 +370,12 @@ class FilmOut {
         const state = JSON.parse(JSON.stringify(this.state));
         let path;
         state.frame = arg.frame;
+        console.dir(state);
         try {
             path = await this.ffmpeg.frame(state, { color: [255, 255, 255] });
         }
         catch (err) {
             this.log.error(err, 'FILMOUT', true, true);
-            ;
             throw err;
         }
         this.ui.send('preview_frame', { path, frame: arg.frame });

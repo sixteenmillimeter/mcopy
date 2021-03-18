@@ -385,11 +385,12 @@ class FilmOut {
 		let path : string;
 
 		state.frame = arg.frame;
+		console.dir(state);
 
 		try {
 			path = await this.ffmpeg.frame(state, { color : [255, 255, 255] });
 		} catch (err) {
-			this.log.error(err, 'FILMOUT', true, true);;
+			this.log.error(err, 'FILMOUT', true, true);
 			throw err;
 		}
 
