@@ -116,7 +116,7 @@ class Arduino {
 	async send (serial : string, cmd : string) {
 		const device : any = this.alias[serial]
 		let results : any
-		console.log(`${cmd} -> ${serial}`)
+		//console.log(`${cmd} -> ${serial}`)
 		if (this.locks[serial]) {
 			return false
 		}
@@ -174,7 +174,7 @@ class Arduino {
 		const end : number = new Date().getTime();
 		const ms : number = end - this.timer;
 		let complete : any;
-		console.log(`${serial} -> ${data}`);
+		//console.log(`${serial} -> ${data}`);
 		if (this.queue[data] !== undefined) {
 			this.locks[serial] = false; 
 			complete = this.queue[data](ms); //execute callback
