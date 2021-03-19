@@ -92,11 +92,13 @@ class FilmOut {
     }
     /**
      * Moves filmout a frame at a time.
+     *
+     * @returns {number} Time since start
      **/
     async move() {
         let start = +new Date();
         if (this.state.still) {
-            return false;
+            return -1;
         }
         if (this.state.dir) {
             this.state.frame++;
@@ -136,6 +138,8 @@ class FilmOut {
      *
      * @param {object} evt Original connect event
      * @param {object} arg Arguments from ipc message
+     *
+     * @returns {boolean} Success state
      **/
     async onConnect(evt, arg) {
         let frames = 0;
@@ -240,7 +244,6 @@ class FilmOut {
                 return false;
             }
         }
-        console.dir(info);
         this.state.frame = 0;
         this.state.path = arg.path;
         this.state.fileName = arg.fileName;
@@ -265,13 +268,16 @@ class FilmOut {
         this.log.info(`Opened ${this.state.fileName}`, 'FILMOUT', true, true);
         this.log.info(`Frames : ${frames}`, 'FILMOUT', true, true);
         this.state.enabled = true;
-        return await this.ui.send(this.id, { valid: true, state: JSON.stringify(this.state) });
+        await this.ui.send(this.id, { valid: true, state: JSON.stringify(this.state) });
+        return true;
     }
     /**
      * Pre-export all frames from video for display.
      *
      * @param {object} evt IPC event
      * @param {object} arg IPC args
+     *
+     * @returns {any} UI send call
      */
     async onPreExport(evt, arg) {
         if (!this.state.path) {

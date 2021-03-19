@@ -102,11 +102,13 @@ class FilmOut {
 	}
 	/**
 	 * Moves filmout a frame at a time.
+	 * 
+	 * @returns {number} Time since start
 	 **/
-	public async move () {
+	public async move () : Promise<number> {
 		let start : number = +new Date();
 		if (this.state.still) {
-			return false;
+			return -1;
 		}
 		if (this.state.dir) {
 			this.state.frame++;
@@ -146,8 +148,10 @@ class FilmOut {
 	 *
 	 * @param {object} evt Original connect event
 	 * @param {object} arg Arguments from ipc message
+	 *
+	 * @returns {boolean} Success state
 	 **/
-	async onConnect (evt : any, arg : any) {
+	async onConnect (evt : any, arg : any) : Promise<boolean> {
 		let frames : number = 0;
 		let isAnimated : boolean = false;
 		let info : any;
@@ -244,8 +248,6 @@ class FilmOut {
 			}
 		}
 
-		console.dir(info);
-
 		this.state.frame = 0;
 		this.state.path = arg.path;
 		this.state.fileName = arg.fileName;
@@ -270,7 +272,8 @@ class FilmOut {
 		this.log.info(`Opened ${this.state.fileName}`, 'FILMOUT', true, true);
 		this.log.info(`Frames : ${frames}`, 'FILMOUT', true, true);
 		this.state.enabled = true;
-		return await this.ui.send(this.id, { valid : true, state : JSON.stringify(this.state) });
+		await this.ui.send(this.id, { valid : true, state : JSON.stringify(this.state) });
+		return true;
 	}
 
 	/**
@@ -278,8 +281,10 @@ class FilmOut {
 	 * 
 	 * @param {object} evt IPC event
 	 * @param {object} arg IPC args
+	 *
+	 * @returns {any} UI send call
 	 */
-	async onPreExport (evt : Event, arg : any) {
+	async onPreExport (evt : Event, arg : any) : Promise<any> {
 		if (!this.state.path) {
 			return await this.ui.send('pre_export', { complete : false, err : 'No file to pre export.' });
 		}
@@ -300,7 +305,7 @@ class FilmOut {
 	 *
 	 * @returns {boolean} Whether or not gif is animated
 	 **/
-	async isGifAnimated (pathStr : string) {
+	async isGifAnimated (pathStr : string) : Promise<boolean> {
 		let gifBuffer : Buffer;
 		try {
 			gifBuffer = await readFile(pathStr);
@@ -317,7 +322,7 @@ class FilmOut {
 	 *
 	 * @returns {object} Info about still from sharp
 	 **/
-	async stillInfo (pathStr : string) {
+	async stillInfo (pathStr : string) : Promise<any> {
 		let info : any;
 
 		try {
@@ -337,7 +342,7 @@ class FilmOut {
 	 *
 	 * @returns {object} Info about first image
 	 **/
-	async dirInfo (images : string[]) {
+	async dirInfo (images : string[]) : Promise<any> {
 		let info : any;
 
 		try {
@@ -357,7 +362,7 @@ class FilmOut {
 	 *
 	 * @returns {array} Array of image paths
 	 **/
-	async dirList (pathStr : string) {
+	async dirList (pathStr : string) : Promise<string[]> {
 		let frameList : string[] = [];
 		try {
 			frameList = await readdir(pathStr)
