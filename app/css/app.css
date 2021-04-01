@@ -839,13 +839,15 @@ button:focus {
 #filmout_position_wrap input {
   margin-right: 5px;
   margin-left: 5px;
+  width: 308px !important;
+  box-sizing: border-box;
 }
 #filmout_position_wrap button,
 #filmout_position_wrap input {
   float: left;
 }
 #filmout_position_wrap > div {
-  width: 410px;
+  width: 425px;
   margin: 0 auto;
 }
 #filmout_functions {
