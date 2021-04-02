@@ -876,6 +876,12 @@ button:focus {
 #filmout_stats_monitor {
   right: 5px;
 }
+.hide {
+  display: none;
+}
+.show {
+  display: block;
+}
 #screens {
   overflow-x: hidden;
 }
