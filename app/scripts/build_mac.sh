@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./node_modules/.bin/electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/icon.icns --prune=true --out=../dist
+node ./scripts/build_and_sign_mac.js
 #build dmg for mac install
 sleep 5s
 mkdir -p ../dist/installers
