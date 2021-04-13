@@ -1,5 +1,7 @@
 #!/bin/bash
 
+version=$(jq -r  '.version' ./package.json)
+
 #package app
 ./node_modules/.bin/electron-packager . mcopy-app --overwrite --platform=linux --arch=x64 --icon=assets/icons/icon.png --prune=true --out=../dist
 #build a .deb installer
