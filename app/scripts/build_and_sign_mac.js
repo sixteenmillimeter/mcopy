@@ -14,11 +14,14 @@
  // security find-identity to find exact string
  const appleIdentity = (readFileSync('.appleIdentity', 'utf8') ).trim();
 
+ const pkg = require('../package.json');
+
  const config = {
  	dir : '.',
  	platform : 'darwin',
  	arch : 'x64',
  	prune : true,
+    appBundleId : pkg.build.appId,
  	icon : './assets/icons/icon.icns',
  	overwrite : true,
  	out : '../dist',
