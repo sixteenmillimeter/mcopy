@@ -1,6 +1,7 @@
 'use strict';
 
 import { Intval } from 'intval';
+import { Processing } from 'processing';
 import { delay } from 'delay';
 
 /** class representing camera functions **/
@@ -12,6 +13,7 @@ class Camera {
 	};
 	private arduino : Arduino = null;
 	private intval : any = null;
+	private processing : any = null;
 	private log : any;
 	private cfg : any;
 	private filmout : any;
@@ -46,6 +48,7 @@ class Camera {
 	private listen () {
 		this.ipc.on(this.id, this.listener.bind(this));
 		this.ipc.on('intval', this.connectIntval.bind(this));
+		this.ipc.on('processing', this.connectProcessing.bind(this));
 	}
 
 	/**
@@ -62,7 +65,13 @@ class Camera {
 		}
 		this.state.dir = dir;
 
-		if (this.intval) {
+		if (this.processing) {
+			try {
+				ms = await this.processing.setDir(dir);
+			} catch (err) {
+				this.log.error(err);
+			}
+		} else if (this.intval) {
 			try {
 				ms = await this.intval.setDir(dir);
 			} catch (err) {
@@ -87,7 +96,13 @@ class Camera {
 		if (this.filmout.state.enabled) {
 			await this.filmout.start()
 		}
-		if (this.intval) {
+		if (this.processing) {
+			try {
+				ms = await this.processing.move();
+			} catch (err) {
+				this.log.error(err);
+			}
+		} else if (this.intval) {
 			try {
 				ms = await this.intval.move();
 			} catch (err) {
@@ -137,6 +152,7 @@ class Camera {
 		return new Promise((resolve, reject) => {
 			if (arg.connect) {
 				this.intval = new Intval(arg.url)
+				this.processing = null
 				this.intval.connect((err : any, ms : number, state : boolean) => {
 					if (err) {
 						this.ui.send('intval', { connected : false })
@@ -152,6 +168,18 @@ class Camera {
 				this.intval = null
 				return resolve(false)
 			}
+		})
+	}
+
+	/**
+	 *
+	 **/
+	private async connectProcessing (event : any, arg : any) {
+		return new Promise((resolve, reject) => {
+			this.processing = new Processing(arg.url)
+			this.intval = null
+			this.ui.send('processing', { connected : true, url : arg.url })
+			return resolve(true)
 		})
 	}
 

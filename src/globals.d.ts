@@ -1,6 +1,7 @@
 declare module 'delay';
 declare module 'log';
 declare module 'intval';
+declare module 'processing';
 declare module 'electron';
 declare module 'fs-extra';
 declare module 'uuid';

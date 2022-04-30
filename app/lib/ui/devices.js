@@ -23,6 +23,7 @@ class Devices {
     listen() {
         ipcRenderer.on('ready', this.ready.bind(this));
         ipcRenderer.on('intval', this.intvalCb.bind(this));
+        ipcRenderer.on('processing', this.processingCb.bind(this));
         ipcRenderer.on('error_state', this.errorState.bind(this));
     }
     ready(event, arg) {
@@ -136,13 +137,13 @@ class Devices {
         let proceed = false;
         let obj = {
             connect: true,
-            url: url
+            url
         };
         if (url !== '' && typeof url !== 'undefined') {
             proceed = confirm(`Are you sure you want to connect to INTVAL3 @ ${url}?`);
         }
         else {
-            alert('Cannot connect to INTVAL3 url as entered.');
+            alert('Cannot connect to INTVAL3 URL as entered.');
         }
         if (proceed) {
             gui.overlay(true);
@@ -173,6 +174,32 @@ class Devices {
             $('#camera_type_arduino').prop('checked', 'checked');
             $('#intval').removeClass('active');
         }
+    }
+    processing() {
+        const url = $('#processing').val();
+        let proceed = false;
+        let obj = {
+            url
+        };
+        if (url !== '' && typeof url !== 'undefined') {
+            proceed = confirm(`Are you sure you want to connect to Processing @ ${url}?`);
+        }
+        else {
+            alert('Cannot connect to Processing URL as entered.');
+        }
+        if (proceed) {
+            gui.overlay(true);
+            gui.spinner(true, `Connecting to Processing @ ${url}`);
+            ipcRenderer.send('processing', obj);
+        }
+        else {
+            $('#camera_type_arduino').prop('checked', 'checked');
+            $('#processing').removeClass('active');
+        }
+    }
+    processingCb() {
+        gui.spinner(false);
+        gui.overlay(false);
     }
     errorState() {
         gui.spinner(false);

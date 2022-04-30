@@ -1,6 +1,7 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const intval_1 = require("intval");
+const processing_1 = require("processing");
 /** class representing camera functions **/
 class Camera {
     /**
@@ -13,6 +14,7 @@ class Camera {
         };
         this.arduino = null;
         this.intval = null;
+        this.processing = null;
         this.id = 'camera';
         this.arduino = arduino;
         this.cfg = cfg;
@@ -37,6 +39,7 @@ class Camera {
     listen() {
         this.ipc.on(this.id, this.listener.bind(this));
         this.ipc.on('intval', this.connectIntval.bind(this));
+        this.ipc.on('processing', this.connectProcessing.bind(this));
     }
     /**
      *
@@ -51,7 +54,15 @@ class Camera {
             cmd = this.cfg.arduino.cmd[`${this.id}_backward`];
         }
         this.state.dir = dir;
-        if (this.intval) {
+        if (this.processing) {
+            try {
+                ms = await this.processing.setDir(dir);
+            }
+            catch (err) {
+                this.log.error(err);
+            }
+        }
+        else if (this.intval) {
             try {
                 ms = await this.intval.setDir(dir);
             }
@@ -78,7 +89,15 @@ class Camera {
         if (this.filmout.state.enabled) {
             await this.filmout.start();
         }
-        if (this.intval) {
+        if (this.processing) {
+            try {
+                ms = await this.processing.move();
+            }
+            catch (err) {
+                this.log.error(err);
+            }
+        }
+        else if (this.intval) {
             try {
                 ms = await this.intval.move();
             }
@@ -129,6 +148,7 @@ class Camera {
         return new Promise((resolve, reject) => {
             if (arg.connect) {
                 this.intval = new intval_1.Intval(arg.url);
+                this.processing = null;
                 this.intval.connect((err, ms, state) => {
                     if (err) {
                         this.ui.send('intval', { connected: false });
@@ -146,6 +166,17 @@ class Camera {
                 this.intval = null;
                 return resolve(false);
             }
+        });
+    }
+    /**
+     *
+     **/
+    async connectProcessing(event, arg) {
+        return new Promise((resolve, reject) => {
+            this.processing = new processing_1.Processing(arg.url);
+            this.intval = null;
+            this.ui.send('processing', { connected: true, url: arg.url });
+            return resolve(true);
         });
     }
     /**

@@ -1,6 +1,6 @@
 {
   "name": "mcopy",
-  "version": "1.6.9",
+  "version": "1.7.0",
   "description": "Small gauge film optical printer platform",
   "main": "build.js",
   "directories": {
@@ -48,6 +48,7 @@
     "log": "file:app/lib/log",
     "mscript": "file:app/lib/mscript",
     "proj": "file:app/lib/proj",
+    "processing": "file:app/lib/processing",
     "sequencer": "file:app/lib/sequencer",
     "settings": "file:app/lib/settings",
     "system": "file:app/lib/system"

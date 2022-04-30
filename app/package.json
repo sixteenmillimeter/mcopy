@@ -1,6 +1,6 @@
 {
   "name": "mcopy-app",
-  "version": "1.6.9",
+  "version": "1.7.0",
   "description": "GUI for the mcopy small gauge film optical printer platform",
   "main": "main.js",
   "scripts": {
@@ -76,6 +76,7 @@
     "mscript": "file:lib/mscript",
     "node-notifier": "^9.0.0",
     "proj": "file:lib/proj",
+    "processing": "file:lib/processing",
     "request": "^2.88.2",
     "sequencer": "file:lib/sequencer",
     "serialport": "^9.0.7",
