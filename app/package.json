@@ -72,7 +72,7 @@
     "jimp": "^0.16.1",
     "light": "file:lib/light",
     "log": "file:lib/log",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "mscript": "file:lib/mscript",
     "node-notifier": "^9.0.0",
     "processing": "file:lib/processing",
