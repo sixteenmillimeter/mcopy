@@ -252,7 +252,10 @@ class Arduino {
 			|| data === cfg.arduino.cmd.camera_second_forward
 			|| data === cfg.arduino.cmd.camera_second_backward
 			|| data === cfg.arduino.cmd.camera_second
-			|| data === cfg.arduino.cmd.cameras) {
+			|| data === cfg.arduino.cmd.cameras
+			|| data === cfg.arduino.cmd.camera_capper_identifier
+			|| data === cfg.arduino.cmd.camera_capper_projector_identifier
+			|| data === cfg.arduino.cmd.camera_capper_projectors_identifier) {
 
 			this.confirmExec(null, data);
 			this.confirmExec = {};
@@ -314,6 +317,12 @@ class Arduino {
 					type = 'camera,camera_second,projector'
 				} else if (data === cfg.arduino.cmd.cameras_projectors_identifier) {
 					type = 'camera,camera_second,projector,projector_second'
+				} else if (data === cfg.arduino.cmd.camera_capper_identifier) {
+					type = 'camera,capper'
+				} else if (data === cfg.arduino.cmd.camera_capper_projector_identifier) {
+					type = 'camera,capper,projector'
+				} else if (data === cfg.arduino.cmd.camera_capper_projectors_identifier) {
+					type = 'camera,capper,projector,projector_second'
 				}
 				return resolve(type)
 			}
