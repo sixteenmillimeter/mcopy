@@ -419,7 +419,7 @@ class Devices {
 		})
 		if (match.length === 0) {
 			deviceEntry = {
-				type : type
+				type
 			}
 			deviceEntry[which] = device
 			this.settings.state.devices.push(deviceEntry)
