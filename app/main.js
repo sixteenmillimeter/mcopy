@@ -3,12 +3,14 @@
 
 'use strict'
 
-process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
+//process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
 const electron = require('electron')
 const { Menu, BrowserWindow, app } = electron
 const { EventEmitter } = require('events')
 const { join } = require('path')
+
+require('@electron/remote/main').initialize()
 
 const ee = new EventEmitter()
 const settings = require('settings')
@@ -54,19 +56,23 @@ var createWindow = function () {
 		skipTaskbar: true,
     	toolbar: false,	
 		webPreferences : {
-			nodeIntegration: true,
-			enableRemoteModule: true
+			nodeIntegration : true,
+			enableRemoteModule: true,
+			contextIsolation : false
 		}
 	})
-	mainWindow.setMenu(null)
-	mainWindow.setAutoHideMenuBar(true) 
+
 	mainWindow.loadURL('file://' + __dirname + '/index.html')
 	if (process.argv.indexOf('-d') !== -1 || process.argv.indexOf('--dev') !== -1) {
 		mainWindow.webContents.openDevTools()
+	} else {
+		mainWindow.setMenu(null)
+		mainWindow.setAutoHideMenuBar(true) 
 	}
 	mainWindow.on('closed', () => {
 		mainWindow = null
 	})
+	require('@electron/remote/main').enable(mainWindow.webContents)
 }
 
 var errorState = function () {

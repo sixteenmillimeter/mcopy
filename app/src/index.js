@@ -1,7 +1,8 @@
 const mcopy = {};
 
-const { remote, ipcRenderer } = require('electron');
-const dialog 	= require('electron').remote.dialog;
+const remote = require('@electron/remote');
+const { ipcRenderer } = require('electron');
+const { dialog } = remote;
 const notifier 	= require('node-notifier');
 const fs 		= require('fs');
 const uuid 		= require('uuid').v4;

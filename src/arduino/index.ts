@@ -3,11 +3,11 @@
 //import Log = require('log');
 import { delay }  from 'delay';
 
-const SerialPort = require('serialport')
-const Readline = SerialPort.parsers.Readline
+const { SerialPort } = require('serialport')
+const { ReadlineParser } = require('@serialport/parser-readline')
 const exec = require('child_process').exec
 
-const parser : any = new Readline('')
+const parser : any = new ReadlineParser({ })
 const newlineRe : RegExp = new RegExp('\n', 'g')
 const returnRe : RegExp = new RegExp('\r', 'g')
 
