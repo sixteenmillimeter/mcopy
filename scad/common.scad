@@ -30,3 +30,6 @@ module trap_cube(height = 19, top_x = 30, top_y = 34, bottom_x = 45, bottom_y = 
 		}
 	}
 }
+
+echo("common.scad - R()");
+function R (diameter) = diameter / 2.0;
