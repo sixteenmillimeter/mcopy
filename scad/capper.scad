@@ -12,6 +12,8 @@ LensY = 20;
 CapOffsetX = -50;
 CapOffsetY = -11;
 
+BoltSpacingY = 49;
+
 module Mount () {
 	$fn = 200;
 	difference(){
@@ -24,10 +26,18 @@ module Mount () {
                 cylinder(r=R(LensVoidDiameter)+5, h=R(LensY)-R(5), center=true);
                 cylinder(r=R(LensVoidDiameter), h=LensY+1, center=true);
             }
+            difference () {
+                translate([50, 0, -6]) cube([100, LensVoidDiameter + 30, 8], center = true);
+                cylinder(r=R(LensVoidDiameter), h=LensY+1, center=true);
+                translate([50, 0, -6]) {
+                    cube([20, 40.25, 10], center = true);
+                    translate([0, BoltSpacingY/2, 0]) 
+                }
+            }
         }
 		translate([0,R(LensVoidDiameter),0])cube([LensVoidDiameter*2, LensVoidDiameter, 5], center=true);
 	}
-
+    
 }
 
 module Cap () {
