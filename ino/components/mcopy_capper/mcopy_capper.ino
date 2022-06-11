@@ -56,6 +56,7 @@ void setup() {
   Serial.setTimeout(serialDelay);
 
   Pins_init();
+  Servo_init();
 }
 
 void loop() {
@@ -108,6 +109,10 @@ void Pins_init () {
 void Servo_init () {
   servo.attach(PIN_SERVO);
   delay(100);
+  servo.write(180);
+  delay(500);
+  servo.write(0);
+  delay(500);
   if (!Read_endstop()) {
     Cap_off(true);
   }
