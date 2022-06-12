@@ -1,6 +1,6 @@
  #include <Servo.h>
 
-boolean debug_state = false;
+boolean debug_state = true;
 
 /*
 ----------------------------------------------------
@@ -30,9 +30,10 @@ volatile boolean cap_state = false;
 volatile boolean endstop_state = false;
 
 volatile int angle = 0;
-const int cap_on_angle = 0;
-const int cap_off_angle = 60;
+const int cap_on_angle = 153;
+const int cap_off_angle = 93;
 volatile long timer = 0;
+volatile int current_angle = 0;
 
 const char cmd_cap_on = 'A';
 const char cmd_cap_off = 'B';
@@ -48,7 +49,7 @@ const int serialDelay = 5;
 Servo servo;
 //SG-5010 speed 0.18s / 60 degree
 //converted to milliseconds/angle
-const float servoSpeed = 180.0 / 60.0;
+const float servoSpeed = 200.0 / 60.0;
 
 void setup() {
   Serial.begin(57600);
@@ -108,14 +109,10 @@ void Pins_init () {
 
 void Servo_init () {
   servo.attach(PIN_SERVO);
-  delay(100);
-  servo.write(180);
-  delay(500);
-  servo.write(0);
-  delay(500);
-  if (!Read_endstop()) {
+  Cap_off(true);
+  /*if (!Read_endstop()) {
     Cap_off(true);
-  }
+  }*/
 }
 
 boolean Read_endstop () {
@@ -124,7 +121,7 @@ boolean Read_endstop () {
 
 void Servo_angle (int newAngle) {
   servo.write(newAngle);
-  delay(Servo_delay(newAngle, angle));
+  delay(Servo_delay(newAngle, angle) + 50);
   angle = newAngle;
 }
 
@@ -134,7 +131,8 @@ int Servo_delay (int angleA, int angleB) {
 }
 
 void Cap_off (boolean suppress) {
-  if (cap_state) {
+  current_angle = servo.read();
+  if (cap_state || current_angle != cap_off_angle) {
     Servo_angle(cap_off_angle);
     cap_state = false;
   } else {
@@ -147,7 +145,8 @@ void Cap_off (boolean suppress) {
 }
 
 void Cap_on (boolean suppress) {
-  if (!cap_state) {
+  current_angle = servo.read();
+  if (!cap_state || current_angle != cap_on_angle) {
     Servo_angle(cap_on_angle);
     cap_state = true;
   } else {
