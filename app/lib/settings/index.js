@@ -18,7 +18,8 @@ class Settings {
             profile: 'mcopy',
             camera: {},
             projector: {},
-            light: {}
+            light: {},
+            capper: {}
         };
         this.state = this.freshState();
     }

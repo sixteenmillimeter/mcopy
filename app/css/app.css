@@ -696,6 +696,9 @@ button:focus {
   border-color: #DAE035;
   color: #DAE035;
 }
+#settings input[type=text] {
+  width: 200px;
+}
 #settings button {
   margin-top: -1px;
   float: right;

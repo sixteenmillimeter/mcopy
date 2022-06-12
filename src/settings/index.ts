@@ -15,7 +15,8 @@ class Settings {
 		profile : 'mcopy',
 		camera : {},
 		projector : {},
-		light : {}
+		light : {},
+		capper : {}
 	}
 	public state : any;
 	/**

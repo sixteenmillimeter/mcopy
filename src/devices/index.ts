@@ -295,7 +295,7 @@ class Devices {
 				this.log.error('Error connecting to camera, camera_secondary and projector', err)
 				return false
 			}
-		} else if ('camera,projector,projector_second') {
+		} else if (type === 'camera,projector,projector_second') {
 			this.connected.camera = device
 			this.connected.projector = device
 			this.connected.projector_second = device
@@ -307,7 +307,7 @@ class Devices {
 				this.log.error('Error connecting to camera, projector and projector_second', err)
 				return false
 			}
-		} else if ('camera,camera_second,projector') {
+		} else if (type === 'camera,camera_second,projector') {
 			this.connected.camera = device
 			this.connected.camera_second = device
 			this.connected.projector = device
@@ -320,7 +320,7 @@ class Devices {
 				this.log.error('Error connecting to camera, camera_second and projector', err)
 				return false
 			}
-		} else if ('camera,camera_second,projector,projector_second') {
+		} else if (type === 'camera,camera_second,projector,projector_second') {
 			this.connected.camera = device
 			this.connected.camera_second = device
 			this.connected.projector = device
@@ -333,6 +333,43 @@ class Devices {
 				connectSuccess = await this.arduino.connect('camera', device, false)
 			} catch (err) {
 				this.log.error('Error connecting to camera, camera_second, projector and projector_second', err)
+				return false
+			}
+		} else if (type === 'camera,capper') {
+			this.connected.camera = device
+			this.connected.capper = device
+			this.arduino.aliasSerial('capper', device)
+			try {
+				connectSuccess = await this.arduino.connect('camera', device, false)
+			} catch (err) {
+				this.log.error('Error connecting to camera and capper', err)
+				return false
+			}
+		} else if (type === 'camera,capper,projector') {
+			this.connected.camera = device
+			this.connected.capper = device
+			this.connected.projector = device
+			this.arduino.aliasSerial('capper', device)
+			this.arduino.aliasSerial('projector', device)
+
+			try {
+				connectSuccess = await this.arduino.connect('camera', device, false)
+			} catch (err) {
+				this.log.error('Error connecting to camera, capper and projector', err)
+				return false
+			}
+		} else if (type === 'camera,capper,projector,projector_second') {
+			this.connected.camera = device
+			this.connected.capper = device
+			this.connected.projector = device
+			this.connected.projector_second = device
+			this.arduino.aliasSerial('capper', device)
+			this.arduino.aliasSerial('projector', device)
+			this.arduino.aliasSerial('projector_second', device)
+			try {
+				connectSuccess = await this.arduino.connect('camera', device, false)
+			} catch (err) {
+				this.log.error('Error connecting to camera, capper, projector and projector_second', err)
 				return false
 			}
 		}
@@ -350,13 +387,15 @@ class Devices {
 		let d : any
 		let cs : any = {}
 		let ps : any = {}
+		let capper : any;
 		let checklist : any[] = []
 
 		this.connected = {
 			projector : false,
 			camera : false,
 			light : false,
-			projector_second : false
+			projector_second : false,
+			capper : false
 		}
 
 		for (let device of devices) {
@@ -400,12 +439,15 @@ class Devices {
 			ps = { arduino : this.connected.projector_second }
 		}
 
+		if (this.connected.capper) {
+			capper = { arduino : this.connected.capper }
+		}
 
 		if (this.settings.state.camera && this.settings.state.camera.intval) {
 			c.intval = this.settings.state.camera.intval
 
 		}
-		return this.ready(p, c, l, cs, ps)
+		return this.ready(p, c, l, cs, ps, capper)
 	}
 	 /**
 	 * 
@@ -430,7 +472,7 @@ class Devices {
 	 /**
 	 * 
 	 **/
-	private ready (projector : any, camera : any, light : any, camera_second : any, projector_second : any) {
+	private ready (projector : any, camera : any, light : any, camera_second : any, projector_second : any, capper : any) {
 		let args : any = { 
 			camera, 
 			projector, 
@@ -438,6 +480,7 @@ class Devices {
 			profile: this.settings.state.profile 
 		}
 
+		console.log("CHECK " + camera)
 		if (projector_second && projector_second.arduino) {
 			args.projector_second = projector_second
 			this.settings.update('projector_second', projector_second)
@@ -454,9 +497,17 @@ class Devices {
 			}
 		}
 
+		if (capper) {
+			this.mainWindow.setSize(800, 800)
+			this.settings.update('capper', capper)
+			args.capper = capper
+		}
+
 		this.settings.update('camera', camera)
 		this.settings.update('projector', projector)
 		this.settings.update('light', light)
+		
+
 		this.settings.save()
 
 		this.ui.send('ready', args)
