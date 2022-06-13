@@ -10,7 +10,8 @@ class Camera {
     constructor(arduino, cfg, ui, filmout, second = false) {
         this.state = {
             pos: 0,
-            dir: true
+            dir: true,
+            capepr: false
         };
         this.arduino = null;
         this.intval = null;
@@ -77,6 +78,27 @@ class Camera {
             catch (err) {
                 this.log.error(err);
             }
+        }
+        return await this.end(cmd, id, ms);
+    }
+    /**
+     *
+     **/
+    async cap(state, id) {
+        let cmd;
+        let ms;
+        if (state) {
+            cmd = this.cfg.arduino.cmd[`${this.id}_forward`];
+        }
+        else {
+            cmd = this.cfg.arduino.cmd[`${this.id}_backward`];
+        }
+        this.state.capper = state;
+        try {
+            ms = await this.arduino.send(this.id, cmd);
+        }
+        catch (err) {
+            this.log.error(err);
         }
         return await this.end(cmd, id, ms);
     }
@@ -201,6 +223,14 @@ class Camera {
         }
         else if (typeof arg.val !== 'undefined') {
             this.state.pos = arg.val;
+        }
+        else if (typeof arg.capper !== 'undefined') {
+            try {
+                await this.cap(arg.capper, arg.id);
+            }
+            catch (err) {
+                this.log.error(err);
+            }
         }
         event.returnValue = true;
     }

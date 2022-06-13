@@ -1,6 +1,6 @@
  #include <Servo.h>
 
-boolean debug_state = true;
+boolean debug_state = false;
 
 /*
 ----------------------------------------------------

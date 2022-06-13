@@ -501,9 +501,9 @@ class Devices {
             }
         }
         if (capper) {
+            args.capper = capper;
             this.mainWindow.setSize(800, 800);
             this.settings.update('capper', capper);
-            args.capper = capper;
         }
         this.settings.update('camera', camera);
         this.settings.update('projector', projector);

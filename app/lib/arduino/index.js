@@ -100,7 +100,6 @@ class Arduino {
                     //console.error(err)
                     return reject(err);
                 }
-                //
             });
         });
     }
@@ -190,7 +189,8 @@ class Arduino {
             let connectSuccess;
             this.path[serial] = device;
             this.alias[serial] = device;
-            this.serial[device] = new SerialPort(this.path[serial], {
+            this.serial[device] = new SerialPort({
+                path: this.path[serial],
                 autoOpen: false,
                 baudRate: cfg.arduino.baud,
                 parser: parser
@@ -242,6 +242,7 @@ class Arduino {
             || data === cfg.arduino.cmd.camera_second_backward
             || data === cfg.arduino.cmd.camera_second
             || data === cfg.arduino.cmd.cameras
+            || data === cfg.arduino.cmd.capper_identifier
             || data === cfg.arduino.cmd.camera_capper_identifier
             || data === cfg.arduino.cmd.camera_capper_projector_identifier
             || data === cfg.arduino.cmd.camera_capper_projectors_identifier) {
@@ -316,6 +317,9 @@ class Arduino {
                 else if (data === cfg.arduino.cmd.cameras_projectors_identifier) {
                     type = 'camera,camera_second,projector,projector_second';
                 }
+                else if (data === cfg.arduino.cmd.capper_identifier) {
+                    type = 'capper';
+                }
                 else if (data === cfg.arduino.cmd.camera_capper_identifier) {
                     type = 'camera,capper';
                 }
@@ -330,6 +334,7 @@ class Arduino {
             await delay_1.delay(cfg.arduino.serialDelay);
             try {
                 writeSuccess = await this.sendAsync(device, cfg.arduino.cmd.mcopy_identifier);
+                this.log.info(writeSuccess);
             }
             catch (e) {
                 return reject(e);
