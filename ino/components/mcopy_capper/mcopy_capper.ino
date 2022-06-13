@@ -49,7 +49,7 @@ const int serialDelay = 5;
 Servo servo;
 //SG-5010 speed 0.18s / 60 degree
 //converted to milliseconds/angle
-const float servoSpeed = 200.0 / 60.0;
+const float servoSpeed = 400.0 / 60.0;
 
 void setup() {
   Serial.begin(57600);
