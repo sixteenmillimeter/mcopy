@@ -1,6 +1,6 @@
  #include <Servo.h>
 
-boolean debug_state = false;
+boolean debug_state = true;
 
 /*
 ----------------------------------------------------
@@ -24,6 +24,7 @@ Yellow     -      Pin 10
 //Arduino Duemilanove
 const int PIN_SERVO = 9;
 const int PIN_ENDSTOP = 10;
+const int PIN_ENDSTOP_PWR = 11;
 
 volatile boolean running = false;
 volatile boolean cap_state = false;
@@ -81,9 +82,9 @@ void cmd (char val) {
   } else if (val == cmd_mcopy_identifier) {
     identify();
   } else if (val == cmd_cap_on) {
-    Cap_on(false);
+    Cap_on(false, false);
   } else if (val == cmd_cap_off) {
-    Cap_off(false);
+    Cap_off(false, false);
   }
 }
 
@@ -105,18 +106,29 @@ void identify () {
 
 void Pins_init () {
   pinMode(PIN_ENDSTOP, INPUT_PULLUP);
+  pinMode(PIN_ENDSTOP_PWR, OUTPUT);
+  Endstop_on();
 }
 
 void Servo_init () {
   servo.attach(PIN_SERVO);
-  Cap_off(true);
-  /*if (!Read_endstop()) {
-    Cap_off(true);
-  }*/
+  Cap_off(true, true);
 }
 
 boolean Read_endstop () {
-  return digitalRead(PIN_ENDSTOP) != LOW;
+  endstop_state = digitalRead(PIN_ENDSTOP) != LOW;
+  log(endstop_state);
+  return endstop_state;
+}
+
+void Endstop_on () {
+  digitalWrite(PIN_ENDSTOP_PWR, HIGH);
+  delay(1);
+}
+
+void Endstop_off () {
+  digitalWrite(PIN_ENDSTOP_PWR, LOW);
+  delay(1);
 }
 
 void Servo_angle (int newAngle) {
@@ -130,28 +142,38 @@ int Servo_delay (int angleA, int angleB) {
   return (int) ceil((float) angle * servoSpeed);
 }
 
-void Cap_off (boolean suppress) {
+void Cap_off (boolean suppress, boolean force) {
+  Endstop_on();
   current_angle = servo.read();
-  if (cap_state || current_angle != cap_off_angle) {
+  if ((Read_endstop() || force) && (cap_state || current_angle != cap_off_angle)) {
     Servo_angle(cap_off_angle);
     cap_state = false;
   } else {
     log("Cap already off");
   }
+  while (Read_endstop()) {
+    delay(1);
+  }
+  Endstop_off();
   log("Cap_off()");
   if (!suppress) {
     Serial.println(cmd_cap_off);
   }
 }
 
-void Cap_on (boolean suppress) {
+void Cap_on (boolean suppress, boolean force) {
+  Endstop_on();
   current_angle = servo.read();
-  if (!cap_state || current_angle != cap_on_angle) {
+  if ((!Read_endstop() || force) && (!cap_state || current_angle != cap_on_angle)) {
     Servo_angle(cap_on_angle);
     cap_state = true;
   } else {
     log("Cap already on");
   }
+  while (!Read_endstop()) {
+    delay(1);
+  }
+  Endstop_off();
   log("Cap_on()");
   if (!suppress) {
     Serial.println(cmd_cap_on);
