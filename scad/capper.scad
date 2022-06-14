@@ -5,7 +5,7 @@ include <common.scad>;
 // https://www.thingiverse.com/thing:83806 - Lego mount (has dimensions of servo body)
 // https://www.thingiverse.com/thing:5241574 - Robot arm (just cool)
 
-currentAngle=-60;
+currentAngle=0;
 
 LensVoidDiameter = 40; //mm
 LensZ = 80;
@@ -61,7 +61,7 @@ module Mount () {
                 translate([50, 0, -6-3.01]) cube([2, 56, 2], center=true);
             }
         }
-		translate([0,R(LensVoidDiameter),1+7.5]) cube([LensVoidDiameter*2, LensVoidDiameter, 7], center=true);
+		translate([0,R(LensVoidDiameter),1+4.5]) cube([LensVoidDiameter*2, LensVoidDiameter, 7], center=true);
         //
         translate([80, R(MountBoltSpacingY), 0]) RailSlots();
         translate([80, -R(MountBoltSpacingY), 0]) RailSlots();
@@ -174,13 +174,13 @@ module OptoEndstopMount () {
 
 module Debug () {
     Mount();
-    translate([-CapOffsetX,-CapOffsetY,6.11 + 1.9]) rotate([0,0,currentAngle]) Cap();
+    translate([-CapOffsetX,-CapOffsetY,5.71]) rotate([0,0,currentAngle]) Cap();
     //color("green") RailMount();
     translate([5, -38, -11.8+OptoEndstopAdjustZ]) rotate([0, -90, 0]) opto_endstop();
-    translate([5, -38, -11.8]) OptoEndstopMount();
+    //translate([5, -38, -11.8]) OptoEndstopMount();
 }
 
-Render="OptoEndstopMount";
+Render="MountFront";
 
 if (Render=="Debug") {
     Debug();
