@@ -25,7 +25,7 @@ RailSlotsD = 6;
 
 MountBoltSpacingY=40;
 
-OptoEndstopAdjustZ=2;
+OptoEndstopAdjustZ=2-9;
 
 module OptoEndstop () {
     $fn=30;
@@ -44,6 +44,7 @@ module OptoEndstop () {
         translate([0,R(Y)+R(4.15),-R(1.75)-R(10.15)]) cube([6.1, 4.15, 10.15], center=true);
         translate([0,-R(Y)-R(4.15),-R(1.75)-R(10.15)]) cube([6.1, 4.15, 10.15], center=true);
     }
+    translate([3,4, -R(1.75)-R(.75)]) cube([3.6, 15.7, .75], center=true);
 }
 
 module BoltVoid () {
@@ -85,9 +86,12 @@ module Mount () {
         translate([80, R(MountBoltSpacingY), 0]) RailSlots();
         translate([80, -R(MountBoltSpacingY), 0]) RailSlots();
         //endstop
-        translate([0, -34, 25-2-2]) {
-            cube([14, 20, 50], center=true);
-            translate([0, 11, -14]) cylinder(r=R(22), h=4, center=true);
+        translate([0, -34, 25-2-2-10]) {
+            difference () {
+                cube([14, 20, 50], center=true);
+                translate([0, R(LensVoidDiameter)+10+4.01, 0]) cylinder(r=R(LensVoidDiameter)+5, h=LensY + 29, center=true, $fn=200);
+            }
+            translate([0, 11, -14+9]) cylinder(r=R(22), h=4, center=true);
         }
 	}
 }
@@ -178,29 +182,33 @@ module RailMount () {
 
 module OptoEndstopMount () {
         
-        translate([-5,9.5,20]) {
-            
-            difference() {
-                translate([0, 0, 4]) cube([14-0.3-0.3, 14, 32], center=true);
-                translate([0, R(LensVoidDiameter)+15+4, 0]) cylinder(r=R(LensVoidDiameter)+15, h=LensY + 10, center=true, $fn=200);
-                translate([0,-8.3, 12]) cube([9, 8, 5], center=true);
-                //translate([0,-5,-9+OptoEndstopAdjustZ]) rotate([90, 0, 0]) cylinder(r=R(2.9),h=10,center=true, $fn=40);
-                translate([-2,-5,15+OptoEndstopAdjustZ]) rotate([90, 0, 0]) cylinder(r=R(2.9),h=20,center=true, $fn=40);
-                translate([0,1,-3+OptoEndstopAdjustZ]) cube([8,20,15],center=true);
-                //pathway void
-                translate([0,6,-3 +OptoEndstopAdjustZ]) cylinder(r=R(22), h=4, center=true);
+    translate([-5,9.5,20]) {
+        difference() {
+            translate([0, 0, 1-7.25]) cube([14-0.3-0.3, 14, 32+4], center=true);
+            //lens void
+            translate([0, R(LensVoidDiameter)+5+4, 0]) cylinder(r=R(LensVoidDiameter)+5, h=LensY + 29, center=true, $fn=200);
+            //connector void
+            translate([0,-8.3, -14.5]) cube([9, 8, 5], center=true);
+            //bolts
+            translate([2,-5,-13.25+OptoEndstopAdjustZ]) rotate([90, 0, 0]) cylinder(r=R(2.9),h=20,center=true, $fn=40);
+            translate([2,-5,15+OptoEndstopAdjustZ]) rotate([90, 0, 0]) cylinder(r=R(2.9),h=20,center=true, $fn=40);
+            //main void
+            translate([1,1,-3]) cube([8,20,15],center=true);
+            //pathway void
+            translate([0,6,-2]) cylinder(r=R(22), h=4, center=true);
+            //smd voids
+            translate([-5, -6.5, -3]) cube([3.6, 1, 18], center=true);
             }
-            
         }
 }
 
 module Debug () {
     Mount();
-    translate([-CapOffsetX,-CapOffsetY,5.71]) rotate([0,0,currentAngle]) Cap();
+    //translate([-CapOffsetX,-CapOffsetY,5.71]) rotate([0,0,currentAngle]) Cap();
     //color("green") RailMount();
     //translate([5, -38, -11.8+OptoEndstopAdjustZ]) rotate([0, -90, 0]) opto_endstop();
     //color("green") translate([5, -38, -11.8]) OptoEndstopMount();
-    translate([-2, -38 + 2, -11.8 + 20 + OptoEndstopAdjustZ+.75]) rotate([90, 180, 0]) OptoEndstop();
+    //translate([2, -38 + 2, -11.8 + 11 + 2 +.75]) rotate([90, 0, 0]) OptoEndstop();
 }
 
 Render="Debug";

@@ -145,15 +145,15 @@ int Servo_delay (int angleA, int angleB) {
 void Cap_off (boolean suppress, boolean force) {
   Endstop_on();
   current_angle = servo.read();
-  if ((Read_endstop() || force) && (cap_state || current_angle != cap_off_angle)) {
+  if ( (cap_state || current_angle != cap_off_angle)) {
     Servo_angle(cap_off_angle);
     cap_state = false;
   } else {
     log("Cap already off");
   }
-  while (Read_endstop()) {
+  /*while (Read_endstop()) {
     delay(1);
-  }
+  }*/
   Endstop_off();
   log("Cap_off()");
   if (!suppress) {
@@ -164,15 +164,15 @@ void Cap_off (boolean suppress, boolean force) {
 void Cap_on (boolean suppress, boolean force) {
   Endstop_on();
   current_angle = servo.read();
-  if ((!Read_endstop() || force) && (!cap_state || current_angle != cap_on_angle)) {
+  if ( (!cap_state || current_angle != cap_on_angle)) {
     Servo_angle(cap_on_angle);
     cap_state = true;
   } else {
     log("Cap already on");
   }
-  while (!Read_endstop()) {
+  /*while (!Read_endstop()) {
     delay(1);
-  }
+  }*/
   Endstop_off();
   log("Cap_on()");
   if (!suppress) {
