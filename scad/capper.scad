@@ -193,11 +193,11 @@ module OptoEndstopMount () {
             translate([2,-5,-13.25+OptoEndstopAdjustZ]) rotate([90, 0, 0]) cylinder(r=R(2.9),h=20,center=true, $fn=40);
             translate([2,-5,15+OptoEndstopAdjustZ]) rotate([90, 0, 0]) cylinder(r=R(2.9),h=20,center=true, $fn=40);
             //main void
-            translate([1,1,-3]) cube([8,20,15],center=true);
+            translate([-0.5,1,-3]) cube([8,20,15],center=true);
             //pathway void
-            translate([0,6,-2]) cylinder(r=R(22), h=4, center=true);
+            translate([0,6,-2]) cylinder(r=R(22), h=6, center=true);
             //smd voids
-            translate([-5, -6.5, -3]) cube([3.6, 1, 18], center=true);
+            translate([5, -6.5, -3]) cube([3.6, 1, 18], center=true);
             }
         }
 }
@@ -207,11 +207,11 @@ module Debug () {
     //translate([-CapOffsetX,-CapOffsetY,5.71]) rotate([0,0,currentAngle]) Cap();
     //color("green") RailMount();
     //translate([5, -38, -11.8+OptoEndstopAdjustZ]) rotate([0, -90, 0]) opto_endstop();
-    //color("green") translate([5, -38, -11.8]) OptoEndstopMount();
-    //translate([2, -38 + 2, -11.8 + 11 + 2 +.75]) rotate([90, 0, 0]) OptoEndstop();
+    color("green") translate([5, -38, -11.8]) OptoEndstopMount();
+    translate([1.5, -38 + 2 -10, -11.8 + 11 + 2 +.75]) rotate([90, 0, 0]) OptoEndstop();
 }
 
-Render="Debug";
+Render="OptoEndstopMount";
 
 if (Render=="Debug") {
     Debug();
