@@ -56,14 +56,18 @@ module Mount () {
 	$fn = 200;
 	difference(){
         union(){
+            //outer cylinder
             translate([0, 0, 5]) difference(){
                 cylinder(r=R(LensVoidDiameter)+15, h=LensY, center=true);
                 cylinder(r=R(LensVoidDiameter)+5, h=LensY+1, center=true);
+                translate([0, 0, 10.01]) cylinder(r1=R(LensVoidDiameter), r2=R(LensVoidDiameter)+10, h=10, center=true);
             }
+            
             translate([0,0,-(LensY/4)-(5/4)]) difference(){
                 cylinder(r=R(LensVoidDiameter)+5, h=R(LensY)-R(5)-10, center=true);
                 cylinder(r=R(LensVoidDiameter), h=LensY+1, center=true);
             }
+
             difference () {
                 union() {
                     translate([50, 0, -6]) cube([100, LensVoidDiameter + 30, 8], center=true);
@@ -85,14 +89,16 @@ module Mount () {
         //
         translate([80, R(MountBoltSpacingY), 0]) RailSlots();
         translate([80, -R(MountBoltSpacingY), 0]) RailSlots();
+        
+        translate([0, 0, -4]) cylinder(r2=R(LensVoidDiameter)-5, r1=R(LensVoidDiameter)+5, h=LensY/2, center=true);
         //endstop
-        translate([0, -34, 25-2-2-10]) {
+        /*translate([0, -34, 25-2-2-10]) {
             difference () {
                 cube([14, 20, 50], center=true);
                 translate([0, R(LensVoidDiameter)+10+4.01, 0]) cylinder(r=R(LensVoidDiameter)+5, h=LensY + 29, center=true, $fn=200);
             }
             translate([0, 11, -14+9]) cylinder(r=R(22), h=4, center=true);
-        }
+        }*/
 	}
 }
 
@@ -119,7 +125,9 @@ module Cap () {
         cylinder(r=R(2.5), h=10,center=true);
         translate([0, 0, 2.5]) cylinder(r=R(7.5), h=5,center=true);
     }
-    translate([CapOffsetX,CapOffsetY - R(LensVoidDiameter) - 4, 1.25]) cylinder(r=R(15), h=1.5, center=true);
+    
+    //removed, unneeded
+    //translate([CapOffsetX,CapOffsetY - R(LensVoidDiameter) - 4, 1.25]) cylinder(r=R(15), h=1.5, center=true);
 }
 
 module MountFront () {
@@ -204,14 +212,14 @@ module OptoEndstopMount () {
 
 module Debug () {
     Mount();
-    //translate([-CapOffsetX,-CapOffsetY,5.71]) rotate([0,0,currentAngle]) Cap();
+    translate([-CapOffsetX,-CapOffsetY,5.71]) rotate([0,0,currentAngle]) Cap();
     //color("green") RailMount();
     //translate([5, -38, -11.8+OptoEndstopAdjustZ]) rotate([0, -90, 0]) opto_endstop();
-    color("green") translate([5, -38, -11.8]) OptoEndstopMount();
-    translate([1.5, -38 + 2 -10, -11.8 + 11 + 2 +.75]) rotate([90, 0, 0]) OptoEndstop();
+    //color("green") translate([5, -38, -11.8]) OptoEndstopMount();
+    //translate([1.5, -38 + 2 -10, -11.8 + 11 + 2 +.75]) rotate([90, 0, 0])OptoEndstop();
 }
 
-Render="OptoEndstopMount";
+Render="Debug";
 
 if (Render=="Debug") {
     Debug();
@@ -224,5 +232,6 @@ if (Render=="Debug") {
 } else if (Render=="RailMount") {
     RailMount();
 } else if (Render=="OptoEndstopMount") {
-    rotate([-90,0,0]) OptoEndstopMount();    
+    echo("Deprecated");
+    //rotate([-90,0,0]) OptoEndstopMount();    
 }
