@@ -123,7 +123,7 @@ module Cap () {
         }
         translate([0, 0, -4]) cylinder(r1=R(5.85), r2=R(5.5), h=4.01,center=true, $fn=20);
         cylinder(r=R(2.5), h=10,center=true);
-        translate([0, 0, 2.5]) cylinder(r=R(7.5), h=5,center=true);
+        translate([0, 0, 2.5]) cylinder(r=R(6.5), h=5,center=true);
     }
     
     //removed, unneeded
@@ -219,7 +219,7 @@ module Debug () {
     //translate([1.5, -38 + 2 -10, -11.8 + 11 + 2 +.75]) rotate([90, 0, 0])OptoEndstop();
 }
 
-Render="Debug";
+Render="Cap";
 
 if (Render=="Debug") {
     Debug();
@@ -228,7 +228,7 @@ if (Render=="Debug") {
 } else if (Render=="MountFront") {
     MountFront();    
 } else if (Render=="MountBack") {
-    MountBack();
+    rotate([180, 0, 0]) MountBack();
 } else if (Render=="RailMount") {
     RailMount();
 } else if (Render=="OptoEndstopMount") {
