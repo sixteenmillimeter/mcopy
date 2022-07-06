@@ -1,4 +1,4 @@
- #include <Servo.h>
+#include <Servo.h>
 
 boolean debug_state = true;
 
@@ -10,8 +10,8 @@ Red        -      5V
 Black      -      GND
 Yellow     -      PWM Pin (9 in this example)
 
-Using TowerPro SG-5010 +
-      TowerPro 
+Using TowerPro SG-5010 - default angle 93
+      TowerPro MG-995  - default angle 93
 as servos for development
 ----------------------------------------------------
 */
