@@ -522,3 +522,8 @@ module bolex_stand () {
     }
 }
 
+PART="rod";
+
+if (PART == "rod") {
+    rod();
+}
