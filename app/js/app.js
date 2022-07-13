@@ -2496,6 +2496,7 @@ const cmd 		= require('./lib/ui/cmd.js');
 const devices 	= require('./lib/ui/devices.js');
 const filmout 	= require('./lib/ui/filmout.js');
 const mse 		= require('./lib/ui/mscript.js');
+const capper    = require('./lib/ui/capper.js');
 const Mscript 	= require('./lib/mscript');
 const { delay }	= require('./lib/delay');
 
@@ -2525,4 +2526,5 @@ async function init () {
 	proj.init();
 	cam.init();
 	seq.init();
+	capper.init();
 };

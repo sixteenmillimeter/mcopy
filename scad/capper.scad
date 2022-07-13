@@ -219,6 +219,10 @@ module Debug () {
     //translate([1.5, -38 + 2 -10, -11.8 + 11 + 2 +.75]) rotate([90, 0, 0])OptoEndstop();
 }
 
+module Base () {
+    
+}
+
 Render="Cap";
 
 if (Render=="Debug") {
@@ -234,4 +238,6 @@ if (Render=="Debug") {
 } else if (Render=="OptoEndstopMount") {
     echo("Deprecated");
     //rotate([-90,0,0]) OptoEndstopMount();    
+} else if (Render=="Base") {
+    
 }

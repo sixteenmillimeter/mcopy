@@ -360,7 +360,9 @@ class Arduino {
 			write : async function (cmd : string, cb : any) {
 				const t : any = {
 					c : cfg.arduino.cam.time + cfg.arduino.cam.delay,
-					p : cfg.arduino.proj.time + cfg.arduino.proj.delay
+					p : cfg.arduino.proj.time + cfg.arduino.proj.delay,
+					A : 180,
+					B : 180
 				}
 				let timeout : number = t[cmd]
 				if (typeof timeout === 'undefined') timeout = 10

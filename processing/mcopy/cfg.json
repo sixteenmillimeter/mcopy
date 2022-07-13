@@ -183,8 +183,8 @@
       "camera_capper_identifier" : "8",
       "camera_capper_projector_identifier" : "9",
       "camera_capper_projectors_identifier" : "0",
-      "cap_on" : "A",
-      "cap_off" : "B"
+      "capper_on" : "A",
+      "capper_off" : "B"
     }
   }
 }

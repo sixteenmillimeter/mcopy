@@ -98,6 +98,9 @@ class Devices {
                 //add second row of camera pads to grid
                 cam.second.enable();
             }
+            if (arg.capper) {
+                capper.enable();
+            }
             return event.returnValue = true;
         });
     }

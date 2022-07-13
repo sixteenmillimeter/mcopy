@@ -182,6 +182,22 @@ class Devices {
 		this.log.info('Connected to fake LIGHT device', 'SERIAL', true, true)
 		return true
 	}
+
+	/**
+	 * 
+	 **/
+	private async fakeCapper () {
+		this.connected.capper = '/dev/fake'
+		try {
+			await this.arduino.fakeConnect('capper')
+		} catch (err) {
+			console.error(err)
+			this.log.error(`Error connecting to fake CAPPER device`, 'SERIAL', true, true)
+			return false
+		}
+		this.log.info('Connected to fake CAPPER device', 'SERIAL', true, true)
+		return true
+	}
 	 /**
 	 * 
 	 **/
@@ -441,6 +457,8 @@ class Devices {
 
 		if (this.connected.capper) {
 			capper = { arduino : this.connected.capper }
+		} else {
+			await this.fakeCapper()
 		}
 
 		if (this.settings.state.camera && this.settings.state.camera.intval) {
@@ -480,7 +498,6 @@ class Devices {
 			profile: this.settings.state.profile 
 		}
 
-		console.log("CHECK " + camera)
 		if (projector_second && projector_second.arduino) {
 			args.projector_second = projector_second
 			this.settings.update('projector_second', projector_second)

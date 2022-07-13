@@ -54,6 +54,7 @@
     "animated-gif-detector": "^1.2.0",
     "arduino": "file:lib/arduino",
     "cam": "file:lib/cam",
+    "capper" : "file:lib/capper",
     "capture": "file:lib/capture",
     "cmd": "file:lib/cmd",
     "delay": "file:lib/delay",

@@ -122,7 +122,8 @@ class Grid {
 			'camera_backward', 
 			'camera_second_backward', 
 			'projector_backward',
-			'projector_second_backward',  
+			'projector_second_backward',
+			'black',  
 			'light_set', 
 			'numbers'
 		];
