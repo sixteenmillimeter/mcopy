@@ -220,10 +220,10 @@ module Debug () {
 }
 
 module Base () {
-    
+    cube([1, 1, 1], center = true);
 }
 
-Render="Cap";
+Render="Base";
 
 if (Render=="Debug") {
     Debug();
@@ -239,5 +239,5 @@ if (Render=="Debug") {
     echo("Deprecated");
     //rotate([-90,0,0]) OptoEndstopMount();    
 } else if (Render=="Base") {
-    
+    Base();
 }
