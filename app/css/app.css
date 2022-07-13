@@ -650,6 +650,9 @@ button:focus {
 ::-webkit-scrollbar-thumb:window-inactive {
   background: rgba(0, 0, 0, 0.05);
 }
+#settings h4 {
+  margin-bottom: 1px;
+}
 #settings > div {
   width: 300px;
   margin: 0 auto;
