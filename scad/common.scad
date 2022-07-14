@@ -72,3 +72,7 @@ module optoswitch() {
        }	
      }
  }
+ 
+ module hex (diag = 10, h = 1) {
+    cylinder(r = diag / 2, h = h, center = true, $fn = 6);
+}

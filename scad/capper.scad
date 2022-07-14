@@ -217,10 +217,29 @@ module Debug () {
     //translate([5, -38, -11.8+OptoEndstopAdjustZ]) rotate([0, -90, 0]) opto_endstop();
     //color("green") translate([5, -38, -11.8]) OptoEndstopMount();
     //translate([1.5, -38 + 2 -10, -11.8 + 11 + 2 +.75]) rotate([90, 0, 0])OptoEndstop();
+    translate([130, 0, 0]) Base();
+    translate([80, 0, 30]) cube([110 + 50, 10, 10], center = true);
 }
 
 module Base () {
-    cube([1, 1, 1], center = true);
+    $fn = 60;
+    difference () {
+        cube([110, LensVoidDiameter + 30, 8], center=true);
+        translate([-45, R(MountBoltSpacingY), 0]) cylinder(r=R(RailSlotsD) + .25, h=40, center=true);
+        translate([-45, -R(MountBoltSpacingY), 0]) cylinder(r=R(RailSlotsD) + .25, h=40, center=true);
+    }
+    translate([15, 0, -R(50)]) cube([10, LensVoidDiameter + 30, 50], center=true);
+    difference () {
+        translate([50, 0, -R(50)]) cube([10, LensVoidDiameter + 30, 50], center=true);
+        translate([50, 20, -40]) rotate([0, 90, 0]) {
+            cylinder(r=R(RailSlotsD) + .25, h=40, center=true);
+            translate([0, 0, -11]) rotate([0, 0, 30]) hex(13.5, 22);
+        }
+        translate([50, -20, -40]) rotate([0, 90, 0]) {
+            cylinder(r=R(RailSlotsD) + .25, h=40, center=true);
+            translate([0, 0, -11]) rotate([0, 0, 30]) hex(13.5, 22);
+        }
+    }
 }
 
 Render="Base";
