@@ -19,7 +19,7 @@ class Capper {
 	queue : any = {};
 	lock : boolean = false;
 	id : string = 'capper';
-	state : boolean = true;
+	state : boolean = false;
 
 	constructor () {
 
@@ -30,11 +30,15 @@ class Capper {
 	}
 
 	public enable () {
-		$('.capper').addClass('on');
-		enabled = true
+		$('.black').addClass('on');
+		$('#cmd_black_forward').parent().removeClass('hide');
+		$('#cmd_black_backward').parent().removeClass('hide');
+		$('#cmd_capper_on').parent().removeClass('hide');
+		$('#cmd_capper_off').parent().removeClass('hide');
+		this.enabled = true;
 	}
 
-	public set (state : boolean, callback : Function) {
+	public capper (state : boolean, callback : Function) {
 		let obj : CapperEvent;
 
 		if (this.lock) {
@@ -54,6 +58,15 @@ class Capper {
 
 		this.queue[obj.id] = obj;
 		this.lock = true;
+		this.state = state;
+
+		if (state) {
+			$('#cmd_capper_on').addClass('active');
+			$('#cmd_capper_off').removeClass('active');
+		} else {
+			$('#cmd_capper_off').addClass('active');
+			$('#cmd_capper_on').removeClass('active');
+		}
 	}
 
 	public end (c : string, id : string, ms : number) {

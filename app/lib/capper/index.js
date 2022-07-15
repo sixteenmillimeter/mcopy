@@ -57,9 +57,9 @@ class Capper {
      *
      **/
     async listener(event, arg) {
-        if (typeof arg.capper !== 'undefined') {
+        if (typeof arg.state !== 'undefined') {
             try {
-                await this.capper(arg.capper, arg.id);
+                await this.capper(arg.state, arg.id);
             }
             catch (err) {
                 this.log.error(err);

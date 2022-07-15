@@ -15,8 +15,8 @@
         "momentary": 0
       },
       "black": {
-        "before": 0,
-        "after": 0
+        "before": 100,
+        "after": 100
       },
       "light": false
     },

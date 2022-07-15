@@ -155,24 +155,63 @@ cmd.black_forward = function (callback) {
 		if (callback) { callback(ms); }	
 	};
 	$('#cmd_black_forward').addClass('active');
+
 	if (!cam.dir) {
-		cam.set(true, function () {
-			setTimeout( function () {
-				light.display(off);
-				light.set(off, function () {
-					setTimeout( function () {
-						cam.move(res);
-					}, cfg.arduino.serialDelay);
-				});
-			}, cfg.arduino.serialDelay);
-		});
+		if (capper.enabled) {
+			cam.set(true, function () {
+				setTimeout( function () {
+					capper.capper(true, function () {
+						setTimeout( function () {
+							light.display(off);
+							light.set(off, function () {
+								setTimeout( function () {
+									cam.move(function () {
+										setTimeout(function () {
+											capper.capper(false, res);
+										}, cfg.arduino.serialDelay);
+									});
+								}, cfg.arduino.serialDelay);
+							});
+						}, cfg.arduino.serialDelay)
+					})
+				}, cfg.arduino.serialDelay);
+			});
+		} else {
+			cam.set(true, function () {
+				setTimeout( function () {
+					light.display(off);
+					light.set(off, function () {
+						setTimeout( function () {
+							cam.move(res);
+						}, cfg.arduino.serialDelay);
+					});
+				}, cfg.arduino.serialDelay);
+			});
+		}
 	} else {
-		light.display(off);
-		light.set(off, function () {
-			setTimeout(function () {
-				cam.move(res);
-			}, cfg.arduino.serialDelay);
-		});
+		if (capper.enabled) {
+			capper.capper(true, function () {
+				setTimeout( function () {
+					light.display(off);
+					light.set(off, function () {
+						setTimeout( function () {
+							cam.move(function () {
+								setTimeout(function () {
+									capper.capper(false, res);
+								}, cfg.arduino.serialDelay);
+							});
+						}, cfg.arduino.serialDelay);
+					});
+				}, cfg.arduino.serialDelay);
+			});
+		} else {
+			light.display(off);
+			light.set(off, function () {
+				setTimeout(function () {
+					cam.move(res);
+				}, cfg.arduino.serialDelay);
+			});
+		}
 	}
 };
 /**
@@ -226,21 +265,57 @@ cmd.black_backward = function (callback) {
 	};
 	$('#cmd_black_backward').addClass('active');
 	if (cam.dir) {
-		cam.set(false, function () {
+		if (capper.enabled) {
+			cam.set(false, function () {
+				setTimeout( function () {
+					capper.capper(true, function () {
+						setTimeout(function () {
+							light.display(off);
+							light.set(off, function () {
+								cam.move(function () {
+									setTimeout(function () {
+										capper.capper(false, res);
+									}, cfg.arduino.serialDelay);
+								});
+							});
+						}, cfg.arduino.serialDelay);
+					});
+				}, cfg.arduino.serialDelay);
+			});
+		} else {
+			cam.set(false, function () {
+				setTimeout(function () {
+					light.display(off);
+					light.set(off, function () {
+						cam.move(res);
+					});
+				}, cfg.arduino.serialDelay);
+			});
+		}
+	} else {
+		if (capper.enabled) {
+			capper.capper(true, function () {
+				setTimeout( function () {
+					light.display(off);
+					light.set(off, function () {
+						setTimeout( function () {
+							cam.move(function () {
+								setTimeout(function () {
+									capper.capper(false, res);
+								}, cfg.arduino.serialDelay);
+							});
+						}, cfg.arduino.serialDelay);
+					});
+				}, cfg.arduino.serialDelay);
+			});
+		} else {
 			setTimeout(function () {
 				light.display(off);
 				light.set(off, function () {
 					cam.move(res);
 				});
 			}, cfg.arduino.serialDelay);
-		});
-	} else {
-		setTimeout(function () {
-			light.display(off);
-			light.set(off, function () {
-				cam.move(res);
-			});
-		}, cfg.arduino.serialDelay);
+		}
 	}
 };
 
@@ -533,5 +608,33 @@ cmd.projector_second_to = function (t) {
 		}
 	}
 }
+
+/**
+ * Turn the capper on (block the camera)
+ *
+ * @param {function} callback  Function to call after capper is on
+ **/
+cmd.capper_on = function (callback) {
+	'use strict';
+	var res = function (ms) {
+		gui.updateState();
+		if (callback) { callback(ms); }
+	};
+	capper.capper(true, res);
+};
+
+/**
+ * Turn the capper off (not blocking the camera)
+ *
+ * @param {function} callback  Function to call after capper is off
+ **/
+cmd.capper_off = function (callback) {
+	'use strict';
+	var res = function (ms) {
+		gui.updateState();
+		if (callback) { callback(ms); }
+	};
+	capper.capper(false, res);
+};
 
 module.exports = cmd;

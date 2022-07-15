@@ -2,18 +2,24 @@
 let capper;
 class Capper {
     constructor() {
+        this.enabled = false;
         this.queue = {};
         this.lock = false;
         this.id = 'capper';
-        this.state = true;
+        this.state = false;
     }
     init() {
         this.listen();
     }
     enable() {
-        $('.capper').addClass('on');
+        $('.black').addClass('on');
+        $('#cmd_black_forward').parent().removeClass('hide');
+        $('#cmd_black_backward').parent().removeClass('hide');
+        $('#cmd_capper_on').parent().removeClass('hide');
+        $('#cmd_capper_off').parent().removeClass('hide');
+        this.enabled = true;
     }
-    set(state, callback) {
+    capper(state, callback) {
         let obj;
         if (this.lock) {
             return false;
@@ -28,6 +34,15 @@ class Capper {
         }
         this.queue[obj.id] = obj;
         this.lock = true;
+        this.state = state;
+        if (state) {
+            $('#cmd_capper_on').addClass('active');
+            $('#cmd_capper_off').removeClass('active');
+        }
+        else {
+            $('#cmd_capper_off').addClass('active');
+            $('#cmd_capper_on').removeClass('active');
+        }
     }
     end(c, id, ms) {
         if (c === cfg.arduino.cmd.capper_on) {

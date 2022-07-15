@@ -46,7 +46,7 @@
             <div id="projector_backward" class="row" y="1"></div>
             <div id="projector_second_backward" class="row proj2" y="3"></div>
 
-            <div id="capper" class="row capper" y="4"></div>
+            <div id="black" class="row black"></div>
             
             <div id="light_set" class="row spacer"></div>
             <div id="numbers" class="row"></div>
@@ -62,7 +62,7 @@
             <div><span>PROJ </span><i class="fa fa-minus"></i></div>
             <div class="proj2"><span>PROJ2 </span><i class="fa fa-minus"></i></div>
 
-            <div class="capper"><span>BLANK </span><i class="fa fa-times"></i></div>
+            <div class="black"><span>BLANK </span><i class="fa fa-times"></i></div>
 
             <div class="spacer"><span>LIGHT</span></div>
           </div>
@@ -160,6 +160,20 @@
                 <i class="fa fa-times-circle"></i> 
                 BLANK -1
                 <i class="fa fa-step-backward"></i>
+              </button>
+            </div>
+            <div class="hide">
+              <button id="cmd_capper_on" onclick="cmd.capper_on();" class="cmd capper">
+                <i class="fa fa-times-circle"></i> 
+                CAPPER ON
+                <i class="fa fa-eye"></i> 
+              </button>
+            </div>
+            <div class="hide">
+              <button id="cmd_capper_off" onclick="cmd.capper_off();" class="cmd capper active">
+                <i class="fa fa-eye"></i> 
+                CAPPER OFF
+                <i class="fa fa-eye"></i> 
               </button>
             </div>
           </div>

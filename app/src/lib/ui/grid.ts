@@ -19,6 +19,9 @@ let grid : Grid;
 *******/
 class Grid {
 	private swatchesElem : any = {};
+	private projector_cmds : string[] = [
+		'PF', 'PB', 'P2F', 'P2B', 'PPF', 'PPB'
+	];
 	constructor () {
 
 	}
@@ -40,8 +43,9 @@ class Grid {
 		const step : Step = seq.grid[x];
 		let className : string;
 		let className2 : string;
+
+		elem.prop('checked', false);
 		if (typeof step !== 'undefined') {
-			elem.prop('checked', false);
 			if (step.cmd === cfg.cmd.cameras_forward) {
 				className = cfg.cmd.camera_forward;
 				className2 = cfg.cmd.camera_second_forward;
@@ -67,6 +71,12 @@ class Grid {
 			} else if (step.cmd === cfg.cmd.projector_backward_projector_second_forward) {
 				className = cfg.cmd.projector_backward;
 				className2 = cfg.cmd.projector_second_forward;
+			} else if (step.cmd === cfg.cmd.black_forward) {
+				className = cfg.cmd.camera_forward;
+				className2 = 'black';
+			} else if (step.cmd === cfg.cmd.black_backward) {
+				className = cfg.cmd.camera_backward;
+				className2 = 'black';
 			} else {
 				className = step.cmd;
 			}
@@ -80,12 +90,17 @@ class Grid {
 				lightElem.css('background', `rgb(${step.light})`)
 					.addClass('a')
 					.prop('title', `rgb(${seq.light})`);
-
 			} else {
 				lightElem.css('background', 'transparent')
 					.removeClass('a')
 					.prop('title', '');
 			}
+			if (capper.enabled && this.projector_cmds.indexOf(step.cmd) !== -1) {
+				$(`.black[x=${x}]`).addClass('disabled');
+			} else if (capper.enabled) {
+				$(`.black[x=${x}]`).removeClass('disabled');
+			}
+
 		} else {
 			lightElem.css('background', 'transparent')
 				.removeClass('a')
@@ -142,6 +157,9 @@ class Grid {
 				} else if (cmds[i] === 'light_set') {
 					elem = `<div x="${x}" class="L"></div>`
 					$(cmd).append($(elem));
+				} else if (cmds[i] === 'black') {
+					elem = `<input type="checkbox" x="${x}" class="black" />`;
+					$(cmd).append($(elem));
 				} else {
 					elem = `<input type="checkbox" x="${x}" />`;
 					$(cmd).append($(elem).addClass(cfg.cmd[cmds[i]]));
@@ -170,7 +188,20 @@ class Grid {
 			current = seq.grid[x].cmd + ''; // cast to string, bad hack
 		}
 		if (checked) {
-			if (cam.second.enabled && current.indexOf('C') !== -1) {
+			if (c.indexOf('black') !== -1) {
+				if (other === '') {
+					c = cfg.cmd.black_forward;
+				} else if (current.indexOf('C') !== -1) {
+					if (other == cfg.cmd.camera_forward) {
+						c = cfg.cmd.black_forward;
+					} else if (other === cfg.cmd.camera_backward) {
+						c = cfg.cmd.black_backward;
+					}
+				} else if (current.indexOf('P') !== -1) {
+					$(elem).prop('checked', false);
+					return;
+				}
+			} else if (cam.second.enabled && current.indexOf('C') !== -1) {
 				if (c === cfg.cmd.camera_forward) {
 					if (other === cfg.cmd.camera_second_forward) {
 						c = cfg.cmd.cameras_forward;
@@ -198,7 +229,6 @@ class Grid {
 				}
 			} else if (proj.second.enabled && current.indexOf('P') !== -1) {
 				if (c === cfg.cmd.projector_forward) {
-
 					if (current === cfg.cmd.projectors_backward) {
 						c = cfg.cmd.projector_forward_projector_second_backward;
 					} else if (current === cfg.cmd.projector_backward_projector_second_forward) {
@@ -209,7 +239,6 @@ class Grid {
 						c = cfg.cmd.projector_forward_projector_second_backward;
 					}
 				} else if (c === cfg.cmd.projector_backward) {
-
 					if (current === cfg.cmd.projectors_forward) {
 						c = cfg.cmd.projector_backward_projector_second_forward;
 					} else if (current === cfg.cmd.projector_forward_projector_second_backward) {
@@ -220,7 +249,6 @@ class Grid {
 						c = cfg.cmd.projectors_backward;
 					}
 				} else if (c === cfg.cmd.projector_second_forward) {
-
 					if (current === cfg.cmd.projectors_backward) {
 						c = cfg.cmd.projector_backward_projector_second_forward;
 					} else if (current === cfg.cmd.projector_forward_projector_second_backward) {
@@ -231,7 +259,6 @@ class Grid {
 						c = cfg.cmd.projector_backward_projector_second_forward;
 					}
 				} else if (c === cfg.cmd.projector_second_backward) {
-
 					if (current === cfg.cmd.projectors_forward) {
 						c = cfg.cmd.projector_forward_projector_second_backward;
 					} else if (current === cfg.cmd.projector_backward_projector_second_forward) {
@@ -245,7 +272,22 @@ class Grid {
 			}
 			seq.set(x, c);
 		} else {
-			if (cam.second.enabled && current.indexOf('C') !== -1) {
+			if (c.indexOf('black') !== -1) {
+				if (current === 'BF' || current === 'BB') {
+					if (other === cfg.cmd.camera_forward) {
+						c = cfg.cmd.camera_forward;
+					} else if (other === cfg.cmd.camera_backward) {
+						c = cfg.cmd.camera_backward;
+					}
+				} else if (current.indexOf('P') !== -1) {
+					$(elem).prop('checked', false);
+					return;
+				}
+			} else if (other === 'black' && current === cfg.cmd.camera_forward) {
+				c = '';
+			} else if (other === 'black' && current === cfg.cmd.camera_backward) {
+				c = '';
+			} else if (cam.second.enabled && current.indexOf('C') !== -1) {
 				if (current === cfg.cmd.cameras_forward) {
 					if (other === cfg.cmd.camera_second_forward) {
 						c = cfg.cmd.camera_second_forward;

@@ -65,17 +65,17 @@ class Capper {
 		} catch (err) {
 			this.log.error(err);
 		}
+
 		return await this.end(cmd, id, ms);
 	}
-
 
 	/**
 	 *
 	 **/
 	private async listener (event : any, arg : any) {
-		if (typeof arg.capper !== 'undefined') {
+		if (typeof arg.state !== 'undefined') {
 			try {
-				await this.capper(arg.capper, arg.id)
+				await this.capper(arg.state, arg.id)
 			} catch (err) {
 				this.log.error(err)
 			}

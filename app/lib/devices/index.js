@@ -418,7 +418,7 @@ class Devices {
         let d;
         let cs = {};
         let ps = {};
-        let capper;
+        let capper = {};
         let checklist = [];
         this.connected = {
             projector: false,
@@ -457,16 +457,13 @@ class Devices {
         }
         l.arduino = this.connected.light;
         if (this.connected.camera_second) {
-            cs = { arduino: this.connected.camera_second };
+            cs.arduino = this.connected.camera_second;
         }
         if (this.connected.projector_second) {
-            ps = { arduino: this.connected.projector_second };
+            ps.arduino = this.connected.projector_second;
         }
         if (this.connected.capper) {
-            capper = { arduino: this.connected.capper };
-        }
-        else {
-            await this.fakeCapper();
+            capper.arduino = this.connected.capper;
         }
         if (this.settings.state.camera && this.settings.state.camera.intval) {
             c.intval = this.settings.state.camera.intval;
@@ -518,7 +515,7 @@ class Devices {
                 this.mainWindow.setSize(800, 800);
             }
         }
-        if (capper) {
+        if (capper && capper.arduino) {
             args.capper = capper;
             this.mainWindow.setSize(800, 800);
             this.settings.update('capper', capper);

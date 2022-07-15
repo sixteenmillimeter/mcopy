@@ -81,12 +81,6 @@ class Devices {
 			}
 			//devices.profile(arg.profile)
 		}
-
-		seq.set(0, cfg.cmd.camera_forward);
-		seq.set(1, cfg.cmd.projector_forward);
-		grid.state(0);
-		grid.state(1);
-		seq.stats();
 		
 		if (arg.projector_second) {
 			//add second row of projector pads to grid
@@ -97,8 +91,16 @@ class Devices {
 			cam.second.enable();
 		}
 		if (arg.capper) {
+			//add capper features to grid
 			capper.enable();
 		}
+
+		seq.set(0, cfg.cmd.camera_forward);
+		seq.set(1, cfg.cmd.projector_forward);
+		grid.state(0);
+		grid.state(1);
+		seq.stats();
+
 		return event.returnValue = true;
 	}
 

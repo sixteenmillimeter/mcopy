@@ -126,6 +126,13 @@
 			color: @BACKWARD + @SECOND;
 		}
 	}
+	#black{
+		input[type=checkbox]{
+			&:checked{
+				background: white;
+			}
+		}
+	}
 	input[type=checkbox]{
 		-webkit-appearance: none;
 		-moz-appearance: none;
@@ -141,6 +148,10 @@
     	display: inline-block;
 		box-sizing: border-box;
 		cursor: pointer;
+		&.disabled{
+			cursor: not-allowed;
+			border-color: rgb(100, 100, 100);
+		}
 	}
 	.L{
 		display: inline-block;

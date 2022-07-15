@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # compile main process code
 cd ..
 npm run compile

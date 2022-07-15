@@ -14,15 +14,17 @@ class Commands {
      * @param {object} cam2 (optional) Camera 2
      * @param {object} proj2 {optional} Projector 2
      **/
-    constructor(cfg, proj, cam, light, cam2 = null, proj2 = null) {
+    constructor(cfg, proj, cam, light, cam2 = null, proj2 = null, capper = null) {
         this.cfg = cfg;
         this.proj = proj;
         this.cam = cam;
         this.light = light;
-        if (cam2)
+        if (cam2 !== null)
             this.cam2 = cam2;
-        if (proj2)
+        if (proj2 !== null)
             this.proj2 = proj2;
+        if (capper !== null)
+            this.capper = capper;
         this.ipc = require('electron').ipcMain;
     }
     /**
@@ -101,18 +103,25 @@ class Commands {
     async black_forward() {
         const id = uuid_1.v4();
         const off = [0, 0, 0];
-        let ms;
+        let ms = 0;
         try {
             if (!this.cam.state.dir) {
                 await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam.set(true);
             }
             await delay_1.delay(this.cfg.arduino.serialDelay);
+            if (this.capper) {
+                ms += await this.capper.capper(true, id);
+            }
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off, id); //make sure set to off
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            ms = await this.cam.move();
+            ms += await this.cam.move();
             await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off, id);
+            if (this.capper) {
+                ms += await this.capper.capper(false, id);
+            }
         }
         catch (err) {
             throw err;
@@ -155,18 +164,24 @@ class Commands {
     async black_backward() {
         const id = uuid_1.v4();
         const off = [0, 0, 0];
-        let ms;
+        let ms = 0;
         try {
             if (this.cam.state.dir) {
                 await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam.set(false);
             }
+            if (this.capper) {
+                ms += await this.capper.capper(true, id);
+            }
             await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off, id); //make sure set to off
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            ms = await this.cam.move();
+            ms += await this.cam.move();
             await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off, id);
+            if (this.capper) {
+                ms += await this.capper.capper(false, id);
+            }
         }
         catch (err) {
             throw err;
@@ -571,7 +586,7 @@ class Commands {
         return ms;
     }
 }
-module.exports = function (cfg, proj, cam, light, cam2, proj2) {
-    return new Commands(cfg, proj, cam, light, cam2, proj2);
+module.exports = function (cfg, proj, cam, light, cam2, proj2, capper) {
+    return new Commands(cfg, proj, cam, light, cam2, proj2, capper);
 };
 //# sourceMappingURL=index.js.map

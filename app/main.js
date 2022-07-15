@@ -127,12 +127,11 @@ var init = async function () {
 	if (dev && dev.connected && dev.connected.projector_second) {
 		proj2 = require('proj')(arduino, cfg, mainWindow.webContents, filmout, true)
 	}
-
 	if (dev && dev.connected && dev.connected.capper) {
 		capper = require('capper')(arduino, cfg, mainWindow.webContents, filmout, true)
 	}
-
-	cmd = require('cmd')(cfg, proj, cam, light, cam2, proj2)
+	
+	cmd = require('cmd')(cfg, proj, cam, light, cam2, proj2, capper)
 	seq = require('sequencer')(cfg, cmd, mainWindow.webContents)
 }
 
