@@ -351,6 +351,14 @@ class Devices {
 				this.log.error('Error connecting to camera, camera_second, projector and projector_second', err)
 				return false
 			}
+		} else if (type === 'capper') {
+			this.connected.capper = device
+			try {
+				connectSuccess = await this.arduino.connect('capper', device, false)
+			} catch (err) {
+				this.log.error('Error connecting capper', err)
+				return false
+			}
 		} else if (type === 'camera,capper') {
 			this.connected.camera = device
 			this.connected.capper = device
