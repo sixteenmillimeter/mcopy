@@ -1,6 +1,6 @@
 #include <Servo.h>
 
-const int PIN_SERVO = 9;
+const int PIN_SERVO = 6;
 Servo servo;
 
 /*
@@ -25,7 +25,10 @@ void setup() {
 }
 
 void loop() {
-  
+  delay(1000);
+  servo.write(153);
+  delay(1000);
+  servo.write(93);
 }
 
 void Servo_init () {

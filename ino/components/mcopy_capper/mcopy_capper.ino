@@ -1,6 +1,6 @@
 #include <Servo.h>
 
-boolean debug_state = true;
+boolean debug_state = false;
 
 /*
 ----------------------------------------------------
@@ -21,7 +21,7 @@ as servos for development
  * ------------------------------------------------*/
 //Arduino Duemilanove +
 //Arduino Uno
-const int PIN_SERVO = 9;
+const int PIN_SERVO = 6;
 
 volatile boolean running = false;
 volatile boolean cap_state = false;
