@@ -266,8 +266,7 @@ class Sequencer {
 		const cmdOriginal : string = this.arr[x].cmd;
 		const cmd : string = this.CMDS[cmdOriginal];
 		this.log.info(`CMD: '${cmdOriginal}' -> ${cmd}`);
-		//I wrote this when I was very tired and delirious
-		return await this.cmd[cmd]();
+		return await this.cmd[cmd](this.arr[x]);
 	}
 }
 

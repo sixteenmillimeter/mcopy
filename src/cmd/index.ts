@@ -13,6 +13,8 @@ class Commands {
 
 	private capper : any;
 
+	private alertObj : any;
+
 	private cfg : any;
 	private ipc : any;
 
@@ -25,14 +27,15 @@ class Commands {
 	 * @param {object} cam  Camera 1
 	 * @param {object} light Light source
 	 * @param {object} cam2 (optional) Camera 2
-	 * @param {object} proj2 {optional} Projector 2
+	 * @param {object} proj2 (optional) Projector 2
 	 **/
 
-	constructor (cfg : any, proj : any, cam : any, light : any, cam2 : any = null, proj2 : any = null, capper : any = null) {
+	constructor (cfg : any, proj : any, cam : any, light : any, alert : any, cam2 : any = null, proj2 : any = null, capper : any = null) {
 		this.cfg = cfg;
 		this.proj = proj;
 		this.cam = cam;
 		this.light = light;
+		this.alertObj = alert;
 
 		if (cam2 !== null) this.cam2 = cam2;
 		if (proj2 !== null) this.proj2 = proj2;
@@ -82,13 +85,14 @@ class Commands {
 	/**
 	 * Move the camera one frame forward
 	 *
-	 * @param {array} 	 rgb 	   Color to set light for frame
+	 * @param {object} 	 cmd 	   Full cmd object
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async camera_forward (rgb : number[] = [255, 255, 255]) {
+	public async camera_forward () {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
+		let rgb : number[] = [255, 255, 255];
 		let ms : number;
 		try {
 			if (!this.cam.state.dir) {
@@ -141,13 +145,14 @@ class Commands {
 	/**
 	 * Move the camera one frame backward
 	 *
-	 * @param {array} 	 rgb 	   Color to set light for frame
+	 * @param {object} 	 cmd 	   Full cmd object
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async camera_backward (rgb : number[] = [255, 255, 255]) {
+	public async camera_backward () {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
+		let rgb : number[] = [255, 255, 255];
 		let ms : number;
 		try {
 			if (this.cam.state.dir) {
@@ -200,13 +205,14 @@ class Commands {
 	/**
 	 * Move the second camera one frame forward
 	 *
-	 * @param {array} 	 rgb 	   Color to set light for frame
+	 * @param {object} 	 cmd 	   Full cmd object
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async camera_second_forward (rgb : number[] = [255, 255, 255]) {
+	public async camera_second_forward () {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
+		let rgb : number[] = [255, 255, 255];
 		let ms : number;
 		try {
 			if (!this.cam2.state.dir) {
@@ -228,13 +234,14 @@ class Commands {
 	/**
 	 * Move the second camera one frame backward
 	 *
-	 * @param {array} 	 rgb 	   Color to set light for frame
+	 * @param {object} 	 cmd 	   Full cmd object
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async camera_second_backward (rgb : number[] = [255, 255, 255]) {
+	public async camera_second_backward () {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
+		let rgb : number[] = [255, 255, 255];
 		let ms : number;
 		try {
 			if (this.cam2.state.dir) {
@@ -257,13 +264,14 @@ class Commands {
 	/**
 	 * Move the both cameras one frame forward
 	 *
-	 * @param {array} 	 rgb 	   Color to set light for frame
+	 * @param {object} 	 cmd 	   Full cmd object
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async cameras_forward (rgb : number[] = [255, 255, 255]) {
+	public async cameras_forward () {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
+		let rgb : number[] = [255, 255, 255];
 		let both : number[];
 		let ms : number;
 		try {
@@ -298,13 +306,14 @@ class Commands {
 	/**
 	 * Move the both cameras one frame backward
 	 *
-	 * @param {array} 	 rgb 	   Color to set light for frame
+	 * @param {object} 	 cmd 	   Full cmd object
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async cameras_backward (rgb : number[] = [255, 255, 255]) {
+	public async cameras_backward () {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
+		let rgb : number[] = [255, 255, 255];
 		let both : number[];
 		let ms : number;
 		try {
@@ -340,13 +349,14 @@ class Commands {
 	/**
 	 * Move first camera one frame forward and rewind secondary camera one frame backward
 	 *
-	 * @param {array} 	 rgb 	   Color to set light for frames
+	 * @param {object} 	 cmd 	   Full cmd object
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async camera_forward_camera_second_backward (rgb : number[] = [255, 255, 255]) {
+	public async camera_forward_camera_second_backward () {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
+		let rgb : number[] = [255, 255, 255];
 		let both : number[];
 		let ms : number;
 		try {
@@ -381,13 +391,14 @@ class Commands {
 	/**
 	 * Rewind first camera one frame backward and move secondary camera one frame forward
 	 *
-	 * @param {array} 	 rgb 	   Color to set light for frame
+	 * @param {object} 	 cmd 	   Full cmd object
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async camera_backward_camera_second_forward (rgb : number[] = [255, 255, 255]) {
+	public async camera_backward_camera_second_forward () {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
+		let rgb : number[] = [255, 255, 255];
 		let both : number[];
 		let ms : number;
 		try {
@@ -589,8 +600,24 @@ class Commands {
 		}
 		return ms;
 	}
+
+	/**
+	 * Throws an alert to pause a sequence
+	 * 
+	 * @returns {integer} Length of action in ms 
+	 **/
+
+	public async alert (cmd : any) {
+		let ms : number;
+		try {
+			ms = await this.alertObj.start(cmd.light); //change this meta
+		} catch (err) {
+			throw err;
+		}
+		return ms;
+	}
 }
 
-module.exports = function (cfg : any, proj : any, cam : any, light : any, cam2 : any, proj2 : any, capper : any) {
-	return new Commands(cfg, proj, cam, light, cam2, proj2, capper);
+module.exports = function (cfg : any, proj : any, cam : any, light : any, alert : any, cam2 : any, proj2 : any, capper : any) {
+	return new Commands(cfg, proj, cam, light, alert, cam2, proj2, capper);
 }

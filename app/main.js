@@ -38,6 +38,7 @@ let dev;
 let cmd;
 let seq;
 let capper;
+let alert;
 
 const cfg = require('./data/cfg.json')
 
@@ -119,6 +120,7 @@ var init = async function () {
 	filmout = require('filmout')(display, ffmpeg, ffprobe, mainWindow.webContents, light)
 	cam = require('cam')(arduino, cfg, mainWindow.webContents, filmout)
 	proj = require('proj')(arduino, cfg, mainWindow.webContents, filmout)
+	alert = require('alert')(mainWindow.webContents)
 
 	if (dev && dev.connected && dev.connected.camera_second) {
 		cam2 = require('cam')(arduino, cfg, mainWindow.webContents, filmout, true)
@@ -131,8 +133,9 @@ var init = async function () {
 		capper = require('capper')(arduino, cfg, mainWindow.webContents, filmout, true)
 	}
 	
-	cmd = require('cmd')(cfg, proj, cam, light, cam2, proj2, capper)
+	cmd = require('cmd')(cfg, proj, cam, light, alert, cam2, proj2, capper)
 	seq = require('sequencer')(cfg, cmd, mainWindow.webContents)
+
 }
 
 app.on('ready', init)

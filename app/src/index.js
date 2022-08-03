@@ -25,6 +25,7 @@ const mse 		= require('./lib/ui/mscript.js');
 const capper    = require('./lib/ui/capper.js');
 const Mscript 	= require('./lib/mscript');
 const { delay }	= require('./lib/delay');
+const alertObj  = require('./lib/ui/alert.js');
 
 let log;
 
@@ -53,4 +54,5 @@ async function init () {
 	cam.init();
 	seq.init();
 	capper.init();
+	alertObj.init();
 };

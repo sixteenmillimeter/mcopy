@@ -15,8 +15,23 @@ const CMD = [
 	'BF',
 	'CB',
 	'PB',
-	'BB'
+	'BB',
+	'C2F',
+	'C2B',
+	'CCF',
+	'CCB',
+	'P2F',
+	'P2B',
+	'PPF',
+	'PPB'
 ];
+/*
+    'CFCB',
+    'CBCF',
+    'PFPB',
+    'PBPF'
+*/
+
 const ALTS = {
 	'CF' : ['CAMERA FORWARD', 'CAM FORWARD'],
 	'PF' : ['PROJECTOR FORWARD', 'PROJ FORWARD'],
@@ -25,9 +40,22 @@ const ALTS = {
 	'PB' : ['PROJECTOR FORWARD', 'PROJ FORWARD', 'PROJECTOR BACK', 'PROJ BACK'],
 	'BB' : ['BLACK BACKWARD', 'BLACK BACK', 'BLANK BACK'],
 	'L ' : ['LIGHT', 'COLOR', 'LAMP'],
-	'F ' : ['FADE']
+	'F ' : ['FADE'],
+	'C2F' : ['CAMERA2 FORWARD', 'CAM2 FORWARD'],
+    'C2B' : ['CAMERA2 BACKWARD', 'CAM2 BACKWARD', 'CAMERA2 BACK', 'CAM2 BACK'],
+    'CCF' : ['CAMERAS FORWARD', 'CAMS FORWARD'],
+    'CCB' : ['CAMERAS BACKWARD', 'CAMS BACKWARD', 'CAMERAS BACK', 'CAMS BACK'],
+    'P2F' : ['PROJECTOR2 FORWARD', 'PROJ2 FORWARD'],
+    'P2B' : ['PROJECTOR2 BACKWARD', 'PROJ2 BACKWARD', 'PROJECTOR2 BACK', 'PROJ2 BACK'],
+    'PPF' : ['PROJECTORS FORWARD', 'PROJS FORWARD'],
+    'PPB' : ['PROJECTORS BACKWARD', 'PROJS BACKWARD', 'PROJECTORS BACK', 'PROJS BACK'],
 };
-
+/*
+    'CFCB' : [ ],
+    'CBCF' : [ ],
+    'PFPB' : [ ],
+    'PBPF' : [ ]
+*/
 const PAUSE = 'PAUSE';
 const ALERT = 'ALERT';
 
@@ -57,7 +85,9 @@ class Mscript {
 	output : any;
 	lines : any[];
 	cam : number;
+	cam2 : number;
 	proj : number;
+	proj2 : number;
 	color : string;
 	loops : any[];
 	rec : number;
@@ -83,7 +113,9 @@ class Mscript {
 		this.lines = [];
 
 		this.cam = 0;
+		this.cam2 = 0;
 		this.proj = 0;
+		this.proj2 = 0;
 		this.color = '';
 		this.loops = [];
 		this.rec = -1;
@@ -667,7 +699,7 @@ class Mscript {
 			this.loops[this.rec].meta
 				.push(lenStr);
 		} else {
-			this.arr.push('AL');
+			this.arr.push('PA');
 			this.meta.push(lenStr);
 		}
 	 }
@@ -685,10 +717,10 @@ class Mscript {
 			this.loops[this.rec].arr
 				.push('AL');
 			this.loops[this.rec].meta
-				.push(msg);
+				.push(line);
 		} else {
 			this.arr.push('AL');
-			this.meta.push(msg);
+			this.meta.push(line);
 		}
 	 }
 
@@ -727,6 +759,14 @@ BF - Black forwards
 CB - Camera backwards
 PB - Projector backwards
 BB - Black backwards
+C2F - Camera 2 forwards
+C2B - Camera 2 backwards
+CCF - Both cameras forwards
+CCB - Both cameras backwards
+P2F - Projector 2 forwards
+P2B - Projector 2 backwards
+PPF - Both projectors forwards
+PPB - Both projectors backwards
 
 ALERT {MESSAGE} - Stop the sequence and requiure user interaction to complete
 PAUSE # - Pause the sequence for a # of seconds

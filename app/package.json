@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",
+    "alert" : "file:lib/alert",
     "animated-gif-detector": "^1.2.0",
     "arduino": "file:lib/arduino",
     "cam": "file:lib/cam",
