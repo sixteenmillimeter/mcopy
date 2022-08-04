@@ -111,11 +111,13 @@ mse.mscript.compile = function () {
 	const mscript = new Mscript();
 	let output = mscript.interpret(data);
 	let len = output.arr.length;
-
+	const cam2 = typeof output.cam2 !== 'undefined' ? `, CAM2 : ${output.cam2}` : '';
+	const proj2 = typeof output.proj2 !== 'undefined' ? `, PROJ2 : ${output.proj2}` : '';
+	
 	mse.mscript.raw = data;
 	mse.mscript.data = output;
 	//mse.console.print(JSON.stringify(output, null, '\t') + '\n')
-	mse.console.print(`Sequence contains ${len} step${(len === 1 ? '' : 's')}, CAM: ${output.cam}, PROJ: ${output.proj}`);
+	mse.console.print(`Sequence contains ${len} step${(len === 1 ? '' : 's')}, CAM: ${output.cam}, PROJ: ${output.proj}${cam2}${proj2}`);
 };
 
 mse.mscript.prepare = function () {
