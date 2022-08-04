@@ -1,6 +1,6 @@
 {
   "name": "mcopy-app",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "GUI for the mcopy small gauge film optical printer platform",
   "main": "main.js",
   "scripts": {
@@ -51,11 +51,11 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",
-    "alert" : "file:lib/alert",
+    "alert": "file:lib/alert",
     "animated-gif-detector": "^1.2.0",
     "arduino": "file:lib/arduino",
     "cam": "file:lib/cam",
-    "capper" : "file:lib/capper",
+    "capper": "file:lib/capper",
     "capture": "file:lib/capture",
     "cmd": "file:lib/cmd",
     "delay": "file:lib/delay",
