@@ -679,7 +679,7 @@ class Mscript {
                 this.cam -= val;
             }
             else {
-                this.loops[this.rec].cam--;
+                this.loops[this.rec].cam -= val;
             }
         }
         else if (cmd === 'PF') {
@@ -695,7 +695,7 @@ class Mscript {
                 this.proj -= val;
             }
             else {
-                this.loops[this.rec].proj--;
+                this.loops[this.rec].proj -= val;
             }
         }
         else if (cmd === 'BF') {

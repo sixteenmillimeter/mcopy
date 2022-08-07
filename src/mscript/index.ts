@@ -700,7 +700,7 @@ class Mscript {
 			if (this.rec === -1) {
 				this.cam -= val;
 			} else {
-				this.loops[this.rec].cam--;
+				this.loops[this.rec].cam -= val;
 			}
 		} else if (cmd === 'PF') {
 			if (this.rec === -1) {
@@ -712,7 +712,7 @@ class Mscript {
 			if (this.rec === -1) {
 				this.proj -= val;
 			} else {
-				this.loops[this.rec].proj--;
+				this.loops[this.rec].proj -= val;
 			}		
 		} else if (cmd === 'BF') {
 			if (this.rec === -1) {
