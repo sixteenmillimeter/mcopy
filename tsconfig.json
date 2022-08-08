@@ -7,6 +7,7 @@
         "moduleResolution": "node",
         "sourceMap": true,
         "removeComments" : false,
+        "declaration" : true,
         "baseUrl" : "lib",
         "outDir": "./lib/",
         "rootDir" : "./src/",

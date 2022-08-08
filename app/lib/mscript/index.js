@@ -1,4 +1,6 @@
 'use strict';
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Mscript = void 0;
 const BLACK = '0,0,0';
 const WHITE = '255,255,255';
 const CMD = [
@@ -122,7 +124,7 @@ class Mscript {
      *
      * @returns {object} if callback is not provided
      */
-    interpret(text, callback) {
+    interpret(text, callback = null) {
         this.clear();
         if (typeof text === 'undefined') {
             return this.fail('No input');
@@ -200,7 +202,7 @@ class Mscript {
         if (this.contains(this.arr, PROJECTOR_SECONDARY)) {
             this.output.proj2 = this.proj2;
         }
-        if (typeof callback !== 'undefined') {
+        if (typeof callback !== 'undefined' && callback != null) {
             //should only be invoked by running mscript.tests()
             callback(this.output);
         }
@@ -967,5 +969,6 @@ class Mscript {
         return arr.some(r => arr2.includes(r));
     }
 }
+exports.Mscript = Mscript;
 module.exports = Mscript;
 //# sourceMappingURL=index.js.map

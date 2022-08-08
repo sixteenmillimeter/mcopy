@@ -72,8 +72,8 @@ const ALTS : any = {
     'PBPF' : [ ]
 };
 
-const PAUSE = 'PAUSE';
-const ALERT = 'ALERT';
+const PAUSE : string = 'PAUSE';
+const ALERT : string = 'ALERT';
 
 /** helper functions */
 
@@ -86,20 +86,24 @@ const ALERT = 'ALERT';
  **/
 function startsWith (str : string, target : string, position? : number) : boolean {
 	const { length } = str;
+
 	position = position == null ? 0 : position;
+
 	if (position < 0) {
 		position = 0;
 	} else if (position > length) {
 		position = length;
 	}
+
 	target = `${target}`;
+
 	return str.slice(position, position + target.length) == target;
 }
 
 /** class Mscript */
-class Mscript {
+export class Mscript {
 	output : any;
-	lines : any[];
+	lines : string[];
 	cam : number;
 	cam2 : number;
 	proj : number;
@@ -159,7 +163,7 @@ class Mscript {
 	 *
 	 * @returns {object} if callback is not provided
 	 */
-	interpret (text : string, callback : Function) {
+	interpret (text : string, callback : Function = null) {
 		this.clear()
 
 		if (typeof text === 'undefined') {
@@ -228,7 +232,7 @@ class Mscript {
 			this.output.proj2 = this.proj2;
 		}
 
-		if (typeof callback !== 'undefined') {
+		if (typeof callback !== 'undefined' && callback != null) {
 			//should only be invoked by running mscript.tests()
 			callback(this.output);
 		} else {
