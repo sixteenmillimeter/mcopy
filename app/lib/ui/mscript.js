@@ -1,7 +1,10 @@
 'use strict';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference path ="jquery.d.ts"/> 
-const mscript_1 = require("mscript");
+const mscript_1 = __importDefault(require("mscript"));
 /******
     Mscript GUI
 *******/
@@ -136,7 +139,7 @@ PF 1`;
      **/
     compile() {
         const data = this.editor.getValue();
-        const mscript = new mscript_1.Mscript();
+        const mscript = new mscript_1.default();
         const output = mscript.interpret(data);
         const len = output.arr.length;
         const cam2 = typeof output.cam2 !== 'undefined' ? `, CAM2 : ${output.cam2}` : '';
@@ -267,6 +270,7 @@ class MscriptConsole {
         let current = (this.elem.val() + '');
         let height;
         current += str;
+        current += '\n';
         mse.console.elem.val(current);
         mse.console.elem.focus();
         this.newLine();

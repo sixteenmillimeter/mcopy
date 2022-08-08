@@ -1,6 +1,5 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Mscript = void 0;
 const BLACK = '0,0,0';
 const WHITE = '255,255,255';
 const CMD = [
@@ -969,6 +968,6 @@ class Mscript {
         return arr.some(r => arr2.includes(r));
     }
 }
-exports.Mscript = Mscript;
+exports.default = Mscript;
 module.exports = Mscript;
 //# sourceMappingURL=index.js.map

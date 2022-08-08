@@ -2,7 +2,7 @@
 
 /// <reference path ="jquery.d.ts"/> 
 
-import { Mscript } from 'mscript';
+import Mscript from 'mscript';
 
 declare var nav : any;
 declare var gui : any;
@@ -305,6 +305,7 @@ class MscriptConsole {
 		let current : string = (this.elem.val() + '');
 		let height : number;
 		current += str;
+		current += '\n';
 		mse.console.elem.val(current);
 		mse.console.elem.focus();
 

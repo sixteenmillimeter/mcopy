@@ -101,7 +101,7 @@ function startsWith (str : string, target : string, position? : number) : boolea
 }
 
 /** class Mscript */
-export class Mscript {
+export default class Mscript {
 	output : any;
 	lines : string[];
 	cam : number;

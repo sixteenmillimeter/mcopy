@@ -3,7 +3,7 @@ interface RGB extends Array<number> {
     [index: number]: number;
 }
 /** class Mscript */
-export declare class Mscript {
+export default class Mscript {
     output: any;
     lines: string[];
     cam: number;
