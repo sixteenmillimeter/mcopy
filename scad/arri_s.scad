@@ -1,30 +1,30 @@
 // Arri-S Animation Motor
 
-include <../common.scad>;
+include <./common.scad>;
 
-BarrelDiameter = 40;
-BarrelLength = 75;
+BarrelDiameter = 45.1;
+BarrelLength = 52;
 
 SeatDiameter = 20;
-SeatLength = 3;
+SeatLength = 5.8;
 
-CapLength = 30;
-CapDiameter = 30;
+CapLength = 19;
+CapDiameter = 40;
 CapThickness = 3;
 
-CapCatchDiameter = 28;
+CapCatchDiameter = 38;
 CapCatchLength = 2;
-CapCatchOffset = 24;
+CapCatchOffset = 15;
 
-CapRimDiameter = 37;
+CapRimDiameter = 46.5;
 CapRimThickness = 3;
 
 NotchDiameter = 2;
 NotchOffset = 3;
 
-DriveLength = 8;
-DriveDiameter1 = 14;
-DriveDiameter2 = 12;
+DriveLength = 7;
+DriveDiameter1 = 11;
+DriveDiameter2 = 9;
 
 module motorBarrel () {
     $fn = 200;
@@ -36,7 +36,7 @@ module motorSeat () {
     cylinder(r = SeatDiameter / 2, h = SeatLength, center = true);
 }
 
-module motor () {
+module motorOriginal () {
     motorBarrel();
     translate([0, 0, (BarrelLength / 2) + (SeatLength / 2)]) motorSeat();
     //notch
@@ -63,10 +63,10 @@ module capBellowsAdapter () {
     translate([0, 0, (CapLength / 2) + (CapRimThickness / 2)]) {
         difference () {
             cylinder(r = CapRimDiameter / 2, h = CapRimThickness, center = true);
-            cube([CapDiameter - CapThickness - 8, CapDiameter - CapThickness - 8, CapRimThickness + 1], center = true);
+            cube([CapDiameter - CapThickness - 12, CapDiameter - CapThickness - 12, CapRimThickness + 1], center = true);
         }
     }
 }
 
-motor();
-//capBellowsAdapter();
+//motorOriginal();
+capBellowsAdapter();
