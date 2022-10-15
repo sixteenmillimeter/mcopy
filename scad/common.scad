@@ -76,3 +76,29 @@ module optoswitch() {
  module hex (diag = 10, h = 1) {
     cylinder(r = diag / 2, h = h, center = true, $fn = 6);
 }
+
+//NEMA17 Stepper
+module NEMA17 ( H = 33 ) { //alt = 47.5
+    difference () {
+        cube([42, 42, H], center = true);
+        for (i = [0 : 3]) {
+            rotate([0, 0, (i * 90) + 45]) translate([29.7, 0, 0]) cube([5.5, 5.5, H + 1], center = true);
+        }
+        translate([31/2, 31/2, (H/2)-1.9]) cylinder(r = R(3), h = 4, center = true, $fn=30);
+        translate([-31/2, 31/2, (H/2)-1.9]) cylinder(r = R(3), h = 4, center = true, $fn=30);
+        translate([31/2, -31/2, (H/2)-1.9]) cylinder(r = R(3), h = 4, center = true, $fn=30);
+        translate([-31/2, -31/2, (H/2)-1.9]) cylinder(r = R(3), h = 4, center = true, $fn=30);
+    }
+    //pad
+    translate([0, 0, (H/2) + (1.9/2)]) {
+        cylinder(r = R(22), h = 1.9, center = true, $fn = 100);
+    }
+    //shaft
+    translate([0, 0, (H/2) + (22.75/2)]) {
+        difference () {
+            cylinder(r = R(5), h = 22.75, center = true, $fn = 30);
+            translate([0, 4.5, 4.7]) cube([5, 5, 22.75], center = true);
+        }
+        
+    } 
+}
