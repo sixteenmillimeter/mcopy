@@ -102,3 +102,25 @@ module NEMA17 ( H = 33 ) { //alt = 47.5
         
     } 
 }
+
+//Geartisan Worm Gear Motor - JSX40-370
+module geared_motor () {
+    cube([46, 32, 21], center = true);
+    translate([(46 / 2) + (30 / 2), 0, 1.5]) rotate([0, 90, 0]) cylinder(r = 24 / 2, h = 30, center = true, $fn = 80);
+    translate([-(46 / 2) + 14.5, 0, -18.5]) rotate([0, 0, 90]) motor_shaft();
+    //pad
+    translate([-(46 / 2) + 14.5, 0, -(1 / 2) - 10.5]) cylinder(r = 13 / 2, h = 1, center = true, $fn = 60);
+    //mount pads
+    translate([-0.5, 0, -(1.5 / 2) - 10.5]) motor_mounts();
+}
+
+module microswitch (position = [0, 0, 0], rotation = [0, 0, 0]) {
+    translate(position) {
+        rotate(rotation) {
+            cube([16, 28, 9.5], center = true);
+            translate([10, 8, 0]) rotate([0, 0, -7]) cube([1, 28, 4], center = true);
+            translate([8 + 7, 14 + 8, 0]) cylinder(r = 2.5, h = 4, center = true);
+            translate([0, -19, 0]) cube([6, 11, 9.5], center = true);
+        }
+    }
+}
