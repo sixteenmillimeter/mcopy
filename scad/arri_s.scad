@@ -30,6 +30,13 @@ DriveDiameter2 = 9;
 ShaftLength = 2.75;
 ShaftDiameter = 5;
 
+MicroswitchCompression = 8.7 - 6.9; //min
+
+BearingDiameter = 22.5;
+BearingInnerDiameter = 11.5;
+
+capM3OffsetZ = 11.5;
+
 PART = "none";
 
 module motorBarrel () {
@@ -159,10 +166,10 @@ module animationMotorDCBodyPositive () {
         //hollow out
         translate([0, 0, 4]) cylinder(r = R(BarrelDiameter) - 5, h = BarrelLength, center = true, $fn = 200);
         //cut
-        translate([0, 0, 20]) cube([100, 100, BarrelLength], center = true);
+        translate([0, 0, 40]) cube([100, 100, BarrelLength], center = true);
         cylinder(r = R(23), h = BarrelLength + 1, center = true, $fn = 100);
         //window
-        translate([0, (BarrelDiameter / 2) - 2, -10]) cube([8, 8, 30], center = true);
+        translate([0, (BarrelDiameter / 2) - 2, -10+5]) cube([8, 8, 40], center = true);
     }
 
     //rim
@@ -216,17 +223,139 @@ module animationMotorDCBody () {
         //microswitch
         translate([-22, -8.75-1.25, -34 + (4/2)-.5]) {
         cube([16, 28, 9.5 + 4], center = true);
+        translate([0, 0, 30]) cube([16, 28, 60], center = true);
         //microswitch lever
-        translate([10, 8, 2]) cube([16, 15, 5.5], center = true);
+        translate([10, 8-3, 2]) cube([16, 15+6, 8], center = true);
        }
+        //cap m3s
+        rotate([0, 0, -60]) translate([14.5, 0, capM3OffsetZ]) {
+            rotate([0, 90, 0]) cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
+        }
+        rotate([0, 0, 120]) translate([14.5, 0, capM3OffsetZ])  {
+            rotate([0, 90, 0]) cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
+        }
     }
-    //color("red") translate([0, -8.75, -45-4]) rotate([180, 0, -90]) geared_motor();
-    color("blue") translate([-22, -10, -30.5]) microswitch();
+    translate([-22, -8.75-1.25, -34 + (4/2)-.5 - 5.04]) difference() {
+        cube([16.1, 28.1, 2.4], center = true);
+        translate([-(16 / 2) + 3, (28 / 2) - 3, 0]) cylinder(r = R(3.5), h = 2.4 + 1, center = true, $fn = 40);
+        translate([(16 / 2) - 3, -(28 / 2) + 3, 0]) cylinder(r = R(3.5), h = 2.4 + 1, center = true, $fn = 40);
+    }
 }
 
-//translate([0, 50, 0]) color("red") motorOriginal();
+module animationMotorDCCapPositive () {
+    difference() {
+        cylinder(r = R(BarrelDiameter), h = 10, center = true, $fn = 200);
+        translate([0, 0, -(10 /2) + (7.5/2) - 0.1]) cylinder(r = R(BearingDiameter), h = 7.5, center = true, $fn = 80);
+        cylinder(r = R(13), h = 10 + 1, center = true, $fn = 80);
+    }
+    translate([0, 0, -(10/2)-(5/2)]) difference() {
+        cylinder(r = R(BarrelDiameter) - 5.3, h = 5, center = true, $fn = 200);
+        cylinder(r = R(BarrelDiameter) - 7.5, h = 5 + 1, center = true, $fn = 200);
+    }
+    translate([0, 0, -(10/2)-(5/2)]) difference() {
+        union() {
+            rotate([0, 0, -60]) translate([13, 0, 0]) cube([6, 8, 5], center = true);
+            rotate([0, 0, 120]) translate([13, 0, 0]) cube([6, 8, 5], center = true);
+        }
+        cylinder(r = R(BearingDiameter)+1, h = 5 + 1, center = true, $fn = 200);
+    }
+    translate([0, 0, -(10/2)-(5/2)]) intersection() {
+        cylinder(r = R(BarrelDiameter), h = 5, center = true, $fn = 200);
+        translate([0, (BarrelDiameter / 2) - 2, 0]) cube([8-0.3, 8, 30], center = true);
+    }
+    translate([0, 0, -(10/2)-(5/2)]) intersection() {
+        cylinder(r = R(BarrelDiameter), h = 5, center = true, $fn = 200);
+        translate([-22, -8.75-1.25, 0]) cube([16-0.3, 28-0.3, 20], center = true);
+    }
+}
+
+module animationMotorDCCap () {
+    difference() {
+        animationMotorDCCapPositive();
+        rotate([0, 0, -60]) translate([14.5, 0, -(10/2)-(5/2)]) {
+            cube([2.5, 5.7, 6], center = true);
+            rotate([0, 90, 0]) cylinder(r = R(3.25), h = 10, center = true, $fn = 40);
+        }
+        rotate([0, 0, 120]) translate([14.5, 0, -(10/2)-(5/2)])  {
+            cube([2.5, 5.7, 6], center = true);
+            rotate([0, 90, 0]) cylinder(r = R(3.25), h = 10, center = true, $fn = 40);
+        }
+    }
+}
+
+module driveCouplingDC () {
+    D = 15.5;
+    H = 45;
+    difference() {
+        union() {
+            cylinder(r = R(D), h = H, center = true, $fn = 80);
+            translate([0, 0, 2]) cylinder(r = R(BearingInnerDiameter), h = H, center = true, $fn = 80);
+        }
+        translate([0, 0, -(H/2)+5]) rotate([0, 0, 180])  motor_shaft();
+        //bottom M3
+        translate([-4.5, 0, -(H/2)+4.9]) cube([2.5, 5.7, 10], center = true);
+        translate([-10, 0, -(H/2) + 9 - 3]) rotate([90, 0, 90]) cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
+        //top M3
+        translate([-4.5, 0, (H/2)-4.9+2]) cube([2.5, 5.7, 10], center = true);
+        translate([-10, 0, (H/2)-9+5]) rotate([90, 0, 90]) cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
+        translate([0, 0, (H/2)-3]) difference() {
+            cylinder(r = R(7.8), h = 10.2, center = true, $fn = 100);
+            translate([-7.8+2, 0, 0]) cube([7.8, 7.8, 10+1], center = true);
+        }
+    }
+}
+
+module driveCouplingDCConnector () {
+    H = 17;
+    H2 = 20;
+    RIDGES=5;
+    translate([0, 0, 0]) difference() {
+        cylinder(r = R(7.8), h = H, center = true, $fn = 100);
+        translate([-7.8+2, 0, 0]) cube([7.8, 7.8, H+1], center = true);
+        translate([-2, 0, -5]) rotate([90, 30, 90]) m3_nut();
+    }
+    translate([0, 0, (H/2)+(H2/2)]) cylinder(r = R(BearingInnerDiameter), h = H2, center = true, $fn = 80);
+    difference() {
+        union(){
+            for (i = [0 : RIDGES-1]) {
+                rotate([0, 0, i*(360/RIDGES)]) translate([0, 0, (H/2)+H2-3]) rotate([90, 0, 0]) cylinder(r = R(13), h = 1, center = true, $fn = 80);
+            }
+        }
+        translate([0, 0, (H/2)+H2+(20/2)]) cube([20, 20, 20], center = true);
+    }
+}
+/*
+translate([0, 20, 0]) color("red") motorOriginal();
 //bodyCapBellowsAdapter();
 //animationMotorBody();
 //translate([0, 0, -49.5]) color("green") NEMA17();
 //bodyCap();
-animationMotorDCBody();
+color("red") translate([0, -8.75, -45-4]) rotate([180, 0, -90]) geared_motor();
+    //color("blue") translate([-22, -10, -30.5]) microswitch();
+difference() {
+    animationMotorDCBody();
+    translate([0, 50, 0]) cube([100, 100, 100], center = true);
+}
+translate([0, 0, 19.5]) difference() {
+    animationMotorDCCap();
+    translate([0, 50, 0]) cube([100, 100, 100], center = true);
+}
+difference() {
+    translate([0, 0, -10]) color("blue") driveCouplingDC();
+    translate([0, 50, 0]) cube([100, 100, 100], center = true);
+}
+
+translate([0, 0, 13.5]) driveCouplingDCConnector();
+*/
+//translate([0, 0, 19.5]) animationMotorDCCap();
+PART = "animation_motor_DC";
+
+if (PART == "drive_coupling_DC_connector") {
+    driveCouplingDCConnector();
+} else if (PART == "drive_coupling_DC") {
+    driveCouplingDC();
+} else if (PART == "animation_motor_DC_cap") {
+    animationMotorDCCap();
+} else if (PART == "animation_motor_DC") {
+    animationMotorDCBody();
+}

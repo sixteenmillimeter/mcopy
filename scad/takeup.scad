@@ -26,7 +26,7 @@ module motor_shaft () {
 
 module motor_mounts () {
     Z = 1.5;
-    D = 7.5;
+    D = 7.5 + 0.3;
     
     translate([MOTOR_MOUNT_X / 2, MOTOR_MOUNT_Y / 2, 0]) motor_mount_pad(D, Z);
     translate([-MOTOR_MOUNT_X / 2, MOTOR_MOUNT_Y / 2, 0]) motor_mount_pad(D, Z);
