@@ -322,17 +322,21 @@ module driveCouplingDC () {
 module driveCouplingDCConnector () {
     H = 17;
     H2 = 20;
+    H3 = 4;
+    D1 = 9;
     RIDGES=5;
+    SHAFT_D = 7.8;
     translate([0, 0, 0]) difference() {
-        cylinder(r = R(7.8), h = H, center = true, $fn = 100);
-        translate([-7.8+2, 0, 0]) cube([7.8, 7.8, H+1], center = true);
+        cylinder(r = R(SHAFT_D), h = H, center = true, $fn = 100);
+        translate([-SHAFT_D+2, 0, 0]) cube([SHAFT_D, SHAFT_D, H+1], center = true);
         translate([-2, 0, -5]) rotate([90, 30, 90]) m3_nut();
     }
-    translate([0, 0, (H/2)+(H2/2)]) cylinder(r = R(BearingInnerDiameter), h = H2, center = true, $fn = 80);
+    translate([0, 0, (H/2)+(H2/2)]) cylinder(r = R(D1), h = H2, center = true, $fn = 80);
+    translate([0, 0, (H/2)+(H3/2)]) cylinder(r1 = R(BearingInnerDiameter), r2 = R(D1), h = H3, center = true, $fn = 80);
     difference() {
         union(){
             for (i = [0 : RIDGES-1]) {
-                rotate([0, 0, i*(360/RIDGES)]) translate([0, 0, (H/2)+H2-3]) rotate([90, 0, 0]) cylinder(r = R(13), h = 1, center = true, $fn = 80);
+                rotate([0, 0, i*(360/RIDGES)]) translate([0, 0, (H/2)+H2-3]) rotate([90, 0, 0]) cylinder(r = R(DriveDiameter1), h = 1, center = true, $fn = 80);
             }
         }
         translate([0, 0, (H/2)+H2+(20/2)]) cube([20, 20, 20], center = true);
