@@ -229,10 +229,16 @@ module animationMotorDCBody () {
        }
         //cap m3s
         rotate([0, 0, -60]) translate([14.5, 0, capM3OffsetZ]) {
-            rotate([0, 90, 0]) cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
+            rotate([0, 90, 0]) {
+                cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
+                translate([0, 0, 6.5]) cylinder(r = R(6), h = 3, center = true, $fn = 40);
+            }
         }
         rotate([0, 0, 120]) translate([14.5, 0, capM3OffsetZ])  {
-            rotate([0, 90, 0]) cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
+            rotate([0, 90, 0]) {
+                cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
+                translate([0, 0, 6.5]) cylinder(r = R(6), h = 3, center = true, $fn = 40);
+            }
         }
     }
     translate([-22, -8.75-1.25, -34 + (4/2)-.5 - 5.04]) difference() {
@@ -279,6 +285,14 @@ module animationMotorDCCap () {
         rotate([0, 0, 120]) translate([14.5, 0, -(10/2)-(5/2)])  {
             cube([2.5, 5.7, 6], center = true);
             rotate([0, 90, 0]) cylinder(r = R(3.25), h = 10, center = true, $fn = 40);
+        }
+        //m3 set screw
+        rotate([0, 0, 180]) translate([14.5, 0, 0]) {
+            translate([2, 0, -6]) cube([2.5, 5.7, 20], center = true);
+            rotate([0, 90, 0]) {
+                cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
+                translate([0, 0, 6.5]) cylinder(r = R(6), h = 3, center = true, $fn = 40);
+            }
         }
     }
 }
@@ -348,14 +362,14 @@ difference() {
 translate([0, 0, 13.5]) driveCouplingDCConnector();
 */
 //translate([0, 0, 19.5]) animationMotorDCCap();
-PART = "animation_motor_DC";
+PART2 = "animation_motor_DC";
 
-if (PART == "drive_coupling_DC_connector") {
+if (PART2 == "drive_coupling_DC_connector") {
     driveCouplingDCConnector();
-} else if (PART == "drive_coupling_DC") {
+} else if (PART2 == "drive_coupling_DC") {
     driveCouplingDC();
-} else if (PART == "animation_motor_DC_cap") {
+} else if (PART2 == "animation_motor_DC_cap") {
     animationMotorDCCap();
-} else if (PART == "animation_motor_DC") {
+} else if (PART2 == "animation_motor_DC") {
     animationMotorDCBody();
 }
