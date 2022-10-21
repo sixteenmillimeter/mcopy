@@ -305,7 +305,7 @@ module driveCouplingDC () {
             cylinder(r = R(D), h = H, center = true, $fn = 80);
             translate([0, 0, 2]) cylinder(r = R(BearingInnerDiameter), h = H, center = true, $fn = 80);
         }
-        translate([0, 0, -(H/2)+5]) rotate([0, 0, 180])  motor_shaft();
+        translate([0, 0, -(H/2)+5]) rotate([0, 0, 180]) scale([1.05, 1.05, 1]) motor_shaft();
         //bottom M3
         translate([-4.5, 0, -(H/2)+4.9]) cube([2.5, 5.7, 10], center = true);
         translate([-10, 0, -(H/2) + 9 - 3]) rotate([90, 0, 90]) cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
