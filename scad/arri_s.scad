@@ -161,6 +161,7 @@ module animationMotorBody () {
 }
 
 module animationMotorDCBodyPositive () {
+    rimH = 10;
     difference () {
         motorBarrel();
         //hollow out
@@ -169,19 +170,19 @@ module animationMotorDCBodyPositive () {
         translate([0, 0, 40]) cube([100, 100, BarrelLength], center = true);
         cylinder(r = R(23), h = BarrelLength + 1, center = true, $fn = 100);
         //window
-        translate([0, (BarrelDiameter / 2) - 2, -10+5]) cube([8, 8, 40], center = true);
+        translate([0, (BarrelDiameter / 2) - 2, -10+5+30]) cube([8, 8, 40], center = true);
     }
 
     //rim
-    translate([0, 0, -(BarrelLength / 2) - (8 / 2)]) {
+    translate([0, 0, -(BarrelLength / 2) - (rimH / 2)]) {
         difference () {
-            cylinder(r = R(BarrelDiameter) + 2, h = 8, center = true, $fn = 200);
-            cylinder(r = R(23), h = 8 + 1, center = true, $fn = 100);
+            cylinder(r = R(BarrelDiameter) + 2, h = rimH, center = true, $fn = 200);
+            cylinder(r = R(23), h = rimH + 1, center = true, $fn = 100);
         }
     }
     
     //geared motor mount
-    translate([0, 0, -34 - 4]) {
+    translate([0, 0, -34 - 4 - 3]) {
         intersection () {
             rotate([0, 0, -90]) minimal_mount();
             union () {
@@ -207,13 +208,18 @@ module animationMotorDCBodyPositive () {
 }
 
 module boltSlotDC () {
-    cylinder(r = R(6), h = 40, center = true, $fn = 40);
+    cylinder(r = R(6), h = 42, center = true, $fn = 40);
 }
 
 module animationMotorDCBody () {
     boltZOffset = -15.01;
+    padZ = 5.4;
     difference () {
-        animationMotorDCBodyPositive();
+        union () {
+            animationMotorDCBodyPositive();
+            translate([-22, -8.75-1.25, -34 + (4/2)-.5 - 5.04-1.5]) cube([16.1+1, 28.1+1, padZ], center = true);
+        }
+        cylinder(r = R(18), h = 160, center = true, $fn = 100);
         translate ([0, -8, 0]) {
             translate([MOTOR_MOUNT_Y/2, MOTOR_MOUNT_X/2, boltZOffset]) boltSlotDC();
             translate([MOTOR_MOUNT_Y/2, -MOTOR_MOUNT_X/2, boltZOffset]) boltSlotDC();
@@ -222,11 +228,12 @@ module animationMotorDCBody () {
         }
         //microswitch
         translate([-22, -8.75-1.25, -34 + (4/2)-.5]) {
-        cube([16, 28, 9.5 + 4], center = true);
-        translate([0, 0, 30]) cube([16, 28, 60], center = true);
-        //microswitch lever
-        translate([10, 8-3, 2]) cube([16, 15+6, 8], center = true);
-       }
+            cube([16 + 1.1, 28 + 1.1, 8], center = true);
+            translate([0, 0, 30]) cube([16, 28, 60], center = true);
+            translate([6, 7, 28]) cube([26, 15, 60], center = true);
+            //microswitch lever
+            translate([10, 8-3, 2]) cube([16, 15+6, 8], center = true);
+        }
         //cap m3s
         rotate([0, 0, -60]) translate([14.5, 0, capM3OffsetZ]) {
             rotate([0, 90, 0]) {
@@ -240,12 +247,19 @@ module animationMotorDCBody () {
                 translate([0, 0, 6.5]) cylinder(r = R(6), h = 3, center = true, $fn = 40);
             }
         }
+        translate([-22, -8.75-1.25, -34 + (4/2)-.5 - 5.04-1.5]) {
+            translate([-(16 / 2) + 3, (28 / 2) - 3, 0]) {
+                cylinder(r = R(3.5), h = padZ + 1, center = true, $fn = 40);
+                translate([0, 0, -padZ/2 - 1]) cylinder(r = R(6), h = padZ + 1, center = true, $fn = 40);
+            }
+            translate([(16 / 2) - 3, -(28 / 2) + 3, 0]) {
+                cylinder(r = R(3.5), h = padZ + 1, center = true, $fn = 40);
+                translate([0, 0, -padZ/2 - 1]) cylinder(r = R(6), h = padZ + 1, center = true, $fn = 40);
+            }
+        }
     }
-    translate([-22, -8.75-1.25, -34 + (4/2)-.5 - 5.04]) difference() {
-        cube([16.1, 28.1, 2.4], center = true);
-        translate([-(16 / 2) + 3, (28 / 2) - 3, 0]) cylinder(r = R(3.5), h = 2.4 + 1, center = true, $fn = 40);
-        translate([(16 / 2) - 3, -(28 / 2) + 3, 0]) cylinder(r = R(3.5), h = 2.4 + 1, center = true, $fn = 40);
-    }
+   
+    
 }
 
 module animationMotorDCCapPositive () {
