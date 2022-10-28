@@ -333,10 +333,16 @@ module driveCouplingDC () {
             translate([-7.8+2, 0, 0]) cube([7.8, 7.8, 10+1], center = true);
         }
         //divot for switch
-        translate([0, -D + Divot, 0]) cylinder(r = R(D), h = H + 1, center = true, $fn = 80);
+        translate([0, -D + Divot, 0]) cylinder(r = R(D), h = H, center = true, $fn = 80);
         translate([0, -D + (3 * (Divot / 4)), 0]) cube([D, D, H + 1], center = true);
+        difference () {
+            translate([0, -D + 4, 0]) cube([D, D, H], center = true);
+            translate([0, -D + 4, 0]) cube([8, D+1, H + 1], center = true);
+            translate([4.25, -(D / 2) + 4.6, 0]) cylinder(r = R(D/3), h = H + 1, center = true, $fn = 60);
+            translate([-4.25, -(D / 2) + 4.6, 0]) cylinder(r = R(D/3), h = H + 1, center = true, $fn = 60);
+        }
     }
-    
+
 }
 
 module driveCouplingDCConnector () {
@@ -390,7 +396,7 @@ animationMotorDCBody();
 */
 
 
-PART2 = "animation_motor_DC";
+PART2 = "drive_coupling_DC";
 
 if (PART2 == "drive_coupling_DC_connector") {
     driveCouplingDCConnector();
