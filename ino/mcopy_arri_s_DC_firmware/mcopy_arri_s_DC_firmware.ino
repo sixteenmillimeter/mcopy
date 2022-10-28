@@ -16,8 +16,9 @@ class ArriSMotor {
     
     void Start (boolean dir) {
     	startTime = millis();
+    	rotationTime = startTime;
     	direction = dir;
-
+    	rotations = 0;
     	Run(direction, speed);
 
 		running = true;
@@ -26,49 +27,67 @@ class ArriSMotor {
 
     void Run (boolean dir, int speed) {
     	if (dir) {
-    		analogWrite(pinPositive, speed);
-    		analogWrite(pinNegative, 0);
-    	} else {
     		analogWrite(pinPositive, 0);
     		analogWrite(pinNegative, speed);
+    	} else {
+    		analogWrite(pinPositive, speed);
+    		analogWrite(pinNegative, 0);
 		}
     }
     
     void CheckMicroswitch () {
 		int value = digitalRead(pinMicroswitch);
 		if (value == 1) {
-			if (running && !primed && millis() - startTime > primeTime) {
+			if (running && !primed && millis() - rotationTime > primeTime) {
 				primed = true;
 			}
 		}
 
 		if (value == 0) {
-			if (running && primed && millis() - startTime > minTime) {
-				Stop();
+			if (running && primed && millis() - rotationTime > minTime) {
+				if (rotations < rotationsPer - 1) {
+					rotations++;
+					primed = false;
+					rotationTime = millis();
+				} else {
+					Stop();
+				}
 			}
 		}
 	};
 
   private:
-    int pinPositive = 5;
-    int pinNegative = 6;
-    int pinMicroswitch = 7;
+    const int pinPositive = 5;
+    const int pinNegative = 6;
+    const int pinMicroswitch = 7;
 
-    int startTime = 0;
-    int primeTime = 100;
-    int minTime = 200;
+    const int rotationsPer = 3;
+    volatile int rotations = 0;
+
+    volatile long startTime = 0;
+    volatile long rotationTime = 0;
+    const int primeTime = 100;
+    const int minTime = 200;
 
     void Stop () {
     	int val = 1;
     	digitalWrite(pinPositive, LOW);
     	digitalWrite(pinNegative, LOW);
-    	Run(!direction, 55);
-    	delay(50);
+    	EvaluateTiming();
+    	Run(!direction, 40);
+    	long c = millis();
+    	while (val == 1) {
+    		delay(4);
+    		val = digitalRead(pinMicroswitch);
+    	}
+    	Serial.print("Correction: ");
+    	Serial.print(millis() - c);
+    	Serial.println("ms");
     	digitalWrite(pinPositive, LOW);
     	digitalWrite(pinNegative, LOW);
     	running = false;
     	primed = false;
-    	EvaluateTiming();
+    	
     }
 
     void EvaluateTiming () {
@@ -104,11 +123,16 @@ void setup() {
 }
 
 boolean d = false;
+int count = 0;
 void loop() {
 	if (!motor.running) {
-		delay(3000);
+		delay(5000);
 		motor.Start(d);
-		d = !d;
+		count++;
+		if (count > 9) {
+			d = !d;
+			count = 0;
+		}
 	}
 	motor.CheckMicroswitch();
 	if (!motor.primed) {
