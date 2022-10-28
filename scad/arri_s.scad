@@ -161,7 +161,7 @@ module animationMotorBody () {
 }
 
 module animationMotorDCBodyPositive () {
-    rimH = 10;
+    rimH = 10 + 3.5;
     difference () {
         motorBarrel();
         //hollow out
@@ -182,7 +182,7 @@ module animationMotorDCBodyPositive () {
     }
     
     //geared motor mount
-    translate([0, 0, -34 - 4 - 3]) {
+    translate([0, 0, -34 - 4 - 3 - 3.5]) {
         intersection () {
             rotate([0, 0, -90]) minimal_mount();
             union () {
@@ -208,7 +208,7 @@ module animationMotorDCBodyPositive () {
 }
 
 module boltSlotDC () {
-    cylinder(r = R(6), h = 42, center = true, $fn = 40);
+    cylinder(r = R(6), h = 52, center = true, $fn = 40);
 }
 
 module animationMotorDCBody () {
@@ -227,12 +227,12 @@ module animationMotorDCBody () {
             translate([-MOTOR_MOUNT_Y/2, -MOTOR_MOUNT_X/2, boltZOffset]) boltSlotDC();
         }
         //microswitch
-        translate([-22, -8.75-1.25, -34 + (4/2)-.5]) {
+        translate([-22, -8.75-1.25, -34 + (4/2)-.5 - 2]) {
             cube([16 + 1.1, 28 + 1.1, 8], center = true);
             translate([0, 0, 30]) cube([16, 28, 60], center = true);
             translate([6, 7, 28]) cube([26, 15, 60], center = true);
             //microswitch lever
-            translate([10, 8-3, 2]) cube([16, 15+6, 8], center = true);
+            translate([10, 8-3, 2-1]) cube([16, 15+6, 8], center = true);
         }
         //cap m3s
         rotate([0, 0, -60]) translate([14.5, 0, capM3OffsetZ]) {
@@ -247,14 +247,15 @@ module animationMotorDCBody () {
                 translate([0, 0, 6.5]) cylinder(r = R(6), h = 3, center = true, $fn = 40);
             }
         }
+        //microswitch m3s
         translate([-22, -8.75-1.25, -34 + (4/2)-.5 - 5.04-1.5]) {
             translate([-(16 / 2) + 3, (28 / 2) - 3, 0]) {
                 cylinder(r = R(3.5), h = padZ + 1, center = true, $fn = 40);
-                translate([0, 0, -padZ/2 - 1]) cylinder(r = R(6), h = padZ + 1, center = true, $fn = 40);
+                translate([0, 0, -5.9]) cylinder(r = R(6), h = padZ + 1, center = true, $fn = 40);
             }
             translate([(16 / 2) - 3, -(28 / 2) + 3, 0]) {
                 cylinder(r = R(3.5), h = padZ + 1, center = true, $fn = 40);
-                translate([0, 0, -padZ/2 - 1]) cylinder(r = R(6), h = padZ + 1, center = true, $fn = 40);
+                translate([0, 0, -5.9]) cylinder(r = R(6), h = padZ + 1, center = true, $fn = 40);
             }
         }
     }
@@ -313,7 +314,8 @@ module animationMotorDCCap () {
 
 module driveCouplingDC () {
     D = 15.5;
-    H = 45;
+    H = 49;
+    Divot = 2.75;
     difference() {
         union() {
             cylinder(r = R(D), h = H, center = true, $fn = 80);
@@ -321,7 +323,7 @@ module driveCouplingDC () {
         }
         translate([0, 0, -(H/2)+5]) rotate([0, 0, 180]) scale([1.05, 1.05, 1]) motor_shaft();
         //bottom M3
-        translate([-4.5, 0, -(H/2)+4.9]) cube([2.5, 5.7, 10], center = true);
+        translate([-4.5, 0, -(H/2) + 4.9]) cube([2.5, 5.7, 12], center = true);
         translate([-10, 0, -(H/2) + 9 - 3]) rotate([90, 0, 90]) cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
         //top M3
         translate([-4.5, 0, (H/2)-4.9+2]) cube([2.5, 5.7, 10], center = true);
@@ -330,7 +332,11 @@ module driveCouplingDC () {
             cylinder(r = R(7.8), h = 10.2, center = true, $fn = 100);
             translate([-7.8+2, 0, 0]) cube([7.8, 7.8, 10+1], center = true);
         }
+        //divot for switch
+        translate([0, -D + Divot, 0]) cylinder(r = R(D), h = H + 1, center = true, $fn = 80);
+        translate([0, -D + (3 * (Divot / 4)), 0]) cube([D, D, H + 1], center = true);
     }
+    
 }
 
 module driveCouplingDCConnector () {
@@ -376,10 +382,14 @@ difference() {
     translate([0, 0, -10]) color("blue") driveCouplingDC();
     translate([0, 50, 0]) cube([100, 100, 100], center = true);
 }
-
+//color("red") translate([0, -8.75, -45-4-3-3.5]) rotate([180, 0, -90]) geared_motor();
 translate([0, 0, 13.5]) driveCouplingDCConnector();
-*/
+translate([0, 0, -12]) color("blue") driveCouplingDC();
 //translate([0, 0, 19.5]) animationMotorDCCap();
+animationMotorDCBody();
+*/
+
+
 PART2 = "animation_motor_DC";
 
 if (PART2 == "drive_coupling_DC_connector") {
