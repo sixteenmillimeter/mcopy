@@ -100,15 +100,20 @@ module bodyCapBellowsAdapter () {
     }
 }
 
+/**
+ ** Stepper Motor Design
+ **/
+ 
 module animationMotorBodyPositive () {
     difference () {
         motorBarrel();
         //hollow out
         translate([0, 0, 4]) cylinder(r = R(BarrelDiameter) - 5, h = BarrelLength, center = true, $fn = 200);
         //cut
-        translate([0, 0, 20]) cube([100, 100, BarrelLength], center = true);
+        translate([0, 0, 40]) cube([100, 100, BarrelLength], center = true);
         cylinder(r = R(23), h = BarrelLength + 1, center = true, $fn = 100);
-        translate([0, (BarrelDiameter / 2) - 2, -10]) cube([8, 8, 16], center = true);
+        //window
+        translate([0, (BarrelDiameter / 2) - 2, -5]) cube([8, 20, 42], center = true);
     }
 
     //rim
@@ -145,20 +150,84 @@ module animationMotorBodyPositive () {
 }
 
 module boltSlot () {
-    cylinder(r = R(6), h = 40, center = true, $fn = 40);
-    cylinder(r = R(3.25), h = 50, center = true, $fn = 40);
+    cylinder(r = R(6), h = 46.5, center = true, $fn = 40);
+    cylinder(r = R(3.25), h = 55, center = true, $fn = 40);
 }
 
 module animationMotorBody () {
     boltZOffset = -6;
     difference () {
         animationMotorBodyPositive();
+        //m3 bolts (vertical)
         translate([31/2, 31/2, boltZOffset]) boltSlot();
         translate([31/2, -31/2, boltZOffset]) boltSlot();
         translate([-31/2, 31/2, boltZOffset]) boltSlot();
         translate([-31/2, -31/2, -6]) boltSlot();
+        //        //cap m3s
+        rotate([0, 0, -60]) translate([14.5, 0, capM3OffsetZ]) {
+            rotate([0, 90, 0]) {
+                cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
+                translate([0, 0, 6.5]) cylinder(r = R(6), h = 3, center = true, $fn = 40);
+            }
+        }
+        rotate([0, 0, 120]) translate([14.5, 0, capM3OffsetZ])  {
+            rotate([0, 90, 0]) {
+                cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
+                translate([0, 0, 6.5]) cylinder(r = R(6), h = 3, center = true, $fn = 40);
+            }
+        }
     }
 }
+
+module animationMotorCapPositive () {
+    difference() {
+        cylinder(r = R(BarrelDiameter), h = 10, center = true, $fn = 200);
+        translate([0, 0, -(10 /2) + (7.5/2) - 0.1]) cylinder(r = R(BearingDiameter), h = 7.5, center = true, $fn = 80);
+        cylinder(r = R(13), h = 10 + 1, center = true, $fn = 80);
+    }
+    translate([0, 0, -(10/2)-(5/2)]) difference() {
+        cylinder(r = R(BarrelDiameter) - 5.3, h = 5, center = true, $fn = 200);
+        cylinder(r = R(BarrelDiameter) - 7.5, h = 5 + 1, center = true, $fn = 200);
+    }
+    translate([0, 0, -(10/2)-(5/2)]) difference() {
+        union() {
+            rotate([0, 0, -60]) translate([13, 0, 0]) cube([6, 8, 5], center = true);
+            rotate([0, 0, 120]) translate([13, 0, 0]) cube([6, 8, 5], center = true);
+        }
+        cylinder(r = R(BearingDiameter)+1, h = 5 + 1, center = true, $fn = 200);
+    }
+    translate([0, 0, -(10/2)-(5/2)]) intersection() {
+        cylinder(r = R(BarrelDiameter), h = 5, center = true, $fn = 200);
+        translate([0, (BarrelDiameter / 2) - 2, 0]) cube([8-0.3, 8, 30], center = true);
+    }
+
+}
+
+module animationMotorCap () {
+    difference() {
+        animationMotorCapPositive();
+        rotate([0, 0, -60]) translate([14.5, 0, -(10/2)-(5/2)]) {
+            cube([2.5, 5.7, 6], center = true);
+            rotate([0, 90, 0]) cylinder(r = R(3.25), h = 10, center = true, $fn = 40);
+        }
+        rotate([0, 0, 120]) translate([14.5, 0, -(10/2)-(5/2)])  {
+            cube([2.5, 5.7, 6], center = true);
+            rotate([0, 90, 0]) cylinder(r = R(3.25), h = 10, center = true, $fn = 40);
+        }
+        //m3 set screw
+        rotate([0, 0, 180]) translate([14.5, 0, 0]) {
+            translate([2, 0, -6]) cube([2.5, 5.7, 20], center = true);
+            rotate([0, 90, 0]) {
+                cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
+                translate([0, 0, 6.5]) cylinder(r = R(6), h = 3, center = true, $fn = 40);
+            }
+        }
+    }
+}
+
+/**
+ ** DC Motor Design
+ **/
 
 module animationMotorDCBodyPositive () {
     rimH = 10 + 3.5;
@@ -368,11 +437,14 @@ module driveCouplingDCConnector () {
         translate([0, 0, (H/2)+H2+(20/2)]) cube([20, 20, 20], center = true);
     }
 }
+
+//translate([0, 20, 0]) color("red") motorOriginal();
+//translate([0, -50, 0]) animationMotorDCBody();
+//translate([0, -50, 19.5]) animationMotorDCCap();
 /*
-translate([0, 20, 0]) color("red") motorOriginal();
 //bodyCapBellowsAdapter();
 //animationMotorBody();
-//translate([0, 0, -49.5]) color("green") NEMA17();
+//
 //bodyCap();
 color("red") translate([0, -8.75, -45-4]) rotate([180, 0, -90]) geared_motor();
     //color("blue") translate([-22, -10, -30.5]) microswitch();
@@ -394,9 +466,11 @@ translate([0, 0, -12]) color("blue") driveCouplingDC();
 //translate([0, 0, 19.5]) animationMotorDCCap();
 animationMotorDCBody();
 */
+//translate([0, 0, -49.5]) color("green") NEMA17();
 
+//color("blue") translate([0, 0, 19.5]) animationMotorCap();
 
-PART2 = "drive_coupling_DC";
+PART2 = "animation_motor";
 
 if (PART2 == "drive_coupling_DC_connector") {
     driveCouplingDCConnector();
@@ -406,4 +480,6 @@ if (PART2 == "drive_coupling_DC_connector") {
     animationMotorDCCap();
 } else if (PART2 == "animation_motor_DC") {
     animationMotorDCBody();
+} else if (PART2 == "animation_motor") {
+    animationMotorBody();
 }
