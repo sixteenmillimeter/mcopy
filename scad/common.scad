@@ -77,6 +77,14 @@ module optoswitch() {
     cylinder(r = diag / 2, h = h, center = true, $fn = 6);
 }
 
+module NEMA17_motor_shaft (L = 22.75) {
+    //shaft
+    difference () {
+        cylinder(r = R(5), h = L, center = true, $fn = 30);
+        translate([0, 4.5, 4.7]) cube([5, 5, L+1], center = true);
+    }
+}
+
 //NEMA17 Stepper
 module NEMA17 ( H = 33 ) { //alt = 47.5
     difference () {
@@ -93,14 +101,7 @@ module NEMA17 ( H = 33 ) { //alt = 47.5
     translate([0, 0, (H/2) + (1.9/2)]) {
         cylinder(r = R(22), h = 1.9, center = true, $fn = 100);
     }
-    //shaft
-    translate([0, 0, (H/2) + (22.75/2)]) {
-        difference () {
-            cylinder(r = R(5), h = 22.75, center = true, $fn = 30);
-            translate([0, 4.5, 4.7]) cube([5, 5, 22.75], center = true);
-        }
-        
-    } 
+    translate([0, 0, (H/2) + (L/2)]) NEMA17_motor_shaft();
 }
 
 //Geartisan Worm Gear Motor - JSX40-370

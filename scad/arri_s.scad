@@ -225,6 +225,30 @@ module animationMotorCap () {
     }
 }
 
+module driveCoupling () {
+    D = 15.5;
+    H = 41;
+    Divot = 2.75;
+    difference() {
+        union() {
+            cylinder(r = R(D), h = H, center = true, $fn = 80);
+            translate([0, 0, 2]) cylinder(r = R(BearingInnerDiameter), h = H, center = true, $fn = 80);
+        }
+        translate([0, 0, -(H/2)+6.5]) rotate([0, 0, 90]) scale([1.05, 1.05, 1]) NEMA17_motor_shaft();
+        //bottom M3
+        translate([-4.5, 0, -(H/2) + 4.9]) cube([2.5, 5.7, 12], center = true);
+        translate([-10, 0, -(H/2) + 9 - 3]) rotate([90, 0, 90]) cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
+        //top M3
+        translate([-4.5, 0, (H/2)-4.9+2]) cube([2.5, 5.7, 10], center = true);
+        translate([-10, 0, (H/2)-9+5]) rotate([90, 0, 90]) cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
+        translate([0, 0, (H/2)-3]) difference() {
+            cylinder(r = R(7.8), h = 10.2, center = true, $fn = 100);
+            translate([-7.8+2, 0, 0]) cube([7.8, 7.8, 10+1], center = true);
+        }
+    }
+    
+}
+
 /**
  ** DC Motor Design
  **/
@@ -465,21 +489,29 @@ translate([0, 0, 13.5]) driveCouplingDCConnector();
 translate([0, 0, -12]) color("blue") driveCouplingDC();
 //translate([0, 0, 19.5]) animationMotorDCCap();
 animationMotorDCBody();
+//translate([0, 0, -49.5]) color("green") rotate([0, 0, 90]) NEMA17();
+translate([0, 0, -8])driveCoupling();
+color("blue") translate([0, 0, 19.5]) difference() {
+    animationMotorCap();
+    translate([0, 50, 0]) cube([100, 100, 100], center = true);
+}
 */
-//translate([0, 0, -49.5]) color("green") NEMA17();
 
-//color("blue") translate([0, 0, 19.5]) animationMotorCap();
 
-PART2 = "animation_motor";
+PART2 = "drive_coupling";
 
 if (PART2 == "drive_coupling_DC_connector") {
     driveCouplingDCConnector();
 } else if (PART2 == "drive_coupling_DC") {
     driveCouplingDC();
 } else if (PART2 == "animation_motor_DC_cap") {
-    animationMotorDCCap();
+    rotate([180, 0, 0]) animationMotorDCCap();
 } else if (PART2 == "animation_motor_DC") {
     animationMotorDCBody();
 } else if (PART2 == "animation_motor") {
     animationMotorBody();
+} else if (PART2 == "animation_motor_cap") {
+    rotate([180, 0, 0]) animationMotorCap();
+} else if (PART2 == "drive_coupling") {
+    driveCoupling();
 }
