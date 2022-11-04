@@ -227,7 +227,7 @@ module animationMotorCap () {
 
 module driveCoupling () {
     D = 15.5;
-    H = 41;
+    H = 41-3;
     Divot = 2.75;
     difference() {
         union() {

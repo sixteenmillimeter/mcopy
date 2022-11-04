@@ -1,75 +1,115 @@
-
-#include <AccelStepper.h>
 #include <Adafruit_MotorShield.h>
 
-volatile boolean DEBUG = true;
+volatile boolean debug_state = true;
+volatile boolean cam_dir = true; 
 
-Adafruit_MotorShield AFMStop(0x60);
-// Create the motor shield object with the default I2C address
+const int fullRotation = 600;
+const int openRotationForward = 300;
+const int openRotationBackward = 300;
+
+//CAMERA COMMANDS
+const char cmd_camera = 'c';
+const char cmd_cam_forward = 'e';
+const char cmd_cam_backward = 'f';
+
+const char cmd_debug = 'd';
+const char cmd_connect = 'i';
+volatile char cmd_char = 'z';
+const char cmd_mcopy_identifier = 'm';
+const char cmd_cam_identifier = 'k';
+
+const int serialDelay = 5;
+
 Adafruit_MotorShield AFMS = Adafruit_MotorShield(); 
 //Set up for a 200step motor (NEMA 17)
-Adafruit_StepperMotor *myMotor = AFMS.getStepper(200, 1);
-
-void forwardstep() {
-  myMotor->onestep(FORWARD, DOUBLE);
-}
-
-void backwardstep() {
-  myMotor->onestep(BACKWARD, DOUBLE);
-}
-
-//Set up AccelStepper
-AccelStepper stepper(forwardstep, backwardstep);
+Adafruit_StepperMotor *stepper = AFMS.getStepper(200, 1);
 
 void setupMotor () {
-	TWBR = ((F_CPU /400000l) - 16) / 2; // Change the i2c clock to 400KHz
-
+	//TWBR = ((F_CPU /400000l) - 16) / 2; // Change the i2c clock to 400KHz
   if (!AFMS.begin()) { // default frequency 1.6KHz
-    Serial.println("Could not find Motor Shield. Check wiring.");
+    log("Could not find Motor Shield. Check wiring.");
     while (1);
   }
-  Serial.println("Motor Shield found.");
-  //myMotor->setSpeed(600);
-  //stepper.setMaxSpeed(600.0);
-  //stepper.setSpeed(600.0);
-  //stepper.setAcceleration(500.0);
+  
+  log("Motor Shield found.");
+  stepper->setSpeed(600);
 }
 
 void setup() {
   Serial.begin(57600);
   setupMotor();
-
-  //stepper.setMaxSpeed(600.0);
-  //stepper.move(600);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  //Serial.println("Microstep steps");
-  //myMotor->step(200, FORWARD, MICROSTEP); 
-  
-  //myMotor->step(round(200 / 8), FORWARD, SINGLE); //109ms @ speed 600
-  //myMotor->step(round(200 / 8), FORWARD, SINGLE); //172ms @ speed 100
+	if (Serial.available()) {
+    // read the most recent byte 
+    cmd_char = (char)Serial.read();
+  }
+  if (cmd_char != 'z') {
+    cmd(cmd_char);
+    cmd_char = 'z';
+  }
+}
 
-  //myMotor->step(round(200 / 8), FORWARD, MICROSTEP); //1557ms @ speed 600
-  //myMotor->step(round(200 / 8), FORWARD, MICROSTEP); //1621ms @ speed 100
+void cmd (char val) {
+  if (val == cmd_debug) {
+    debug();
+  } else if (val == cmd_connect) {
+    connect();
+  } else if (val == cmd_mcopy_identifier) {
+    identify();
+  } else if (val == cmd_cam_forward) {
+    setDir(true); //explicit
+  } else if (val == cmd_cam_backward) {
+    setDir(false);
+  } else if (val == cmd_camera) {
+    cam();
+  }
+}
 
-  //myMotor->step(200, FORWARD, SINGLE); //873ms @ speed 600
-  //myMotor->step(200, FORWARD, SINGLE); //1377ms @ speed 100
+void debug () {
+  debug_state = true;
+  Serial.println(cmd_debug);
+  log("debugging enabled");
+}
 
-  //myMotor->step(200, FORWARD, MICROSTEP); //12466ms @ speed 600
-  //myMotor->step(200, FORWARD, MICROSTEP); //12967ms @ speed 100
-  
-  //if (stepper.distanceToGo() != 0) {
-    long startTime = millis();
-    //stepper.runToNewPosition(0);
-    //stepper.runToNewPosition(600);
-    myMotor->step(600, FORWARD, DOUBLE);
-    //myMotor->step(600, FORWARD, SINGLE);
-    stepper.run();
-    long stopTime = millis();
-    Serial.print(stopTime - startTime);
-    Serial.println("ms");
-    delay(1000); 
-  //}
+void connect () {
+  Serial.println(cmd_connect);
+  log("connect()");
+}
+
+void identify () {
+  Serial.println(cmd_cam_identifier);
+  log("identify()");  
+}
+
+void setDir (boolean dir) {
+  cam_dir = dir;
+  if (cam_dir) {
+  	Serial.println(cmd_cam_forward);
+  	log("setDir = true");
+  } else {
+  	Serial.println(cmd_cam_backward);
+  	log("setDir -> false");
+	}
+}
+
+void cam () {
+	long startTime = millis();
+	if (cam_dir) {
+		stepper->step(fullRotation, FORWARD, DOUBLE);
+		Serial.println(cmd_cam_forward);
+    log("cam -> forward");
+	} else {
+		stepper->step(fullRotation, BACKWARD, DOUBLE);
+	  Serial.println(cmd_cam_backward);
+    log("cam -> backward");
+	}
+	log(String(millis() - startTime));
+}
+
+void log (String msg) {
+	if (debug_state) {
+		Serial.println(msg);
+	}
 }
