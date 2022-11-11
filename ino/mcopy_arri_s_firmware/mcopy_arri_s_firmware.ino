@@ -24,7 +24,7 @@ const int serialDelay = 5;
 
 Adafruit_MotorShield AFMS = Adafruit_MotorShield(); 
 //Set up for a 200step motor (NEMA 17)
-Adafruit_StepperMotor *stepper = AFMS.getStepper(200, 2);
+Adafruit_StepperMotor *stepper = AFMS.getStepper(stepsPerRevolution, 2);
 
 void setupMotor () {
 	//TWBR = ((F_CPU /400000l) - 16) / 2; // Change the i2c clock to 400KHz
