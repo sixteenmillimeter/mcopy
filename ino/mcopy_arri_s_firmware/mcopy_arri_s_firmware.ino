@@ -2,8 +2,10 @@
 
 volatile boolean debug_state = true;
 volatile boolean cam_dir = true; 
+volatile boolean running = true;
 
-const int fullRotation = 600;
+const int stepsPerRevolution = 200;  
+const int fullRotation = 3 * stepsPerRevolution;
 const int openRotationForward = 300;
 const int openRotationBackward = 300;
 
@@ -22,7 +24,7 @@ const int serialDelay = 5;
 
 Adafruit_MotorShield AFMS = Adafruit_MotorShield(); 
 //Set up for a 200step motor (NEMA 17)
-Adafruit_StepperMotor *stepper = AFMS.getStepper(200, 1);
+Adafruit_StepperMotor *stepper = AFMS.getStepper(200, 2);
 
 void setupMotor () {
 	//TWBR = ((F_CPU /400000l) - 16) / 2; // Change the i2c clock to 400KHz
