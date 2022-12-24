@@ -39,6 +39,11 @@ module m3_nut (H = 5) {
     cylinder(r=R(6.6), h=H, center=true, $fn=6);
 }
 
+echo("common.scad - m4_nut");
+module m4_nut (H = 5) {
+    cylinder(r=R(7.15), h=H, center=true, $fn=6);
+}
+
 module opto_endstop(){
  difference(){
   union(){
