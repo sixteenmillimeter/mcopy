@@ -2,6 +2,7 @@
 
 include <./common.scad>;
 include <./takeup.scad>;
+include <./bellows.scad>;
 
 BarrelDiameter = 45;
 BarrelLength = 52;
@@ -95,7 +96,13 @@ module bodyCapBellowsAdapter () {
     difference () {
         bodyCap();
         translate([0, 0, (CapLength / 2) + (CapRimThickness / 2)]) {
-        cube([CapDiameter - CapThickness - 12, CapDiameter - CapThickness - 12, CapRimThickness + 1], center = true);
+            cube([CapDiameter - CapThickness - 16, CapDiameter - CapThickness - 16, CapRimThickness + 1], center = true);
+        }
+    }
+    translate([0, 0, 16]) {
+        difference() {
+            cylinder(r = 37.9 / 2, h = 7, center = true);
+            cylinder(r = 30 / 2, h = 7 + 1, center = true);
         }
     }
 }
@@ -163,7 +170,7 @@ module animationMotorBody () {
         translate([31/2, -31/2, boltZOffset]) boltSlot();
         translate([-31/2, 31/2, boltZOffset]) boltSlot();
         translate([-31/2, -31/2, -6]) boltSlot();
-        //        //cap m3s
+        //cap m3s
         rotate([0, 0, -60]) translate([14.5, 0, capM3OffsetZ]) {
             rotate([0, 90, 0]) {
                 cylinder(r = R(3.25), h = 20, center = true, $fn = 40);
@@ -246,7 +253,6 @@ module driveCoupling () {
             translate([-7.8+2, 0, 0]) cube([7.8, 7.8, 10+1], center = true);
         }
     }
-    
 }
 
 /**
@@ -285,7 +291,6 @@ module animationMotorDCBodyPositive () {
         }
     }
     
-
     //notch
     $fn = 50;
     rotate([0, 0, 35]) {
@@ -296,8 +301,6 @@ module animationMotorDCBodyPositive () {
             }
         }
     }
-    
-    
 }
 
 module boltSlotDC () {
@@ -352,8 +355,6 @@ module animationMotorDCBody () {
             }
         }
     }
-   
-    
 }
 
 module animationMotorDCCapPositive () {
@@ -462,43 +463,9 @@ module driveCouplingDCConnector () {
     }
 }
 
-//translate([0, 20, 0]) color("red") motorOriginal();
-//translate([0, -50, 0]) animationMotorDCBody();
-//translate([0, -50, 19.5]) animationMotorDCCap();
-/*
-//bodyCapBellowsAdapter();
-//animationMotorBody();
-//
-//bodyCap();
-color("red") translate([0, -8.75, -45-4]) rotate([180, 0, -90]) geared_motor();
-    //color("blue") translate([-22, -10, -30.5]) microswitch();
-difference() {
-    animationMotorDCBody();
-    translate([0, 50, 0]) cube([100, 100, 100], center = true);
-}
-translate([0, 0, 19.5]) difference() {
-    animationMotorDCCap();
-    translate([0, 50, 0]) cube([100, 100, 100], center = true);
-}
-difference() {
-    translate([0, 0, -10]) color("blue") driveCouplingDC();
-    translate([0, 50, 0]) cube([100, 100, 100], center = true);
-}
-//color("red") translate([0, -8.75, -45-4-3-3.5]) rotate([180, 0, -90]) geared_motor();
-translate([0, 0, 13.5]) driveCouplingDCConnector();
-translate([0, 0, -12]) color("blue") driveCouplingDC();
-//translate([0, 0, 19.5]) animationMotorDCCap();
-animationMotorDCBody();
-//translate([0, 0, -49.5]) color("green") rotate([0, 0, 90]) NEMA17();
-translate([0, 0, -8])driveCoupling();
-color("blue") translate([0, 0, 19.5]) difference() {
-    animationMotorCap();
-    translate([0, 50, 0]) cube([100, 100, 100], center = true);
-}
-*/
 
 
-PART2 = "drive_coupling";
+PART2 = "bellows_camera_board";
 
 if (PART2 == "drive_coupling_DC_connector") {
     driveCouplingDCConnector();
@@ -514,4 +481,8 @@ if (PART2 == "drive_coupling_DC_connector") {
     rotate([180, 0, 0]) animationMotorCap();
 } else if (PART2 == "drive_coupling") {
     driveCoupling();
+} else if (PART2 == "bellows_camera_board") {
+    bodyCapBellowsAdapter();
+} else if (PART2 == "bellows_camera_board") {
+    bellows_camera_board();
 }
