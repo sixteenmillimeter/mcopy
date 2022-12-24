@@ -40,8 +40,9 @@ module m3_nut (H = 5) {
 }
 
 echo("common.scad - m4_nut");
-module m4_nut (H = 5) {
-    cylinder(r=R(7.15), h=H, center=true, $fn=6);
+module m4_nut (H = 5, DIAG = 8.1) {
+    //tolerance
+    hex(diag = DIAG, h = H);
 }
 
 module opto_endstop(){
