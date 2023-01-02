@@ -1,6 +1,6 @@
 include <./common.scad>;
 
-Z = 100;
+Z = 100 - 14.5;
 
 baseX = 134.5;
 baseY = 105.4;
@@ -47,8 +47,8 @@ module mount () {
         //center void
         translate([0, 0, -camBoltZ]) cube([mountBoltsX - 20, innerBaseY, Z], center =true);
         translate([0, 0, -camBoltZ]) cube([baseX + 1, innerBaseY - 40, Z], center =true);
-        bolts(boltD, Z + 1);
-        //
+        bolts(boltD + .4, Z + 1);
+        //inset
         translate([0, 0, (Z / 2) - (Z / 2) + 15]) bolts(20, Z);
         camera_bolt();
     }
