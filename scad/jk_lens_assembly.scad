@@ -119,7 +119,7 @@ module lensAssemblyThreadedZ () {
 		}
 		//------
 		//threaded rod void
-		threadedRod(Z + 20);
+		threadedRod(Z + 20, 0.5);
 		//board nut void
 		translate([0, -10, 0]) rotate([0, 90, 0]) cylinder(r = R(12), h = 30, center = true, $fn = 40);
 		//board void
@@ -133,7 +133,7 @@ module lensAssemblyThreadedZ () {
 		//top linear motion rod voids
 		//
 		translate([0, -(LinearMotionY/2) - 8, (Z/2) - (LinearMotionZ/2)]) cube([LinearMotionX + 1, LinearMotionY, 2], center = true);
-		//
+		//rod
 		translate([0, -(LinearMotionY/2), (Z/2) - (LinearMotionZ/2)]) rotate([0, 90, 0]) cylinder(r = R(LinearMotionDiameter)+.2, h = LinearMotionX + 1, center = true, $fn = 60);
 		//m4 bolt
 		translate([0, -(LinearMotionY/2) - 8 + 1, (Z/2) - (LinearMotionZ/2)]) cylinder(r = R(4.25), h = LinearMotionZ + 1, center = true, $fn = 40);
@@ -141,7 +141,7 @@ module lensAssemblyThreadedZ () {
 		translate([0, -(LinearMotionY/2) - 8 + 1, (Z/2) - (LinearMotionZ/2) - 6]) m4_nut();
 		//------
 		//bottom threaded rod void
-		translate([0, -BackOffset, -XOffset]) rotate([0, 90, 0]) threadedRod(22 + 1);
+		translate([0, -BackOffset, -XOffset]) rotate([0, 90, 0]) threadedRod(22 + 1, 0.5);
 		//flatten bottom
 		translate([0, -BackOffset, -(Z / 2) - 11]) cube([23, 22, 22], center = true);
 	}
@@ -207,10 +207,12 @@ module debug () {
     //translate([15, -5, XOffset]) rotate([0, 90, 0]) color("blue") m4_nut();
 }
 
-PART = "lens_assembly_bellows_board";
+PART = "lens_assembly_threaded_z";
 
 if (PART == "lens_assembly_bellows_board") {
     lensAssemblyBellowsBoard();
+} else if (PART == "lens_assembly_threaded_z") {
+    lensAssemblyThreadedZ();
 } else {
     debug();
 }
