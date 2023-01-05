@@ -29,6 +29,10 @@ XWidth = 50;
 FrontOffset = 0;
 BackOffset = 10;
 
+LinearMotionX = 22;
+LinearMotionY = 20;
+LinearMotionZ = 14;
+
 module linearBearing (pad = 0) {
 	difference () {
 		cylinder(r = R(LinearBearingOuterDiameter + pad), h = LinearBearingHeight, center = true, $fn = 100);
@@ -105,9 +109,6 @@ module lensAssemblyBellowsBoard () {
 
 module lensAssemblyThreadedZ () {
 	Z = 90;
-	LinearMotionX = 22;
-	LinearMotionY = 20;
-	LinearMotionZ = 14;
 	difference () {
 		union () {
 			//main cylinder
@@ -131,13 +132,13 @@ module lensAssemblyThreadedZ () {
 
 		//------
 		//top linear motion rod voids
-		//
+		//top gap to close
 		translate([0, -(LinearMotionY/2) - 8, (Z/2) - (LinearMotionZ/2)]) cube([LinearMotionX + 1, LinearMotionY, 2], center = true);
 		//rod
 		translate([0, -(LinearMotionY/2), (Z/2) - (LinearMotionZ/2)]) rotate([0, 90, 0]) cylinder(r = R(LinearMotionDiameter)+.2, h = LinearMotionX + 1, center = true, $fn = 60);
-		//m4 bolt
+		//m4 bolt top
 		translate([0, -(LinearMotionY/2) - 8 + 1, (Z/2) - (LinearMotionZ/2)]) cylinder(r = R(4.25), h = LinearMotionZ + 1, center = true, $fn = 40);
-		//m4 nut
+		//m4 nut top
 		translate([0, -(LinearMotionY/2) - 8 + 1, (Z/2) - (LinearMotionZ/2) - 6]) m4_nut();
 		//------
 		//bottom threaded rod void
@@ -148,33 +149,45 @@ module lensAssemblyThreadedZ () {
 }
 
 module lensAssemblyLinearZ () {
-	Z = 90 + 15 + 8;
-	XCorrection = 23.75;
-	ZLinearBearing = 36.5;
+	Z = 90;
+	ZLinearBearing = 31;
+    
 	difference () {
 		union () {
 			//main cylinder
-			translate([0, 0, 4]) rounded_cube([22, 22, Z], d = 8, $fn = 30, center = true);
-			//
-			translate([9, -BackOffset, (Z / 2) - XCorrection]) rotate([0, 90, 0]) cylinder(r = R(22), h = 40, center = true, $fn = 80);
-			//
-			translate([0, -BackOffset, -(Z / 2) + 13.5]) rotate([0, 90, 0]) cylinder(r = R(22), h = 22, center = true, $fn = 80);
+			rounded_cube([22, 22, Z], d = 8, $fn = 30, center = true);
+			//top
+			translate([0, -BackOffset, (Z / 2) - (LinearMotionZ/2)]) cube([LinearMotionX, LinearMotionY, LinearMotionZ], center = true);
+			//bottom
+			translate([0, -BackOffset, -XOffset]) rotate([0, 90, 0]) cylinder(r = R(22), h = 22, center = true, $fn = 80);
 		}
 		//x linear motion rod void
-		translate([9, -BackOffset, (Z / 2) - XCorrection]) rotate([0, 90, 0]) linearMotionRod(50);
+		translate([9, -BackOffset, (Z / 2) - (LinearMotionZ/2)]) rotate([0, 90, 0]) linearMotionRod(50, 0.3);
 		//board void
 		translate([-8, -BackOffset, -5]) cube([8, 7, 52], center = true);
-		//x linear bearing
-		translate([18, -BackOffset, (Z / 2) - XCorrection]) rotate([0, 90, 0]) linearBearing();
-		//
-		translate([0, 0, (Z / 2) - 5]) linearBearing();
+		//z threaded rod
+        linearMotionRod(250, 0.3);
+        //top gap to close
+		translate([0, -(LinearMotionY/2) - 8, (Z/2) - (LinearMotionZ/2)]) cube([LinearMotionX + 1, LinearMotionY, 2], center = true);
+        //m4 bolt top
+		translate([0, -(LinearMotionY/2) - 8 + 1, (Z/2) - (LinearMotionZ/2)]) cylinder(r = R(4.25), h = LinearMotionZ + 1, center = true, $fn = 40);
+		//m4 nut top
+		translate([0, -(LinearMotionY/2) - 8 + 1, (Z/2) - (LinearMotionZ/2) - 6]) m4_nut();
 		//flatten bottom
-		translate([0, -BackOffset, -(Z / 2) - 7]) cube([23, 22, 22], center = true);
-		//x linear bearing
-		translate([0, 0, -(Z / 2) + ZLinearBearing]) linearBearing();
-		translate([LinearBearingOuterDiameter / 2, 0, -(Z / 2) + ZLinearBearing]) cube([LinearBearingOuterDiameter, LinearBearingOuterDiameter, LinearBearingHeight], center = true);
+		translate([0, -BackOffset, -(Z / 2) - 11]) cube([23, 22, 22], center = true);
+		//z linear bearing
+		translate([0, 0, -(Z / 2) + ZLinearBearing]) {
+            linearBearing(0.25);
+            translate([LinearBearingOuterDiameter / 2, 0, 0]) cube([LinearBearingOuterDiameter, LinearBearingOuterDiameter, LinearBearingHeight], center = true);
+        }
+        
+        //z linear bearing
+		translate([0, 0, -(Z / 2) + ZLinearBearing + 32]) {
+            linearBearing(0.25);
+            translate([LinearBearingOuterDiameter / 2, 0, 0]) cube([LinearBearingOuterDiameter, LinearBearingOuterDiameter, LinearBearingHeight], center = true);
+        }
 		//x threaded rod
-		translate([0, -BackOffset, -(Z / 2) + 13.5]) rotate([0, 90, 0]) threadedRod(50);
+		translate([0, -BackOffset, -XOffset]) rotate([0, 90, 0]) threadedRod(50, 0.5);
 	}
 }
 
@@ -207,12 +220,14 @@ module debug () {
     //translate([15, -5, XOffset]) rotate([0, 90, 0]) color("blue") m4_nut();
 }
 
-PART = "lens_assembly_threaded_z";
+PART = "lens_assembly_linear_z";
 
 if (PART == "lens_assembly_bellows_board") {
     lensAssemblyBellowsBoard();
 } else if (PART == "lens_assembly_threaded_z") {
     lensAssemblyThreadedZ();
+} else if (PART == "lens_assembly_linear_z") {
+    lensAssemblyLinearZ();
 } else {
     debug();
 }
