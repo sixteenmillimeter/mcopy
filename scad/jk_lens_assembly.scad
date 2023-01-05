@@ -58,8 +58,12 @@ module TNut () {
 	}
 }
 
-module m3BoltNut (bolt = 20, nut = 3.5) {
+module m3Bolt (bolt = 20) {
     cylinder(r = 3.1 / 2, h = bolt, center = true, $fn = 40);
+}
+
+module m3BoltNut (bolt = 20, nut = 3.5) {
+    m3Bolt(bolt);
 
     translate([0, 0, nut]) color("red") {
         cylinder(r = 8 / 2, h = 2.5, center = true, $fn = 6);
@@ -80,17 +84,17 @@ module lensAssemblyBellowsBoard () {
             //   -centered
             translate([-(XWidth/2) + 2.5 + 5, -FrontOffset - 8, -XOffset]) rotate([0, -90, 0])  rotate([0, 0, 90]) m3BoltNut();
             //   -top no nut
-            translate([-(XWidth/2) + 2.5 + 5, -FrontOffset, -XOffset + 8]) rotate([0, -90, 0]) cylinder(r = 3.1 / 2, h = 20, center = true, $fn = 40);
+            translate([-(XWidth/2) + 2.5 + 5, -FrontOffset, -XOffset + 8]) rotate([0, -90, 0]) m3Bolt();
             //   -bottom no nut
-            translate([-(XWidth/2) + 2.5 + 5, -FrontOffset, -XOffset - 8]) rotate([0, -90, 0])  cylinder(r = 3.1 / 2, h = 20, center = true, $fn = 40);
+            translate([-(XWidth/2) + 2.5 + 5, -FrontOffset, -XOffset - 8]) rotate([0, -90, 0])  m3Bolt();
 			translate([(XWidth/2) - 2.5, -FrontOffset, -XOffset]) rotate([0, -90, 0]) TNut();
             //m3s
             //    -center
             translate([(XWidth/2) - 2.5 - 5, -FrontOffset - 8, -XOffset]) rotate([0, 90, 0]) rotate([0, 0, 90]) m3BoltNut();
             //    -top no nut
-            translate([(XWidth/2) - 2.5 - 5, -FrontOffset, -XOffset + 8]) rotate([0, 90, 0]) cylinder(r = 3.1 / 2, h = 20, center = true, $fn = 40);
+            translate([(XWidth/2) - 2.5 - 5, -FrontOffset, -XOffset + 8]) rotate([0, 90, 0]) m3Bolt();
             //    -bottom no nut
-            translate([(XWidth/2) - 2.5 - 5, -FrontOffset, -XOffset - 8]) rotate([0, 90, 0]) cylinder(r = 3.1 / 2, h = 20, center = true, $fn = 40);
+            translate([(XWidth/2) - 2.5 - 5, -FrontOffset, -XOffset - 8]) rotate([0, 90, 0]) m3Bolt();
 		}
 		rotate([-90, 0, 0]) translate([0, -FrontOffset, -XOffset]) rotate([0, 90, 0]) threadedRod(RodLength, 0.5);
        translate([0, -XOffset, -10.5]) cube([100,30, 15], center = true); 
@@ -126,9 +130,25 @@ module lensAssemblyThreadedZ () {
 		//board void
 		translate([8, -BackOffset, 0]) cube([8, 7, 52], center = true);
 		//T nuts
+        //top
 		translate([0, 0, (Z / 2) - 4]) rotate([180, 0, 0]) TNut();
+        //bottom
 		translate([0, 0, -(Z / 2) + 4]) TNut();
-		translate([0, 0, -(Z / 2) - 10]) cylinder(r = R(22), h = 20, center = true, $fn = 80);
+		
+        //----
+        //T nut M3 bolts
+        //top
+        translate([0, 0, (Z / 2) - 4]) {
+            translate([-8, 0, 0]) rotate([180, 0, 0]) m3BoltNut();
+            translate([8, 0, 0]) rotate([0, 0, 180]) rotate([180, 0, 0]) m3BoltNut();
+            translate([0, 8, 0]) rotate([0, 0, -90]) rotate([180, 0, 0]) m3BoltNut();
+        }
+        //bottom
+        translate([0, 0, -(Z / 2) + 4]) {
+            translate([-8, 0, 0]) m3BoltNut();
+            translate([8, 0, 0]) rotate([0, 0, 180]) m3BoltNut();
+            translate([0, 8, 0]) rotate([0, 0, -90]) m3BoltNut();
+        }
 
 		//------
 		//top linear motion rod voids
@@ -220,7 +240,7 @@ module debug () {
     //translate([15, -5, XOffset]) rotate([0, 90, 0]) color("blue") m4_nut();
 }
 
-PART = "lens_assembly_linear_z";
+PART = "lens_assembly_threaded_z";
 
 if (PART == "lens_assembly_bellows_board") {
     lensAssemblyBellowsBoard();
