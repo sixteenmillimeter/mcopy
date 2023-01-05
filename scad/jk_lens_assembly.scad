@@ -33,10 +33,10 @@ LinearMotionX = 22;
 LinearMotionY = 20;
 LinearMotionZ = 14;
 
-module linearBearing (pad = 0) {
+module linearBearing (padD = 0, padH = 0) {
 	difference () {
-		cylinder(r = R(LinearBearingOuterDiameter + pad), h = LinearBearingHeight, center = true, $fn = 100);
-		cylinder(r = R(LinearBearingBoreDiameter), h = LinearBearingHeight + 1, center = true, $fn = 60);
+		cylinder(r = R(LinearBearingOuterDiameter + padD), h = LinearBearingHeight + padH, center = true, $fn = 100);
+		cylinder(r = R(LinearBearingBoreDiameter), h = LinearBearingHeight + padH + 1, center = true, $fn = 60);
 	}
 }
 
@@ -48,11 +48,11 @@ module linearMotionRod (H = 40, pad = 0) {
 	color("blue") cylinder(r = R(LinearMotionDiameter + pad), h = H, center = true, $fn = 60);
 }
 
-module TNut () {
+module TNut (padD = 0, padH = 0) {
 	color("red") difference () {
 		union () {
-			translate([0, 0, -(TNutHeight2 / 2) + (TNutHeight1 / 2) + TNutOffset]) cylinder(r = R(TNutDiameter1), h = TNutHeight1, center = true, $fn = 100);
-			cylinder(r = R(TNutDiameter2), h = TNutHeight2, center = true, $fn = 80);
+			translate([0, 0, -(TNutHeight2 / 2) + (TNutHeight1 / 2) + TNutOffset]) cylinder(r = R(TNutDiameter1 + padD), h = TNutHeight1, center = true, $fn = 100);
+			cylinder(r = R(TNutDiameter2), h = TNutHeight2 + padH, center = true, $fn = 80);
 		}
 		cylinder(r = R(TNutInnerDiameter), h = TNutHeight2 + 1, center = true, $fn = 60);
 	}
@@ -79,7 +79,7 @@ module lensAssemblyBellowsBoard () {
             translate([0, -XOffset, FrontOffset]) rotate([0, 90, 0]) cylinder(r = R(22), h = XWidth, center = true, $fn = 80);
         }
 		rotate([-90, 0, 0]) {
-			translate([-(XWidth/2) + 2.5, -FrontOffset, -XOffset]) rotate([0, 90, 0]) TNut();
+			translate([-(XWidth/2) + 2.5, -FrontOffset, -XOffset]) rotate([0, 90, 0]) TNut(0.3, 0.3);
             //m3s
             //   -centered
             translate([-(XWidth/2) + 2.5 + 5, -FrontOffset - 8, -XOffset]) rotate([0, -90, 0])  rotate([0, 0, 90]) m3BoltNut();
@@ -87,7 +87,7 @@ module lensAssemblyBellowsBoard () {
             translate([-(XWidth/2) + 2.5 + 5, -FrontOffset, -XOffset + 8]) rotate([0, -90, 0]) m3Bolt();
             //   -bottom no nut
             translate([-(XWidth/2) + 2.5 + 5, -FrontOffset, -XOffset - 8]) rotate([0, -90, 0])  m3Bolt();
-			translate([(XWidth/2) - 2.5, -FrontOffset, -XOffset]) rotate([0, -90, 0]) TNut();
+			translate([(XWidth/2) - 2.5, -FrontOffset, -XOffset]) rotate([0, -90, 0]) TNut(0.3, 0.3);
             //m3s
             //    -center
             translate([(XWidth/2) - 2.5 - 5, -FrontOffset - 8, -XOffset]) rotate([0, 90, 0]) rotate([0, 0, 90]) m3BoltNut();
@@ -131,9 +131,9 @@ module lensAssemblyThreadedZ () {
 		translate([8, -BackOffset, 0]) cube([8, 7, 52], center = true);
 		//T nuts
         //top
-		translate([0, 0, (Z / 2) - 4]) rotate([180, 0, 0]) TNut();
+		translate([0, 0, (Z / 2) - 4]) rotate([180, 0, 0]) TNut(0.3, 0.3);
         //bottom
-		translate([0, 0, -(Z / 2) + 4]) TNut();
+		translate([0, 0, -(Z / 2) + 4]) TNut(0.3, 0.3);
 		
         //----
         //T nut M3 bolts
@@ -197,14 +197,14 @@ module lensAssemblyLinearZ () {
 		translate([0, -BackOffset, -(Z / 2) - 11]) cube([23, 22, 22], center = true);
 		//z linear bearing
 		translate([0, 0, -(Z / 2) + ZLinearBearing]) {
-            linearBearing(0.25);
-            translate([LinearBearingOuterDiameter / 2, 0, 0]) cube([LinearBearingOuterDiameter, LinearBearingOuterDiameter, LinearBearingHeight], center = true);
+            linearBearing(0.25, 0.3);
+            translate([LinearBearingOuterDiameter / 2, 0, 0]) cube([LinearBearingOuterDiameter, LinearBearingOuterDiameter + 0.25, LinearBearingHeight + 0.3], center = true);
         }
         
         //z linear bearing
 		translate([0, 0, -(Z / 2) + ZLinearBearing + 32]) {
-            linearBearing(0.25);
-            translate([LinearBearingOuterDiameter / 2, 0, 0]) cube([LinearBearingOuterDiameter, LinearBearingOuterDiameter, LinearBearingHeight], center = true);
+            linearBearing(0.25, 0.3);
+            translate([LinearBearingOuterDiameter / 2, 0, 0]) cube([LinearBearingOuterDiameter, LinearBearingOuterDiameter + 0.25, LinearBearingHeight + 0.3], center = true);
         }
 		//x threaded rod
 		translate([0, -BackOffset, -XOffset]) rotate([0, 90, 0]) threadedRod(50, 0.5);
