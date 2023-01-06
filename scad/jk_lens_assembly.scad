@@ -23,7 +23,7 @@ TNutOffset = 1.5;
 
 RodLength = 150;
 
-ZOffset = 50;
+ZOffset = 120;
 XOffset = 38;
 XWidth = 50;
 FrontOffset = 0;
@@ -32,6 +32,9 @@ BackOffset = 10;
 LinearMotionX = 22;
 LinearMotionY = 20;
 LinearMotionZ = 14;
+
+XPosition = 0;
+ZPosition = 0;
 
 module linearBearing (padD = 0, padH = 0) {
 	difference () {
@@ -60,6 +63,10 @@ module TNut (padD = 0, padH = 0) {
 
 module m3Bolt (bolt = 20) {
     cylinder(r = 3.1 / 2, h = bolt, center = true, $fn = 40);
+}
+
+module m4Bolt (H = 10) {
+	cylinder(r = R(4.25), h = H, center = true, $fn = 40);
 }
 
 module m3BoltNut (bolt = 20, nut = 3.5) {
@@ -157,7 +164,7 @@ module lensAssemblyThreadedZ () {
 		//rod
 		translate([0, -(LinearMotionY/2), (Z/2) - (LinearMotionZ/2)]) rotate([0, 90, 0]) cylinder(r = R(LinearMotionDiameter)+.2, h = LinearMotionX + 1, center = true, $fn = 60);
 		//m4 bolt top
-		translate([0, -(LinearMotionY/2) - 8 + 1, (Z/2) - (LinearMotionZ/2)]) cylinder(r = R(4.25), h = LinearMotionZ + 1, center = true, $fn = 40);
+		translate([0, -(LinearMotionY/2) - 8 + 1, (Z/2) - (LinearMotionZ/2)]) m4Bolt(LinearMotionZ + 1);
 		//m4 nut top
 		translate([0, -(LinearMotionY/2) - 8 + 1, (Z/2) - (LinearMotionZ/2) - 6]) m4_nut();
 		//------
@@ -190,7 +197,7 @@ module lensAssemblyLinearZ () {
         //top gap to close
 		translate([0, -(LinearMotionY/2) - 8, (Z/2) - (LinearMotionZ/2)]) cube([LinearMotionX + 1, LinearMotionY, 2], center = true);
         //m4 bolt top
-		translate([0, -(LinearMotionY/2) - 8 + 1, (Z/2) - (LinearMotionZ/2)]) cylinder(r = R(4.25), h = LinearMotionZ + 1, center = true, $fn = 40);
+		translate([0, -(LinearMotionY/2) - 8 + 1, (Z/2) - (LinearMotionZ/2)]) m4Bolt(LinearMotionZ + 1);
 		//m4 nut top
 		translate([0, -(LinearMotionY/2) - 8 + 1, (Z/2) - (LinearMotionZ/2) - 6]) m4_nut();
 		//flatten bottom
@@ -209,6 +216,14 @@ module lensAssemblyLinearZ () {
 		//x threaded rod
 		translate([0, -BackOffset, -XOffset]) rotate([0, 90, 0]) threadedRod(50, 0.5);
 	}
+}
+
+module lensAssemblyBaseZ () {
+	difference () {
+		rounded_cube([150, 22, 22], d = 8, $fn = 30, center = true);
+		translate([ZOffset/2, 0, 5]) linearMotionRod(22 + 1, 0.2);
+	}
+	translate([ZOffset/2+10, 0, 0]) rotate([0, 90, 0]) m4Bolt(20);
 }
 
 module lensAssemblyThreadedCollar (H = 8) {
@@ -234,32 +249,33 @@ module lensAssemblyThreadedKnob () {
 }
 
 module debug () {
-    rotate([90, 0, 0]) lensAssemblyBellowsBoard();
+	translate([0, 0, ZPosition]) {
+	    translate([-ZOffset/2, BackOffset, 0]) lensAssemblyThreadedZ();
+	    translate([ZOffset/2, BackOffset, 0]) lensAssemblyLinearZ();
 
-    translate([-ZOffset, BackOffset, 0]) lensAssemblyThreadedZ();
-    translate([ZOffset, BackOffset, 5]) lensAssemblyLinearZ();
+	    translate([ZOffset/2, 10, 18]) color("green") linearBearing();
+	    translate([ZOffset/2, 10, -14]) color("green") linearBearing();
 
-    //Z axis
-    //translate([-ZOffset, BackOffset, 0])  threadedRod(RodLength);
-    //translate([ZOffset, BackOffset, 0]) linearMotionRod(RodLength);
+	    translate([-ZOffset/2, 10, 40]) rotate([180, 0, 0]) TNut();
+	    translate([-ZOffset/2, 10, -40]) TNut();
 
-    //translate([40, 8, 0]) linearBearing();
-    //translate([-40, 8, 25]) rotate([180, 0, 0]) TNut();
-    //translate([-40, 8, -25]) TNut();
+	    //X axis
+	    translate([0, -FrontOffset, -XOffset]) rotate([0, 90, 0]) threadedRod(RodLength);
+	    translate([0, -FrontOffset, XOffset]) rotate([0, 90, 0])  linearMotionRod(RodLength);
 
-    //translate([ZOffset, 5, 15]) color("blue") m4_nut();
-    //translate([ZOffset, 5, -15]) color("blue") m4_nut();
-
-    //X axis
-    //translate([0, -FrontOffset, -XOffset]) rotate([0, 90, 0]) threadedRod(RodLength);
-    //translate([0, -FrontOffset, XOffset]) rotate([0, 90, 0])  linearMotionRod(RodLength);
-
-    //translate([0, -8, 40]) rotate([0, 90, 0]) linearBearing();
-    //translate([-25, -8, -XOffset]) rotate([0, 90, 0]) TNut();
-    //translate([25, -8, -XOffset]) rotate([0, -90, 0]) TNut();
-
-    //translate([-15, -5, XOffset]) rotate([0, 90, 0]) color("blue") m4_nut();
-    //translate([15, -5, XOffset]) rotate([0, 90, 0]) color("blue") m4_nut();
+	   	translate([XPosition, 0, 0]) {
+	    	rotate([90, 0, 0]) lensAssemblyBellowsBoard();
+	    	translate([0, 0, 40]) rotate([0, 90, 0]) color("green") linearBearing();
+	    	translate([-22.5, 0, -XOffset]) rotate([0, 90, 0]) TNut();
+	    	translate([22.5, 0, -XOffset]) rotate([0, -90, 0]) TNut();
+	    }
+	}
+	
+	//Z axis
+	translate([-ZOffset/2, BackOffset, 0])  threadedRod(RodLength + 20);
+	translate([ZOffset/2, BackOffset, 0]) linearMotionRod(RodLength);
+    
+    translate([0, BackOffset, -70]) lensAssemblyBaseZ();
 }
 
 PART = "lens_assembly_threaded_z";
@@ -270,6 +286,8 @@ if (PART == "lens_assembly_bellows_board") {
     lensAssemblyThreadedZ();
 } else if (PART == "lens_assembly_linear_z") {
     lensAssemblyLinearZ();
+} else if (PART == "lens_assembly_base_z") {
+	lensAssemblyBaseZ();
 } else if (PART == "lens_assembly_threaded_knob") {
     lensAssemblyThreadedKnob();
 } else if (PART == "lens_assembly_threaded_collar") {
