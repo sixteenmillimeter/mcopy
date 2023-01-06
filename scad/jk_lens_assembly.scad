@@ -3,7 +3,7 @@
 //
 include <./common.scad>;
 include <./bellows.scad>;
-
+include <./knurledFinishLib_v2.scad>;
 
 PART = "";
 
@@ -211,6 +211,28 @@ module lensAssemblyLinearZ () {
 	}
 }
 
+module lensAssemblyThreadedCollar (H = 8) {
+    difference () {
+        union () {
+            cylinder(r = R(26), h = H, center = true, $fn = 80);
+        }
+        threadedRod(H*2, 0.1);
+        translate([8.5, 0, 0]) rotate([0, 90, 0]) m3BoltNut(10, -1);
+    }
+}
+
+module lensAssemblyThreadedKnob () {
+    H = 8;
+    D1 = 38.7;
+    difference () {
+        union () {
+            translate([0, 0, -H/2]) knurled_cyl(H, D1, 2, 2, .3, 0, 0);
+            translate([0, 0, H]) lensAssemblyThreadedCollar(H);
+        }
+        translate([0, 0, H]) threadedRod(H*2, 0.1);
+    }
+}
+
 module debug () {
     rotate([90, 0, 0]) lensAssemblyBellowsBoard();
 
@@ -248,6 +270,10 @@ if (PART == "lens_assembly_bellows_board") {
     lensAssemblyThreadedZ();
 } else if (PART == "lens_assembly_linear_z") {
     lensAssemblyLinearZ();
+} else if (PART == "lens_assembly_threaded_knob") {
+    lensAssemblyThreadedKnob();
+} else if (PART == "lens_assembly_threaded_collar") {
+    lensAssemblyThreadedCollar(6);
 } else {
     debug();
 }
