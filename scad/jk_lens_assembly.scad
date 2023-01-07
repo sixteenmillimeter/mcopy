@@ -222,16 +222,18 @@ module lensAssemblyBaseZ () {
 	difference () {
 		rounded_cube([150, 22, 22], d = 8, $fn = 30, center = true);
 		translate([ZOffset/2, 0, 5]) linearMotionRod(22 + 1, 0.2);
+        translate([-ZOffset/2, 0, 0]) threadedRod(50, 0.2);
+        translate([ZOffset/2+10, 0, 0]) rotate([0, 90, 0]) m4Bolt(20);
 	}
-	translate([ZOffset/2+10, 0, 0]) rotate([0, 90, 0]) m4Bolt(20);
+	
 }
 
-module lensAssemblyThreadedCollar (H = 8) {
+module lensAssemblyThreadedCollar (H = 8, pad = 0) {
     difference () {
         union () {
             cylinder(r = R(26), h = H, center = true, $fn = 80);
         }
-        threadedRod(H*2, 0.1);
+        threadedRod(H*2, 0.1 + pad);
         translate([8.5, 0, 0]) rotate([0, 90, 0]) m3BoltNut(10, -1);
     }
 }
@@ -278,7 +280,7 @@ module debug () {
     translate([0, BackOffset, -70]) lensAssemblyBaseZ();
 }
 
-PART = "lens_assembly_threaded_z";
+PART = "lens_assembly_base_z";
 
 if (PART == "lens_assembly_bellows_board") {
     lensAssemblyBellowsBoard();
@@ -291,7 +293,7 @@ if (PART == "lens_assembly_bellows_board") {
 } else if (PART == "lens_assembly_threaded_knob") {
     lensAssemblyThreadedKnob();
 } else if (PART == "lens_assembly_threaded_collar") {
-    lensAssemblyThreadedCollar(6);
+    lensAssemblyThreadedCollar(6, 0.2);
 } else {
     debug();
 }
