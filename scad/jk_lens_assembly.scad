@@ -298,9 +298,11 @@ module debug () {
     translate([0, BackOffset, -70]) lensAssemblyBaseZ();
 }
 
-PART = "lens_assembly_threaded_z";
+PART = "lens_assembly_camera_bellows_board";
 
-if (PART == "lens_assembly_bellows_board") {
+if (PART == "lens_assembly_camera_bellows_board") {
+    bellows_camera_board();
+} else if (PART == "lens_assembly_bellows_board") {
     lensAssemblyBellowsBoard();
 } else if (PART == "lens_assembly_threaded_z") {
     lensAssemblyThreadedZ();

@@ -16,7 +16,7 @@ CapThickness = 3;
 
 CapCatchDiameter = 38;
 CapCatchLength = 2;
-CapCatchOffset = 15;
+CapCatchOffset = 15 + 1;
 
 CapRimDiameter = 46.5;
 CapRimThickness = 3;
@@ -465,7 +465,7 @@ module driveCouplingDCConnector () {
 
 
 
-PART2 = "bellows_camera_board";
+PART2 = "bellows_camera_board_adapter";
 
 if (PART2 == "drive_coupling_DC_connector") {
     driveCouplingDCConnector();
@@ -481,7 +481,7 @@ if (PART2 == "drive_coupling_DC_connector") {
     rotate([180, 0, 0]) animationMotorCap();
 } else if (PART2 == "drive_coupling") {
     driveCoupling();
-} else if (PART2 == "bellows_camera_board") {
+} else if (PART2 == "bellows_camera_board_adapter") {
     bodyCapBellowsAdapter();
 } else if (PART2 == "bellows_camera_board") {
     bellows_camera_board();
