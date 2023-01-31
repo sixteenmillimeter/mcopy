@@ -296,6 +296,14 @@ module debug () {
 	translate([ZOffset/2, BackOffset, 0]) linearMotionRod(RodLength);
     
     translate([0, BackOffset, -70]) lensAssemblyBaseZ();
+    
+    translate([0, 130, 0]) rotate([90, 0, 0]) bellows_camera_board();
+    translate([0, 130/2, 0]) color("blue") {
+        difference () {
+            cube([70, 130-10, 70], center = true);
+            cube([40, 130 + 1, 40], center = true);
+        }
+    }
 }
 
 PART = "lens_assembly_camera_bellows_board";
