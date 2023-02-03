@@ -224,13 +224,56 @@ module lensAssemblyLinearZ () {
 	}
 }
 
+module m5_nut_bolt () {
+    cylinder(r = R(4.95), h = 30, center = true, $fn = 30);
+    translate([0, 0, 20/2]) rotate([0, 0, 30]) m5_nut();
+}
+
 module lensAssemblyBaseZ () {
-	difference () {
-		rounded_cube([150, 22, 22], d = 8, $fn = 30, center = true);
+    H = 22 + 12 + 12;
+    TOP_X = 74;
+    BOTTOM_X = 88;
+    Z_OFFSET = (12/2)+(22/2);
+	translate([0, 0, Z_OFFSET]) difference () {
+		translate([0, 6, -(24 / 2)]) cube([150, 45 + 12, H], center = true);
 		translate([ZOffset/2, 0, 5]) linearMotionRod(22 + 1, 0.2);
         translate([-ZOffset/2, 0, 0]) threadedRod(50, 0.5);
         translate([ZOffset/2+10, 0, 3]) rotate([0, 90, 0]) m4BoltNut(20, -1);
+        //shelf void
+        translate([0, 12, -17]) cube([160 + 1, 45 + 0.1, 12], center = true);
+        //top corner voids
+        translate([(150 / 2) + (TOP_X / 2), 6 + (45 + 12) - 20, -(24 / 2) + 12]) cube([150, 45 + 12, H], center = true);
+        translate([-(150 / 2) - (TOP_X / 2), 6 + (45 + 12) - 20, -(24 / 2) + 12]) cube([150, 45 + 12, H], center = true);
+        //bottom voids
+        translate([(150 / 2) + (BOTTOM_X / 2), 6, -(24 / 2) - 22 - 12]) cube([150, 45 + 12 + 1, H], center = true);
+        translate([-(150 / 2) - (BOTTOM_X / 2), 6, -(24 / 2) - 22 - 12]) cube([150, 45 + 12 + 1, H], center = true);
+        
+        //bottom bolts
+        translate([25, 25, -18 - Z_OFFSET]) m5_nut_bolt();
+        translate([-25, 25, -18 - Z_OFFSET]) m5_nut_bolt();
+        translate([25, -5, -18 - Z_OFFSET]) m5_nut_bolt();
+        translate([-25, -5, -18 - Z_OFFSET]) m5_nut_bolt();
+        
+        //top bolts
+        translate([25, 25, 17.5 - Z_OFFSET]) {
+            rotate([180, 0, 0]) m5_nut_bolt();
+            translate([0, 0, 10]) rotate([0, 0, 30]) cylinder(r = R(20), h = 20, center = true, $fn = 6);
+        }
+        translate([-25, 25, 17.5 - Z_OFFSET]) {
+            rotate([180, 0, 0]) m5_nut_bolt();
+            translate([0, 0, 10]) rotate([0, 0, 30]) cylinder(r = R(20), h = 20, center = true, $fn = 6);
+        }
+        translate([25, -5, 17.5 - Z_OFFSET]) {
+            rotate([180, 0, 0]) m5_nut_bolt();
+            translate([0, 0, 10]) rotate([0, 0, 30]) cylinder(r = R(20), h = 20, center = true, $fn = 6);
+        }
+        translate([-25, -5, 17.5 - Z_OFFSET]) {
+            rotate([180, 0, 0]) m5_nut_bolt();
+            translate([0, 0, 10]) rotate([0, 0, 30]) cylinder(r = R(20), h = 20, center = true, $fn = 6);
+        }
 	}
+    
+    //translate([0, 12, 0]) color("green") cube([160, 45, 12], center = true);
 }
 
 module lensAssemblyTopZ () {
@@ -306,7 +349,7 @@ module debug () {
     }
 }
 
-PART = "lens_assembly_camera_bellows_board";
+PART = "lens_assembly_base_z";
 
 if (PART == "lens_assembly_camera_bellows_board") {
     bellows_camera_board();
