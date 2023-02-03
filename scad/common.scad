@@ -34,6 +34,10 @@ module trap_cube(height = 19, top_x = 30, top_y = 34, bottom_x = 45, bottom_y = 
 echo("common.scad - R()");
 function R (diameter) = diameter / 2.0;
 
+module hex (diag = 10, h = 1) {
+    cylinder(r = diag / 2, h = h, center = true, $fn = 6);
+}
+
 echo("common.scad - m3_nut");
 module m3_nut (H = 5) {
     cylinder(r=R(6.6), h=H, center=true, $fn=6);
@@ -42,6 +46,11 @@ module m3_nut (H = 5) {
 echo("common.scad - m4_nut");
 module m4_nut (H = 5, DIAG = 8.1) {
     //tolerance
+    hex(diag = DIAG, h = H);
+}
+
+echo("common.scad - m5_nut");
+module m5_nut (H = 5, DIAG = 9.1) {
     hex(diag = DIAG, h = H);
 }
 
@@ -73,14 +82,10 @@ module optoswitch() {
             color("gray")translate([6.63,0,0]) cube([4.45,11.3,6.3]);
             color("gray")translate([13.63,0,0]) cube([4.45,11.3,6.3]);
         }
-       for ( hole = [2.75,24.5-2.75] ){
+        for ( hole = [2.75,24.5-2.75] ){
            rotate([90,0,0]) translate([hole,6.4/2,-4]) cylinder(r=1.5, h=4.5,$fn=40);
-       }	
-     }
- }
- 
- module hex (diag = 10, h = 1) {
-    cylinder(r = diag / 2, h = h, center = true, $fn = 6);
+        }	
+    }
 }
 
 module NEMA17_motor_shaft (L = 22.75) {
