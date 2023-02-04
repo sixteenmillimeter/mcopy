@@ -234,6 +234,8 @@ module lensAssemblyBaseZ () {
     TOP_X = 74;
     BOTTOM_X = 88;
     Z_OFFSET = (12/2)+(22/2);
+    RAILS = 160;
+    RAIL_D = 30; //with clearance
 	translate([0, 0, Z_OFFSET]) difference () {
 		translate([0, 6, -(24 / 2)]) cube([150, 45 + 12, H], center = true);
 		translate([ZOffset/2, 0, 5]) linearMotionRod(22 + 1, 0.2);
@@ -271,9 +273,17 @@ module lensAssemblyBaseZ () {
             rotate([180, 0, 0]) m5_nut_bolt();
             translate([0, 0, 10]) rotate([0, 0, 30]) cylinder(r = R(20), h = 20, center = true, $fn = 6);
         }
+        
+        //rails void
+            translate([RAILS / 2, 0, -Z_OFFSET -6.5-5.75]) rotate([90, 0, 0]) cylinder(r = R(RAIL_D), h = 100, center = true, $fn = 80);
+            translate([-RAILS / 2, 0, -Z_OFFSET -6.5-5.75]) rotate([90, 0, 0]) cylinder(r = R(RAIL_D), h = 100, center = true, $fn = 80);
 	}
     
+    //debug
+
     //translate([0, 12, 0]) color("green") cube([160, 45, 12], center = true);
+    //translate([RAILS / 2, 0, -6.5-5.75]) rotate([90, 0, 0]) cylinder(r = R(RAIL_D), h = 100, center = true, $fn = 80);
+    //translate([-RAILS / 2, 0, -6.5-5.75]) rotate([90, 0, 0]) cylinder(r = R(RAIL_D), h = 100, center = true, $fn = 80);
 }
 
 module lensAssemblyTopZ () {
