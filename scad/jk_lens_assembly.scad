@@ -236,6 +236,7 @@ module lensAssemblyBaseZ () {
     Z_OFFSET = (12/2)+(22/2);
     RAILS = 160;
     RAIL_D = 30; //with clearance
+    BOTTOM_CORNER_ADJUST_X = 4;
 	translate([0, 0, Z_OFFSET]) difference () {
 		translate([0, 6, -(24 / 2)]) cube([150, 45 + 12, H], center = true);
 		translate([ZOffset/2, 0, 5]) linearMotionRod(22 + 1, 0.2);
@@ -246,9 +247,11 @@ module lensAssemblyBaseZ () {
         //top corner voids
         translate([(150 / 2) + (TOP_X / 2), 6 + (45 + 12) - 20, -(24 / 2) + 12]) cube([150, 45 + 12, H], center = true);
         translate([-(150 / 2) - (TOP_X / 2), 6 + (45 + 12) - 20, -(24 / 2) + 12]) cube([150, 45 + 12, H], center = true);
-        //bottom voids
+        //bottom corner voids
         translate([(150 / 2) + (BOTTOM_X / 2), 6, -(24 / 2) - 22 - 12]) cube([150, 45 + 12 + 1, H], center = true);
         translate([-(150 / 2) - (BOTTOM_X / 2), 6, -(24 / 2) - 22 - 12]) cube([150, 45 + 12 + 1, H], center = true);
+        //additional corner off right side
+        translate([-(150 / 2) - (BOTTOM_X / 2) + BOTTOM_CORNER_ADJUST_X, 6, -(24 / 2) - 22 - 12]) cube([150, 45 + 12 + 1, H], center = true);
         
         //bottom bolts
         translate([25, 25, -18 - Z_OFFSET]) m5_nut_bolt();
