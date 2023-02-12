@@ -58,7 +58,7 @@ module mount () {
         bolts(boltD + .4, Z + 1);
         //inset
         translate([0, 0, (Z / 2) - (Z / 2) + 15]) bolts(20, Z);
-        camera_bolt();
+        camera_bolt(35);
         wing_nuts(-(Z / 2) + 20.5);
     }
 }
@@ -82,4 +82,5 @@ module center_fitting () {
 //base();
 //translate([0, 0, (baseZ/2) + (Z/2) + 5]) mount();
 //translate([0, 0, (baseZ/2) + Z + 9]) 
-center_fitting();
+//center_fitting();
+mount();
