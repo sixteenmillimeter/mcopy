@@ -4,6 +4,7 @@
         "esModuleInterop": true,
         "target": "ES2016",
         "noImplicitAny": true,
+        "declaration": false,
         "moduleResolution": "node",
         "sourceMap": true,
         "removeComments" : false,
