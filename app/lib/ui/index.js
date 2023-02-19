@@ -3,6 +3,10 @@
 const gui = {};
 
 //GUI
+gui.init = function () {
+	gui.version();
+};
+
 gui.fmtZero = function (val, len) {
 	'use strict';
 	const raw = val;
@@ -255,5 +259,9 @@ gui.warn = async function (title, message) {
 	return dialog.showMessageBox(config);
 };
 gui.error = function () {};
+
+gui.version = function () {
+	$('#version').text(PACKAGE.version);
+}
 
 module.exports = gui;

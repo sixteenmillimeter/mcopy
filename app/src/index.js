@@ -43,6 +43,7 @@ async function init () {
 	log = await require('log')({})
 
 	nav.init();
+	gui.init();
 	grid.init();
 	mse.mscript.init();
 	mse.console.init();

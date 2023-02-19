@@ -8,7 +8,7 @@ echo "VERSION: $version"
 
 git add ./package.json
 
-declare -a fileArr=("./package-lock.json" "./data/cfg.json" "./app/package.json" "./app/package-lock.json")
+declare -a fileArr=("./package-lock.json" "./data/cfg.json" "./app/package.json" "./app/package-lock.json" "./processing/mcopy/cfg.json")
 
 for i in "${fileArr[@]}"
 do 
