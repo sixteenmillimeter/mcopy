@@ -11,7 +11,8 @@
         "outDir": "./",
         "rootDir" : "./src/",
         "paths" : {
-            "log" : ["./lib/log"]
+            "log" : ["./lib/log"],
+            "mscript" : ["./lib/mscript"]
         }
     },
     "exclude" : [

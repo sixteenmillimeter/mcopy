@@ -47,9 +47,18 @@ class Sequence {
                 log.info('Sequence stopped', 'SERIAL', true);
                 timeStr = (arg.ms < 2000) ? `${arg.ms}ms` : humanizeDuration(arg.ms);
                 gui.notify(`SEQUENCE`, `Sequence finished in ${timeStr}`);
+                if (capper.enabled && this.arr.some(this.hasCapper)) {
+                    $('#cmd_capper_off').addClass('active');
+                    $('#cmd_capper_on').removeClass('active');
+                }
             }
         }
         return event.returnValue = true;
+    }
+    hasCapper(el) {
+        if (['BF', 'BB'].indexOf(el.cmd) !== -1) {
+            return true;
+        }
     }
     progress(step, loop) {
         const elem = $('.progress-bar');

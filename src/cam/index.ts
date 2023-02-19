@@ -9,7 +9,8 @@ import { delay } from 'delay';
 class Camera {
 	private state : any = { 
 		pos : 0,
-		dir : true
+		dir : true,
+		capepr: false
 	};
 	private arduino : Arduino = null;
 	private intval : any = null;
@@ -83,6 +84,28 @@ class Camera {
 			} catch (err) {
 				this.log.error(err);
 			}
+		}
+		return await this.end(cmd, id, ms);
+	}
+
+	/**
+	 *
+	 **/
+	 public async cap (state : boolean, id : string) {
+		let cmd : string;
+		let ms : number;
+
+		if (state) {
+			cmd = this.cfg.arduino.cmd[`${this.id}_forward`];
+		} else {
+			cmd = this.cfg.arduino.cmd[`${this.id}_backward`];
+		}
+		this.state.capper = state;
+
+		try {
+			ms = await this.arduino.send(this.id, cmd);
+		} catch (err) {
+			this.log.error(err);
 		}
 		return await this.end(cmd, id, ms);
 	}
@@ -189,20 +212,26 @@ class Camera {
 	private async listener (event : any, arg : any) {
 		if (typeof arg.dir !== 'undefined') {
 			try {
-				await this.set(arg.dir, arg.id);
+				await this.set(arg.dir, arg.id)
 			} catch (err) {
-				this.log.error(err);
+				this.log.error(err)
 			}
 		} else if (typeof arg.frame !== 'undefined') {
 			try {
-				await this.move(arg.frame, arg.id);
+				await this.move(arg.frame, arg.id)
 			} catch (err) {
-				this.log.error(err);
+				this.log.error(err)
 			}
 		} else if (typeof arg.val !== 'undefined') {
-			this.state.pos = arg.val;
+			this.state.pos = arg.val
+		} else if (typeof arg.capper !== 'undefined') {
+			try {
+				await this.cap(arg.capper, arg.id)
+			} catch (err) {
+				this.log.error(err)
+			}
 		}
-		event.returnValue = true;
+		event.returnValue = true
 	}
 
 	/**

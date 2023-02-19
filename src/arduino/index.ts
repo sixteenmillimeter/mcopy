@@ -3,11 +3,11 @@
 //import Log = require('log');
 import { delay }  from 'delay';
 
-const SerialPort = require('serialport')
-const Readline = SerialPort.parsers.Readline
+const { SerialPort } = require('serialport')
+const { ReadlineParser } = require('@serialport/parser-readline')
 const exec = require('child_process').exec
 
-const parser : any = new Readline('')
+const parser : any = new ReadlineParser({ })
 const newlineRe : RegExp = new RegExp('\n', 'g')
 const returnRe : RegExp = new RegExp('\r', 'g')
 
@@ -108,7 +108,6 @@ class Arduino {
 					//console.error(err)
 					return reject(err)
 				}
-				//
 			})
 		})
 	}
@@ -198,9 +197,10 @@ class Arduino {
 	async connect (serial : string, device : string, confirm : any) {
 		return new Promise(async (resolve, reject) => {
 			let connectSuccess : any
-			this.path[serial] = device;
-			this.alias[serial] = device;
-			this.serial[device] = new SerialPort(this.path[serial], {
+			this.path[serial] = device
+			this.alias[serial] = device
+			this.serial[device] = new SerialPort({
+				path : this.path[serial],
 				autoOpen : false,
 				baudRate: cfg.arduino.baud,
 				parser: parser
@@ -252,7 +252,12 @@ class Arduino {
 			|| data === cfg.arduino.cmd.camera_second_forward
 			|| data === cfg.arduino.cmd.camera_second_backward
 			|| data === cfg.arduino.cmd.camera_second
-			|| data === cfg.arduino.cmd.cameras) {
+			|| data === cfg.arduino.cmd.cameras
+
+			|| data === cfg.arduino.cmd.capper_identifier
+			|| data === cfg.arduino.cmd.camera_capper_identifier
+			|| data === cfg.arduino.cmd.camera_capper_projector_identifier
+			|| data === cfg.arduino.cmd.camera_capper_projectors_identifier) {
 
 			this.confirmExec(null, data);
 			this.confirmExec = {};
@@ -314,12 +319,23 @@ class Arduino {
 					type = 'camera,camera_second,projector'
 				} else if (data === cfg.arduino.cmd.cameras_projectors_identifier) {
 					type = 'camera,camera_second,projector,projector_second'
+				} else if (data === cfg.arduino.cmd.capper_identifier) {
+					type = 'capper'
+				} else if (data === cfg.arduino.cmd.camera_capper_identifier) {
+					type = 'camera,capper'
+				} else if (data === cfg.arduino.cmd.camera_capper_projector_identifier) {
+					type = 'camera,capper,projector'
+				} else if (data === cfg.arduino.cmd.camera_capper_projectors_identifier) {
+					type = 'camera,capper,projector,projector_second'
 				}
 				return resolve(type)
 			}
+			
 			await delay(cfg.arduino.serialDelay)
+			
 			try {
 				writeSuccess = await this.sendAsync(device, cfg.arduino.cmd.mcopy_identifier)
+				this.log.info(writeSuccess)
 			} catch (e) {
 				return reject(e)
 			}
@@ -344,7 +360,9 @@ class Arduino {
 			write : async function (cmd : string, cb : any) {
 				const t : any = {
 					c : cfg.arduino.cam.time + cfg.arduino.cam.delay,
-					p : cfg.arduino.proj.time + cfg.arduino.proj.delay
+					p : cfg.arduino.proj.time + cfg.arduino.proj.delay,
+					A : 180,
+					B : 180
 				}
 				let timeout : number = t[cmd]
 				if (typeof timeout === 'undefined') timeout = 10

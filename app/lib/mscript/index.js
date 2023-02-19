@@ -1,4 +1,5 @@
 'use strict';
+Object.defineProperty(exports, "__esModule", { value: true });
 const BLACK = '0,0,0';
 const WHITE = '255,255,255';
 const CMD = [
@@ -7,7 +8,35 @@ const CMD = [
     'BF',
     'CB',
     'PB',
-    'BB'
+    'BB',
+    'C2F',
+    'C2B',
+    'CCF',
+    'CCB',
+    'P2F',
+    'P2B',
+    'PPF',
+    'PPB',
+    'CFCB',
+    'CBCF',
+    'PFPB',
+    'PBPF'
+];
+const CAMERA_SECONDARY = [
+    'C2F',
+    'C2B',
+    'CCF',
+    'CCB',
+    'CFCB',
+    'CBCF'
+];
+const PROJECTOR_SECONDARY = [
+    'P2F',
+    'P2B',
+    'PPF',
+    'PPB',
+    'PFPB',
+    'PBPF'
 ];
 const ALTS = {
     'CF': ['CAMERA FORWARD', 'CAM FORWARD'],
@@ -17,7 +46,19 @@ const ALTS = {
     'PB': ['PROJECTOR FORWARD', 'PROJ FORWARD', 'PROJECTOR BACK', 'PROJ BACK'],
     'BB': ['BLACK BACKWARD', 'BLACK BACK', 'BLANK BACK'],
     'L ': ['LIGHT', 'COLOR', 'LAMP'],
-    'F ': ['FADE']
+    'F ': ['FADE'],
+    'C2F': ['CAMERA2 FORWARD', 'CAM2 FORWARD'],
+    'C2B': ['CAMERA2 BACKWARD', 'CAM2 BACKWARD', 'CAMERA2 BACK', 'CAM2 BACK'],
+    'CCF': ['CAMERAS FORWARD', 'CAMS FORWARD'],
+    'CCB': ['CAMERAS BACKWARD', 'CAMS BACKWARD', 'CAMERAS BACK', 'CAMS BACK'],
+    'P2F': ['PROJECTOR2 FORWARD', 'PROJ2 FORWARD'],
+    'P2B': ['PROJECTOR2 BACKWARD', 'PROJ2 BACKWARD', 'PROJECTOR2 BACK', 'PROJ2 BACK'],
+    'PPF': ['PROJECTORS FORWARD', 'PROJS FORWARD'],
+    'PPB': ['PROJECTORS BACKWARD', 'PROJS BACKWARD', 'PROJECTORS BACK', 'PROJS BACK'],
+    'CFCB': [],
+    'CBCF': [],
+    'PFPB': [],
+    'PBPF': []
 };
 const PAUSE = 'PAUSE';
 const ALERT = 'ALERT';
@@ -56,11 +97,15 @@ class Mscript {
     clear() {
         this.lines = [];
         this.cam = 0;
+        this.cam2 = 0;
         this.proj = 0;
+        this.proj2 = 0;
         this.color = '';
         this.loops = [];
         this.rec = -1;
         this.two = '';
+        this.three = '';
+        this.four = '';
         this.arr = [];
         this.meta = [];
         this.target = 0; //move to target using CAM # or PROJ #
@@ -78,7 +123,7 @@ class Mscript {
      *
      * @returns {object} if callback is not provided
      */
-    interpret(text, callback) {
+    interpret(text, callback = null) {
         this.clear();
         if (typeof text === 'undefined') {
             return this.fail('No input');
@@ -93,11 +138,19 @@ class Mscript {
         });
         for (let line of this.lines) {
             this.two = line.substring(0, 2);
-            if (CMD.indexOf(this.two) !== -1) {
-                this.basic_cmd(line);
+            this.three = line.substring(0, 3);
+            this.four = line.substring(0, 4);
+            if (CMD.indexOf(this.four) !== -1) {
+                this.basic_cmd(line, this.four);
+            }
+            else if (CMD.indexOf(this.three) !== -1) {
+                this.basic_cmd(line, this.three);
+            }
+            else if (CMD.indexOf(this.two) !== -1) {
+                this.basic_cmd(line, this.two);
             }
             else if (startsWith(line, PAUSE)) {
-                this.pause(line);
+                //this.pause(line);
             }
             else if (startsWith(line, ALERT)) {
                 this.alert(line);
@@ -117,8 +170,14 @@ class Mscript {
             else if (startsWith(line, 'END')) {
                 this.end_loop(line);
             }
-            else if (startsWith(line, 'CAM')) { //directly go to that frame (black?)
+            else if (startsWith(line, 'CAM2')) { //directly go to that frame 
+                this.move_cam2(line);
+            }
+            else if (startsWith(line, 'CAM')) { //directly go to that frame 
                 this.move_cam(line);
+            }
+            else if (startsWith(line, 'PROJ2')) { //directly go to that frame
+                this.move_proj2(line);
             }
             else if (startsWith(line, 'PROJ')) { //directly go to that frame
                 this.move_proj(line);
@@ -130,18 +189,19 @@ class Mscript {
                 //comments
                 //ignore while parsing
             }
-            else if (startsWith(line, 'ALERT')) {
-            }
-            else if (startsWith(line, 'PAUSE')) {
-                this.pause(line);
-            }
         }
         this.output.success = true;
         this.output.arr = this.arr; //all instructions
         this.output.meta = this.meta; //all metadata for instructions
         this.output.cam = this.cam;
         this.output.proj = this.proj;
-        if (typeof callback !== 'undefined') {
+        if (this.contains(this.arr, CAMERA_SECONDARY)) {
+            this.output.cam2 = this.cam2;
+        }
+        if (this.contains(this.arr, PROJECTOR_SECONDARY)) {
+            this.output.proj2 = this.proj2;
+        }
+        if (typeof callback !== 'undefined' && callback != null) {
             //should only be invoked by running mscript.tests()
             callback(this.output);
         }
@@ -203,25 +263,26 @@ class Mscript {
      * Interpret a basic two character command
      *
      * @param {string} line Line of script to interpret
+     * @param {string} short The short command to use
      */
-    basic_cmd(line) {
+    basic_cmd(line, short) {
         if (this.rec !== -1) {
             //hold generated arr in state loop array
             this.loops[this.rec].arr
-                .push.apply(this.loops[this.rec].arr, this.str_to_arr(line, this.two));
+                .push.apply(this.loops[this.rec].arr, this.str_to_arr(line, short));
             this.loops[this.rec].meta
-                .push.apply(this.loops[this.rec].meta, this.light_to_arr(line, this.two));
+                .push.apply(this.loops[this.rec].meta, this.light_to_arr(line, short));
         }
         else {
-            this.arr.push.apply(this.arr, this.str_to_arr(line, this.two));
-            this.meta.push.apply(this.meta, this.light_to_arr(line, this.two));
+            this.arr.push.apply(this.arr, this.str_to_arr(line, short));
+            this.meta.push.apply(this.meta, this.light_to_arr(line, short));
         }
     }
     /**
      * Start a new loop
      *
      * @param {string} line  	Line to evaluate as either loop or fade
-     * @param {boolean} fade 	Flag as boolean if true
+     * @param {boolean} fade 	Flag as true if fade
      */
     new_loop(line, fade) {
         this.rec++;
@@ -230,6 +291,8 @@ class Mscript {
             meta: [],
             cam: 0,
             proj: 0,
+            cam2: 0,
+            proj2: 0,
             cmd: line + ''
         };
         if (fade) {
@@ -316,6 +379,50 @@ class Mscript {
         }
     }
     /**
+     * Move secondary camera to explicitly-defined frame
+     *
+     * @param {string} line Line to interpret with camera move statement
+     */
+    move_cam2(line) {
+        this.target = parseInt(line.split('CAM2 ')[1]);
+        if (this.rec !== -1) {
+            if (this.target > this.cam2) {
+                this.dist = this.target - this.cam2;
+                for (let x = 0; x < this.dist; x++) {
+                    this.loops[this.rec].arr.push('C2F');
+                    this.loops[this.rec].meta.push(BLACK);
+                    this.update('C2F');
+                }
+            }
+            else {
+                this.dist = this.cam2 - this.target;
+                for (let x = 0; x < this.dist; x++) {
+                    this.loops[this.rec].arr.push('C2B');
+                    this.loops[this.rec].meta.push(BLACK);
+                    this.update('C2B');
+                }
+            }
+        }
+        else {
+            if (this.target > this.cam2) {
+                this.dist = this.target - this.cam2;
+                for (let x = 0; x < this.dist; x++) {
+                    this.arr.push('C2F');
+                    this.meta.push(BLACK);
+                    this.update('C2F');
+                }
+            }
+            else {
+                this.dist = this.cam2 - this.target;
+                for (let x = 0; x < this.dist; x++) {
+                    this.arr.push('C2B');
+                    this.meta.push(BLACK);
+                    this.update('C2B');
+                }
+            }
+        }
+    }
+    /**
      * Move projector to explicitly-defined frame
      *
      * @param {string} line Line containing `move` statement to interpret
@@ -360,12 +467,62 @@ class Mscript {
         }
     }
     /**
+     * Move projector to explicitly-defined frame
+     *
+     * @param {string} line Line containing `move` statement to interpret
+     */
+    move_proj2(line) {
+        this.target = parseInt(line.split('PROJ2 ')[1]);
+        if (this.rec !== -1) {
+            if (this.target > this.proj2) {
+                this.dist = this.target - this.proj2;
+                for (let x = 0; x < this.dist; x++) {
+                    this.loops[this.rec].arr.push('P2F');
+                    this.loops[this.rec].meta.push('');
+                    this.update('P2F');
+                }
+            }
+            else {
+                this.dist = this.proj2 - this.target;
+                for (let x = 0; x < this.dist; x++) {
+                    this.loops[this.rec].arr.push('P2B');
+                    this.loops[this.rec].meta.push('');
+                    this.update('P2B');
+                }
+            }
+        }
+        else {
+            if (this.target > this.proj2) {
+                this.dist = this.target - this.proj2;
+                for (let x = 0; x < this.dist; x++) {
+                    this.arr.push('P2F');
+                    this.meta.push('');
+                    this.update('P2F');
+                }
+            }
+            else {
+                this.dist = this.proj2 - this.target;
+                for (let x = 0; x < this.dist; x++) {
+                    this.arr.push('P2B');
+                    this.meta.push('');
+                    this.update('P2B');
+                }
+            }
+        }
+    }
+    /**
      * Set the state of either the cam or projector
      *
      * @param line {string} String containing set statement
      */
     set_state(line) {
-        if (startsWith(line, 'SET CAM')) {
+        if (startsWith(line, 'SET CAM2')) {
+            parseInt(line.split('SET CAM2')[1]);
+        }
+        else if (startsWith(line, 'SET PROJ2')) {
+            this.cam2 = parseInt(line.split('SET PROJ2')[1]);
+        }
+        else if (startsWith(line, 'SET CAM')) {
             this.cam = parseInt(line.split('SET CAM')[1]);
         }
         else if (startsWith(line, 'SET PROJ')) {
@@ -523,7 +680,7 @@ class Mscript {
                 this.cam -= val;
             }
             else {
-                this.loops[this.rec].cam--;
+                this.loops[this.rec].cam -= val;
             }
         }
         else if (cmd === 'PF') {
@@ -539,7 +696,7 @@ class Mscript {
                 this.proj -= val;
             }
             else {
-                this.loops[this.rec].proj--;
+                this.loops[this.rec].proj -= val;
             }
         }
         else if (cmd === 'BF') {
@@ -556,6 +713,118 @@ class Mscript {
             }
             else {
                 this.loops[this.rec].cam -= val;
+            }
+        }
+        else if (cmd === 'C2F') {
+            if (this.rec === -1) {
+                this.cam2 += val;
+            }
+            else {
+                this.loops[this.rec].cam2 += val;
+            }
+        }
+        else if (cmd === 'C2B') {
+            if (this.rec === -1) {
+                this.cam2 -= val;
+            }
+            else {
+                this.loops[this.rec].cam2 -= val;
+            }
+        }
+        else if (cmd === 'CCF') {
+            if (this.rec === -1) {
+                this.cam += val;
+                this.cam2 += val;
+            }
+            else {
+                this.loops[this.rec].cam2 += val;
+                this.loops[this.rec].cam2 += val;
+            }
+        }
+        else if (cmd === 'CCB') {
+            if (this.rec === -1) {
+                this.cam -= val;
+                this.cam2 -= val;
+            }
+            else {
+                this.loops[this.rec].cam2 -= val;
+                this.loops[this.rec].cam2 -= val;
+            }
+        }
+        else if (cmd === 'P2F') {
+            if (this.rec === -1) {
+                this.proj2 += val;
+            }
+            else {
+                this.loops[this.rec].proj2 += val;
+            }
+        }
+        else if (cmd === 'P2B') {
+            if (this.rec === -1) {
+                this.proj2 -= val;
+            }
+            else {
+                this.loops[this.rec].proj2 -= val;
+            }
+        }
+        else if (cmd === 'PPF') {
+            if (this.rec === -1) {
+                this.proj += val;
+                this.proj2 += val;
+            }
+            else {
+                this.loops[this.rec].proj += val;
+                this.loops[this.rec].proj2 += val;
+            }
+        }
+        else if (cmd === 'PPB') {
+            if (this.rec === -1) {
+                this.proj -= val;
+                this.proj2 -= val;
+            }
+            else {
+                this.loops[this.rec].proj -= val;
+                this.loops[this.rec].proj2 -= val;
+            }
+        }
+        else if (cmd === 'CFCB') {
+            if (this.rec === -1) {
+                this.cam += val;
+                this.cam2 -= val;
+            }
+            else {
+                this.loops[this.rec].cam += val;
+                this.loops[this.rec].cam2 -= val;
+            }
+        }
+        else if (cmd === 'CBCF') {
+            if (this.rec === -1) {
+                this.cam -= val;
+                this.cam2 += val;
+            }
+            else {
+                this.loops[this.rec].cam -= val;
+                this.loops[this.rec].cam2 += val;
+            }
+        }
+        else if (cmd === 'PFPB') {
+            if (this.rec === -1) {
+                this.proj += val;
+                this.proj2 -= val;
+            }
+            else {
+                this.loops[this.rec].proj += val;
+                this.loops[this.rec].proj2 -= val;
+            }
+        }
+        else if (cmd === 'PBPF') {
+            if (this.rec === -1) {
+                this.proj -= val;
+                this.proj2 += val;
+            }
+            else {
+                this.loops[this.rec].proj -= val;
+                this.loops[this.rec].proj2 += val;
             }
         }
         else if (cmd === 'L ') {
@@ -654,7 +923,7 @@ class Mscript {
                 .push(lenStr);
         }
         else {
-            this.arr.push('AL');
+            this.arr.push('PA');
             this.meta.push(lenStr);
         }
     }
@@ -671,11 +940,11 @@ class Mscript {
             this.loops[this.rec].arr
                 .push('AL');
             this.loops[this.rec].meta
-                .push(msg);
+                .push(line);
         }
         else {
             this.arr.push('AL');
-            this.meta.push(msg);
+            this.meta.push(line);
         }
     }
     /**
@@ -686,6 +955,19 @@ class Mscript {
     fail(msg) {
         throw new Error(msg);
     }
+    /**
+     * Determine if array contains matching elements of
+     * another array
+     *
+     * @param {Array} arr Original array to compare
+     * @param {Array} arr2 Array to compare elements from
+     *
+     * @returns {boolean} Whether arr contains elements in arr2
+     **/
+    contains(arr, arr2) {
+        return arr.some(r => arr2.includes(r));
+    }
 }
+exports.default = Mscript;
 module.exports = Mscript;
 //# sourceMappingURL=index.js.map

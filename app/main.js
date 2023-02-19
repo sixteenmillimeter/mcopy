@@ -3,12 +3,14 @@
 
 'use strict'
 
-process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
+//process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
 const electron = require('electron')
 const { Menu, BrowserWindow, app } = electron
 const { EventEmitter } = require('events')
 const { join } = require('path')
+
+require('@electron/remote/main').initialize()
 
 const ee = new EventEmitter()
 const settings = require('settings')
@@ -35,6 +37,8 @@ let filmout;
 let dev;
 let cmd;
 let seq;
+let capper;
+let alert;
 
 const cfg = require('./data/cfg.json')
 
@@ -54,19 +58,23 @@ var createWindow = function () {
 		skipTaskbar: true,
     	toolbar: false,	
 		webPreferences : {
-			nodeIntegration: true,
-			enableRemoteModule: true
+			nodeIntegration : true,
+			enableRemoteModule: true,
+			contextIsolation : false
 		}
 	})
-	mainWindow.setMenu(null)
-	mainWindow.setAutoHideMenuBar(true) 
+
 	mainWindow.loadURL('file://' + __dirname + '/index.html')
 	if (process.argv.indexOf('-d') !== -1 || process.argv.indexOf('--dev') !== -1) {
 		mainWindow.webContents.openDevTools()
+	} else {
+		mainWindow.setMenu(null)
+		mainWindow.setAutoHideMenuBar(true) 
 	}
 	mainWindow.on('closed', () => {
 		mainWindow = null
 	})
+	require('@electron/remote/main').enable(mainWindow.webContents)
 }
 
 var errorState = function () {
@@ -112,6 +120,7 @@ var init = async function () {
 	filmout = require('filmout')(display, ffmpeg, ffprobe, mainWindow.webContents, light)
 	cam = require('cam')(arduino, cfg, mainWindow.webContents, filmout)
 	proj = require('proj')(arduino, cfg, mainWindow.webContents, filmout)
+	alert = require('alert')(mainWindow.webContents)
 
 	if (dev && dev.connected && dev.connected.camera_second) {
 		cam2 = require('cam')(arduino, cfg, mainWindow.webContents, filmout, true)
@@ -120,9 +129,13 @@ var init = async function () {
 	if (dev && dev.connected && dev.connected.projector_second) {
 		proj2 = require('proj')(arduino, cfg, mainWindow.webContents, filmout, true)
 	}
-
-	cmd = require('cmd')(cfg, proj, cam, light, cam2, proj2)
+	if (dev && dev.connected && dev.connected.capper) {
+		capper = require('capper')(arduino, cfg, mainWindow.webContents, filmout, true)
+	}
+	
+	cmd = require('cmd')(cfg, proj, cam, light, alert, cam2, proj2, capper)
 	seq = require('sequencer')(cfg, cmd, mainWindow.webContents)
+
 }
 
 app.on('ready', init)

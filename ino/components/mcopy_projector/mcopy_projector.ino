@@ -1,13 +1,14 @@
 boolean debug_state = false;
 
-const int proj_fwd_pin = 12;
-const int proj_bwd_pin = 11;
-const int proj_pin = 10;
+const int proj_fwd_pin = 9;
+const int proj_bwd_pin = 10;
+const int proj_micro_pin = 4;
 const int proj_time = 1200;
 const int proj_delay = 42;
 
 boolean proj_dir = true; 
 boolean proj_running = false;
+volatile int proj_micro_raw;
 
 const char cmd_projector = 'p';
 const char cmd_proj_forward = 'g';
@@ -25,6 +26,16 @@ void setup() {
   Serial.begin(57600);
   Serial.flush();
   Serial.setTimeout(serialDelay);
+  pins_init();
+}
+
+void pins_init () {
+  pinMode(proj_fwd_pin, OUTPUT);
+  pinMode(proj_bwd_pin, OUTPUT);
+  pinMode(proj_micro_pin, INPUT_PULLUP);
+
+  analogWrite(proj_fwd_pin, 0);
+  analogWrite(proj_bwd_pin, 0);
 }
 
 void loop() {
@@ -35,6 +46,9 @@ void loop() {
   if (cmd_char != 'z') {
     cmd(cmd_char);
     cmd_char = 'z';
+  }
+  if (proj_running) {
+    proj_reading();
   }
 }
 
@@ -72,11 +86,11 @@ void identify () {
 
 void proj_start () {
   if (proj_dir) {
-    digitalWrite(proj_fwd_pin, HIGH);
-    digitalWrite(proj_bwd_pin, LOW); 
+    analogWrite(proj_fwd_pin, 255);
+    analogWrite(proj_bwd_pin, 0); 
   } else {
-    digitalWrite(proj_bwd_pin, HIGH); 
-    digitalWrite(proj_fwd_pin, LOW); 
+    analogWrite(proj_bwd_pin, 255); 
+    analogWrite(proj_fwd_pin, 0); 
   }
   proj_running = true;
   delay(500); // Let bump pass out of microswitch
@@ -95,8 +109,8 @@ void proj_reading () {
 }
 
 void proj_stop () {
-  digitalWrite(proj_bwd_pin, LOW); 
-  digitalWrite(proj_fwd_pin, LOW);
+  analogWrite(proj_bwd_pin, 0); 
+  analogWrite(proj_fwd_pin, 0);
   
   proj_running = false;
   

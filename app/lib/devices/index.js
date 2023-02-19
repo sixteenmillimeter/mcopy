@@ -171,6 +171,22 @@ class Devices {
         return true;
     }
     /**
+     *
+     **/
+    async fakeCapper() {
+        this.connected.capper = '/dev/fake';
+        try {
+            await this.arduino.fakeConnect('capper');
+        }
+        catch (err) {
+            console.error(err);
+            this.log.error(`Error connecting to fake CAPPER device`, 'SERIAL', true, true);
+            return false;
+        }
+        this.log.info('Connected to fake CAPPER device', 'SERIAL', true, true);
+        return true;
+    }
+    /**
     *
     **/
     async connectDevice(device, type) {
@@ -302,7 +318,7 @@ class Devices {
                 return false;
             }
         }
-        else if ('camera,projector,projector_second') {
+        else if (type === 'camera,projector,projector_second') {
             this.connected.camera = device;
             this.connected.projector = device;
             this.connected.projector_second = device;
@@ -316,7 +332,7 @@ class Devices {
                 return false;
             }
         }
-        else if ('camera,camera_second,projector') {
+        else if (type === 'camera,camera_second,projector') {
             this.connected.camera = device;
             this.connected.camera_second = device;
             this.connected.projector = device;
@@ -330,7 +346,7 @@ class Devices {
                 return false;
             }
         }
-        else if ('camera,camera_second,projector,projector_second') {
+        else if (type === 'camera,camera_second,projector,projector_second') {
             this.connected.camera = device;
             this.connected.camera_second = device;
             this.connected.projector = device;
@@ -343,6 +359,58 @@ class Devices {
             }
             catch (err) {
                 this.log.error('Error connecting to camera, camera_second, projector and projector_second', err);
+                return false;
+            }
+        }
+        else if (type === 'capper') {
+            this.connected.capper = device;
+            try {
+                connectSuccess = await this.arduino.connect('capper', device, false);
+            }
+            catch (err) {
+                this.log.error('Error connecting capper', err);
+                return false;
+            }
+        }
+        else if (type === 'camera,capper') {
+            this.connected.camera = device;
+            this.connected.capper = device;
+            this.arduino.aliasSerial('capper', device);
+            try {
+                connectSuccess = await this.arduino.connect('camera', device, false);
+            }
+            catch (err) {
+                this.log.error('Error connecting to camera and capper', err);
+                return false;
+            }
+        }
+        else if (type === 'camera,capper,projector') {
+            this.connected.camera = device;
+            this.connected.capper = device;
+            this.connected.projector = device;
+            this.arduino.aliasSerial('capper', device);
+            this.arduino.aliasSerial('projector', device);
+            try {
+                connectSuccess = await this.arduino.connect('camera', device, false);
+            }
+            catch (err) {
+                this.log.error('Error connecting to camera, capper and projector', err);
+                return false;
+            }
+        }
+        else if (type === 'camera,capper,projector,projector_second') {
+            this.connected.camera = device;
+            this.connected.capper = device;
+            this.connected.projector = device;
+            this.connected.projector_second = device;
+            this.arduino.aliasSerial('capper', device);
+            this.arduino.aliasSerial('projector', device);
+            this.arduino.aliasSerial('projector_second', device);
+            try {
+                connectSuccess = await this.arduino.connect('camera', device, false);
+            }
+            catch (err) {
+                this.log.error('Error connecting to camera, capper, projector and projector_second', err);
                 return false;
             }
         }
@@ -360,12 +428,14 @@ class Devices {
         let d;
         let cs = {};
         let ps = {};
+        let capper = {};
         let checklist = [];
         this.connected = {
             projector: false,
             camera: false,
             light: false,
-            projector_second: false
+            projector_second: false,
+            capper: false
         };
         for (let device of devices) {
             try {
@@ -397,15 +467,18 @@ class Devices {
         }
         l.arduino = this.connected.light;
         if (this.connected.camera_second) {
-            cs = { arduino: this.connected.camera_second };
+            cs.arduino = this.connected.camera_second;
         }
         if (this.connected.projector_second) {
-            ps = { arduino: this.connected.projector_second };
+            ps.arduino = this.connected.projector_second;
+        }
+        if (this.connected.capper) {
+            capper.arduino = this.connected.capper;
         }
         if (this.settings.state.camera && this.settings.state.camera.intval) {
             c.intval = this.settings.state.camera.intval;
         }
-        return this.ready(p, c, l, cs, ps);
+        return this.ready(p, c, l, cs, ps, capper);
     }
     /**
     *
@@ -419,7 +492,7 @@ class Devices {
         });
         if (match.length === 0) {
             deviceEntry = {
-                type: type
+                type
             };
             deviceEntry[which] = device;
             this.settings.state.devices.push(deviceEntry);
@@ -430,7 +503,7 @@ class Devices {
     /**
     *
     **/
-    ready(projector, camera, light, camera_second, projector_second) {
+    ready(projector, camera, light, camera_second, projector_second, capper) {
         let args = {
             camera,
             projector,
@@ -451,6 +524,11 @@ class Devices {
             else {
                 this.mainWindow.setSize(800, 800);
             }
+        }
+        if (capper && capper.arduino) {
+            args.capper = capper;
+            this.mainWindow.setSize(800, 800);
+            this.settings.update('capper', capper);
         }
         this.settings.update('camera', camera);
         this.settings.update('projector', projector);

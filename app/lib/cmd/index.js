@@ -12,17 +12,20 @@ class Commands {
      * @param {object} cam  Camera 1
      * @param {object} light Light source
      * @param {object} cam2 (optional) Camera 2
-     * @param {object} proj2 {optional} Projector 2
+     * @param {object} proj2 (optional) Projector 2
      **/
-    constructor(cfg, proj, cam, light, cam2 = null, proj2 = null) {
+    constructor(cfg, proj, cam, light, alert, cam2 = null, proj2 = null, capper = null) {
         this.cfg = cfg;
         this.proj = proj;
         this.cam = cam;
         this.light = light;
-        if (cam2)
+        this.alertObj = alert;
+        if (cam2 !== null)
             this.cam2 = cam2;
-        if (proj2)
+        if (proj2 !== null)
             this.proj2 = proj2;
+        if (capper !== null)
+            this.capper = capper;
         this.ipc = require('electron').ipcMain;
     }
     /**
@@ -68,13 +71,14 @@ class Commands {
     /**
      * Move the camera one frame forward
      *
-     * @param {array} 	 rgb 	   Color to set light for frame
+     * @param {object} 	 cmd 	   Full cmd object
      *
      * @returns {integer} Length of action in ms
      **/
-    async camera_forward(rgb = [255, 255, 255]) {
+    async camera_forward() {
         const id = uuid_1.v4();
         const off = [0, 0, 0];
+        let rgb = [255, 255, 255];
         let ms;
         try {
             if (!this.cam.state.dir) {
@@ -101,18 +105,25 @@ class Commands {
     async black_forward() {
         const id = uuid_1.v4();
         const off = [0, 0, 0];
-        let ms;
+        let ms = 0;
         try {
             if (!this.cam.state.dir) {
                 await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam.set(true);
             }
             await delay_1.delay(this.cfg.arduino.serialDelay);
+            if (this.capper) {
+                ms += await this.capper.capper(true, id);
+            }
+            await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off, id); //make sure set to off
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            ms = await this.cam.move();
+            ms += await this.cam.move();
             await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off, id);
+            if (this.capper) {
+                ms += await this.capper.capper(false, id);
+            }
         }
         catch (err) {
             throw err;
@@ -122,13 +133,14 @@ class Commands {
     /**
      * Move the camera one frame backward
      *
-     * @param {array} 	 rgb 	   Color to set light for frame
+     * @param {object} 	 cmd 	   Full cmd object
      *
      * @returns {integer} Length of action in ms
      **/
-    async camera_backward(rgb = [255, 255, 255]) {
+    async camera_backward() {
         const id = uuid_1.v4();
         const off = [0, 0, 0];
+        let rgb = [255, 255, 255];
         let ms;
         try {
             if (this.cam.state.dir) {
@@ -155,18 +167,24 @@ class Commands {
     async black_backward() {
         const id = uuid_1.v4();
         const off = [0, 0, 0];
-        let ms;
+        let ms = 0;
         try {
             if (this.cam.state.dir) {
                 await delay_1.delay(this.cfg.arduino.serialDelay);
                 await this.cam.set(false);
             }
+            if (this.capper) {
+                ms += await this.capper.capper(true, id);
+            }
             await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off, id); //make sure set to off
             await delay_1.delay(this.cfg.arduino.serialDelay);
-            ms = await this.cam.move();
+            ms += await this.cam.move();
             await delay_1.delay(this.cfg.arduino.serialDelay);
             await this.light.set(off, id);
+            if (this.capper) {
+                ms += await this.capper.capper(false, id);
+            }
         }
         catch (err) {
             throw err;
@@ -176,13 +194,14 @@ class Commands {
     /**
      * Move the second camera one frame forward
      *
-     * @param {array} 	 rgb 	   Color to set light for frame
+     * @param {object} 	 cmd 	   Full cmd object
      *
      * @returns {integer} Length of action in ms
      **/
-    async camera_second_forward(rgb = [255, 255, 255]) {
+    async camera_second_forward() {
         const id = uuid_1.v4();
         const off = [0, 0, 0];
+        let rgb = [255, 255, 255];
         let ms;
         try {
             if (!this.cam2.state.dir) {
@@ -204,13 +223,14 @@ class Commands {
     /**
      * Move the second camera one frame backward
      *
-     * @param {array} 	 rgb 	   Color to set light for frame
+     * @param {object} 	 cmd 	   Full cmd object
      *
      * @returns {integer} Length of action in ms
      **/
-    async camera_second_backward(rgb = [255, 255, 255]) {
+    async camera_second_backward() {
         const id = uuid_1.v4();
         const off = [0, 0, 0];
+        let rgb = [255, 255, 255];
         let ms;
         try {
             if (this.cam2.state.dir) {
@@ -232,13 +252,14 @@ class Commands {
     /**
      * Move the both cameras one frame forward
      *
-     * @param {array} 	 rgb 	   Color to set light for frame
+     * @param {object} 	 cmd 	   Full cmd object
      *
      * @returns {integer} Length of action in ms
      **/
-    async cameras_forward(rgb = [255, 255, 255]) {
+    async cameras_forward() {
         const id = uuid_1.v4();
         const off = [0, 0, 0];
+        let rgb = [255, 255, 255];
         let both;
         let ms;
         try {
@@ -273,13 +294,14 @@ class Commands {
     /**
      * Move the both cameras one frame backward
      *
-     * @param {array} 	 rgb 	   Color to set light for frame
+     * @param {object} 	 cmd 	   Full cmd object
      *
      * @returns {integer} Length of action in ms
      **/
-    async cameras_backward(rgb = [255, 255, 255]) {
+    async cameras_backward() {
         const id = uuid_1.v4();
         const off = [0, 0, 0];
+        let rgb = [255, 255, 255];
         let both;
         let ms;
         try {
@@ -314,13 +336,14 @@ class Commands {
     /**
      * Move first camera one frame forward and rewind secondary camera one frame backward
      *
-     * @param {array} 	 rgb 	   Color to set light for frames
+     * @param {object} 	 cmd 	   Full cmd object
      *
      * @returns {integer} Length of action in ms
      **/
-    async camera_forward_camera_second_backward(rgb = [255, 255, 255]) {
+    async camera_forward_camera_second_backward() {
         const id = uuid_1.v4();
         const off = [0, 0, 0];
+        let rgb = [255, 255, 255];
         let both;
         let ms;
         try {
@@ -355,13 +378,14 @@ class Commands {
     /**
      * Rewind first camera one frame backward and move secondary camera one frame forward
      *
-     * @param {array} 	 rgb 	   Color to set light for frame
+     * @param {object} 	 cmd 	   Full cmd object
      *
      * @returns {integer} Length of action in ms
      **/
-    async camera_backward_camera_second_forward(rgb = [255, 255, 255]) {
+    async camera_backward_camera_second_forward() {
         const id = uuid_1.v4();
         const off = [0, 0, 0];
+        let rgb = [255, 255, 255];
         let both;
         let ms;
         try {
@@ -570,8 +594,23 @@ class Commands {
         }
         return ms;
     }
+    /**
+     * Throws an alert to pause a sequence
+     *
+     * @returns {integer} Length of action in ms
+     **/
+    async alert(cmd) {
+        let ms;
+        try {
+            ms = await this.alertObj.start(cmd.light); //change this meta
+        }
+        catch (err) {
+            throw err;
+        }
+        return ms;
+    }
 }
-module.exports = function (cfg, proj, cam, light, cam2, proj2) {
-    return new Commands(cfg, proj, cam, light, cam2, proj2);
+module.exports = function (cfg, proj, cam, light, alert, cam2, proj2, capper) {
+    return new Commands(cfg, proj, cam, light, alert, cam2, proj2, capper);
 };
 //# sourceMappingURL=index.js.map

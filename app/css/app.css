@@ -484,6 +484,9 @@ button:focus {
 #sequence #projector_second_backward > div {
   color: #bf2e39;
 }
+#sequence #black input[type=checkbox]:checked {
+  background: white;
+}
 #sequence input[type=checkbox] {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -499,6 +502,10 @@ button:focus {
   display: inline-block;
   box-sizing: border-box;
   cursor: pointer;
+}
+#sequence input[type=checkbox].disabled {
+  cursor: not-allowed;
+  border-color: #646464;
 }
 #sequence .L {
   display: inline-block;
@@ -627,6 +634,11 @@ button:focus {
   background: #AB1A25;
   border-color: #AB1A25;
 }
+.cmd:active.capper,
+.cmd.active.capper {
+  background: white;
+  color: #272b30;
+}
 .cmd:active i,
 .cmd.active i {
   color: #272b30;
@@ -649,6 +661,9 @@ button:focus {
 }
 ::-webkit-scrollbar-thumb:window-inactive {
   background: rgba(0, 0, 0, 0.05);
+}
+#settings h4 {
+  margin-bottom: 1px;
 }
 #settings > div {
   width: 300px;
@@ -695,6 +710,9 @@ button:focus {
 #settings select.active {
   border-color: #DAE035;
   color: #DAE035;
+}
+#settings input[type=text] {
+  width: 200px;
 }
 #settings button {
   margin-top: -1px;
@@ -1134,19 +1152,23 @@ button:focus {
   float: right;
 }
 .cam2,
-.proj2 {
+.proj2,
+.black {
   display: none;
 }
 .cam2 > *,
-.proj2 > * {
+.proj2 > *,
+.black > * {
   visibility: hidden;
 }
 .cam2.on,
-.proj2.on {
+.proj2.on,
+.black.on {
   display: block;
 }
 .cam2.on > *,
-.proj2.on > * {
+.proj2.on > *,
+.black.on > * {
   visibility: visible;
 }
 #overlay {

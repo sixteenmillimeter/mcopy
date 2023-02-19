@@ -1,7 +1,8 @@
 const mcopy = {};
 
-const { remote, ipcRenderer } = require('electron');
-const dialog 	= require('electron').remote.dialog;
+const remote = require('@electron/remote');
+const { ipcRenderer } = require('electron');
+const { dialog } = remote;
 const notifier 	= require('node-notifier');
 const fs 		= require('fs');
 const uuid 		= require('uuid').v4;
@@ -21,8 +22,10 @@ const cmd 		= require('./lib/ui/cmd.js');
 const devices 	= require('./lib/ui/devices.js');
 const filmout 	= require('./lib/ui/filmout.js');
 const mse 		= require('./lib/ui/mscript.js');
+const capper    = require('./lib/ui/capper.js');
 const Mscript 	= require('./lib/mscript');
 const { delay }	= require('./lib/delay');
+const alertObj  = require('./lib/ui/alert.js');
 
 let log;
 
@@ -50,4 +53,6 @@ async function init () {
 	proj.init();
 	cam.init();
 	seq.init();
+	capper.init();
+	alertObj.init();
 };

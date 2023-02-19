@@ -1,5 +1,5 @@
 {
-  "version": "1.6.9",
+  "version": "1.7.1",
   "ext_port": 1111,
   "profiles": {
     "mcopy": {
@@ -15,8 +15,8 @@
         "momentary": 0
       },
       "black": {
-        "before": 0,
-        "after": 0
+        "before": 100,
+        "after": 100
       },
       "light": false
     },
@@ -178,7 +178,13 @@
       "cameras": "4",
       "camera_projectors_identifier": "5",
       "cameras_projector_identifier": "6",
-      "cameras_projectors_identifier": "7"
+      "cameras_projectors_identifier": "7",
+      "capper_identifier": "C",
+      "camera_capper_identifier": "8",
+      "camera_capper_projector_identifier": "9",
+      "camera_capper_projectors_identifier": "0",
+      "capper_on": "A",
+      "capper_off": "B"
     }
   }
 }
