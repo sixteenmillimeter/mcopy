@@ -13,3 +13,7 @@ do
 	tmp=$(mktemp)
 	VERSION="$version" jq '.version = env.VERSION' "$i" > "$tmp" && mv "$tmp" "$i"
 done
+
+npm i
+cd app
+npm i
