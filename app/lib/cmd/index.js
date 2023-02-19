@@ -11,8 +11,11 @@ class Commands {
      * @param {object} proj Projector 1
      * @param {object} cam  Camera 1
      * @param {object} light Light source
+     * @param {object} alert Alert object
      * @param {object} cam2 (optional) Camera 2
      * @param {object} proj2 (optional) Projector 2
+     * @param {object} capper Capper object
+     *
      **/
     constructor(cfg, proj, cam, light, alert, cam2 = null, proj2 = null, capper = null) {
         this.cfg = cfg;
