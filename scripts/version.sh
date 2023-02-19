@@ -6,10 +6,13 @@ npm version --no-git-tag-version ${1}
 version=$(jq -r  '.version' ./package.json)
 echo "VERSION: $version"
 
+fit add ./package.json
+
 declare -a fileArr=("./package-lock.json" "./data/cfg.json" "./app/package.json" "./app/package-lock.json")
 
 for i in "${fileArr[@]}"
 do 
 	tmp=$(mktemp)
 	VERSION="$version" jq '.version = env.VERSION' "$i" > "$tmp" && mv "$tmp" "$i"
+	git add "$i"
 done
