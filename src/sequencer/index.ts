@@ -168,7 +168,7 @@ class Sequencer {
 		this.log.info(`Starting sequence...`);
 		this.ui.send(this.id, { start : true });
 
-		if (this.cmd.proj.filmout.state.enabled === true) {
+		if (this.cmd.proj.filmout.state.enabled === true && !this.cmd.proj.filmout.server.useServer()) {
 			await this.cmd.proj.filmout.display.open();
 		}
 
@@ -209,7 +209,7 @@ class Sequencer {
 			this.ui.send(this.id, { loop : x, stop : true });
 		}
 
-		if (this.cmd.proj.filmout.state.enabled === true) {
+		if (this.cmd.proj.filmout.state.enabled === true && !this.cmd.proj.filmout.server.useServer()) {
 			await this.cmd.proj.filmout.display.close();
 		}
 

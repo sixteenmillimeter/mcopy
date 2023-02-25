@@ -190,7 +190,7 @@ class Server {
 
 	public async cmdAll (action : string, options : any = {}) {
 		const cmds : any[] = []
-		if (this.isActive && this.wss.clients.size > 0) {
+		if (this.useServer()) {
 			this.wss.clients.forEach(function (ws : WebSocket) {
 				cmds.push(this.cmd(ws, action, options))
 			}.bind(this))
@@ -202,13 +202,17 @@ class Server {
 
 	public async displayImage (src : string) {
 		let key
-		if (this.isActive && this.wss.clients.size > 0) {
+		if (this.useServer()) {
 			key = basename(src)
 			this.addProxy(key, src)
 			await this.cmdAll('image', { image : `/image/${key}` })
 			return true
 		}
 		return false
+	}
+
+	public useServer () : boolean {
+		return this.isActive && this.wss.clients.size > 0
 	}
 
 	/**

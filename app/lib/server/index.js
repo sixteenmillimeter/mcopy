@@ -149,7 +149,7 @@ class Server {
     }
     async cmdAll(action, options = {}) {
         const cmds = [];
-        if (this.isActive && this.wss.clients.size > 0) {
+        if (this.useServer()) {
             this.wss.clients.forEach(function (ws) {
                 cmds.push(this.cmd(ws, action, options));
             }.bind(this));
@@ -160,13 +160,16 @@ class Server {
     }
     async displayImage(src) {
         let key;
-        if (this.isActive && this.wss.clients.size > 0) {
+        if (this.useServer()) {
             key = path_1.basename(src);
             this.addProxy(key, src);
             await this.cmdAll('image', { image: `/image/${key}` });
             return true;
         }
         return false;
+    }
+    useServer() {
+        return this.isActive && this.wss.clients.size > 0;
     }
     /**
      * WSS
