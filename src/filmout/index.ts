@@ -444,9 +444,11 @@ class FilmOut {
 	async focus (evt : any, arg : any) {
 		this.log.info(`Showing focus screen`);
 		try {
+			if (await this.server.cmdAll('focus')) {
+				return
+			}
 			await this.display.open();
 			await this.display.focus();
-			await this.server.cmdAll('focus')
 		} catch (err) {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
@@ -458,9 +460,12 @@ class FilmOut {
 		const ratio : number = arg.ratio;
 		this.log.info(`Showing field guide screen`);
 		try {
+			if (await this.server.cmdAll('field', { ratio })) {
+				return
+			}
 			await this.display.open();
 			await this.display.field(ratio);
-			await this.server.cmdAll('field', { ratio });
+			
 		} catch (err) {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
@@ -471,9 +476,11 @@ class FilmOut {
 	async meter (evt : any, arg : any) {
 		this.log.info(`Showing meter screen`);
 		try {
+			if (await this.server.cmdAll('meter')) {
+				return
+			}
 			await this.display.open();
 			await this.display.meter();
-			await this.server.cmdAll('meter');
 		} catch (err) {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
@@ -483,9 +490,12 @@ class FilmOut {
 	 **/
 	async close (evt : any, arg : any) {
 		try {
+			if (await this.server.cmdAll('blank')) {
+				return
+			}
 			await this.display.hide();
 			await this.display.close();
-			await this.server.cmdAll('blank');
+			
 		} catch (err) {
 			this.log.error(err, 'FILMOUT', true, true);
 		}

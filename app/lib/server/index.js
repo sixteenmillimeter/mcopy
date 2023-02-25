@@ -41,7 +41,6 @@ class Server {
             tmpl.data = await promises_1.readFile(tmpl.path, 'utf8');
         }
         this.http.get('/', this.index.bind(this));
-        this.http.get('/client.js', this.script.bind(this));
         this.http.get('/image/:key', this.image.bind(this));
         this.log.info("Server assets loaded");
     }
@@ -110,15 +109,10 @@ class Server {
         this.isActive = false;
     }
     index(req, res, next) {
-        const html = this.template('index', { PORT: `${this.port}` });
+        const SCRIPT = this.template('script', { PORT: `${this.wsPort}` });
+        const html = this.template('index', { SCRIPT });
         this.log.info('GET /');
         return res.send(html);
-    }
-    script(req, res, next) {
-        const js = this.template('script', { PORT: `${this.wsPort}` });
-        res.contentType('text/javascript');
-        this.log.info('GET /script.js');
-        return res.send(js);
     }
     async image(req, res, next) {
         let filePath;
@@ -158,7 +152,8 @@ class Server {
             this.wss.clients.forEach(function (ws) {
                 cmds.push(this.cmd(ws, action, options));
             }.bind(this));
-            return await Promise.all(cmds);
+            await Promise.all(cmds);
+            return true;
         }
         return false;
     }

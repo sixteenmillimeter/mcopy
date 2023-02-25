@@ -9,6 +9,7 @@ import { delay }  from 'delay';
 interface ServerData {
 	[key: string]: string;
 	PORT? : string;
+	SCRIPT? : string;
 }
 
 interface ServerTemplate {
@@ -71,7 +72,6 @@ class Server {
 		}
 
 		this.http.get('/', this.index.bind(this))
-		this.http.get('/client.js', this.script.bind(this))
 		this.http.get('/image/:key', this.image.bind(this))
 
 		this.log.info("Server assets loaded")
@@ -150,15 +150,10 @@ class Server {
 	}
 
 	index (req : Request, res : Response, next : Function) {
-		const html : string = this.template('index', { PORT : `${this.port}` })
+		const SCRIPT = this.template('script', { PORT : `${this.wsPort}` })
+		const html : string = this.template('index', { SCRIPT })
 		this.log.info('GET /')
 		return res.send(html)
-	}
-	script (req : Request, res : Response, next : Function) {
-		const js : string = this.template('script', { PORT : `${this.wsPort}` })
-		res.contentType('text/javascript')
-		this.log.info('GET /script.js')
-		return res.send(js)
 	}
 
 	async image (req : Request, res : Response, next : Function) {
@@ -199,7 +194,8 @@ class Server {
 			this.wss.clients.forEach(function (ws : WebSocket) {
 				cmds.push(this.cmd(ws, action, options))
 			}.bind(this))
-			return await Promise.all(cmds)
+			await Promise.all(cmds)
+			return true
 		}
 		return false
 	}
