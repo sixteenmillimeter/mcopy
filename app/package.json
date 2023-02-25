@@ -64,6 +64,7 @@
     "display": "file:lib/display",
     "exec": "file:lib/exec",
     "exit": "file:lib/exit",
+    "express": "^4.18.2",
     "ffmpeg": "file:lib/ffmpeg",
     "ffmpeg-static": "^5.0.0",
     "ffprobe": "file:lib/ffprobe",
@@ -89,7 +90,8 @@
     "spawn": "file:lib/spawn",
     "system": "file:lib/system",
     "uuid": "^8.3.2",
-    "winston": "^3.7.2"
+    "winston": "^3.7.2",
+    "ws": "^8.12.1"
   },
   "optionalDependencies": {
     "electron-installer-debian": "^3.1.0"

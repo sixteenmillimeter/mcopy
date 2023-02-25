@@ -26,12 +26,14 @@
   "homepage": "https://github.com/sixteenmillimeter/mcopy#readme",
   "devDependencies": {
     "@types/electron": "^1.6.10",
+    "@types/express": "^4.17.17",
     "@types/fs-extra": "^9.0.7",
     "@types/jimp": "^0.2.28",
     "@types/node": "^14.14.31",
     "@types/request": "^2.48.5",
     "@types/sharp": "^0.27.1",
     "@types/uuid": "^8.3.0",
+    "@types/ws": "^8.5.4",
     "jsdoc-to-markdown": "^6.0.1",
     "typescript": "^4.1.5"
   },
@@ -47,8 +49,8 @@
     "light": "file:app/lib/light",
     "log": "file:app/lib/log",
     "mscript": "file:app/lib/mscript",
-    "proj": "file:app/lib/proj",
     "processing": "file:app/lib/processing",
+    "proj": "file:app/lib/proj",
     "sequencer": "file:app/lib/sequencer",
     "settings": "file:app/lib/settings",
     "system": "file:app/lib/system"
