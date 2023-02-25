@@ -145,7 +145,7 @@
        				can.style.width = `${window.innerHeight * arg.ratio}px`
        				can.style.height = `${window.innerHeight}px`
        			} else {
-       				can.style.width = `${window.inneWidth}px`
+       				can.style.width = `${window.innerWidth}px`
        				can.style.height = `${window.innerWidth / arg.ratio}px`
        			}
        		} else {
@@ -209,7 +209,7 @@
 		async function onDigital (event, arg) {
 			if (arg.src) {
 				try {
-					await setImage(arg.src)
+					await setImage(arg.src) 
 				} catch (err) {
 					console.error(err)
 				}

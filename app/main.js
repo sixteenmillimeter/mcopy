@@ -39,6 +39,7 @@ let cmd;
 let seq;
 let capper;
 let alert;
+let server;
 
 const cfg = require('./data/cfg.json')
 
@@ -136,6 +137,7 @@ var init = async function () {
 	cmd = require('cmd')(cfg, proj, cam, light, alert, cam2, proj2, capper)
 	seq = require('sequencer')(cfg, cmd, mainWindow.webContents)
 
+	server = require('server')()
 }
 
 app.on('ready', init)
