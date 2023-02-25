@@ -7,6 +7,7 @@ const ws_1 = require("ws");
 const express_1 = __importDefault(require("express"));
 const promises_1 = require("fs/promises");
 const mime_1 = __importDefault(require("mime"));
+const uuid_1 = require("uuid");
 const Log = require("log");
 class Server {
     constructor() {
@@ -25,6 +26,8 @@ class Server {
         this.port = 9900;
         this.wsPort = 9901;
         this.proxy = {};
+        this.queue = {};
+        this.intervalPeriod = 10000; //10 sec
         this.init();
     }
     async init() {
@@ -57,18 +60,28 @@ class Server {
             this.log.error(err);
             return;
         }
-        this.wss.on('connection', (ws) => {
-            this.log.info(`Client connected to WebSocketServer`);
-            console.dir(ws);
-            ws.send('mcopy');
-        });
+        this.wss.on('connection', async function (ws) {
+            ws.on("message", function (data) {
+                let obj = JSON.parse(data);
+                this.log.info(data);
+                if (obj.id && this.queue[obj.id]) {
+                    this.queue[obj.id](obj);
+                    delete this.queue[obj.id];
+                }
+            }.bind(this));
+            ws.on('close', function () {
+                this.log.info('Client disconnected');
+            }.bind(this));
+            await this.cmd(ws, 'mcopy');
+            this.log.info('Client connected');
+        }.bind(this));
+        this.log.info(`Websocket server started!`);
         this.log.info(`WSS [ ws://localhost:${this.wsPort} ]`);
     }
     async startHttp() {
         return new Promise(function (resolve, reject) {
             this.httpd = this.http.listen(this.port, function () {
-                this.isActive = true;
-                this.log.info(`Server started!`);
+                this.log.info(`HTTP server started!`);
                 this.log.info(`URL [ http://localhost:${this.port} ]`);
                 return resolve(true);
             }.bind(this));
@@ -77,15 +90,23 @@ class Server {
     async start() {
         await this.startHttp();
         await this.startWss();
+        this.interval = setInterval(async function () {
+            await this.cmdAll('ping');
+        }.bind(this), this.intervalPeriod);
+        this.isActive = true;
     }
-    async stop() {
+    async stopHttp() {
         return new Promise(function (resolve, reject) {
             return this.httpd.close(function () {
-                this.isActive = false;
-                this.log.info(`Server stopped :(`);
+                this.log.info(`HTTP server stopped :(`);
                 return resolve(false);
             }.bind(this));
         }.bind(this));
+    }
+    async stop() {
+        await this.stopHttp();
+        clearInterval(this.interval);
+        this.isActive = false;
     }
     index(req, res, next) {
         const html = this.template('index', { PORT: `${this.port}` });
@@ -122,11 +143,42 @@ class Server {
         }.bind(this));
     }
     addProxy(key, filePath) {
+        //wipe every time
+        this.proxy = {};
         this.proxy[key] = {
             path: filePath,
             mime: mime_1.default.getType(filePath)
         };
         this.log.info(`Added proxy image [${key}]`);
+    }
+    async cmdAll(action, options = {}) {
+        const cmds = [];
+        if (this.isActive && this.wss.clients.size > 0) {
+            this.wss.clients.forEach(function (ws) {
+                cmds.push(this.cmd(ws, action, options));
+            }.bind(this));
+            return await Promise.all(cmds);
+        }
+        return false;
+    }
+    /**
+     * WSS
+     **/
+    async cmd(ws, action, options = {}) {
+        const id = uuid_1.v4();
+        let obj = {
+            id, action
+        };
+        let str;
+        obj = Object.assign(obj, options);
+        str = JSON.stringify(obj);
+        ws.send(str);
+        return new Promise(function (resolve, reject) {
+            this.queue[id] = function (obj) {
+                return resolve(obj);
+            };
+            //setTimeout() ?
+        }.bind(this));
     }
 }
 module.exports = function () {
