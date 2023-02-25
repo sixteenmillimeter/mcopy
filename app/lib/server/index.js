@@ -63,10 +63,11 @@ class Server {
         this.wss.on('connection', async function (ws) {
             ws.on("message", function (data) {
                 let obj = JSON.parse(data);
-                this.log.info(data);
+                //this.log.info(data)
                 if (obj.id && this.queue[obj.id]) {
                     this.queue[obj.id](obj);
                     delete this.queue[obj.id];
+                    this.log.info(`${obj.action} complete`);
                 }
             }.bind(this));
             ws.on('close', function () {

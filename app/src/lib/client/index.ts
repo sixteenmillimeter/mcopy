@@ -32,9 +32,7 @@ async function setImage (src : string) {
       imgTmp = new Image()
       let img = document.getElementById('img')
       let body = document.querySelector('body')
-      if (body.classList.contains('meter')) {
-         body.classList.remove('meter')
-      }
+      body.className = ''
       imgTmp.onload = function () {
          img.style.backgroundImage = `url('${src}')`;
          return resolve(src)
@@ -66,6 +64,8 @@ async function onFocus (arg : McopyRequest ) {
    const can : HTMLCanvasElement = document.getElementById('can') as HTMLCanvasElement
    const dpr = window.devicePixelRatio || 1
    let ctx;
+   const body = document.querySelector('body')
+   body.className = ''
 
    if (!can.classList.contains('show')) {
       can.classList.add('show')
@@ -113,6 +113,8 @@ async function onField (arg : McopyRequest) {
    const can : HTMLCanvasElement = document.getElementById('can') as HTMLCanvasElement
    const dpr : number = window.devicePixelRatio || 1
    const screen : number = window.outerWidth / window.outerHeight
+   const body = document.querySelector('body')
+   body.className = ''
    let ctx : CanvasRenderingContext2D;
    if (!can.classList.contains('show')) {
       can.classList.add('show')

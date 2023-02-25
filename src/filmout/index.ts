@@ -37,6 +37,7 @@ class FilmOut {
 	private ipc : any;
 	private ui : any;
 	private log : any;
+	private server : any;
 	/**
 	 * @constructor
 	 * Builds FilmOut class with display, ffmpeg, ffprobe, ui and light as internal properties.
@@ -47,8 +48,9 @@ class FilmOut {
 	 * @param {object} ui      Electron ui object
 	 * @param {object} light   Light device object
 	 **/
-	constructor (display : any, ffmpeg : any, ffprobe : any, ui : any, light : any) {
+	constructor (display : any, server : any, ffmpeg : any, ffprobe : any, ui : any, light : any) {
 		this.display = display;
+		this.server = server;
 		this.ffmpeg = ffmpeg;
 		this.ffprobe = ffprobe;
 		this.ui = ui;
@@ -444,6 +446,7 @@ class FilmOut {
 		try {
 			await this.display.open();
 			await this.display.focus();
+			await this.server.cmdAll('focus')
 		} catch (err) {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
@@ -457,6 +460,7 @@ class FilmOut {
 		try {
 			await this.display.open();
 			await this.display.field(ratio);
+			await this.server.cmdAll('field', { ratio });
 		} catch (err) {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
@@ -469,6 +473,7 @@ class FilmOut {
 		try {
 			await this.display.open();
 			await this.display.meter();
+			await this.server.cmdAll('meter');
 		} catch (err) {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
@@ -480,6 +485,7 @@ class FilmOut {
 		try {
 			await this.display.hide();
 			await this.display.close();
+			await this.server.cmdAll('blank');
 		} catch (err) {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
@@ -493,6 +499,6 @@ class FilmOut {
 	}
 }
 
-module.exports = (display : any, ffmpeg : any, ffprobe : any, ui : any, light : any) => {
-	return new FilmOut(display, ffmpeg, ffprobe, ui, light);
+module.exports = (display : any, server : any, ffmpeg : any, ffprobe : any, ui : any, light : any) => {
+	return new FilmOut(display, server, ffmpeg, ffprobe, ui, light);
 }

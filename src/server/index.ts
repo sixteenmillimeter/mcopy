@@ -95,10 +95,11 @@ class Server {
 		this.wss.on('connection', async function (ws : WebSocket) {
 			ws.on("message", function (data : string ) {
 				let obj : any = JSON.parse(data)
-				this.log.info(data)
+				//this.log.info(data)
 				if (obj.id && this.queue[obj.id]) {
 					this.queue[obj.id](obj)
 					delete this.queue[obj.id]
+					this.log.info(`${obj.action} complete`)
 				}
     		}.bind(this))
 

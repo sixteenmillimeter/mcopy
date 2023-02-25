@@ -23,7 +23,7 @@ class FilmOut {
      * @param {object} ui      Electron ui object
      * @param {object} light   Light device object
      **/
-    constructor(display, ffmpeg, ffprobe, ui, light) {
+    constructor(display, server, ffmpeg, ffprobe, ui, light) {
         this.id = 'filmout';
         this.videoExtensions = ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4'];
         this.stillExtensions = ['.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
@@ -42,6 +42,7 @@ class FilmOut {
             files: []
         };
         this.display = display;
+        this.server = server;
         this.ffmpeg = ffmpeg;
         this.ffprobe = ffprobe;
         this.ui = ui;
@@ -426,6 +427,7 @@ class FilmOut {
         try {
             await this.display.open();
             await this.display.focus();
+            await this.server.cmdAll('focus');
         }
         catch (err) {
             this.log.error(err, 'FILMOUT', true, true);
@@ -440,6 +442,7 @@ class FilmOut {
         try {
             await this.display.open();
             await this.display.field(ratio);
+            await this.server.cmdAll('field', { ratio });
         }
         catch (err) {
             this.log.error(err, 'FILMOUT', true, true);
@@ -453,6 +456,7 @@ class FilmOut {
         try {
             await this.display.open();
             await this.display.meter();
+            await this.server.cmdAll('meter');
         }
         catch (err) {
             this.log.error(err, 'FILMOUT', true, true);
@@ -465,6 +469,7 @@ class FilmOut {
         try {
             await this.display.hide();
             await this.display.close();
+            await this.server.cmdAll('blank');
         }
         catch (err) {
             this.log.error(err, 'FILMOUT', true, true);
@@ -478,7 +483,7 @@ class FilmOut {
         this.log.info(`Changing the display to ${arg.display}`);
     }
 }
-module.exports = (display, ffmpeg, ffprobe, ui, light) => {
-    return new FilmOut(display, ffmpeg, ffprobe, ui, light);
+module.exports = (display, server, ffmpeg, ffprobe, ui, light) => {
+    return new FilmOut(display, server, ffmpeg, ffprobe, ui, light);
 };
 //# sourceMappingURL=index.js.map

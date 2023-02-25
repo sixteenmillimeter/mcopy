@@ -50,9 +50,7 @@ function setImage(src) {
             imgTmp = new Image();
             let img = document.getElementById('img');
             let body = document.querySelector('body');
-            if (body.classList.contains('meter')) {
-                body.classList.remove('meter');
-            }
+            body.className = '';
             imgTmp.onload = function () {
                 img.style.backgroundImage = `url('${src}')`;
                 return resolve(src);
@@ -88,6 +86,8 @@ function onFocus(arg) {
         const can = document.getElementById('can');
         const dpr = window.devicePixelRatio || 1;
         let ctx;
+        const body = document.querySelector('body');
+        body.className = '';
         if (!can.classList.contains('show')) {
             can.classList.add('show');
         }
@@ -132,6 +132,8 @@ function onField(arg) {
         const can = document.getElementById('can');
         const dpr = window.devicePixelRatio || 1;
         const screen = window.outerWidth / window.outerHeight;
+        const body = document.querySelector('body');
+        body.className = '';
         let ctx;
         if (!can.classList.contains('show')) {
             can.classList.add('show');
