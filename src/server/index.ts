@@ -98,7 +98,9 @@ class Server {
 				if (obj.id && this.queue[obj.id]) {
 					this.queue[obj.id](obj)
 					delete this.queue[obj.id]
-					this.log.info(`${obj.action} complete`)
+					if (obj.action !== 'ping') {
+						this.log.info(`${obj.action} ACK`)
+					}
 				}
     		}.bind(this))
 
