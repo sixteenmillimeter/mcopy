@@ -17,7 +17,8 @@ class WebView {
             webPreferences: {
                 nodeIntegration: true,
                 allowRunningInsecureContent: false,
-                enableRemoteModule: true
+                enableRemoteModule: true,
+                contextIsolation: false
             },
             width: 800,
             height: 600,
