@@ -13,6 +13,10 @@
 	body.meter {
 		background: rgb(117, 117, 117);
 	}
+	body.meter #img,
+	body.meter #can {
+		display : none;
+	}
 	#img {
 		position: absolute;
 	    /*background-image: url(".../img/background.jpg");*/
@@ -46,16 +50,15 @@
 	</canvas>
 	<script>
 		'use strict';
-		const { remote, ipcRenderer } = require('electron')
+		const { ipcRenderer } = require('electron')
+		const remote = require('@electron/remote')
 		let imgTmp; 
 		async function setImage (src) {
 			return new Promise(async (resolve, reject) => {
 				imgTmp = new Image()
 				let img = document.getElementById('img')
 				let body = document.querySelector('body')
-				if (body.classList.contains('meter')) {
-					body.classList.remove('meter')
-				}
+				body.className = ''
 				imgTmp.onload = function () {
 					img.style.backgroundImage = `url('${src}')`;
 					return resolve(src);
@@ -66,15 +69,16 @@
 		async function onMeter () {
 			console.log('meter')
 			const body = document.querySelector('body')
-			if (!body.classList.contains('meter')) {
-				body.classList.add('meter')
-			}
+			body.className = ''
+			body.classList.add('meter')
 		}
 		async function onFocus () {
 			console.log('focus')
 			const can = document.getElementById('can')
 			const dpr = window.devicePixelRatio || 1
+			const body = document.querySelector('body')
 			let ctx;
+			body.className = ''
 			if (!can.classList.contains('show')) {
 				can.classList.add('show')
 			}
@@ -122,7 +126,9 @@
 			const can = document.getElementById('can')
 			const dpr = window.devicePixelRatio || 1
 			const screen = window.outerWidth / window.outerHeight
+			const body = document.querySelector('body')
 			let ctx;
+			body.className = ''
 			if (!can.classList.contains('show')) {
 				can.classList.add('show')
 			}
@@ -217,9 +223,11 @@
 			}
 			return event.returnValue = true
 		}
+
 		async function onEscape (evt) {
 			let isEscape = false
 			let win
+
 			evt = evt || window.event
 			
 			if ('key' in evt) {
@@ -227,6 +235,7 @@
 			} else {
 				isEscape = (evt.keyCode == 27)
 			}
+
 			if (isEscape) {
 				win = remote.getCurrentWindow()
        			win.close()
