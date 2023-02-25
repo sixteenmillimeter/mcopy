@@ -1,10 +1,10 @@
 import WebSocket, { WebSocketServer } from 'ws'
 import express, { Express, Request, Response, Application } from 'express'
 import { readFile } from 'fs/promises'
-import mime from 'mime'
+import { basename } from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import Log = require('log')
-import { delay }  from 'delay';
+import { delay }  from 'delay'
 
 interface ServerData {
 	[key: string]: string;
@@ -20,7 +20,6 @@ interface ServerTemplate {
 
 interface ServerProxy {
 	path : string;
-	mime : string;
 }
 
 interface ServerProxyList {
@@ -182,8 +181,7 @@ class Server {
 		//wipe every time
 		this.proxy = {}
 		this.proxy[key] = {
-			path : filePath,
-			mime : mime.getType(filePath)
+			path : filePath
 		}
 		this.log.info(`Added proxy image [${key}]`)
 	}
@@ -195,6 +193,17 @@ class Server {
 				cmds.push(this.cmd(ws, action, options))
 			}.bind(this))
 			await Promise.all(cmds)
+			return true
+		}
+		return false
+	}
+
+	public async displayImage (src : string) {
+		let key
+		if (this.isActive && this.wss.clients.size > 0) {
+			key = basename(src)
+			this.addProxy(key, src)
+			await this.cmdAll('image', { image : `/image/${key}` })
 			return true
 		}
 		return false

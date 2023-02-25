@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const ws_1 = require("ws");
 const express_1 = __importDefault(require("express"));
 const promises_1 = require("fs/promises");
-const mime_1 = __importDefault(require("mime"));
+const path_1 = require("path");
 const uuid_1 = require("uuid");
 const Log = require("log");
 class Server {
@@ -141,8 +141,7 @@ class Server {
         //wipe every time
         this.proxy = {};
         this.proxy[key] = {
-            path: filePath,
-            mime: mime_1.default.getType(filePath)
+            path: filePath
         };
         this.log.info(`Added proxy image [${key}]`);
     }
@@ -153,6 +152,16 @@ class Server {
                 cmds.push(this.cmd(ws, action, options));
             }.bind(this));
             await Promise.all(cmds);
+            return true;
+        }
+        return false;
+    }
+    async displayImage(src) {
+        let key;
+        if (this.isActive && this.wss.clients.size > 0) {
+            key = path_1.basename(src);
+            this.addProxy(key, src);
+            await this.cmdAll('image', { image: `/image/${key}` });
             return true;
         }
         return false;

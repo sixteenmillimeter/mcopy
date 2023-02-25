@@ -124,6 +124,10 @@ class FilmOut {
             this.log.error(err, 'FILMOUT', true, true);
             throw err;
         }
+        if (this.server.displayImage(path)) {
+            await delay_1.delay(20);
+            return;
+        }
         await this.display.show(path);
         await delay_1.delay(20);
     }
@@ -412,6 +416,9 @@ class FilmOut {
             throw err;
         }
         try {
+            if (await this.server.displayImage(path)) {
+                return;
+            }
             await this.display.open();
             await this.display.show(path);
         }
