@@ -4,8 +4,9 @@
       html, body{ background: #000; padding: 0; margin: 0; width: 100vw; height: 100vh; overflow: hidden; }
       body.meter { background: rgb(117, 117, 117); }
       body.blank { background: #000; }
-      body.blank #img, body.blank #can, body.meter #img, body.meter #can { display: none; }
-      #nosleep { color: #fff; margin: 50px auto }
+      body.blank #img, body.blank #can, body.meter #img, body.meter #can, body.image #can { display: none; }
+      body.image #img, #can.show { display: block; }
+      #nosleep { color: #fff; margin: 50px auto; text-align: center; }
       #img {
          position: absolute;
          background-repeat:no-repeat;
@@ -25,11 +26,8 @@
          top: 50%;
          transform: translate(-50%,-50%);
       }
-      #can.show{
-         display: block;
-      }
    </style>
-   <div id="nosleep">Click to prevent sleep</div>
+   <div id="nosleep">Click to full screen and prevent sleep</div>
    <div id="img">
    </div>
    <canvas id="can">

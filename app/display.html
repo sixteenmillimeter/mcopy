@@ -15,7 +15,13 @@
 	}
 	body.meter #img,
 	body.meter #can {
-		display : none;
+		display: none;
+	}
+	body.image #can{
+		display: none;
+	}
+	body.image #img {
+		display: block;
 	}
 	#img {
 		position: absolute;
@@ -59,6 +65,7 @@
 				let img = document.getElementById('img')
 				let body = document.querySelector('body')
 				body.className = ''
+				body.classList.add('image')
 				imgTmp.onload = function () {
 					img.style.backgroundImage = `url('${src}')`;
 					return resolve(src);

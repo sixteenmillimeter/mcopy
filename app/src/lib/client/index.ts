@@ -14,7 +14,7 @@ interface McopyResponse {
    id : string;
 }
 
-const ws = new WebSocket('ws://localhost:{{PORT}}/');
+const ws = new WebSocket(`ws://${location.host.split(':')[0]}:{{PORT}}/`);
 let imgTmp : HTMLImageElement 
 
 function preventSleep () {
@@ -22,9 +22,32 @@ function preventSleep () {
    var noSleep = new NoSleep();
    document.addEventListener('click', function enableNoSleep() {
       document.removeEventListener('click', enableNoSleep, false);
-      document.getElementById('nosleep').remove();
       noSleep.enable();
+      document.getElementById('nosleep').remove();
    }, false);
+}
+
+function fullScreen () {
+	document.addEventListener('click', function enableFullScreen() {
+		const elem = document.querySelector('body');
+		document.removeEventListener('click', enableFullScreen, false);
+		if (elem.requestFullscreen) {
+			elem.requestFullscreen();
+			//@ts-ignore
+		} else if (typeof elem.webkitRequestFullscreen !== 'undefined') { /* Safari */
+			//@ts-ignore
+			elem.webkitRequestFullscreen();
+			//@ts-ignore
+		} else if (typeof elem.msRequestFullscreen !== 'undefined') { /* IE11 */
+			//@ts-ignore
+			elem.msRequestFullscreen();
+		}
+   }, false);
+}
+
+function displayMode () {
+	fullScreen();
+	preventSleep();
 }
 
 async function setImage (src : string) {
@@ -33,6 +56,7 @@ async function setImage (src : string) {
       let img = document.getElementById('img')
       let body = document.querySelector('body')
       body.className = ''
+      body.classList.add('image')
       imgTmp.onload = function () {
          img.style.backgroundImage = `url('${src}')`;
          return resolve(src)
@@ -243,5 +267,5 @@ ws.onclose = async (event : any) => {
 };
 
 (function main () {
-   preventSleep();
+   displayMode();
 })()
