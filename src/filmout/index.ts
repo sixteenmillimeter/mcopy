@@ -37,6 +37,7 @@ class FilmOut {
 	private ipc : any;
 	private ui : any;
 	private log : any;
+	private server : any;
 	/**
 	 * @constructor
 	 * Builds FilmOut class with display, ffmpeg, ffprobe, ui and light as internal properties.
@@ -47,8 +48,9 @@ class FilmOut {
 	 * @param {object} ui      Electron ui object
 	 * @param {object} light   Light device object
 	 **/
-	constructor (display : any, ffmpeg : any, ffprobe : any, ui : any, light : any) {
+	constructor (display : any, server : any, ffmpeg : any, ffprobe : any, ui : any, light : any) {
 		this.display = display;
+		this.server = server;
 		this.ffmpeg = ffmpeg;
 		this.ffprobe = ffprobe;
 		this.ui = ui;
@@ -131,6 +133,11 @@ class FilmOut {
 		} catch (err) {
 			this.log.error(err, 'FILMOUT', true, true);
 			throw err;
+		}
+
+		if (this.server.displayImage(path)) {
+			await delay(20)
+			return
 		}
 
 		await this.display.show(path);
@@ -430,6 +437,9 @@ class FilmOut {
 		}
 
 		try {
+			if (await this.server.displayImage(path)) {
+				return
+			}
 			await this.display.open();
 			await this.display.show(path);
 		} catch (err) {
@@ -442,6 +452,9 @@ class FilmOut {
 	async focus (evt : any, arg : any) {
 		this.log.info(`Showing focus screen`);
 		try {
+			if (await this.server.cmdAll('focus')) {
+				return
+			}
 			await this.display.open();
 			await this.display.focus();
 		} catch (err) {
@@ -455,8 +468,12 @@ class FilmOut {
 		const ratio : number = arg.ratio;
 		this.log.info(`Showing field guide screen`);
 		try {
+			if (await this.server.cmdAll('field', { ratio })) {
+				return
+			}
 			await this.display.open();
 			await this.display.field(ratio);
+			
 		} catch (err) {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
@@ -467,6 +484,9 @@ class FilmOut {
 	async meter (evt : any, arg : any) {
 		this.log.info(`Showing meter screen`);
 		try {
+			if (await this.server.cmdAll('meter')) {
+				return
+			}
 			await this.display.open();
 			await this.display.meter();
 		} catch (err) {
@@ -478,8 +498,12 @@ class FilmOut {
 	 **/
 	async close (evt : any, arg : any) {
 		try {
+			if (await this.server.cmdAll('blank')) {
+				return
+			}
 			await this.display.hide();
 			await this.display.close();
+			
 		} catch (err) {
 			this.log.error(err, 'FILMOUT', true, true);
 		}
@@ -493,6 +517,6 @@ class FilmOut {
 	}
 }
 
-module.exports = (display : any, ffmpeg : any, ffprobe : any, ui : any, light : any) => {
-	return new FilmOut(display, ffmpeg, ffprobe, ui, light);
+module.exports = (display : any, server : any, ffmpeg : any, ffprobe : any, ui : any, light : any) => {
+	return new FilmOut(display, server, ffmpeg, ffprobe, ui, light);
 }

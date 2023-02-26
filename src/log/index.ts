@@ -53,7 +53,7 @@ async function logFile () {
  *
  * @returns {object} Logger transport
  **/
-module.exports = async function (arg : any) {
+module.exports = async function Log (arg : any) {
 	let consoleFormat : any = {
 		colorize : true
 	}

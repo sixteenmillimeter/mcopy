@@ -17,7 +17,8 @@ class WebView {
             webPreferences: {
                 nodeIntegration: true,
                 allowRunningInsecureContent: false,
-                enableRemoteModule: true
+                enableRemoteModule: true,
+                contextIsolation: false
             },
             width: 800,
             height: 600,
@@ -35,6 +36,7 @@ class WebView {
             prefs.y = display.y + 50;
         }
         this.digitalWindow = new BrowserWindow(prefs);
+        require('@electron/remote/main').enable(this.digitalWindow.webContents);
         this.digitalWindow.loadURL(pageUrl);
         if (process.argv.indexOf('-d') !== -1 || process.argv.indexOf('--dev') !== -1) {
             this.digitalWindow.webContents.openDevTools();

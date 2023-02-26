@@ -155,7 +155,7 @@ class Projector {
 			}
 			message += ' 1 frame'
 		} else if (cmd === this.cfg.arduino.cmd.projectors) {
-			message += 'Projectors both MOVED 1 frame each';
+			message += 'Projectors both MOVED 1 frame each'
 		}
 		message += ` ${ms}ms`
 		this.log.info(message, 'PROJECTOR')
@@ -164,5 +164,5 @@ class Projector {
 }
 
 module.exports = function (arduino : Arduino, cfg : any, ui : any, filmout : any, second : boolean) {
-	return new Projector(arduino, cfg, ui, filmout, second);
+	return new Projector(arduino, cfg, ui, filmout, second)
 }

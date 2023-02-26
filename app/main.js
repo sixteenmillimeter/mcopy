@@ -39,6 +39,7 @@ let cmd;
 let seq;
 let capper;
 let alert;
+let server;
 
 const cfg = require('./data/cfg.json')
 
@@ -116,8 +117,9 @@ var init = async function () {
 		log.error('Error enumerating connected devices', err)
 	}
 
+	server = require('server')()
 	light = require('light')(arduino, cfg, mainWindow.webContents)
-	filmout = require('filmout')(display, ffmpeg, ffprobe, mainWindow.webContents, light)
+	filmout = require('filmout')(display, server, ffmpeg, ffprobe, mainWindow.webContents, light)
 	cam = require('cam')(arduino, cfg, mainWindow.webContents, filmout)
 	proj = require('proj')(arduino, cfg, mainWindow.webContents, filmout)
 	alert = require('alert')(mainWindow.webContents)
@@ -135,7 +137,6 @@ var init = async function () {
 	
 	cmd = require('cmd')(cfg, proj, cam, light, alert, cam2, proj2, capper)
 	seq = require('sequencer')(cfg, cmd, mainWindow.webContents)
-
 }
 
 app.on('ready', init)

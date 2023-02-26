@@ -23,7 +23,7 @@ class FilmOut {
      * @param {object} ui      Electron ui object
      * @param {object} light   Light device object
      **/
-    constructor(display, ffmpeg, ffprobe, ui, light) {
+    constructor(display, server, ffmpeg, ffprobe, ui, light) {
         this.id = 'filmout';
         this.videoExtensions = ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4'];
         this.stillExtensions = ['.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
@@ -42,6 +42,7 @@ class FilmOut {
             files: []
         };
         this.display = display;
+        this.server = server;
         this.ffmpeg = ffmpeg;
         this.ffprobe = ffprobe;
         this.ui = ui;
@@ -122,6 +123,10 @@ class FilmOut {
         catch (err) {
             this.log.error(err, 'FILMOUT', true, true);
             throw err;
+        }
+        if (this.server.displayImage(path)) {
+            await delay_1.delay(20);
+            return;
         }
         await this.display.show(path);
         await delay_1.delay(20);
@@ -411,6 +416,9 @@ class FilmOut {
             throw err;
         }
         try {
+            if (await this.server.displayImage(path)) {
+                return;
+            }
             await this.display.open();
             await this.display.show(path);
         }
@@ -424,6 +432,9 @@ class FilmOut {
     async focus(evt, arg) {
         this.log.info(`Showing focus screen`);
         try {
+            if (await this.server.cmdAll('focus')) {
+                return;
+            }
             await this.display.open();
             await this.display.focus();
         }
@@ -438,6 +449,9 @@ class FilmOut {
         const ratio = arg.ratio;
         this.log.info(`Showing field guide screen`);
         try {
+            if (await this.server.cmdAll('field', { ratio })) {
+                return;
+            }
             await this.display.open();
             await this.display.field(ratio);
         }
@@ -451,6 +465,9 @@ class FilmOut {
     async meter(evt, arg) {
         this.log.info(`Showing meter screen`);
         try {
+            if (await this.server.cmdAll('meter')) {
+                return;
+            }
             await this.display.open();
             await this.display.meter();
         }
@@ -463,6 +480,9 @@ class FilmOut {
      **/
     async close(evt, arg) {
         try {
+            if (await this.server.cmdAll('blank')) {
+                return;
+            }
             await this.display.hide();
             await this.display.close();
         }
@@ -478,7 +498,7 @@ class FilmOut {
         this.log.info(`Changing the display to ${arg.display}`);
     }
 }
-module.exports = (display, ffmpeg, ffprobe, ui, light) => {
-    return new FilmOut(display, ffmpeg, ffprobe, ui, light);
+module.exports = (display, server, ffmpeg, ffprobe, ui, light) => {
+    return new FilmOut(display, server, ffmpeg, ffprobe, ui, light);
 };
 //# sourceMappingURL=index.js.map
