@@ -15,7 +15,7 @@ bool ledState;
 
 String name_remote = "mcopy";
 CanonBLERemote canon_ble(name_remote);
-TickTwo blinker(blink, 500);
+TickTwo blinker(blink, 500, 0, MILLIS);
 
 void blink(){
     digitalWrite(LED, ledState);
