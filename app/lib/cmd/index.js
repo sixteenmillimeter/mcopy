@@ -612,6 +612,21 @@ class Commands {
         }
         return ms;
     }
+    /**
+     * Pauses a sequence for a length of time
+     *
+     * @returns {integer} Length of action in ms
+     **/
+    async pause(cmd) {
+        let ms;
+        try {
+            ms = await delay_1.delay(cmd.light * 1000); //delay is in seconds
+        }
+        catch (err) {
+            throw err;
+        }
+        return ms;
+    }
 }
 module.exports = function (cfg, proj, cam, light, alert, cam2, proj2, capper) {
     return new Commands(cfg, proj, cam, light, alert, cam2, proj2, capper);

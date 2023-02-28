@@ -60,6 +60,7 @@ const ALTS = {
     'PFPB': [],
     'PBPF': []
 };
+const DELAY = 'DELAY';
 const PAUSE = 'PAUSE';
 const ALERT = 'ALERT';
 /** helper functions */
@@ -149,8 +150,11 @@ class Mscript {
             else if (CMD.indexOf(this.two) !== -1) {
                 this.basic_cmd(line, this.two);
             }
+            else if (startsWith(line, DELAY)) {
+                this.delay(line);
+            }
             else if (startsWith(line, PAUSE)) {
-                //this.pause(line);
+                this.pause(line);
             }
             else if (startsWith(line, ALERT)) {
                 this.alert(line);
@@ -897,11 +901,11 @@ class Mscript {
         this.color = color;
     }
     /**
-     * Interpret a pause command
+     * Interpret a delay command
      *
-     * @param {string} line String containing pause command
+     * @param {string} line String containing delay command
      **/
-    pause(line) {
+    delay(line) {
         let lenStr = line.split(' ')[1] || '';
         let len;
         lenStr = lenStr.trim();
@@ -918,19 +922,19 @@ class Mscript {
         if (this.rec !== -1) {
             //hold generated arr in state loop array
             this.loops[this.rec].arr
-                .push('PA');
+                .push('DE');
             this.loops[this.rec].meta
                 .push(lenStr);
         }
         else {
-            this.arr.push('PA');
+            this.arr.push('DE');
             this.meta.push(lenStr);
         }
     }
     /**
     * Interpret an alert command
     *
-    * @param {string} line String containing pause command
+    * @param {string} line String containing alert message
     **/
     alert(line) {
         let msg = line.split(' ')[1] || '';
@@ -945,6 +949,25 @@ class Mscript {
         else {
             this.arr.push('AL');
             this.meta.push(line);
+        }
+    }
+    /**
+    * Interpret an pause command
+    *
+    * @param {string} line String containing alert message
+    **/
+    pause(line) {
+        const msg = "Paused script. Click OK to continue.";
+        if (this.rec !== -1) {
+            //hold generated arr in state loop array
+            this.loops[this.rec].arr
+                .push('AL');
+            this.loops[this.rec].meta
+                .push(msg);
+        }
+        else {
+            this.arr.push('AL');
+            this.meta.push(msg);
         }
     }
     /**

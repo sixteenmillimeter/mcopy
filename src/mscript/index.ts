@@ -72,6 +72,7 @@ const ALTS : any = {
     'PBPF' : [ ]
 };
 
+const DELAY : string = 'DELAY';
 const PAUSE : string = 'PAUSE';
 const ALERT : string = 'ALERT';
 
@@ -190,8 +191,10 @@ export default class Mscript {
 				this.basic_cmd(line, this.three);
 			} else if (CMD.indexOf(this.two) !== -1) {
 				this.basic_cmd(line, this.two);
+			} else if (startsWith(line, DELAY)) {
+				this.delay(line);
 			} else if (startsWith(line, PAUSE)) {
-				//this.pause(line);
+				this.pause(line);
 			} else if (startsWith(line, ALERT)) {
 				this.alert(line);
 			} else if (startsWith(line, '@') || line.indexOf('@') !== -1) {
@@ -886,11 +889,11 @@ export default class Mscript {
 	}
 
 	/**
-	 * Interpret a pause command
+	 * Interpret a delay command
 	 * 
-	 * @param {string} line String containing pause command
+	 * @param {string} line String containing delay command
 	 **/
-	 pause (line : string) {
+	 delay (line : string) {
 	 	let lenStr : string = line.split(' ')[1] || ''
 	 	let len : number;
 	 	lenStr = lenStr.trim();
@@ -910,11 +913,11 @@ export default class Mscript {
 	 	if (this.rec !== -1) {
 			//hold generated arr in state loop array
 			this.loops[this.rec].arr
-				.push('PA');
+				.push('DE');
 			this.loops[this.rec].meta
 				.push(lenStr);
 		} else {
-			this.arr.push('PA');
+			this.arr.push('DE');
 			this.meta.push(lenStr);
 		}
 	 }
@@ -922,7 +925,7 @@ export default class Mscript {
 	 /**
 	 * Interpret an alert command
 	 * 
-	 * @param {string} line String containing pause command
+	 * @param {string} line String containing alert message
 	 **/
 	 alert (line : string) {
 	 	let msg : string = line.split(' ')[1] || ''
@@ -936,6 +939,25 @@ export default class Mscript {
 		} else {
 			this.arr.push('AL');
 			this.meta.push(line);
+		}
+	 }
+
+	 /**
+	 * Interpret an pause command
+	 * 
+	 * @param {string} line String containing alert message
+	 **/
+	 pause (line : string) {
+	 	const msg : string = "Paused script. Click OK to continue."
+	 	if (this.rec !== -1) {
+			//hold generated arr in state loop array
+			this.loops[this.rec].arr
+				.push('AL');
+			this.loops[this.rec].meta
+				.push(msg);
+		} else {
+			this.arr.push('AL');
+			this.meta.push(msg);
 		}
 	 }
 
