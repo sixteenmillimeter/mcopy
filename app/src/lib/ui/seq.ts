@@ -207,7 +207,7 @@ class Sequence {
 			}
 			return true;
 		});
-
+		console.dir(cfg);
 		//timing
 		for (let step of this.grid) {
 			if (!step) continue

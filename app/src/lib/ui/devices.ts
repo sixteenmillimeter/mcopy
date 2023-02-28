@@ -79,6 +79,7 @@ class Devices {
 			} else {
 				light.enable();
 			}
+			timing.reset(p);
 			//devices.profile(arg.profile)
 		}
 		
@@ -128,6 +129,7 @@ class Devices {
 		for (let key of keys) {
 			cfg[key] = keys[key]
 		}
+		timing.reset(p);
 		if (typeof p.light !== 'undefined' && p.light === false) {
 			light.disable();
 		} else {
