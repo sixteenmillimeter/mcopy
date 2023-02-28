@@ -173,6 +173,7 @@ proj.second.end = function (c, id, ms) {
 			proj.second.pos -= 1;
 		}
 	}
+	timing.update(c, ms);
 	gui.counterUpdate('proj2', proj.second.pos);
 	if (typeof proj.second.queue[id] !== 'undefined') {
 		if (typeof proj.second.queue[id].callback !== 'undefined') {

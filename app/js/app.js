@@ -2497,6 +2497,7 @@ const devices 	= require('./lib/ui/devices.js');
 const filmout 	= require('./lib/ui/filmout.js');
 const mse 		= require('./lib/ui/mscript.js');
 const capper    = require('./lib/ui/capper.js');
+const timing    = require('./lib/ui/timing.js');
 const Mscript 	= require('./lib/mscript');
 const { delay }	= require('./lib/delay');
 const alertObj  = require('./lib/ui/alert.js');

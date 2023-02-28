@@ -83,7 +83,11 @@ class Devices {
                 else {
                     light.enable();
                 }
+                timing.reset(p);
                 //devices.profile(arg.profile)
+            }
+            if (arg && arg.timing) {
+                timing.restore(arg.timing);
             }
             if (arg.projector_second) {
                 //add second row of projector pads to grid
@@ -128,6 +132,7 @@ class Devices {
         for (let key of keys) {
             cfg[key] = keys[key];
         }
+        timing.reset(p);
         if (typeof p.light !== 'undefined' && p.light === false) {
             light.disable();
         }
@@ -135,6 +140,7 @@ class Devices {
             light.enable();
         }
         ipcRenderer.send('profile', { profile });
+        timing.store();
     }
     intval() {
         const url = $('#intval').val();

@@ -80,6 +80,7 @@ cam.end = function (c, id, ms) {
 		}
 		gui.counterUpdate('cam2', cam.second.pos);
 	}
+	timing.update(c, ms);
 	gui.counterUpdate('cam', cam.pos)
 	if (typeof cam.queue[id] !== 'undefined') {
 		if (typeof cam.queue[id].callback !== 'undefined') {
@@ -182,6 +183,7 @@ cam.second.end = function (c, id, ms) {
 			cam.second.pos -= 1;
 		}
 	}
+	timing.update(c, ms);
 	gui.counterUpdate('cam2', cam.second.pos)
 	if (typeof cam.second.queue[id] !== 'undefined') {
 		if (typeof cam.queue[id].callback !== 'undefined') {

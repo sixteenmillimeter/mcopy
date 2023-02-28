@@ -51,6 +51,8 @@ class Sequence {
                     $('#cmd_capper_off').addClass('active');
                     $('#cmd_capper_on').removeClass('active');
                 }
+                this.stats();
+                timing.store();
             }
         }
         return event.returnValue = true;
@@ -178,23 +180,8 @@ class Sequence {
             if (!step)
                 continue;
             c = step.cmd;
-            if (c === cfg.cmd.camera_forward || c === cfg.cmd.camera_backward) {
-                ms += cfg.arduino.cam.time;
-                ms += cfg.arduino.cam.delay;
-                ms += cfg.arduino.serialDelay;
-            }
-            if (c === cfg.cmd.projector_forward || c === cfg.cmd.projector_backward) {
-                ms += cfg.arduino.proj.time;
-                ms += cfg.arduino.proj.delay;
-                ms += cfg.arduino.serialDelay;
-            }
-            if (c === cfg.cmd.black_forward || c === cfg.cmd.black_backward) {
-                ms += cfg.arduino.black.before;
-                ms += cfg.arduino.black.after;
-                ms += cfg.arduino.cam.time;
-                ms += cfg.arduino.cam.delay;
-                ms += cfg.arduino.serialDelay;
-            }
+            ms += timing.get(c);
+            ms += cfg.arduino.serialDelay;
             ms += cfg.arduino.sequenceDelay;
             if (c === cfg.cmd.camera_forward || c === cfg.cmd.black_forward) {
                 cam_total++;

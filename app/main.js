@@ -20,26 +20,26 @@ const { delay } = require('delay')
 //Objects
 const mcopy = {}
 
-let SYSTEM;
-let log;
-let mainWindow;
-let arduino;
-let menu;
-let display;
-let ffmpeg;
-let ffprobe;
-let cam;
-let cam2;
-let proj;
-let proj2;
-let light;
-let filmout;
-let dev;
-let cmd;
-let seq;
-let capper;
-let alert;
-let server;
+let SYSTEM
+let log
+let mainWindow
+let arduino
+let menu
+let display
+let ffmpeg
+let ffprobe
+let cam
+let cam2
+let proj
+let proj2
+let light
+let filmout
+let dev
+let cmd
+let seq
+let capper
+let alert
+let server
 
 const cfg = require('./data/cfg.json')
 
@@ -142,12 +142,12 @@ var init = async function () {
 app.on('ready', init)
 
 app.on('window-all-closed', () => {
-	app.quit();
+	app.quit()
 });
 
 app.on('activate', () => {
 	if (mainWindow === null) {
-		createWindow();
+		createWindow()
 	}
 });
 
