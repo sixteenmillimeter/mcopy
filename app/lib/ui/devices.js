@@ -86,6 +86,9 @@ class Devices {
                 timing.reset(p);
                 //devices.profile(arg.profile)
             }
+            if (arg && arg.timing) {
+                timing.restore(arg.timing);
+            }
             if (arg.projector_second) {
                 //add second row of projector pads to grid
                 proj.second.enable();
@@ -137,6 +140,7 @@ class Devices {
             light.enable();
         }
         ipcRenderer.send('profile', { profile });
+        timing.store();
     }
     intval() {
         const url = $('#intval').val();

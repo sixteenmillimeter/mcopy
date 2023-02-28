@@ -19,7 +19,8 @@ class Settings {
             camera: {},
             projector: {},
             light: {},
-            capper: {}
+            capper: {},
+            timing: {}
         };
         this.state = this.freshState();
     }

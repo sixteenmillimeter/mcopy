@@ -16,7 +16,8 @@ class Settings {
 		camera : {},
 		projector : {},
 		light : {},
-		capper : {}
+		capper : {},
+		timing : {}
 	}
 	public state : any;
 	/**

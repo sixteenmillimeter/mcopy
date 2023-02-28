@@ -82,6 +82,9 @@ class Devices {
 			timing.reset(p);
 			//devices.profile(arg.profile)
 		}
+		if (arg && arg.timing) {
+			timing.restore(arg.timing);
+		}
 		
 		if (arg.projector_second) {
 			//add second row of projector pads to grid
@@ -127,7 +130,7 @@ class Devices {
 		const p : any = cfg.profiles[profile];
 		const keys : any[] = Object.keys(p);
 		for (let key of keys) {
-			cfg[key] = keys[key]
+			cfg[key] = keys[key];
 		}
 		timing.reset(p);
 		if (typeof p.light !== 'undefined' && p.light === false) {
@@ -136,6 +139,8 @@ class Devices {
 			light.enable();
 		}
 		ipcRenderer.send('profile', { profile })
+		timing.store();
+
 	}
 
 	intval () {
