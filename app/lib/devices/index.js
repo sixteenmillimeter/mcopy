@@ -41,9 +41,16 @@ class Devices {
      * local settings object.
      **/
     listener(event, arg) {
-        this.log.info(`Saving profile ${arg.profile}`, 'SETTINGS', false, false);
-        this.settings.update('profile', arg.profile);
-        this.settings.save();
+        if (typeof arg.profile !== 'undefined') {
+            this.log.info(`Saving profile ${arg.profile}`, 'SETTINGS', false, false);
+            this.settings.update('profile', arg.profile);
+            this.settings.save();
+        }
+        if (typeof arg.timing !== 'undefined') {
+            this.log.info(`Saving timing info`, 'SETTINGS', false, false);
+            this.settings.update('timing', arg.timing);
+            this.settings.save();
+        }
     }
     /**
      *
@@ -510,6 +517,9 @@ class Devices {
             light,
             profile: this.settings.state.profile
         };
+        if (this.settings.state.timing) {
+            args.timing = this.settings.state.timing;
+        }
         if (projector_second && projector_second.arduino) {
             args.projector_second = projector_second;
             this.settings.update('projector_second', projector_second);

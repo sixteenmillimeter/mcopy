@@ -79,7 +79,11 @@ class Devices {
 			} else {
 				light.enable();
 			}
+			timing.reset(p);
 			//devices.profile(arg.profile)
+		}
+		if (arg && arg.timing) {
+			timing.restore(arg.timing);
 		}
 		
 		if (arg.projector_second) {
@@ -126,14 +130,17 @@ class Devices {
 		const p : any = cfg.profiles[profile];
 		const keys : any[] = Object.keys(p);
 		for (let key of keys) {
-			cfg[key] = keys[key]
+			cfg[key] = keys[key];
 		}
+		timing.reset(p);
 		if (typeof p.light !== 'undefined' && p.light === false) {
 			light.disable();
 		} else {
 			light.enable();
 		}
 		ipcRenderer.send('profile', { profile })
+		timing.store();
+
 	}
 
 	intval () {

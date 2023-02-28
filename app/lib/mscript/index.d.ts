@@ -212,17 +212,23 @@ export default class Mscript {
      */
     light_state(str: string): void;
     /**
-     * Interpret a pause command
+     * Interpret a delay command
      *
-     * @param {string} line String containing pause command
+     * @param {string} line String containing delay command
      **/
-    pause(line: string): void;
+    delay(line: string): void;
     /**
     * Interpret an alert command
     *
-    * @param {string} line String containing pause command
+    * @param {string} line String containing alert message
     **/
     alert(line: string): void;
+    /**
+    * Interpret an pause command
+    *
+    * @param {string} line String containing alert message
+    **/
+    pause(line: string): void;
     /**
      * Throw an error with specific message
      *
