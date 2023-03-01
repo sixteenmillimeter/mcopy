@@ -181,8 +181,6 @@ class Sequence {
                 continue;
             c = step.cmd;
             ms += timing.get(c);
-            ms += cfg.arduino.serialDelay;
-            ms += cfg.arduino.sequenceDelay;
             if (c === cfg.cmd.camera_forward || c === cfg.cmd.black_forward) {
                 cam_total++;
             }
