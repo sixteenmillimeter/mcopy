@@ -3,6 +3,7 @@
 import { v4 as uuid } from 'uuid';
 import Log = require('log');
 import { powerSaveBlocker } from 'electron'
+import delay from 'delay';
 
 
 /** @module lib/sequencer **/

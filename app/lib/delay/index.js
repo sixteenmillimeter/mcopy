@@ -1,4 +1,6 @@
 'use strict';
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.delay = void 0;
 /**
  * Delay in an async/await function
  *
@@ -11,5 +13,6 @@ function delay(ms) {
         return setTimeout(resolve, ms);
     });
 }
-module.exports.delay = delay;
+exports.delay = delay;
+module.exports = { delay };
 //# sourceMappingURL=index.js.map

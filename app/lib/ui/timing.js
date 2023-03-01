@@ -40,7 +40,6 @@ class Timing {
         let proj;
         let pad;
         for (let key of keys) {
-            console.log(key);
             if (key === 'label') {
                 continue;
             }
