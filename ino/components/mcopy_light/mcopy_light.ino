@@ -37,6 +37,9 @@ void setup () {
 	pixieSerial.begin(115200); // Pixie REQUIRES this baud rate
 	light.setPixelColor(0, 0, 0, 0);
   light.show();
+  r = 90;
+  g = 90;
+  b = 90;
 }
 
 void loop () {
