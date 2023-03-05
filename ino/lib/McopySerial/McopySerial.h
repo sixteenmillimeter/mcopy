@@ -10,8 +10,10 @@ class McopySerial {
 	volatile bool debugOn = false;
 
 	public:
+	McopySerial();
+
 	void begin();
-	void begin(int baudRate);
+	void setBaud(int baudRate);
 
 	void debug (bool state);
 	void log (String message);

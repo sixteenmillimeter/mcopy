@@ -1,12 +1,15 @@
 #include "McopySerial.h" 
 
-void McopySerial::begin (int baudRate) {
-	baud = baudRate;
-	begin();	
+McopySerial::McopySerial () {
+
 }
 
 void McopySerial::begin () {
+	Serial.begin(baud);
+}
 
+void McopySerial::setBaud (int baudRate) {
+	baud = baudRate;
 }
 
 void McopySerial::debug (bool state) {

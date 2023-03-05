@@ -33,6 +33,8 @@ volatile bool ledState;
 const String name_remote = "mcopy";
 CanonBLERemote canon_ble(name_remote);
 TickTwo blinker(blink, 500);
+//McopySerial mc;
+
 volatile boolean connected = false;
 
 volatile long now;
@@ -47,11 +49,12 @@ void blink(){
 
 void setup()
 {
-    Serial.begin(57600);
     esp_log_level_set("*", ESP_LOG_INFO); 
 
     pinMode(SHUTTTER_BTN, INPUT_PULLUP);  
     pinMode(LED, OUTPUT);
+
+    //mc.begin();
 
     canon_ble.init();
     delay(1000);
@@ -71,8 +74,8 @@ void connectBLE () {
     digitalWrite(LED, HIGH);
     delay(1000);
     
-    Serial.println("Camera paired");
-    Serial.println(canon_ble.getPairedAddressString());
+    //mc.log("Camera paired");
+    //mc.log(canon_ble.getPairedAddressString());
 }
 
 void loop()
@@ -93,7 +96,7 @@ void loop()
     blinker.update();
     if (connected && !canon_ble.isConnected()) {
         connected = false;
-        Serial.println("Disconnected");
+        //mc.log("Disconnected");
         blinker.interval(500);
         blinker.resume();
     }
@@ -102,10 +105,10 @@ void loop()
 void shutter () {
     digitalWrite(LED, LOW);
     blinker.resume();
-    Serial.println("Shutter pressed");
+    //mc.log("Shutter pressed");
 
     if(!canon_ble.trigger()){
-        Serial.println("Trigger Failed");
+        //mc.log("Trigger Failed");
     }
 
     blinker.pause();
