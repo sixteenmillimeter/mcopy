@@ -1,4 +1,4 @@
-#include "mcopy_serial.h" 
+#include "McopySerial.h" 
 
 void McopySerial::begin (int baudRate) {
 	baud = baudRate;
