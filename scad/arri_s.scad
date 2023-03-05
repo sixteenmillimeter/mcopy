@@ -38,7 +38,6 @@ BearingInnerDiameter = 11.5;
 
 capM3OffsetZ = 11.5;
 
-PART = "none";
 
 module motorBarrel () {
     $fn = 200;
@@ -464,25 +463,25 @@ module driveCouplingDCConnector () {
 }
 
 
+LIBRARY = true;
+PART = "bellows_camera_board_adapter";
 
-PART2 = "bellows_camera_board_adapter";
-
-if (PART2 == "drive_coupling_DC_connector") {
+if (PART == "drive_coupling_DC_connector") {
     driveCouplingDCConnector();
-} else if (PART2 == "drive_coupling_DC") {
+} else if (PART == "drive_coupling_DC") {
     driveCouplingDC();
-} else if (PART2 == "animation_motor_DC_cap") {
+} else if (PART == "animation_motor_DC_cap") {
     rotate([180, 0, 0]) animationMotorDCCap();
-} else if (PART2 == "animation_motor_DC") {
+} else if (PART == "animation_motor_DC") {
     animationMotorDCBody();
-} else if (PART2 == "animation_motor") {
+} else if (PART == "animation_motor") {
     animationMotorBody();
-} else if (PART2 == "animation_motor_cap") {
+} else if (PART == "animation_motor_cap") {
     rotate([180, 0, 0]) animationMotorCap();
-} else if (PART2 == "drive_coupling") {
+} else if (PART == "drive_coupling") {
     driveCoupling();
-} else if (PART2 == "bellows_camera_board_adapter") {
+} else if (PART == "bellows_camera_board_adapter") {
     bodyCapBellowsAdapter();
-} else if (PART2 == "bellows_camera_board") {
+} else if (PART == "bellows_camera_board") {
     bellows_camera_board();
 }

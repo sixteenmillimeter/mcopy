@@ -1,3 +1,5 @@
+LIBRARY=false;
+
 module cmount_male(len = 4) {
 	inner_d = 23;
 	outer_d = 24.7;
@@ -56,8 +58,8 @@ module camera_mount () {
 
 PART = "bellows_camera_board";
 
-if (PART == "bellows_camera_board") {
+if (!LIBRARY && PART == "bellows_camera_board") {
     bellows_camera_board();
-} else if (PART == "camera_mount") {
+} else if (!LIBRARY && PART == "camera_mount") {
     camera_mount();
 }
