@@ -28,11 +28,13 @@ module case_mount_debug () {
 }
 
 module case_mounts_debug () {
-	Z = -CaseInnerZ/2+(CaseMountsH/2);
-	translate([CaseMountsX/2,   CaseMountsY/2, Z]) case_mount_debug();
-	translate([CaseMountsX/2,  -CaseMountsY/2, Z]) case_mount_debug();
-	translate([-CaseMountsX/2,  CaseMountsY/2, Z]) case_mount_debug();
-	translate([-CaseMountsX/2, -CaseMountsY/2, Z]) case_mount_debug();
+	X = CaseMountsX/2;
+	Y = CaseMountsY/2;
+	Z = -(CaseInnerZ/2)+(CaseMountsH/2);
+	translate([X,   Y, Z]) case_mount_debug();
+	translate([X,  -Y, Z]) case_mount_debug();
+	translate([-X,  Y, Z]) case_mount_debug();
+	translate([-X, -Y, Z]) case_mount_debug();
 }
 
 module case_debug () {
