@@ -27,7 +27,7 @@ module cpc_9pin_plug () {
 	}
 }
 
-module cpc_9pin_plug_sleeve () {
+module cpc_9pin_plug_collar () {
 	$fn = 200;
 	D = 17;
 	OD = 28;
@@ -66,8 +66,8 @@ module cpc_9pin_socket () {
 
 if (PART == "cpc_9pin_plug") {
 	cpc_9pin_plug();
-} else if (PART == "cpc_9pin_plug_sleeve") {
-	cpc_9pin_plug_sleeve();
+} else if (PART == "cpc_9pin_plug_collar") {
+	cpc_9pin_plug_collar();
 } else if (PART == "cpc_9pin_socket") {
 	cpc_9pin_socket();
 }

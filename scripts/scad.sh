@@ -25,3 +25,9 @@ openscadPart "arri_s_mount.scad" "mount" "arri_s_mount.stl"
 # mcopy mono 99 projector controller
 
 openscadPart "projector_controller.scad" "electronics_mount" "mcopy_mono99_electronics_mount.stl"
+
+# cpc connector
+
+openscadPart "cpc_connectors.scad" "cpc_9pin_plug" 			"cpc_connector_9pin_plug.stl" 
+openscadPart "cpc_connectors.scad" "cpc_9pin_plug_collar" 	"cpc_connector_9pin_plug_collar.stl"
+openscadPart "cpc_connectors.scad" "cpc_9pin_socket"		"cpc_connector_9pin_socket.stl"
