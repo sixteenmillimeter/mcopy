@@ -4,44 +4,79 @@
 
 include <./common/common.scad>;
 
-PART="";
+PART="cpc_9pin_plug";
 
-PlugD = 11;
+PlugD = 15.75;
+PlugH = 11.65;
+PlugGuideD = 17;
+PlugPinD = 3.1;
+
+PlugGuideRetraction = 1.25;
+
+PinSpacing = 3.85;
+
 SocketD = PlugD + 0.2;
+
+CollarD = 19;
+
+GuideAngles = [0, 100, 140, 220, 260];
+GuideWidths = [3.2, 1.5, 1.5, 1.5, 1.5];
+
+function arc_angle (D, W) = W / ((PI/180) * (D/2));
+
+module guide (Diameter, Height, Angle, Width) {
+	A = arc_angle(Diameter, Width);
+	echo(A);
+	rotate([0, 0, Angle]) difference () {
+		cylinder(r = R(Diameter), h = Height, center = true, $fn = 200);
+		rotate([0, 0, -A/2]) translate([Diameter / 2, 0, 0])  cube([Diameter, Diameter * 2, Height + 1], center = true);
+		rotate([0, 0, A/2]) translate([-Diameter / 2, 0, 0])  cube([Diameter, Diameter * 2, Height + 1], center = true);
+	}
+}
+
+module plug_pin (X, Y, H) {
+	translate([X, Y, 0]) {
+		cylinder(r = R(PlugPinD), h = H, center = true, $fn = 40);
+	}
+}
+
+module plug_pin_voids (PinH) {
+	plug_pin(0, 0, PinH);                     //5
+	plug_pin(PinSpacing, 0, PinH);            //4
+	plug_pin(-PinSpacing, 0, PinH);           //6
+	plug_pin(0, PinSpacing, PinH);            //2
+	plug_pin(0, -PinSpacing, PinH);           //8
+	plug_pin(PinSpacing, PinSpacing, PinH);   //1
+	plug_pin(-PinSpacing, PinSpacing, PinH);  //3
+	plug_pin(-PinSpacing, -PinSpacing, PinH); //9
+	plug_pin(PinSpacing, -PinSpacing, PinH);  //7
+}
 
 module cpc_9pin_plug () {
 	$fn = 200;
-	D = 17;
-	OD = 28;
-	H = 25;
-
+	PinH = PlugH + 1;
 	difference () {
 		union () {
-			cylinder(r = OD / 2, h = H, center = true);
-			//cube([12, 48, 3], center = true);
+			cylinder(r = R(PlugD), h = PlugH, center = true);
+			translate([0, 0, -PlugGuideRetraction/2]) {
+				for (i = [0 : len(GuideAngles) - 1]) {
+					guide(PlugGuideD, PlugH - PlugGuideRetraction, GuideAngles[i], GuideWidths[i]);
+				}
+			}
 		}
-		//main void
-		translate([0, 0, -3]) cylinder(r = (OD / 2) - 3, h = H, center = true);
-		//connector void
-		cylinder(r = D / 2, h = H * 2, center = true);
+		plug_pin_voids(PinH);
 	}
 }
 
 module cpc_9pin_plug_collar () {
 	$fn = 200;
-	D = 17;
-	OD = 28;
 	H = 25;
 
 	difference () {
 		union () {
-			cylinder(r = OD / 2, h = H, center = true);
-			//cube([12, 48, 3], center = true);
+			cylinder(r = R(CollarD), h = H, center = true);
 		}
-		//main void
-		translate([0, 0, -3]) cylinder(r = (OD / 2) - 3, h = H, center = true);
-		//connector void
-		cylinder(r = D / 2, h = H * 2, center = true);
+		cylinder(r = R(SocketD), h = H, center = true);
 	}
 }
 
@@ -61,7 +96,6 @@ module cpc_9pin_socket () {
 		//connector void
 		cylinder(r = D / 2, h = H * 2, center = true);
 	}
-
 }
 
 if (PART == "cpc_9pin_plug") {
