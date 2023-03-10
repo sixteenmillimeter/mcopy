@@ -8,6 +8,8 @@ McopySerial::McopySerial (char identity) {
 
 void McopySerial::begin () {
 	Serial.begin(baud);
+	Serial.flush();
+  	Serial.setTimeout(serialDelay);
 }
 
 char McopySerial::loop () {
@@ -50,6 +52,10 @@ void McopySerial::setIdentity (char identity) {
 
 void McopySerial::debug (bool state) {
 	debugOn = state;
+}
+
+void McopySerial::confirm (char cmd) {
+	Serial.println(cmd);
 }
 
 void McopySerial::log (String message) {

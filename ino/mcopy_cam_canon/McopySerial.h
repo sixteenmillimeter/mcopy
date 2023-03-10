@@ -6,6 +6,8 @@
 class McopySerial {           
 
 	private:
+	const int serialDelay = 5;
+
 	volatile int baud = 57600;
 	volatile bool debugOn = false;
 	volatile char cmdChar = 'z';
@@ -67,6 +69,7 @@ class McopySerial {
 	void setBaud(int baudRate);
 	void setIdentity(char identity);
 	char loop();
+	void confirm(char cmd);
 
 	void debug (bool state);
 	void log (String message);
