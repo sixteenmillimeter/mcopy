@@ -3,23 +3,20 @@
 #include "McopySerial.h" 
 
 McopySerial::McopySerial () {
-
+	//create mcopy serial
 }
-
-void McopySerial::on()
 
 void McopySerial::begin () {
 	Serial.begin(baud);
 }
 
-void McopySerial::loop () {
+char McopySerial::loop () {
 	if (Serial.available()) {
 		cmdChar = (char) Serial.read();
-	}
-	if (cmdChar != 'z') {
-		//cmd(cmdChar);
+	} else {
 		cmdChar = 'z';
 	}
+	return cmdChar;
 }
 
 void McopySerial::setBaud (int baudRate) {

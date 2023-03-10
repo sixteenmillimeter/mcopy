@@ -33,14 +33,14 @@ volatile bool ledState;
 const String name_remote = "mcopy";
 CanonBLERemote canon_ble(name_remote);
 TickTwo blinker(blink, 500);
-//McopySerial mc;
+McopySerial mc;
 
 volatile boolean connected = false;
 
 volatile long now;
 volatile long last = -1;
 
-volatile byte cmd_char;
+volatile byte cmd;
 
 void blink(){
     digitalWrite(LED, ledState);
@@ -81,14 +81,12 @@ void connectBLE () {
 void loop()
 {
     now = millis();
-    if (Serial.available()) {
-        /* read the most recent byte */
-        cmd_char = (char)Serial.read();
-    }
-    if (cmd_char == 'c' && last + 1000 < now) {
+    cmd = mc.loop();
+
+    if (cmd == 'c' && last + 1000 < now) {
         shutter();
-        cmd_char = 'z';
     }
+    
     // Shutter
     if (digitalRead(SHUTTTER_BTN) == LOW && last + 1000 < now){
         shutter();
