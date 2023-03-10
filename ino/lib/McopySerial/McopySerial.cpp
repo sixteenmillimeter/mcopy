@@ -10,29 +10,42 @@ void McopySerial::begin () {
 	Serial.begin(baud);
 }
 
-void McopySerial::identify (char identity) {
-	id = identity;
-}
-
 char McopySerial::loop () {
 	if (Serial.available()) {
 		cmdChar = (char) Serial.read();
-		internal();
+		_internal();
 	} else {
 		cmdChar = 'z';
 	}
 	return cmdChar;
 }
 
-void McopySerial::internal () {
+void McopySerial::_internal () {
 	if (cmdChar == DEBUG) {
 		debugOn = !debugOn;
-		cmdChar = 'z';
+	} else if (cmdChar == CONNECT) {
+		_connect();
+	} else if (cmdChar == MCOPY_IDENTIFIER) {
+		_identify();
 	}
+}
+
+void McopySerial::_connect () {
+  Serial.println(CONNECT);
+  log("connect()");
+}
+
+void McopySerial::_identify () {
+  Serial.println(id);
+  log("identify()");  
 }
 
 void McopySerial::setBaud (int baudRate) {
 	baud = baudRate;
+}
+
+void McopySerial::setIdentity (char identity) {
+	id = identity;
 }
 
 void McopySerial::debug (bool state) {

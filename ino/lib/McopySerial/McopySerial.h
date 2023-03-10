@@ -11,7 +11,9 @@ class McopySerial {
 	volatile char cmdChar = 'z';
 	volatile char id;
 
-	void internal ();
+	void _internal ();
+	void _connect ();
+	void _identify ();
 
 	public:
 
@@ -63,8 +65,8 @@ class McopySerial {
 
 	void begin();
 	void setBaud(int baudRate);
+	void setIdentity(char identity);
 	char loop();
-	void identify(char identity);
 
 	void debug (bool state);
 	void log (String message);
