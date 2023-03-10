@@ -13,10 +13,18 @@ void McopySerial::begin () {
 char McopySerial::loop () {
 	if (Serial.available()) {
 		cmdChar = (char) Serial.read();
+		internal();
 	} else {
 		cmdChar = 'z';
 	}
 	return cmdChar;
+}
+
+void McopySerial::internal () {
+	if (cmdChar == DEBUG) {
+		debugOn = !debugOn;
+		cmdChar = 'z';
+	}
 }
 
 void McopySerial::setBaud (int baudRate) {

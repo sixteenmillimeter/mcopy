@@ -10,6 +10,8 @@ class McopySerial {
 	volatile bool debugOn = false;
 	volatile char cmdChar = 'z';
 
+	void internal ();
+
 	public:
 
 	/* CMD FLAGS */
