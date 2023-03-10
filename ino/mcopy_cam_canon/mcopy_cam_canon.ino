@@ -114,4 +114,5 @@ void shutter () {
     blinker.pause();
     digitalWrite(LED, HIGH);
     last = millis();
+    mc.confirm(McopySerial::CAMERA);
 }
