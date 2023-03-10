@@ -8,7 +8,7 @@ if [ -f "$(which jq)" ]; then
 
 	awk '{print} /CMD FLAGS/ {exit}' "${HEADER}" > "${TMP_FILE}"
 
-	cat ./data/cfg.json | jq -r '.arduino.cmd | keys[] as $k | "    char \($k) = '"'"'\(.[$k])'"'"';"' | awk '{print "\t"$1" "toupper($2)" "$3" "$4}' >> "${TMP_FILE}"
+	cat ./data/cfg.json | jq -r '.arduino.cmd | keys[] as $k | "   static const char \($k) = '"'"'\(.[$k])'"'"';"' | awk '{print "\t"$1" "$2" "$3" "toupper($4)" "$5" "$6}' >> "${TMP_FILE}"
 
 	awk '/END CMD/,EOF { print $0 }' "${HEADER}" >> "${TMP_FILE}"
 

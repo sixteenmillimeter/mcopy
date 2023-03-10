@@ -2,12 +2,16 @@
 
 #include "McopySerial.h" 
 
-McopySerial::McopySerial () {
-	//create mcopy serial
+McopySerial::McopySerial (char identity) {
+	id = identity;
 }
 
 void McopySerial::begin () {
 	Serial.begin(baud);
+}
+
+void McopySerial::identify (char identity) {
+	id = identity;
 }
 
 char McopySerial::loop () {

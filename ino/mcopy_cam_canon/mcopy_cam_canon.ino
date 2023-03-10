@@ -33,7 +33,7 @@ volatile bool ledState;
 const String name_remote = "mcopy";
 CanonBLERemote canon_ble(name_remote);
 TickTwo blinker(blink, 500);
-McopySerial mc;
+McopySerial mc(McopySerial::CAMERA);
 
 volatile boolean connected = false;
 
@@ -86,7 +86,7 @@ void loop()
     if (cmd == 'c' && last + 1000 < now) {
         shutter();
     }
-    
+
     // Shutter
     if (digitalRead(SHUTTTER_BTN) == LOW && last + 1000 < now){
         shutter();
