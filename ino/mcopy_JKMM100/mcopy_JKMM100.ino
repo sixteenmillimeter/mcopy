@@ -8,23 +8,6 @@
  * Rrelay module for proj : 
 
   Wiring
-  
-  CAMERA + CAMERA_DIR
-  Wire directly to corresponding relay pins.
-  Arduino  2   3  5V   GND
-  Relay    1   2  VCC  GND
-
-  Relays wired to JK Camera Controller 103/104 models
-
-  PINS FOR CAM WIRE
-
-  (# = Connector #)
-  Arduino  #   Wire      In case     Relay
-  =========================================
-  PIN3     1 - Yellow  = Grey      = IN2
-  5V       2 - Red     = Purple    = VCC
-  PIN2     3 - Green   = White     = IN1
-  GND      4 - Black   = Black     = GND
 
   PROJECTOR + PROJECTOR_DIR
 
