@@ -34,7 +34,6 @@ module arduino_uno_standoffs (pos) {
     }
 }
 
-
 module case_shell (pos = [0,0,0]) {
     translate(pos) difference () {
         rounded_cube([85, 75, 30], 8);
