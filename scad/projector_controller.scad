@@ -25,9 +25,9 @@ RelayMountsY = 44;
 CapacitorSize = [30.5, 37.2, 20];
 ResistorSize = [16.25, 49.8, 15.5];
 
-ArduinoPosition = [40, 78, 2];
+ArduinoPosition = [36, 78, 2];
 RelayPosition = [25, -25, 1];
-ResistorPosition = [-37, 25, 0];
+ResistorPosition = [-37, 18, 0];
 CapacitorPosition = [-35, -40, 0];
 
 /**
@@ -109,6 +109,7 @@ module resistor_debug (pos = [0, 0, 0]) {
 		resistor_foot_debug([-(X/2)-(6/2), (Y/2)-(8.75/2), -(Z/2)+(2/2)]);
 		resistor_foot_debug([(X/2)+(6/2), -(Y/2)+(8.75/2), -(Z/2)+(2/2)]);
 		translate([0, (Y/2)+(11.5/2), 0]) rotate([90, 0, 0]) cylinder(r = R(2), h = 11.5, center = true);
+		translate([0, -(Y/2)-(11.5/2), 0]) rotate([90, 0, 0]) cylinder(r = R(2), h = 11.5, center = true);
 	}
 }
 
@@ -136,7 +137,7 @@ module debug () {
  **/
 
  module arduino_mount_reinforcement () {
- 	X = 56.25;
+ 	X = 57.25;
  	Y = 71;
  	Z = 5;
  	pos = [-(X/2)+1.5, -(Y/2)+1.5, -2];
@@ -244,7 +245,7 @@ module electronics_mount () {
 		union() {
 			case_mounts([0, 0, 0]);
 			translate(ArduinoPosition) {
-				rotate([0, 0, 180]) bumper();
+				scale([1.02, 1.02, 1]) rotate([0, 0, 180]) bumper();
 				arduino_mount_reinforcement();
 			}
 			relay_mount(RelayPosition);
