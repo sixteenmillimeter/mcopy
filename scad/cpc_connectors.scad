@@ -4,7 +4,7 @@
 
 include <./common/common.scad>;
 
-PART="cpc_9pin_plug";
+PART="cpc_9pin_plugx";
 
 PlugD = 15.75;
 PlugH = 11.65;
@@ -16,10 +16,11 @@ PlugGuideRetraction = 1.25;
 PinSpacing = 3.85;
 
 SocketD = PlugD + 0.2;
+SocketGuideD = PlugGuideD + 0.2;
 
 CollarD = 19;
 
-GuideAngles = [0, 100, 140, 220, 260];
+GuideAngles = [0,   100, 140, 220, 260];
 GuideWidths = [3.2, 1.5, 1.5, 1.5, 1.5];
 
 function arc_angle (D, W) = W / ((PI/180) * (D/2));
@@ -58,6 +59,7 @@ module cpc_9pin_plug () {
 	difference () {
 		union () {
 			cylinder(r = R(PlugD), h = PlugH, center = true);
+			translate([0, 0, -(PlugH/2)+(2/2)]) cylinder(r = R(PlugD + 2), h = 2, center = true);
 			translate([0, 0, -PlugGuideRetraction/2]) {
 				for (i = [0 : len(GuideAngles) - 1]) {
 					guide(PlugGuideD, PlugH - PlugGuideRetraction, GuideAngles[i], GuideWidths[i]);
@@ -66,6 +68,7 @@ module cpc_9pin_plug () {
 		}
 		plug_pin_voids(PinH);
 	}
+
 }
 
 module cpc_9pin_plug_collar () {
@@ -80,21 +83,36 @@ module cpc_9pin_plug_collar () {
 	}
 }
 
+module cpc_9pin_plug_back () {
+	//
+}
+
 module cpc_9pin_socket () {
 	$fn = 200;
-	D = 17;
-	OD = 28;
-	H = 25;
+	PinH = PlugH + 1;
 
 	difference () {
 		union () {
-			cylinder(r = OD / 2, h = H, center = true);
-			//cube([12, 48, 3], center = true);
+			cylinder(r = R(CollarD-1), h = PlugH, center = true);
 		}
-		//main void
-		translate([0, 0, -3]) cylinder(r = (OD / 2) - 3, h = H, center = true);
-		//connector void
-		cylinder(r = D / 2, h = H * 2, center = true);
+		translate([0, 0, -9]) union () {
+			cylinder(r = R(SocketD), h = PlugH, center = true);
+			for (i = [0 : len(GuideAngles) - 1]) {
+				guide(SocketGuideD, PlugH, GuideAngles[i], GuideWidths[i] + 0.1);
+			}
+		}
+
+		plug_pin_voids(PinH);
+	}
+}
+
+module debug () {
+	difference () {
+		union () {
+			cpc_9pin_plug();
+			translate([0, 0, 13]) cpc_9pin_socket();
+		}
+		translate([25, 0, 0]) cube([50, 50, 100], center = true);
 	}
 }
 
@@ -102,6 +120,10 @@ if (PART == "cpc_9pin_plug") {
 	cpc_9pin_plug();
 } else if (PART == "cpc_9pin_plug_collar") {
 	cpc_9pin_plug_collar();
+} else if (PART == "cpc_9pin_plug_back") {
+	cpc_9pin_plug_back();
 } else if (PART == "cpc_9pin_socket") {
 	cpc_9pin_socket();
+} else {
+	debug();
 }
