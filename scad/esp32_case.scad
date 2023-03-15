@@ -13,6 +13,9 @@ CaseSplitZ = 25;
 
 ESP32Position = [0, -7, -5];
 ESP32Size = [25.85, 53.8, 1.5];
+ButtonPosition = [0, CaseY/2, 3];
+LEDPosition1 = [10, CaseY/2, 3];
+LEDPosition2 = [-10, CaseY/2, 3];
 
 module pin_debug (pos = [0, 0, 0]) {
 	translate(pos) cube([.6, .6, 6.26], center = true); 
@@ -83,6 +86,17 @@ module esp32_mount (pos = [0, 0, 0]) {
 	}
 }
 
+module button_void (pos = [0, 0, 0]) {
+	D = 6.9;
+	translate(pos) rotate([90, 0, 0]) cylinder(r = R(D), h = 10, center = true, $fn = 60);
+}
+
+module LED_void (pos = [0, 0, 0]) {
+	D = 5.1;
+	translate(pos) rotate([90, 0, 0]) cylinder(r = R(D), h = 10, center = true, $fn = 60);
+}
+
+
 module case_bottom () {
 	difference () {
 		case_shell();
@@ -90,7 +104,13 @@ module case_bottom () {
 		//micro usb
 		translate([0, -(CaseY/2), -7.8]) cube([9, 7, 4], center = true);
 		translate([0, -(CaseY/2)-3, -7.8]) cube([12, 10, 7.7], center = true);
+		//button
+		button_void(ButtonPosition);
+		//LEDS
+		LED_void(LEDPosition1);
+		LED_void(LEDPosition2);
 	}
+	
 	esp32_mount(ESP32Position);
 }
 

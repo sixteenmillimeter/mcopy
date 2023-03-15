@@ -4,7 +4,7 @@
 
 include <./common/common.scad>;
 
-PART="cpc_9pin_plugx";
+PART="cpc_9pin_socket";
 
 PlugD = 15.75;
 PlugH = 11.65;
@@ -93,7 +93,7 @@ module cpc_9pin_socket () {
 
 	difference () {
 		union () {
-			cylinder(r = R(CollarD-1), h = PlugH, center = true);
+			cylinder(r = R(CollarD), h = PlugH, center = true);
 		}
 		translate([0, 0, -9]) union () {
 			cylinder(r = R(SocketD), h = PlugH, center = true);
