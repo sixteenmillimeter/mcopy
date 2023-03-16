@@ -15,10 +15,12 @@ PlugGuideRetraction = 1.25;
 
 PinSpacing = 3.85;
 
-SocketD = PlugD + 0.2;
+SocketD = PlugD + 0.4;
 SocketGuideD = PlugGuideD + 0.2;
 
-CollarD = 19;
+SocketOuterD = 21;
+
+CollarD = 22;
 
 GuideAngles = [0,   100, 140, 220, 260];
 GuideWidths = [3.2, 1.5, 1.5, 1.5, 1.5];
@@ -29,7 +31,7 @@ module guide (Diameter, Height, Angle, Width) {
 	A = arc_angle(Diameter, Width);
 	echo(A);
 	rotate([0, 0, Angle]) difference () {
-		cylinder(r = R(Diameter), h = Height, center = true, $fn = 200);
+		cylinder(r = R(Diameter), h = Height, center = true, $fn = 120);
 		rotate([0, 0, -A/2]) translate([Diameter / 2, 0, 0])  cube([Diameter, Diameter * 2, Height + 1], center = true);
 		rotate([0, 0, A/2]) translate([-Diameter / 2, 0, 0])  cube([Diameter, Diameter * 2, Height + 1], center = true);
 	}
@@ -87,15 +89,34 @@ module cpc_9pin_plug_back () {
 	//
 }
 
+module flange_guide_void (pos = [0, 0, 0], Z = 8) {
+	OD = 24;
+	ID = 18;
+	translate(pos) {
+		intersection () {
+			difference () {
+				cylinder(r = R(OD), h = Z, center = true);
+				cylinder(r = R(ID), h = Z + 1, center = true);
+			}
+			union () {
+				translate([0, 0, 1]) cube([5, 25, Z], center = true);
+				translate([0, 0, -3]) rotate([7, 0, 0]) translate([(OD/2)-(5/2), OD/4, 0]) cube([OD, OD/2, 3], center = true);
+				translate([0, 0, -3]) rotate([-7, 0, 0]) translate([-(OD/2)+(5/2), -OD/4, 0]) cube([OD, OD/2, 3], center = true);
+			}
+		}
+		
+	}
+}
+
 module cpc_9pin_socket () {
-	$fn = 200;
+	$fn = 120;
 	PinH = PlugH + 1;
 
 	difference () {
 		union () {
-			cylinder(r = R(CollarD), h = PlugH, center = true);
+			cylinder(r = R(SocketOuterD), h = PlugH, center = true);
 		}
-		translate([0, 0, -9]) union () {
+		translate([0, 0, 3]) union () {
 			cylinder(r = R(SocketD), h = PlugH, center = true);
 			for (i = [0 : len(GuideAngles) - 1]) {
 				guide(SocketGuideD, PlugH, GuideAngles[i], GuideWidths[i] + 0.1);
@@ -103,7 +124,9 @@ module cpc_9pin_socket () {
 		}
 
 		plug_pin_voids(PinH);
+		flange_guide_void([0, 0, (PlugH / 2) - (8 / 2) + 0.01], 8);
 	}
+	
 }
 
 module debug () {
