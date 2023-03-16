@@ -2,20 +2,22 @@ include <./arduino.scad>;
 include <./common/common.scad>;
 
 DEBUG = false;
-PART = "case_bottomx";
+PART = "case_bottom";
 
 CaseX = 40;
-CaseY = 75;
-CaseZ = 30;
+CaseY = 85;
+CaseZ = 35;
 CaseD = 8;
 
-CaseSplitZ = 25;
+CaseSplitZ = 30;
 
-ESP32Position = [0, -7, -5];
+ESP32Position = [0, -7-5, -5];
 ESP32Size = [25.85, 53.8, 1.5];
-ButtonPosition = [0, CaseY/2, 3];
-LEDPosition1 = [10, CaseY/2, 3];
-LEDPosition2 = [-10, CaseY/2, 3];
+ButtonPosition = [9, CaseY/2, 0];
+LEDPosition1 = [-3, CaseY/2, 0];
+LEDPosition2 = [-11, CaseY/2, 0];
+
+BoltY = 25;
 
 module pin_debug (pos = [0, 0, 0]) {
 	translate(pos) cube([.6, .6, 6.26], center = true); 
@@ -50,8 +52,11 @@ module esp32_debug () {
 module debug () {
 	//translate(ESP32Position) rotate([180, 0, 0]) esp32_debug();
 	difference () {
-		case_bottom();
-		//translate([CaseX / 2, 0, 0]) cube([CaseX, CaseY + 1, CaseZ + 1], center = true);
+		union () {
+			case_bottom();
+			translate([0, 0, 1]) rotate([0, 0, 0]) color("red") case_top();
+		}
+		translate([-CaseX / 2, 0, 0]) cube([CaseX, CaseY + 1, 100], center = true);
 	}
 }
 
@@ -76,7 +81,7 @@ module esp32_mount (pos = [0, 0, 0]) {
 	Y = ESP32Size[1];
 	Z = 2;
 	translate([pos[0], pos[1], pos[2]-5]) difference () {
-		cube([X+3, Y+3, 10], center = true);
+		cube([X+4, Y+4, 10], center = true);
 		translate([0, 0, (10/2)-(2/2)+0.01]) cube([X, Y, Z], center = true);
 		translate([0, 0, 0]) cube([X-1, Y-1, 10], center = true);
 		//micro usb
@@ -96,10 +101,20 @@ module LED_void (pos = [0, 0, 0]) {
 	translate(pos) rotate([90, 0, 0]) cylinder(r = R(D), h = 10, center = true, $fn = 60);
 }
 
+module bolt_void (pos = [0, 0, 0], Z = 20, pad = 0) {
+	translate(pos) cylinder(r = R(3.25 + pad), h = Z, center = true, $fn = 30);
+}
+
+module bolt_plug (pos = [0, 0, 0], pad = 0) {
+	translate(pos) cylinder(r = R(8 + pad), h = 3.5, center = true, $fn = 60);
+}
 
 module case_bottom () {
 	difference () {
-		case_shell();
+		union () {
+			case_shell();
+			bolt_plug([0, BoltY, -(CaseZ/2)+4]);
+		}
 		translate([0, 0, CaseSplitZ]) cube([CaseX + 1, CaseY + 1, CaseZ],center = true);
 		//micro usb
 		translate([0, -(CaseY/2), -7.8]) cube([9, 7, 4], center = true);
@@ -109,16 +124,35 @@ module case_bottom () {
 		//LEDS
 		LED_void(LEDPosition1);
 		LED_void(LEDPosition2);
+		//bolt
+		translate([0, BoltY, -(CaseZ/2)+(3.5/2)-0.01]) cylinder(r = R(5.6), h = 3.5, center = true, $fn = 30);
+		bolt_void([0, BoltY, -(CaseZ/2)], 20);
 	}
 	
 	esp32_mount(ESP32Position);
+
 }
 
 module case_top () {
+	$fn = 50;
 	difference () {
 		case_shell();
 		translate([0, 0, CaseSplitZ-CaseZ]) cube([CaseX + 1, CaseY + 1, CaseZ],center = true);
+		bolt_void([0, BoltY, 0], CaseZ - 6 + 1);
+		translate([2.5, -28, 17]) rotate([0, 0, 90]) scale([0.5, 0.5, 1]) linear_extrude(4) {
+			text("Canon EOS M50", font = "Liberation Sans:style=Bold Italic");
+		}
 	}
+	translate([0, 0, 12]) difference () {
+		rounded_cube([CaseX - 6.1, CaseY - 6.1, 4], d = 6, center = true);
+		rounded_cube([CaseX - 8, CaseY - 8, 4 + 1], d = 5, center = true);
+	}
+	difference () {
+		translate([0, BoltY, 1]) cube([10, 10, CaseZ - 6 - 1], center = true);
+		bolt_void([0, BoltY, -4], CaseZ - 6 + 1, -.4);
+		bolt_plug([0, BoltY, -(CaseZ/2)+4], 0.2);
+	}
+
 }
 
 if (PART == "case_bottom") {
