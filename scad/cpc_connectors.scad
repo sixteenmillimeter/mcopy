@@ -16,9 +16,9 @@ PlugGuideRetraction = 1.25;
 PinSpacing = 3.85;
 
 SocketD = PlugD + 0.4;
-SocketGuideD = PlugGuideD + 0.2;
+SocketGuideD = PlugGuideD + 0.4;
 
-SocketOuterD = 21;
+SocketOuterD = 19.5;
 
 CollarD = 22;
 
@@ -91,7 +91,7 @@ module cpc_9pin_plug_back () {
 
 module flange_guide_void (pos = [0, 0, 0], Z = 8) {
 	OD = 24;
-	ID = 18;
+	ID = 18.5;
 	translate(pos) {
 		intersection () {
 			difference () {
@@ -119,12 +119,12 @@ module cpc_9pin_socket () {
 		translate([0, 0, 3]) union () {
 			cylinder(r = R(SocketD), h = PlugH, center = true);
 			for (i = [0 : len(GuideAngles) - 1]) {
-				guide(SocketGuideD, PlugH, GuideAngles[i], GuideWidths[i] + 0.1);
+				guide(SocketGuideD + 0.1, PlugH, GuideAngles[i], GuideWidths[i] + 0.4);
 			}
 		}
 
 		plug_pin_voids(PinH);
-		flange_guide_void([0, 0, (PlugH / 2) - (8 / 2) + 0.01], 8);
+		rotate([0,0, 37]) flange_guide_void([0, 0, (PlugH / 2) - (8 / 2) + 0.01], 8);
 	}
 	
 }
