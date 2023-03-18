@@ -2,7 +2,6 @@
 
 /// <reference path ="jquery.d.ts"/> 
 
-
 let devices : Devices;
 
 class Devices {

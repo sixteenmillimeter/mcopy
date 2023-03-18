@@ -2,7 +2,6 @@
 
 /// <reference path ="jquery.d.ts"/> 
 
-declare var gui : any;
 declare var cfg : any;
 declare var log : any;
 declare var w2popup : any;

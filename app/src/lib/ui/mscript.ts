@@ -5,7 +5,6 @@
 import Mscript from 'mscript';
 
 declare var nav : any;
-declare var gui : any;
 declare var CodeMirror : any;
 declare var mscript : any;
 declare var cmd : any;
