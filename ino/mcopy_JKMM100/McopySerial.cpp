@@ -63,3 +63,14 @@ void McopySerial::log (String message) {
 		Serial.println(message);
 	}
 }
+
+String McopySerial::getString () {
+  while (Serial.available() == 0) {             
+    //Wait for value string
+  }
+  return Serial.readString();
+}
+
+void McopySerial::print (String message) {
+	Serial.println(message);
+}

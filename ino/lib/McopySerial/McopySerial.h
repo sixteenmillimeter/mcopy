@@ -26,6 +26,7 @@ class McopySerial {
 	static const char CAMERA_CAPPER_IDENTIFIER = '8';
 	static const char CAMERA_CAPPER_PROJECTOR_IDENTIFIER = '9';
 	static const char CAMERA_CAPPER_PROJECTORS_IDENTIFIER = '0';
+	static const char CAMERA_EXPOSURE = 'G';
 	static const char CAMERA_FORWARD = 'e';
 	static const char CAMERA_IDENTIFIER = 'k';
 	static const char CAMERA_PROJECTORS_IDENTIFIER = '5';
@@ -43,6 +44,7 @@ class McopySerial {
 	static const char CAPPER_ON = 'A';
 	static const char CONNECT = 'i';
 	static const char DEBUG = 'd';
+	static const char ERROR = 'E';
 	static const char LIGHT = 'l';
 	static const char LIGHT_IDENTIFIER = 'o';
 	static const char MCOPY_IDENTIFIER = 'm';
@@ -59,7 +61,8 @@ class McopySerial {
 	static const char PROJECTOR_SECOND_IDENTIFIER = 't';
 	static const char PROJECTORS = 'x';
 	static const char PROJECTORS_IDENTIFIER = 'd';
-	static const char TAKEUP_BACKWARD = 'E';
+	static const char STATE = 'H';
+	static const char TAKEUP_BACKWARD = 'F';
 	static const char TAKEUP_FORWARD = 'D';
 	/* END CMD FLAGS */
 
@@ -70,6 +73,8 @@ class McopySerial {
 	void setIdentity(char identity);
 	char loop();
 	void confirm(char cmd);
+	String getString();
+	void print(String message);
 
 	void debug (bool state);
 	void log (String message);
