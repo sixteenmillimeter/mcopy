@@ -12,7 +12,7 @@
   PROJECTOR + PROJECTOR_DIR
 
   Wire to corresponding pins
-  Arduino  9   10   5V   GND
+  Arduino  3    4   5V   GND
   Relay    1    2   VCC  GND
 
   For controling JK Projectors 106 models
@@ -39,11 +39,10 @@
 volatile unsigned long now;
 
 //PROJECTOR CONSTANTS
-const int PROJECTOR_MICROSWITCH = 8;
+const int PROJECTOR_MICROSWITCH = 11;
 
-const int PROJECTOR_FWD = 9;
-const int PROJECTOR_BWD = 10; 
-const int PROJECTOR_ON = 11;
+const int PROJECTOR_FWD = 3;
+const int PROJECTOR_BWD = 4; 
 
 const int PROJECTOR_MOMENT = 240;
 const int PROJECTOR_FRAME = 600;
@@ -83,16 +82,14 @@ void pins () {
   pinMode(PROJECTOR_MICROSWITCH, INPUT_PULLUP);
   pinMode(PROJECTOR_FWD, OUTPUT);
   pinMode(PROJECTOR_BWD, OUTPUT);
-  pinMode(PROJECTOR_ON, OUTPUT);
 
   digitalWrite(PROJECTOR_FWD, LOW);
   digitalWrite(PROJECTOR_BWD, LOW);
-  digitalWrite(PROJECTOR_ON, LOW);
 }
 
 void cmd (char val) {
   if (val == McopySerial::PROJECTOR_FORWARD) {
-    proj_direction(true); //explicit
+    proj_direction(true);
   } else if (val == McopySerial::PROJECTOR_BACKWARD) {
     proj_direction(false);
   } else if (val == McopySerial::PROJECTOR) {
@@ -104,8 +101,6 @@ void cmd (char val) {
 
 void proj_start () {
   proj_time = millis();
-  
-  digitalWrite(PROJECTOR_ON, HIGH);
 
   if (proj_dir) {
     digitalWrite(PROJECTOR_FWD, HIGH);
@@ -119,11 +114,8 @@ void proj_start () {
 void proj_stop () {
   //stop both directions
   delay(10);
-  digitalWrite(PROJECTOR_ON, LOW);
   digitalWrite(PROJECTOR_FWD, LOW);
   digitalWrite(PROJECTOR_BWD, LOW);
-
-  //evaluate total time
 
   mc.confirm(McopySerial::PROJECTOR);
   mc.log("projector()");
