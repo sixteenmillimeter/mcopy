@@ -57,6 +57,7 @@ boolean proj_running = false;
 boolean proj_primed = false;
 volatile int proj_micro_state = 0;
 volatile long proj_time = 0;
+volatile long proj_avg = -1;
 
 volatile char cmdChar = 'z';
 
@@ -96,6 +97,8 @@ void cmd (char val) {
     proj_direction(false);
   } else if (val == McopySerial::PROJECTOR) {
     proj_start();
+  } else if (val == McopySerial::STATE) {
+    state();
   }
 }
 
@@ -126,7 +129,7 @@ void proj_stop () {
   mc.log("projector()");
   proj_running = false;
 
-  //Serial.println(millis() - proj_time);
+  update_timing(millis() - proj_time);
 }
 
 void proj_direction (boolean state) {
@@ -163,4 +166,19 @@ void proj_microswitch () {
   } else {
     //delay(2); //some smothing value
   }
+}
+
+void update_timing (int timing) {
+  if (proj_avg == -1) {
+    proj_avg = timing;
+  } else {
+    proj_avg = (int) round((proj_avg + timing) / 2);
+  }
+}
+
+void state () {
+  String stateString = String(McopySerial::CAMERA_EXPOSURE);
+  stateString += String(proj_avg);
+  stateString += String(McopySerial::STATE);
+  mc.print(stateString);
 }
