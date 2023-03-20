@@ -65,6 +65,8 @@ McopySerial mc(McopySerial::PROJECTOR_IDENTIFIER);
 void setup () {
   mc.begin();
   pins();
+  proj_dir = false;
+  cmdChar = 'p';
 }
 
 void loop () {
@@ -73,7 +75,7 @@ void loop () {
   if (proj_running) {
     proj_microswitch();
   } else {
-    cmdChar = mc.loop();
+    //cmdChar = mc.loop();
     cmd(cmdChar);
   }
 }
@@ -83,8 +85,8 @@ void pins () {
   pinMode(PROJECTOR_FWD, OUTPUT);
   pinMode(PROJECTOR_BWD, OUTPUT);
 
-  digitalWrite(PROJECTOR_FWD, LOW);
-  digitalWrite(PROJECTOR_BWD, LOW);
+  digitalWrite(PROJECTOR_FWD, HIGH);
+  digitalWrite(PROJECTOR_BWD, HIGH);
 }
 
 void cmd (char val) {
@@ -103,9 +105,9 @@ void proj_start () {
   proj_time = millis();
 
   if (proj_dir) {
-    digitalWrite(PROJECTOR_FWD, HIGH);
+    digitalWrite(PROJECTOR_FWD, LOW);
   } else {
-    digitalWrite(PROJECTOR_BWD, HIGH);
+    digitalWrite(PROJECTOR_BWD, LOW);
   }
   
   proj_running = true;
@@ -114,8 +116,8 @@ void proj_start () {
 void proj_stop () {
   //stop both directions
   delay(10);
-  digitalWrite(PROJECTOR_FWD, LOW);
-  digitalWrite(PROJECTOR_BWD, LOW);
+  digitalWrite(PROJECTOR_FWD, HIGH);
+  digitalWrite(PROJECTOR_BWD, HIGH);
 
   mc.confirm(McopySerial::PROJECTOR);
   mc.log("projector()");

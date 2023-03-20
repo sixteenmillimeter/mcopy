@@ -2,14 +2,14 @@
 
 #include "McopySerial.h" 
 
-McopySerial::McopySerial (char identity) {
+McopySerial::McopySerial ( char identity) {
 	id = identity;
 }
 
 void McopySerial::begin () {
 	Serial.begin(baud);
 	Serial.flush();
-  	Serial.setTimeout(serialDelay);
+	Serial.setTimeout(serialDelay);
 }
 
 char McopySerial::loop () {
