@@ -7,7 +7,7 @@
 
 SoftwareSerial pixieSerial(-1, PIXIEPIN);
 Adafruit_Pixie light = Adafruit_Pixie(NUMPIXELS, &pixieSerial);
-McopySerial mc(McopySerial::LIGHT_IDENTIFIER);
+McopySerial mc;
 
 String color = "000,000,000";
 
@@ -28,7 +28,7 @@ volatile char cmd = 'z';
 
 
 void setup () {
-  mc.begin();
+  mc.begin(mc.LIGHT_IDENTIFIER);
 	pixieSerial.begin(115200); // Pixie REQUIRES this baud rate
 	light.setPixelColor(0, 0, 0, 0);
   light.show();
@@ -41,10 +41,10 @@ void loop () {
   now = millis();
   cmd = mc.loop();
 
-  if (cmd == McopySerial::LIGHT) {
+  if (cmd == mc.LIGHT) {
     color = mc.getString();
     parseColorString();
-    mc.confirm(McopySerial::LIGHT);
+    mc.confirm(mc.LIGHT);
   }
 
   //send light signal to pixie every second
