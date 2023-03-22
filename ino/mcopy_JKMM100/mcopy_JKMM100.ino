@@ -60,22 +60,19 @@ volatile long proj_avg = -1;
 
 volatile char cmdChar = 'z';
 
-McopySerial mc(McopySerial::PROJECTOR_IDENTIFIER);
+McopySerial mc;
 
 void setup () {
-  mc.begin();
   pins();
-  proj_dir = false;
-  cmdChar = 'p';
+  mc.begin(mc.PROJECTOR_IDENTIFIER);
 }
 
 void loop () {
   now = millis();
-  
   if (proj_running) {
     proj_microswitch();
   } else {
-    //cmdChar = mc.loop();
+    cmdChar = mc.loop();
     cmd(cmdChar);
   }
 }
@@ -90,13 +87,13 @@ void pins () {
 }
 
 void cmd (char val) {
-  if (val == McopySerial::PROJECTOR_FORWARD) {
+  if (val == mc.PROJECTOR_FORWARD) {
     proj_direction(true);
-  } else if (val == McopySerial::PROJECTOR_BACKWARD) {
+  } else if (val == mc.PROJECTOR_BACKWARD) {
     proj_direction(false);
-  } else if (val == McopySerial::PROJECTOR) {
+  } else if (val == mc.PROJECTOR) {
     proj_start();
-  } else if (val == McopySerial::STATE) {
+  } else if (val == mc.STATE) {
     state();
   }
 }
@@ -119,7 +116,7 @@ void proj_stop () {
   digitalWrite(PROJECTOR_FWD, HIGH);
   digitalWrite(PROJECTOR_BWD, HIGH);
 
-  mc.confirm(McopySerial::PROJECTOR);
+  mc.confirm(mc.PROJECTOR);
   mc.log("projector()");
   proj_running = false;
 
@@ -129,10 +126,10 @@ void proj_stop () {
 void proj_direction (boolean state) {
   proj_dir = state;
   if (state) {
-    mc.confirm(McopySerial::PROJECTOR_FORWARD);
+    mc.confirm(mc.PROJECTOR_FORWARD);
     mc.log("proj_direction -> true");
   } else {
-    mc.confirm(McopySerial::PROJECTOR_BACKWARD);
+    mc.confirm(mc.PROJECTOR_BACKWARD);
     mc.log("proj_direction -> false");
   }
 }
@@ -171,8 +168,8 @@ void update_timing (int timing) {
 }
 
 void state () {
-  String stateString = String(McopySerial::CAMERA_EXPOSURE);
+  String stateString = String(mc.CAMERA_EXPOSURE);
   stateString += String(proj_avg);
-  stateString += String(McopySerial::STATE);
+  stateString += String(mc.STATE);
   mc.print(stateString);
 }

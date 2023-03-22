@@ -2,11 +2,10 @@
 
 #include "McopySerial.h" 
 
-McopySerial::McopySerial ( char identity) {
-	id = identity;
-}
+McopySerial::McopySerial () {}
 
-void McopySerial::begin () {
+void McopySerial::begin (char identity) {
+	id = identity;
 	Serial.begin(baud);
 	Serial.flush();
 	Serial.setTimeout(serialDelay);
@@ -24,7 +23,7 @@ char McopySerial::loop () {
 
 void McopySerial::_internal () {
 	if (cmdChar == DEBUG) {
-		debugOn = !debugOn;
+		debug(!debugOn);
 	} else if (cmdChar == CONNECT) {
 		_connect();
 	} else if (cmdChar == MCOPY_IDENTIFIER) {
@@ -42,16 +41,9 @@ void McopySerial::_identify () {
   log("identify()");  
 }
 
-void McopySerial::setBaud (int baudRate) {
-	baud = baudRate;
-}
-
-void McopySerial::setIdentity (char identity) {
-	id = identity;
-}
-
 void McopySerial::debug (bool state) {
 	debugOn = state;
+	log("debug()");
 }
 
 void McopySerial::confirm (char cmd) {
