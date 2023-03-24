@@ -19,3 +19,7 @@ fi
 cp ino/lib/McopySerial/McopySerial.* ino/mcopy_cam_canon/
 cp ino/lib/McopySerial/McopySerial.* ino/mcopy_JKMM100/
 cp ino/lib/McopySerial/McopySerial.* ino/components/mcopy_light/
+
+if [ -d ../McopySerial ]; then
+	cp ino/lib/McopySerial/McopySerial.* ../McopySerial/
+fi
