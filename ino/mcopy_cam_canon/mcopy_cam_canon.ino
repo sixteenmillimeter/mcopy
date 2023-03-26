@@ -16,7 +16,6 @@
 
 #include "CanonBLERemote.h"
 #include <Arduino.h>
-#include "TickTwo.h"
 #include "McopySerial.h"
 
 #define LOG_LOCAL_LEVEL ESP_LOG_INFO
@@ -25,14 +24,15 @@
 
 #define SHUTTTER_BTN    12
 #define RELAY_PIN       14
-#define LED 22
+#define RED_LED         23
+#define GREEN_LED             22
 
 void blink();
-volatile bool ledState;
+volatile bool greenLEDstate;
 
 const String name_remote = "mcopy";
 CanonBLERemote canon_ble(name_remote);
-TickTwo blinker(blink, 500);
+
 McopySerial mc;
 
 volatile boolean connected = false;
@@ -43,8 +43,8 @@ volatile long last = -1;
 volatile byte cmd;
 
 void blink(){
-    digitalWrite(LED, ledState);
-    ledState = !ledState;
+    digitalWrite(GREEN_LED, greenLEDstate);
+    greenLEDstate = !greenLEDstate;
 }
 
 void setup()
@@ -52,13 +52,13 @@ void setup()
     esp_log_level_set("*", ESP_LOG_INFO); 
 
     pinMode(SHUTTTER_BTN, INPUT_PULLUP);  
-    pinMode(LED, OUTPUT);
+    pinMode(GREEN_LED, OUTPUT);
 
-    mc.begin();
-
+    mc.begin(mc.CAMERA_IDENTIFIER);
+    digitalWrite(GREEN_LED, HIGH);
     canon_ble.init();
+
     delay(1000);
-    blinker.start();
 }
 
 void connectBLE () {
@@ -68,10 +68,8 @@ void connectBLE () {
     while(!canon_ble.pair(10));
 
     connected = true;
-    blinker.pause();
-    blinker.interval(100);
 
-    digitalWrite(LED, HIGH);
+    digitalWrite(GREEN_LED, HIGH);
     delay(1000);
     
     mc.log("Camera paired");
@@ -92,27 +90,20 @@ void loop()
         shutter();
     }
 
-    blinker.update();
-
     if (connected && !canon_ble.isConnected()) {
         connected = false;
-        //mc.log("Disconnected");
-        blinker.interval(500);
-        blinker.resume();
     }
 }
 
 void shutter () {
-    digitalWrite(LED, LOW);
-    blinker.resume();
+    digitalWrite(GREEN_LED, LOW);
     mc.log("Shutter pressed");
 
     if(!canon_ble.trigger()){
         mc.log("Trigger Failed");
     }
 
-    blinker.pause();
-    digitalWrite(LED, HIGH);
+    digitalWrite(GREEN_LED, HIGH);
     last = millis();
     mc.confirm(mc.CAMERA);
 }
