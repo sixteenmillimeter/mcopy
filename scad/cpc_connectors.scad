@@ -6,6 +6,8 @@ include <./common/common.scad>;
 
 PART="cpc_9pin_socket";
 
+FN = 120;
+
 PlugD = 15.75;
 PlugH = 11.65;
 PlugGuideD = 17;
@@ -16,13 +18,13 @@ PlugGuideRetraction = 1.25;
 PinSpacing = 3.85;
 
 SocketD = PlugD + 0.4;
-SocketGuideD = PlugGuideD + 0.4;
+SocketGuideD = PlugGuideD + 0.5;
 
-SocketOuterD = 19.5;
+SocketOuterD = 20;
 
 CollarD = 22;
 
-GuideAngles = [0,   100, 140, 220, 260];
+GuideAngles = [0,   100, 140, 215, 260];
 GuideWidths = [3.2, 1.5, 1.5, 1.5, 1.5];
 
 function arc_angle (D, W) = W / ((PI/180) * (D/2));
@@ -56,7 +58,7 @@ module plug_pin_voids (PinH) {
 }
 
 module cpc_9pin_plug () {
-	$fn = 200;
+	$fn = FN;
 	PinH = PlugH + 1;
 	difference () {
 		union () {
@@ -74,7 +76,7 @@ module cpc_9pin_plug () {
 }
 
 module cpc_9pin_plug_collar () {
-	$fn = 200;
+	$fn = FN;
 	H = 25;
 
 	difference () {
@@ -109,22 +111,22 @@ module flange_guide_void (pos = [0, 0, 0], Z = 8) {
 }
 
 module cpc_9pin_socket () {
-	$fn = 120;
+	$fn = FN;
 	PinH = PlugH + 1;
 
 	difference () {
 		union () {
 			cylinder(r = R(SocketOuterD), h = PlugH, center = true);
 		}
-		translate([0, 0, 3]) union () {
+		translate([0, 0, 3]) {
 			cylinder(r = R(SocketD), h = PlugH, center = true);
 			for (i = [0 : len(GuideAngles) - 1]) {
-				guide(SocketGuideD + 0.1, PlugH, GuideAngles[i], GuideWidths[i] + 0.4);
+				guide(SocketGuideD + 0.1, PlugH, GuideAngles[i], GuideWidths[i] + 0.5);
 			}
 		}
 
 		plug_pin_voids(PinH);
-		rotate([0,0, 37]) flange_guide_void([0, 0, (PlugH / 2) - (8 / 2) + 0.01], 8);
+		//rotate([0,0, 37]) flange_guide_void([0, 0, (PlugH / 2) - (8 / 2) + 0.01], 8);
 	}
 	
 }
