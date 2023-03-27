@@ -34,7 +34,7 @@ module guide (Diameter, Height, Angle, Width) {
 	A = arc_angle(Diameter, Width);
 	echo(A);
 	rotate([0, 0, Angle]) difference () {
-		cylinder(r = R(Diameter), h = Height, center = true, $fn = 120);
+		cylinder(r = R(Diameter), h = Height, center = true, $fn = FN);
 		rotate([0, 0, -A/2]) translate([Diameter / 2, 0, 0])  cube([Diameter, Diameter * 2, Height + 1], center = true);
 		rotate([0, 0, A/2]) translate([-Diameter / 2, 0, 0])  cube([Diameter, Diameter * 2, Height + 1], center = true);
 	}
@@ -43,6 +43,13 @@ module guide (Diameter, Height, Angle, Width) {
 module plug_pin (X, Y, H) {
 	translate([X, Y, 0]) {
 		cylinder(r = R(PlugPinD), h = H, center = true, $fn = 40);
+	}
+}
+
+module m3_bolt_void (pos = [0, 0, 0], H = 1) {
+	D = 3.25;
+	translate(pos) {
+		cylinder(r = R(D), h = H, center = true, $fn = 40);
 	}
 }
 
@@ -107,7 +114,6 @@ module flange_guide_void (pos = [0, 0, 0], Z = 8) {
 				translate([0, 0, -3]) rotate([-7, 0, 0]) translate([-(OD/2)+(5/2), -OD/4, 0]) cube([OD, OD/2, 3], center = true);
 			}
 		}
-		
 	}
 }
 
@@ -115,10 +121,12 @@ module cpc_9pin_socket () {
 	$fn = FN;
     BaseH = 3;
 	PinH = SocketH + BaseH + 1;
-
+	BoltVoid = 32;
 	difference () {
-		cylinder(r = R(SocketOuterD), h = SocketH + BaseH, center = true);
-        
+        union () {
+            cylinder(r = R(SocketOuterD), h = SocketH + BaseH, center = true);
+            translate([0, 0, -((SocketH + BaseH) / 2) + (BaseH / 2)]) rounded_cube([40, 40, BaseH], d = 6, center = true, $fn = 30);
+        }
 		translate([0, 0, BaseH]) {
 			cylinder(r = R(SocketD), h = SocketH + BaseH, center = true);
 			for (i = [0 : len(GuideAngles) - 1]) {
@@ -128,6 +136,12 @@ module cpc_9pin_socket () {
 
 		plug_pin_voids(PinH);
 		translate([0, 0, 3]) rotate([0,0, 37]) flange_guide_void([0, 0, (PlugH / 2) - (8 / 2) + 0.01], 8);
+		translate([0, 0, -((SocketH + BaseH) / 2) + (BaseH / 2)]) {
+			m3_bolt_void([BoltVoid/2,   BoltVoid/2, 0], BaseH + 1);
+			m3_bolt_void([BoltVoid/2,  -BoltVoid/2, 0], BaseH + 1);
+			m3_bolt_void([-BoltVoid/2,  BoltVoid/2, 0], BaseH + 1);
+			m3_bolt_void([-BoltVoid/2, -BoltVoid/2, 0], BaseH + 1);
+		}
 	}
 	
 }
