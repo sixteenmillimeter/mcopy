@@ -130,7 +130,6 @@ module case_bottom () {
 	}
 	
 	esp32_mount(ESP32Position);
-
 }
 
 module case_top () {
