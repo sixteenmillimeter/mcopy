@@ -4,6 +4,12 @@ BaseZ = 10; //debug
 BaseX = 91.4;
 BaseY = 97.6;
 
+MountX = 60;
+MountY = 97.6;
+MountZ = 73;
+
+CameraY = 15;
+
 function hypotenuese(X) = sqrt(pow(X, 2) + pow(X, 2));
 
 module base_void (pos = [0, 0, 0]) {
@@ -59,7 +65,7 @@ module canon_rebel_t3i (pos = [0, 0, 0]) {
 		color("azure", 0.25) {
 			cage_cube(X, Y, Z);
 		}
-		color("green") sensor([0, 0, 0]); //160
+		color("green") sensor([0, 0, -(Z/2) + (14.9/2) + 30.75]); //160
 	}
 }
 
@@ -81,14 +87,14 @@ module canon_m_50 (pos = [0, 0, 0]) {
 		color("green", 0.25) {
 			cage_cube(X, Y, Z);
 		}
-		color("green") sensor([0, 0, 0]);
+		color("green") sensor([0, 0, -(Z/2) + (14.9/2) + 23.71]); //,150
 	}
 }
 
 module canon_m_50_mount () {
-	X = 60;
-	Y = 60;
-	Z = 71.75;
+	X = MountX;
+	Y = MountY;
+	Z = MountZ;
 	SPACING = 40;
 	ACCESS = 15;
 	DIAG = hypotenuese(ACCESS);
@@ -99,13 +105,13 @@ module canon_m_50_mount () {
 			cube([X + 1, Y-20, Z-40], center = true);
 
 			//void around camera bolt
-			translate([0, 0, (Z/2) - 20]) cylinder(r = R(30), h = 20, center = true, $fn = 100);
+			translate([0, CameraY, (Z/2) - 15]) cylinder(r = R(30), h = 20, center = true, $fn = 100);
 			//void for camera bolt
-			translate([0, 0, (Z/2)]) cylinder(r = R(5), h = 20 + 1, center = true, $fn = 60);
+			translate([0, CameraY, (Z/2)]) cylinder(r = R(5), h = 20 + 1, center = true, $fn = 60);
 		
 			//void for base bolts
-			//translate([0, SPACING/2, -(Z/2) + 10]) cylinder(r = R(9), h = 40, center = true, $fn = 60);
-			//translate([0, -SPACING/2, -(Z/2) + 10]) cylinder(r = R(9), h = 40, center = true, $fn = 60);
+			base_nut_void([0, SPACING/2, -(Z/2) + 10]);
+			base_nut_void([0, -SPACING/2, -(Z/2) + 10]);
 		
 			//bolt access
 			//translate([0, 0, -10]) rotate([0, 45, 0]) cube([ACCESS, Y + 1, ACCESS], center = true);
@@ -114,9 +120,27 @@ module canon_m_50_mount () {
 	}
 }
 
-//color("red") base();
-//canon_rebel_t3i_mount([0, 20, 33]);
-//canon_rebel_t3i([0, 20+52.5, 66 + (99.5/2)]);
+module base_nut_void (pos = [0, 0, 0], H = 8.5) {
+	translate(pos) {
+		cylinder(r = R(16.3), h = H, center = true, $fn = 6);
+		cylinder(r = R(9.7), h = H + 20, center = true, $fn = 40);
+	}
+}
 
-//canon_m_50([0, 0, 115.75]);
-canon_m_50_mount();
+module debug () {
+    color("red") base();
+    //canon_rebel_t3i_mount([0, 20, 33]);
+    canon_rebel_t3i([0, 20+52.5, 66 + (99.5/2)]);
+
+    canon_m_50([0, CameraY, MountZ + 44]);
+    canon_m_50_mount();
+}
+
+PART = "mount";
+
+if (PART == "mount") {
+    canon_m_50_mount();
+} else {
+    debug();
+
+}
