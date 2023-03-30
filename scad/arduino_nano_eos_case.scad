@@ -24,6 +24,9 @@ ButtonPosition = [-15, -CaseY/2, 0];
 
 LEDPosition = [15, -CaseY/2, 0];
 
+BoltY = 25;
+BoltX = 0;
+
 module arduino_nano_mount (pos = [0, 0, 0]) {
     X = 18.2;
     Y = 43.9;
@@ -86,16 +89,24 @@ module LED_void (pos = [0, 0, 0]) {
 	translate(pos) rotate([90, 0, 0]) cylinder(r = R(D), h = 10, center = true, $fn = 60);
 }
 
+module bolt_void (pos = [0, 0, 0], Z = 20, pad = 0) {
+	translate(pos) cylinder(r = R(3.25 + pad), h = Z, center = true, $fn = 30);
+}
+
+module bolt_plug (pos = [0, 0, 0], pad = 0) {
+	translate(pos) cylinder(r = R(8 + pad), h = 3.5, center = true, $fn = 60);
+}
+
 module case_bottom () {
 	difference () {
 		union () {
 			case_shell();
-			//bolt_plug([0, BoltY, -(CaseZ/2)+4]);
+			bolt_plug([BoltX, BoltY, -(CaseZ/2)+4]);
 		}
 		translate([0, 0, CaseSplitZ]) cube([CaseX + 1, CaseY + 1, CaseZ],center = true);
 		//bolt
-		//translate([0, BoltY, -(CaseZ/2)+(3.5/2)-0.01]) cylinder(r = R(5.6), h = 3.5, center = true, $fn = 30);
-		//bolt_void([0, BoltY, -(CaseZ/2)], 20);
+		translate([BoltX, BoltY, -(CaseZ/2)+(3.5/2)-0.01]) cylinder(r = R(5.6), h = 3.5, center = true, $fn = 30);
+		bolt_void([BoltX, BoltY, -(CaseZ/2)], 20);
         //usb mini
         usb_mini_void(ArduinoNanoPosition);
         audio_jack_void (AudioJackPosition);
@@ -112,6 +123,7 @@ module case_top () {
 	difference () {
 		case_shell();
 		translate([0, 0, CaseSplitZ-CaseZ]) cube([CaseX + 1, CaseY + 1, CaseZ],center = true);
+        bolt_void([BoltX, BoltY, 0], CaseZ - 6 + 1);
 		translate([2.5, -28, 17]) rotate([0, 0, 90]) scale([0.5, 0.5, 1]) linear_extrude(4) {
 			text("Canon Rebel T3i", font = "Liberation Sans:style=Bold Italic");
 		}
@@ -119,6 +131,11 @@ module case_top () {
 	translate([0, 0, 12]) difference () {
 		rounded_cube([CaseX - 6.1, CaseY - 6.1, 4], d = 6, center = true);
 		rounded_cube([CaseX - 8, CaseY - 8, 4 + 1], d = 5, center = true);
+	}
+    difference () {
+		translate([BoltX, BoltY, 1]) cube([10, 10, CaseZ - 6 - 1], center = true);
+		bolt_void([BoltX, BoltY, -4], CaseZ - 6 + 1, -.4);
+		bolt_plug([BoltX, BoltY, -(CaseZ/2)+4], 0.2);
 	}
 }
 
@@ -137,7 +154,7 @@ module relay_module_mount (pos = [0, 0, 0]) {
 }
 
 module debug_relay_module (pos = [0, 0, 0]) {
-    translate(pos) {
+    translate(pos) rotate([0, 0, 180]) {
         difference () {
             union () {
                 cube([RelayModuleX, RelayModuleY, RelayModuleZ], center = true);
@@ -153,15 +170,17 @@ module debug_relay_module (pos = [0, 0, 0]) {
 }
 
 module debug () {
+    case_top();
     difference () {
         case_bottom();
-        //translate([(CaseX/2)+20, 0, 0]) cube([CaseX, CaseY + 1, CaseZ + 1], center = true);
+        
+        translate([(CaseX/2), 0, 0]) cube([CaseX, CaseY + 1, CaseZ + 1], center = true);
     }
     translate([0, 0, 4]) translate(ArduinoNanoPosition) rotate([0, 0, 90]) nano_328_v1();
     debug_relay_module(RelayModulePosition);
 }
 
-PART = "case_top";
+PART = "case_bottom";
 
 if (PART == "case_bottom") {
     case_bottom();
