@@ -7,8 +7,8 @@
 
 
 //$fs = .1;
-$fn = 50;
-module EFmount() {
+$fn = 120;
+module EFmount_body() {
 	//$fa = 1;
 	union() {
 		translate([0,0,-1])
@@ -50,14 +50,16 @@ module threads() {
 	}	
 }
 
-difference() {
-	EFmount();
-	translate([0, 0, 1.4])
-		cylinder(h = 10, r = 41.5/2);
-	for(k = [44.639 : 8.639 : 385]) {
-		rotate([0, 0, -k])
-		translate([-68/2, 0, -1.1])
-		cylinder(h = 6, r = 2);
-	}
-	//cylinder(h = 17, r = 33/2);
+module EFmount () {
+    difference() {
+        EFmount_body();
+        translate([0, 0, 1.4])
+            cylinder(h = 10, r = 41.5/2);
+        for(k = [44.639 : 8.639 : 385]) {
+            rotate([0, 0, -k])
+            translate([-68/2, 0, -1.1])
+            cylinder(h = 6, r = 2);
+        }
+        //cylinder(h = 17, r = 33/2);
+    }
 }

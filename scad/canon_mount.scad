@@ -9,6 +9,7 @@ MountY = 97.6;
 MountZ = 73;
 
 CameraY = 15;
+CameraBoltD = 6.4;
 
 function hypotenuese(X) = sqrt(pow(X, 2) + pow(X, 2));
 
@@ -107,15 +108,11 @@ module canon_m_50_mount () {
 			//void around camera bolt
 			translate([0, CameraY, (Z/2) - 15]) cylinder(r = R(30), h = 20, center = true, $fn = 100);
 			//void for camera bolt
-			translate([0, CameraY, (Z/2)]) cylinder(r = R(5), h = 20 + 1, center = true, $fn = 60);
+			translate([0, CameraY, (Z/2)]) cylinder(r = R(CameraBoltD), h = 20 + 1, center = true, $fn = 60);
 		
 			//void for base bolts
 			base_nut_void([0, SPACING/2, -(Z/2) + 10]);
 			base_nut_void([0, -SPACING/2, -(Z/2) + 10]);
-		
-			//bolt access
-			//translate([0, 0, -10]) rotate([0, 45, 0]) cube([ACCESS, Y + 1, ACCESS], center = true);
-			//translate([0, 0, -10 - (ACCESS/2) + (10/4)])cube([DIAG, Y + 1, 10], center = true);
 		}
 	}
 }
