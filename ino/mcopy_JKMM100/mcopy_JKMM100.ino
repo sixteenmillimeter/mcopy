@@ -66,7 +66,12 @@ McopySerial mc;
 
 void setup () {
   pins();
+  digitalWrite(LED_FWD, HIGH);
+  digitalWrite(LED_BWD, HIGH);
   mc.begin(mc.PROJECTOR_IDENTIFIER);
+  delay(42);
+  digitalWrite(LED_FWD, LOW);
+  digitalWrite(LED_BWD, LOW);
 }
 
 void loop () {
@@ -88,6 +93,9 @@ void pins () {
 
   digitalWrite(PROJECTOR_FWD, HIGH);
   digitalWrite(PROJECTOR_BWD, HIGH);
+
+  digitalWrite(LED_FWD, LOW);
+  digitalWrite(LED_BWD, LOW);
 }
 
 void cmd (char val) {
