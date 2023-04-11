@@ -16,9 +16,15 @@ if [ -f "$(which jq)" ]; then
 	rm -f "${TMP_FILE}"
 fi
 
-cp ino/lib/McopySerial/McopySerial.* ino/mcopy_cam_canon/
-cp ino/lib/McopySerial/McopySerial.* ino/mcopy_JKMM100/
-cp ino/lib/McopySerial/McopySerial.* ino/components/mcopy_light/
+SKETCHES=(
+	mcopy_cam_canon_ble
+	mcopy_JKMM100
+	components/mcopy_light
+)
+
+for sketch in "${SKETCHES[@]}"; do
+	cp ino/lib/McopySerial/McopySerial.* ino/${sketch}/
+done
 
 if [ -d ../McopySerial ]; then
 	cp ino/lib/McopySerial/McopySerial.* ../McopySerial/
