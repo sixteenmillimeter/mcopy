@@ -39,7 +39,9 @@
 volatile unsigned long now;
 
 //PROJECTOR CONSTANTS
-const int PROJECTOR_MICROSWITCH = 11;
+const int PROJECTOR_MICROSWITCH = 10;
+const int LED_FWD = 11;
+const int LED_BWD = 12;
 
 const int PROJECTOR_FWD = 3;
 const int PROJECTOR_BWD = 4; 
@@ -81,6 +83,8 @@ void pins () {
   pinMode(PROJECTOR_MICROSWITCH, INPUT_PULLUP);
   pinMode(PROJECTOR_FWD, OUTPUT);
   pinMode(PROJECTOR_BWD, OUTPUT);
+  pinMode(LED_FWD, OUTPUT);
+  pinMode(LED_BWD, OUTPUT);
 
   digitalWrite(PROJECTOR_FWD, HIGH);
   digitalWrite(PROJECTOR_BWD, HIGH);
@@ -103,8 +107,10 @@ void proj_start () {
 
   if (proj_dir) {
     digitalWrite(PROJECTOR_FWD, LOW);
+    digitalWrite(LED_FWD, HIGH);
   } else {
     digitalWrite(PROJECTOR_BWD, LOW);
+    digitalWrite(LED_FWD, HIGH);
   }
   
   proj_running = true;
@@ -115,6 +121,8 @@ void proj_stop () {
   delay(10);
   digitalWrite(PROJECTOR_FWD, HIGH);
   digitalWrite(PROJECTOR_BWD, HIGH);
+  digitalWrite(LED_FWD, LOW);
+  digitalWrite(LED_BWD, LOW);
 
   mc.confirm(mc.PROJECTOR);
   mc.log("projector()");
