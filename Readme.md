@@ -2,6 +2,11 @@
 
 An open platform for controlling small-gauge film optical printers (16mm, Super8, 8mm).
 
+## [Project Home - git.sixteenmillimter.com/16mm/mcopy](https://git.sixteenmillimter.com/16mm/mcopy)
+
+* Github Mirror - [github.com/sixteenmillimeter/mcopy](https://github.com/sixteenmillimeter/mcopy)
+* Gitlab Mirror - [gitlab.com/16mm/mcopy](https://gitlab.com/16mm/mcopy)
+
 -------
 1. <a href="#intro">Introduction</a>
 2. <a href="#downloads">Downloads</a>
