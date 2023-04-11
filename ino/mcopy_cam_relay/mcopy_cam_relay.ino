@@ -1,141 +1,96 @@
 /*
+
+  Control a camera with a single relay that
+  triggers a shutter release.
+
+  Hardware
+
+  Arduino Nano
+  Relay module
+  LED
+  480 Ohm resistor
+
   Wiring
   
-  CAMERA + CAMERA_DIR
+  CAMERA
   Wire directly to corresponding relay pins.
-  Arduino  2   3
-  Relay    1   2
+  Arduino  2  5V   GND
+  Relay    1  VCC  GND
 */
 
-boolean debug_state = false;
-
-//unsigned long now; //to be compared to stored values every loop
+#include "McopySerial.h"
 
 //CAMERA CONSTANTS
 const int CAMERA = 2;
-const int CAMERA_DIR = 3;
+const int LED = 8;
 
 const int CAMERA_MOMENT = 240;
-const int CAMERA_FRAME = 600;
-//CAMERA VARIABLES
-boolean cam_dir = true; 
 
-//CAMERA COMMANDS
-const char cmd_camera = 'c';
-const char cmd_cam_forward = 'e';
-const char cmd_cam_backward = 'f';
+//VARIABLES
+volatile int cameraFrame = 1200;
+volatile char cmdChar = 'z';
+volatile long now;
 
-const char cmd_debug = 'd';
-const char cmd_connect = 'i';
-volatile char cmd_char = 'z';
-const char cmd_mcopy_identifier = 'm';
-
-const char cmd_cam_identifier = 'k';
-
-const int serialDelay = 5;
+McopySerial mc;
 
 void setup () {
-  Serial.begin(57600);
-  Serial.flush();
-  //Serial.setTimeout(serialDelay);
-
   pins();
+  digitalWrite(LED, HIGH);
+  mc.begin(mc.CAMERA_IDENTIFIER);
+  delay(42);
+  digitalWrite(LED, LOW);
 }
 
 void loop () {
-  //now = millis();
-  if (Serial.available()) {
-    /* read the most recent byte */
-    cmd_char = (char)Serial.read();
-  }
-  if (cmd_char != 'z') {
-    cmd(cmd_char);
-    cmd_char = 'z';
-  }
+  now = millis();
+  cmdChar = mc.loop();
+  cmd(cmdChar);
 }
 
 void pins () {
-  //RELAYS
   pinMode(CAMERA, OUTPUT);
+  pinMode(LED, OUTPUT);
 
-  pinMode(CAMERA_DIR, OUTPUT);
-
-  //SET LOW
   digitalWrite(CAMERA, HIGH);
-  
-  digitalWrite(CAMERA_DIR, HIGH);
+  digitalWrite(LED, LOW);
 
 }
 
 void cmd (char val) {
-  if (val == cmd_debug) {
-    debug();
-  } else if (val == cmd_connect) {
-    connect();
-  } else if (val == cmd_mcopy_identifier) {
-    identify();
-  } else if (val == cmd_cam_forward) {
-    cam_direction(true); //explicit
-  } else if (val == cmd_cam_backward) {
-    cam_direction(false);
-  } else if (val == cmd_camera) {
-    cam_start();
+  if (val == mc.CAMERA_FORWARD) {
+    camera_direction(true);
+  } else if (val == mc.CAMERA_BACKWARD) {
+    camera_direction(false);
+  } else if (val == mc.CAMERA) {
+    camera();
+  } else if (val == mc.STATE) {
+    state();
   }
 }
 
-void debug () {
-  debug_state = true;
-  Serial.println(cmd_debug);
-  log("debugging enabled");
-}
-
-void connect () {
-  Serial.println(cmd_connect);
-  log("connect()");
-}
-
-void identify () {
-  Serial.println(cmd_cam_identifier);
-  log("identify()");  
-}
-
-void setDir (int pin, boolean dir) {
-  if (!dir) {
-    digitalWrite(pin, LOW);
+//null route direction
+void camera_direction (boolean state) {
+  if (state) {
+    mc.confirm(mc.CAMERA_FORWARD);
+    mc.log("camera_direction(true)");
   } else {
-    digitalWrite(pin, HIGH);
+    mc.confirm(mc.CAMERA_BACKWARD);
+    mc.log("camera_direction(false)");
   }
 }
 
-void cam_start () {
+void camera () {
   digitalWrite(CAMERA, LOW);
+  digitalWrite(LED, HIGH);
   delay(CAMERA_MOMENT);
   digitalWrite(CAMERA, HIGH);
-  delay(CAMERA_FRAME - CAMERA_MOMENT);
-  cam_stop();
+  delay(cameraFrame - CAMERA_MOMENT);
+  digitalWrite(LED, LOW);
 }
 
-void cam_stop () {
-  Serial.println(cmd_camera);
-  log("camera()");
-}
-
-
-void cam_direction (boolean state) {
-  cam_dir = state;
-  if (state) {
-    digitalWrite(CAMERA_DIR, LOW);
-    Serial.println(cmd_cam_forward);
-    log("cam_direction -> true");
-  } else {
-    digitalWrite(CAMERA_DIR, HIGH);
-    Serial.println(cmd_cam_backward);
-    log("cam_direction -> false");
-  }
-}
-
-void log (String msg) {
-  if (debug_state) {
-    Serial.println(msg);
-  }
+void state () {
+  String stateString = String(mc.CAMERA_EXPOSURE);
+  stateString += String(cameraFrame);
+  stateString += String(mc.STATE);
+  mc.print(stateString);
 }
