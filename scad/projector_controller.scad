@@ -1,7 +1,7 @@
 include <arduino.scad>;
 include <common/common.scad>;
 
-PART="electronics_mount";
+PART="usb_protector";
 
 CaseX = 121;
 CaseY = 172;
@@ -255,10 +255,20 @@ module electronics_mount () {
 	}
 }
 
+module usb_protector () {
+    H = 3;
+    difference () {
+        rounded_cube([IN, IN, H], d = 5, center = true, $fn = 40);
+        cube([11.75, 11.75, H + 1], center = true);
+    }
+}
+
 if (PART == "electronics_mount") {
 	electronics_mount();
 } else if (PART == "case_mounts") {
 	case_mounts();
+} else if (PART == "usb_protector") {
+    usb_protector();
 } else {
 	debug();
 }

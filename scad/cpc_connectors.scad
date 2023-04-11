@@ -40,6 +40,7 @@ module guide (Diameter, Height, Angle, Width) {
 	}
 }
 
+//
 module plug_pin (X, Y, H) {
 	translate([X, Y, 0]) {
 		cylinder(r = R(PlugPinD), h = H, center = true, $fn = 40);
@@ -120,12 +121,18 @@ module flange_guide_void (pos = [0, 0, 0], Z = 8) {
 module cpc_9pin_socket () {
 	$fn = FN;
     BaseH = 3;
-	PinH = SocketH + BaseH + 1;
-	BoltVoid = 32;
+	
+	BoltVoid = 26;
+	BackingH = 8;
+	BackingD = 17;
+
+	PinH = SocketH + BaseH + BackingH + 10;
+
 	difference () {
         union () {
             cylinder(r = R(SocketOuterD), h = SocketH + BaseH, center = true);
-            translate([0, 0, -((SocketH + BaseH) / 2) + (BaseH / 2)]) rounded_cube([40, 40, BaseH], d = 6, center = true, $fn = 30);
+            translate([0, 0, -((SocketH + BaseH) / 2) + (BaseH / 2)]) rounded_cube([34, 34, BaseH], d = 6, center = true, $fn = 40);
+        	translate([0, 0, - (BaseH / 2) - BackingH]) cylinder(r = R(BackingD), h = BackingH, center = true);
         }
 		translate([0, 0, BaseH]) {
 			cylinder(r = R(SocketD), h = SocketH + BaseH, center = true);
