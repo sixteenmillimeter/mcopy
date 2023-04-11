@@ -18,6 +18,7 @@ fi
 
 SKETCHES=(
 	mcopy_cam_canon_ble
+	mcopy_cam_relay
 	mcopy_JKMM100
 	components/mcopy_light
 )
