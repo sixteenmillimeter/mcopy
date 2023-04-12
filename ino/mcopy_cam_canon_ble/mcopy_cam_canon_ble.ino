@@ -27,8 +27,6 @@
 #define RED_LED         23
 #define GREEN_LED       22
 
-void blink();
-volatile bool greenLEDstate;
 
 const String name_remote = "mcopy";
 CanonBLERemote canon_ble(name_remote);
@@ -39,6 +37,7 @@ volatile boolean connected = false;
 
 volatile long now;
 volatile long last = -1;
+volatile long cameraFrame = 2000;
 
 volatile char cmdChar = 'z';
 
@@ -61,12 +60,12 @@ void pins () {
     pinMode(GREEN_LED, OUTPUT);
 
     digitalWrite(RED_LED, LOW);
-    digitalWrite(GREEN_LED, HIGH);
+    digitalWrite(GREEN_LED, LOW);
 }
 
 void connectBLE () {
     do {
-        Serial.println("Pairing...");
+        mc.log("Pairing...");
     }
     while(!canon_ble.pair(10));
 
@@ -89,8 +88,9 @@ void loop()
 
     // Shutter
     if (digitalRead(SHUTTTER_BTN) == LOW && last + 1000 < now){
-        shutter();
+        camera();
     }
+
 
     if (connected && !canon_ble.isConnected()) {
         connected = false;
@@ -99,21 +99,50 @@ void loop()
 
 void cmd (char val) {
     if (cmd == mc.CAMERA && connected) {
-        shutter();
+        camera();
+    } else if (val == mc.CAMERA_FORWARD) {
+        camera_direction(true);
+    } else if (val == mc.CAMERA_BACKWARD) {
+        camera_direction(false);
+    } else if (val == mc.STATE) {
+        state();
     }
 }
 
-void shutter () {
+void camera () {
+    long start = now;
+    long end;
+
     digitalWrite(GREEN_LED, HIGH);
     digitalWrite(RED_LED, HIGH);
     mc.log("Shutter pressed");
 
     if(!canon_ble.trigger()){
-        mc.log("Trigger Failed");
+        mc.log("camera() failed");
     }
 
+    end = millis();
+    delay(cameraFrame - (end - start));
     digitalWrite(GREEN_LED, HIGH);
     digitalWrite(RED_LED, LOW);
     last = millis();
     mc.confirm(mc.CAMERA);
+}
+
+//null route direction
+void camera_direction (boolean state) {
+    if (state) {
+        mc.confirm(mc.CAMERA_FORWARD);
+        mc.log("camera_direction(true)");
+    } else {
+        mc.confirm(mc.CAMERA_BACKWARD);
+        mc.log("camera_direction(false)");
+    }
+}
+
+void state () {
+  String stateString = String(mc.CAMERA_EXPOSURE);
+  stateString += String(cameraFrame);
+  stateString += String(mc.STATE);
+  mc.print(stateString);
 }
