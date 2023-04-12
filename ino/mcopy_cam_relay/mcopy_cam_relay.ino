@@ -91,6 +91,7 @@ void camera () {
   digitalWrite(CAMERA, LOW);
   delay(cameraFrame - CAMERA_MOMENT);
   digitalWrite(LED, LOW);
+  mc.confirm(mc.CAMERA);
 }
 
 void state () {
