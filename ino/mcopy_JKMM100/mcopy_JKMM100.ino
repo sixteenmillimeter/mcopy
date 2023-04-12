@@ -118,7 +118,7 @@ void proj_start () {
     digitalWrite(LED_FWD, HIGH);
   } else {
     digitalWrite(PROJECTOR_BWD, LOW);
-    digitalWrite(LED_FWD, HIGH);
+    digitalWrite(LED_BWD, HIGH);
   }
   
   proj_running = true;
