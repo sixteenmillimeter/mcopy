@@ -25,7 +25,7 @@
 #define SHUTTTER_BTN    12
 #define RELAY_PIN       14
 #define RED_LED         23
-#define GREEN_LED             22
+#define GREEN_LED       22
 
 void blink();
 volatile bool greenLEDstate;
@@ -40,25 +40,28 @@ volatile boolean connected = false;
 volatile long now;
 volatile long last = -1;
 
-volatile byte cmd;
+volatile char cmdChar = 'z';
 
-void blink(){
-    digitalWrite(GREEN_LED, greenLEDstate);
-    greenLEDstate = !greenLEDstate;
-}
 
 void setup()
 {
     esp_log_level_set("*", ESP_LOG_INFO); 
 
-    pinMode(SHUTTTER_BTN, INPUT_PULLUP);  
-    pinMode(GREEN_LED, OUTPUT);
-
+    pins();
     mc.begin(mc.CAMERA_IDENTIFIER);
-    digitalWrite(GREEN_LED, HIGH);
+    digitalWrite(RED_LED, HIGH);
     canon_ble.init();
 
     delay(1000);
+}
+
+void pins () {
+    pinMode(SHUTTTER_BTN, INPUT_PULLUP);  
+    pinMode(RED_LED, OUTPUT);
+    pinMode(GREEN_LED, OUTPUT);
+
+    digitalWrite(RED_LED, LOW);
+    digitalWrite(GREEN_LED, HIGH);
 }
 
 void connectBLE () {
@@ -69,6 +72,7 @@ void connectBLE () {
 
     connected = true;
 
+    digitalWrite(RED_LED, LOW);
     digitalWrite(GREEN_LED, HIGH);
     delay(1000);
     
@@ -79,11 +83,9 @@ void connectBLE () {
 void loop()
 {
     now = millis();
-    cmd = mc.loop();
+    cmdChar = mc.loop();
 
-    if (cmd == mc.CAMERA && last + 1000 < now) {
-        shutter();
-    }
+    cmd(cmdChar);
 
     // Shutter
     if (digitalRead(SHUTTTER_BTN) == LOW && last + 1000 < now){
@@ -95,8 +97,15 @@ void loop()
     }
 }
 
+void cmd (char val) {
+    if (cmd == mc.CAMERA && connected) {
+        shutter();
+    }
+}
+
 void shutter () {
-    digitalWrite(GREEN_LED, LOW);
+    digitalWrite(GREEN_LED, HIGH);
+    digitalWrite(RED_LED, HIGH);
     mc.log("Shutter pressed");
 
     if(!canon_ble.trigger()){
@@ -104,6 +113,7 @@ void shutter () {
     }
 
     digitalWrite(GREEN_LED, HIGH);
+    digitalWrite(RED_LED, LOW);
     last = millis();
     mc.confirm(mc.CAMERA);
 }
