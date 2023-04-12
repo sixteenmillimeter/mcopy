@@ -22,6 +22,7 @@
 
 //CAMERA CONSTANTS
 const int CAMERA = 2;
+const int BUTTON = 7;
 const int LED = 8;
 
 const int CAMERA_MOMENT = 240;
@@ -45,11 +46,15 @@ void loop () {
   now = millis();
   cmdChar = mc.loop();
   cmd(cmdChar);
+  if (digitalRead(BUTTON) == LOW) {
+    camera();
+  }
 }
 
 void pins () {
   pinMode(CAMERA, OUTPUT);
   pinMode(LED, OUTPUT);
+  pinMode(BUTTON, INPUT_PULLUP);
 
   digitalWrite(CAMERA, HIGH);
   digitalWrite(LED, LOW);
