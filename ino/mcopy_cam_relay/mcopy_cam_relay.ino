@@ -28,7 +28,7 @@ const int LED = 8;
 const int CAMERA_MOMENT = 240;
 
 //VARIABLES
-volatile int cameraFrame = 1200;
+volatile int cameraFrame = 2000;
 volatile char cmdChar = 'z';
 volatile long now;
 
@@ -56,7 +56,7 @@ void pins () {
   pinMode(LED, OUTPUT);
   pinMode(BUTTON, INPUT_PULLUP);
 
-  digitalWrite(CAMERA, HIGH);
+  digitalWrite(CAMERA, LOW);
   digitalWrite(LED, LOW);
 
 }
@@ -85,10 +85,10 @@ void camera_direction (boolean state) {
 }
 
 void camera () {
-  digitalWrite(CAMERA, LOW);
+  digitalWrite(CAMERA, HIGH);
   digitalWrite(LED, HIGH);
   delay(CAMERA_MOMENT);
-  digitalWrite(CAMERA, HIGH);
+  digitalWrite(CAMERA, LOW);
   delay(cameraFrame - CAMERA_MOMENT);
   digitalWrite(LED, LOW);
 }
