@@ -39,9 +39,9 @@
 volatile unsigned long now;
 
 //PROJECTOR CONSTANTS
-const int PROJECTOR_MICROSWITCH = 10;
-const int LED_FWD = 11;
-const int LED_BWD = 12;
+const int PROJECTOR_MICROSWITCH = 11;
+const int LED_FWD = 12;
+const int LED_BWD = 13;
 
 const int PROJECTOR_FWD = 3;
 const int PROJECTOR_BWD = 4; 

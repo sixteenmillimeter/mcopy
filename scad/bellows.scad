@@ -39,6 +39,26 @@ module bellows_camera_board () {
     }
 }
 
+module bellows_camera_board () {
+    H = 6;
+    PROTRUSION_D = 37.25;
+    PROTRUSION_H = 7;
+    INNER_D = 34.5;
+    difference () {
+        union () {
+            cube([60, 60, H], center = true);
+            translate([0, 0, (H/2) + (PROTRUSION_H/2)]) cylinder(r = PROTRUSION_D / 2, h = PROTRUSION_H, center = true, $fn = 360);
+        }
+        //center
+        cylinder(r = INNER_D / 2, h = H + PROTRUSION_H + 10, center = true, $fn = 360);
+        
+        //corners
+        for (i = [0 : 3]) {
+            rotate([0, 0, i * (360 / 4) + 45 ]) translate([43.5, 0, 0]) cube([11, 11, H + 1], center = true);
+        }
+    }
+}
+
 module camera_mount () {
     $fn = 360;
     cmount_male(5);
@@ -62,4 +82,6 @@ if (!LIBRARY && PART == "bellows_camera_board") {
     bellows_camera_board();
 } else if (!LIBRARY && PART == "camera_mount") {
     camera_mount();
+} else if (!LIBRARY && PART == "bellows_lens_board") {
+    bellows_lens_board();
 }
