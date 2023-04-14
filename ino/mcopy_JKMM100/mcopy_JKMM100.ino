@@ -91,8 +91,8 @@ void pins () {
   pinMode(LED_FWD, OUTPUT);
   pinMode(LED_BWD, OUTPUT);
 
-  digitalWrite(PROJECTOR_FWD, HIGH);
-  digitalWrite(PROJECTOR_BWD, HIGH);
+  digitalWrite(PROJECTOR_FWD, LOW);
+  digitalWrite(PROJECTOR_BWD, LOW);
 
   digitalWrite(LED_FWD, LOW);
   digitalWrite(LED_BWD, LOW);
@@ -114,10 +114,10 @@ void proj_start () {
   proj_time = millis();
 
   if (proj_dir) {
-    digitalWrite(PROJECTOR_FWD, LOW);
+    digitalWrite(PROJECTOR_FWD, HIGH);
     digitalWrite(LED_FWD, HIGH);
   } else {
-    digitalWrite(PROJECTOR_BWD, LOW);
+    digitalWrite(PROJECTOR_BWD, HIGH);
     digitalWrite(LED_BWD, HIGH);
   }
   
@@ -127,8 +127,8 @@ void proj_start () {
 void proj_stop () {
   //stop both directions
   delay(10);
-  digitalWrite(PROJECTOR_FWD, HIGH);
-  digitalWrite(PROJECTOR_BWD, HIGH);
+  digitalWrite(PROJECTOR_FWD, LOW);
+  digitalWrite(PROJECTOR_BWD, LOW);
   digitalWrite(LED_FWD, LOW);
   digitalWrite(LED_BWD, LOW);
 
