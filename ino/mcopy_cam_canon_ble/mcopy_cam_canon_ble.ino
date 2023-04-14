@@ -48,7 +48,6 @@ void setup()
 
     pins();
     mc.begin(mc.CAMERA_IDENTIFIER);
-    digitalWrite(RED_LED, HIGH);
     canon_ble.init();
 
     delay(1000);
@@ -64,6 +63,8 @@ void pins () {
 }
 
 void connectBLE () {
+    digitalWrite(RED_LED, HIGH);
+    digitalWrite(GREEN_LED, LOW);
     do {
         mc.log("Pairing...");
     }
@@ -91,14 +92,17 @@ void loop()
         camera();
     }
 
-
     if (connected && !canon_ble.isConnected()) {
         connected = false;
+    }
+
+    if (!connected) {
+        connectBLE();
     }
 }
 
 void cmd (char val) {
-    if (cmd == mc.CAMERA && connected) {
+    if (val == mc.CAMERA && connected) {
         camera();
     } else if (val == mc.CAMERA_FORWARD) {
         camera_direction(true);
