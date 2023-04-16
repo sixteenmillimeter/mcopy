@@ -17,6 +17,7 @@ if [ -f "$(which jq)" ]; then
 fi
 
 SKETCHES=(
+	mcopy_arri_s_firmware
 	mcopy_cam_canon_ble
 	mcopy_cam_relay
 	mcopy_JKMM100
