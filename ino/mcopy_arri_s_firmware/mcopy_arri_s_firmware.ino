@@ -48,6 +48,8 @@ void cmd (char val) {
     setDir(false);
   } else if (val == mc.CAMERA) {
     cam();
+  } else if (val == mc.STATE) {
+    state();
   }
 }
 
@@ -72,12 +74,16 @@ void cam () {
     mc.log("cam() -> backward");
 	}
   mc.confirm(mc.CAMERA);
+  timeFrame(startTime);
+	mc.log(String(cameraFrame));
+}
+
+void timeFrame (long startTime) {
   if (cameraFrame == -1) {
     cameraFrame = millis() - startTime;
   } else {
     cameraFrame = round((cameraFrame + (millis() - startTime)) / 2);
   }
-	mc.log(String(cameraFrame));
 }
 
 void state () {
