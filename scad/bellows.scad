@@ -7,21 +7,21 @@ MagnetPositionX = 40;
 MagnetPositionY = 40;
 
 module cmount_male (len = 4) {
-	inner_d = 23;
-	outer_d = 24.7;
-	f_inner_d = 25.4;
-	f_outer_d = 28.6;
+	InnerD = 23;
+	OuterD = 24.7;
+	SocketInnerD = 25.4;
+	SocketOuterD = 28.6;
 	translate ([0, 0, len / 2 ]) {
 		difference () {
 			union () {
-				cylinder(r = R(outer_d), h = len, center = true);
+				cylinder(r = R(OuterD), h = len, center = true);
 			}
-			cylinder(r = R(inner_d), h = len + 1, center = true);
+			cylinder(r = R(InnerD), h = len + 1, center = true);
 		}
 
 		difference () {
-			translate([0, 0, -(len / 2) - 1]) cylinder(r = R(f_outer_d), h = 2, center = true);
-			translate([0, 0, -(len / 2) - 1]) cylinder(r1 = R(f_inner_d), r2 = R(inner_d), h = 3, center = true);
+			translate([0, 0, -(len / 2) - 1]) cylinder(r = R(SocketOuterD), h = 2, center = true);
+			translate([0, 0, -(len / 2) - 1]) cylinder(r1 = R(SocketInnerD), r2 = R(InnerD), h = 3, center = true);
 		}	
 	}
 }
@@ -31,7 +31,7 @@ module bellows_camera_board (magnets = false) {
     InnerD = 39;
     difference () {
         if (magnets) {
-            bellows_board_magnetic_body();
+            bellows_board_magnetic_body(H);
         } else {
             cube([BellowsBoard, BellowsBoard, H], center = true);
         }
@@ -49,14 +49,18 @@ module bellows_camera_board (magnets = false) {
     }
 }
 
-module bellows_lens_board () {
+module bellows_lens_board (magnets = false) {
     H = 6;
     ProtrusionD = 37.25;
     ProtrusionH = 7;
     InnerD = 34.5;
     difference () {
         union () {
-            cube([BellowsBoard, BellowsBoard, H], center = true);
+            if (magnets) {
+                bellows_board_magnetic_body(H);
+            } else {
+                cube([BellowsBoard, BellowsBoard, H], center = true);
+            }
             translate([0, 0, (H/2) + (ProtrusionH/2)]) cylinder(r = R(ProtrusionD), h = ProtrusionH, center = true, $fn = 360);
         }
         //center
@@ -104,7 +108,19 @@ module bellows_board_magnetic_body (H = 6) {
     }
 }
 
-
+module bellows_board_magnetic(H = 3) {
+    InnerD = 45;
+    difference () {
+        bellows_board_magnetic_body(H);
+        //center
+        cylinder(r = R(InnerD), h = H + 1, center = true, $fn = 360);
+        
+        //corners
+        for (i = [0 : 3]) {
+            rotate([0, 0, i * (360 / 4) + 45 ]) translate([43.5, 0, 0]) cube([11, 11, H + 1], center = true);
+        }
+    }
+}
 
 PART = "bellows_camera_board_magnetic";
 
@@ -116,4 +132,8 @@ if (!LIBRARY && PART == "bellows_camera_board") {
     camera_mount();
 } else if (!LIBRARY && PART == "bellows_lens_board") {
     bellows_lens_board();
+} else if (!LIBRARY && PART == "bellows_lens_board_magnetic") {
+    bellows_lens_board(magnets = true);
+} else if (!LIBRARY && PART == "bellows_board_magnetic") {
+    bellows_board_magnetic();
 }
