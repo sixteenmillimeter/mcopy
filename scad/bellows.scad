@@ -50,9 +50,9 @@ module bellows_camera_board (magnets = false) {
 }
 
 module bellows_lens_board (magnets = false) {
-    H = 6;
-    ProtrusionD = 37.25;
-    ProtrusionH = 7;
+    H = 3;
+    ProtrusionD = 39.25;
+    ProtrusionH = 5;
     InnerD = 34.5;
     difference () {
         union () {
@@ -122,7 +122,7 @@ module bellows_board_magnetic(H = 3) {
     }
 }
 
-PART = "bellows_camera_board_magnetic";
+PART = "bellows_lens_board";
 
 if (!LIBRARY && PART == "bellows_camera_board") {
     bellows_camera_board();
