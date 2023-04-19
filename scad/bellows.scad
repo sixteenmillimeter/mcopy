@@ -51,7 +51,7 @@ module bellows_camera_board (magnets = false) {
 
 module bellows_lens_board (magnets = false) {
     H = 3;
-    ProtrusionD = 39.25;
+    ProtrusionD = 38.25;
     ProtrusionH = 5;
     InnerD = 34.5;
     difference () {
