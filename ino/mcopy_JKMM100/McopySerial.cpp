@@ -32,11 +32,13 @@ void McopySerial::_internal () {
 }
 
 void McopySerial::_connect () {
+  connected = true;
   Serial.println(CONNECT);
   log("connect()");
 }
 
 void McopySerial::_identify () {
+  identified = true;
   Serial.println(id);
   log("identify()");  
 }
