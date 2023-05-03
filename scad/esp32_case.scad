@@ -2,16 +2,17 @@ include <./arduino.scad>;
 include <./common/common.scad>;
 
 DEBUG = false;
-PART = "case_bottom";
+PART = "case_top";
 
-CaseX = 40;
+CaseX = 70;
 CaseY = 85;
 CaseZ = 35;
 CaseD = 8;
 
 CaseSplitZ = 30;
 
-ESP32Position = [0, -7-5, -5];
+ESP32Position = [15, -7-5, -5];
+ArduinoNanoPosition = [-17, -17, -(CaseZ/2) + 8];
 ESP32Size = [25.85, 53.8, 1.5];
 ButtonPosition = [9, CaseY/2, 0];
 LEDPosition1 = [-3, CaseY/2, 0];
@@ -76,6 +77,29 @@ module case_shell (pos = [0,0,0]) {
     }
 }
 
+module arduino_nano_mount (pos = [0, 0, 0]) {
+    X = 18.2;
+    Y = 43.9;
+    Z = 10.5;
+    BOARD_Z = 1.5;
+    translate(pos) rotate([0, 0, 180]) difference () {
+        //outer
+        cube([X + 6, Y + 6, Z], center = true);
+        //inner void minus corners
+        difference () {
+            cube([X - 1, Y - 1, Z + 1], center = true);
+            translate([(X / 2) - 1, (Y / 2) - 1, -BOARD_Z]) cylinder(r = (2 / 2), h = Z + 1, center = true, $fn = 20);
+            translate([(-X / 2) + 1, (Y / 2) - 1, -BOARD_Z]) cylinder(r = (2 / 2), h = Z + 1, center = true, $fn = 20);
+            translate([(X / 2) - 1, (-Y / 2) + 1, -BOARD_Z]) cylinder(r = (2 / 2), h = Z + 1, center = true, $fn = 20);
+            translate([(-X / 2) + 1, (-Y / 2) + 1, -BOARD_Z]) cylinder(r = (2 / 2), h = Z + 1, center = true, $fn = 20);
+        }
+        //board void
+        translate([0, 0, (Z / 2) - (BOARD_Z / 2)]) cube([X, Y, BOARD_Z], center = true);
+        //usb void
+        translate([0, Y / 2, (Z / 2) - (6 / 2) + 0.01]) cube([8, 10, 6], center = true);
+    }
+}
+
 module esp32_mount (pos = [0, 0, 0]) {
 	X = ESP32Size[0];
 	Y = ESP32Size[1];
@@ -109,6 +133,15 @@ module bolt_plug (pos = [0, 0, 0], pad = 0) {
 	translate(pos) cylinder(r = R(8 + pad), h = 3.5, center = true, $fn = 60);
 }
 
+module usb_mini_void (pos = [0, 0, 0]) {
+    translate(pos) {
+        translate([0, -25, 2]) {
+            cube([8, 10, 5], center = true);
+            translate([0, -5, 0]) cube([12, 10, 8], center = true);
+        }
+    }
+}
+
 module case_bottom () {
 	difference () {
 		union () {
@@ -117,8 +150,10 @@ module case_bottom () {
 		}
 		translate([0, 0, CaseSplitZ]) cube([CaseX + 1, CaseY + 1, CaseZ],center = true);
 		//micro usb
-		translate([0, -(CaseY/2), -7.8]) cube([9, 7, 4], center = true);
-		translate([0, -(CaseY/2)-3, -7.8]) cube([12, 10, 7.7], center = true);
+		translate([15, -(CaseY/2), -7.8]) cube([9, 7, 4], center = true);
+		translate([15, -(CaseY/2)-3, -7.8]) cube([12, 10, 7.7], center = true);
+        //mini USB
+        usb_mini_void(ArduinoNanoPosition);
 		//button
 		button_void(ButtonPosition);
 		//LEDS
@@ -127,9 +162,10 @@ module case_bottom () {
 		//bolt
 		translate([0, BoltY, -(CaseZ/2)+(3.5/2)-0.01]) cylinder(r = R(5.6), h = 3.5, center = true, $fn = 30);
 		bolt_void([0, BoltY, -(CaseZ/2)], 20);
+        
 	}
-	
 	esp32_mount(ESP32Position);
+    arduino_nano_mount(ArduinoNanoPosition);
 }
 
 module case_top () {
