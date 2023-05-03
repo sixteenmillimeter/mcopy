@@ -34,6 +34,7 @@ CanonBLERemote canon_ble(name_remote);
 McopySerial mc;
 
 volatile boolean connected = false;
+volatile boolean bleInit = false;
 
 volatile long now;
 volatile long last = -1;
@@ -44,13 +45,18 @@ volatile char cmdChar = 'z';
 
 void setup()
 {
-    esp_log_level_set("*", ESP_LOG_INFO); 
+    esp_log_level_set("*", ESP_LOG_NONE);
 
     pins();
     mc.begin(mc.CAMERA_IDENTIFIER);
-    canon_ble.init();
 
-    delay(1000);
+    digitalWrite(RED_LED, HIGH);
+    digitalWrite(GREEN_LED, HIGH);
+
+    delay(42);
+
+    digitalWrite(RED_LED, LOW);
+    digitalWrite(GREEN_LED, LOW);
 }
 
 void pins () {
@@ -88,7 +94,7 @@ void loop()
     cmd(cmdChar);
 
     // Shutter
-    if (digitalRead(SHUTTTER_BTN) == LOW && last + 1000 < now){
+    if (digitalRead(SHUTTTER_BTN) == LOW && connected){
         camera();
     }
 
@@ -96,7 +102,15 @@ void loop()
         connected = false;
     }
 
-    if (!connected) {
+    if (!bleInit && mc.connected && mc.identified) {
+        mc.log("Initializing BLE...");
+        canon_ble.init();
+        bleInit = true;
+        delay(1000);
+    }
+
+    if (!connected && mc.connected && mc.identified) {
+        mc.log("Connecting BLE...");
         connectBLE();
     }
 }

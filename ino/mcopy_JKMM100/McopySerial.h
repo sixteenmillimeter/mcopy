@@ -20,6 +20,9 @@ class McopySerial {
 
 	public:
 
+	volatile bool connected = false;
+	volatile bool identified = false;
+
 	/* CMD FLAGS */
 	const char BLACK = 'b';
 	const char CAMERA = 'c';
