@@ -50,7 +50,7 @@ module bearing_void (pos = [0, 0, 0], width= 8) {
 module key_void (pos = [0, 0, 0]) {
 	translate(pos) {
 		cylinder(r = R(KeyVoidD), h = 6 + 1, center = true, $fn = 50);
-		translate([0, 0, -2]) cylinder(r = R(KeyVoidD2), h = 6, center = true, $fn = 50);
+		translate([0, 0, -1.5]) cylinder(r = R(KeyVoidD2), h = 6, center = true, $fn = 50);
 	}
 }
 
@@ -73,7 +73,7 @@ module bolt_and_cap_void (pos = [0, 0, 0], cap = 10, bolt = 10) {
 	}
 }
 
-module stepper_block_bolt_voids (pos = [0, 0, 0]) {
+module panel_bolt_and_cap_group_voids (pos = [0, 0, 0]) {
 	BoltX = NEMA17BoltSpacing / 2;
 	BoltY = NEMA17BoltSpacing / 2;
 	translate(pos) {
@@ -86,8 +86,8 @@ module stepper_block_bolt_voids (pos = [0, 0, 0]) {
 
 module panel_bolt_voids (pos = [0, 0, 0]) {
 	translate(pos) {
-		stepper_block_bolt_voids([0, KeyDistance / 2, 0]);
-		stepper_block_bolt_voids([0, -KeyDistance / 2, 0]);
+		panel_bolt_and_cap_group_voids([0, KeyDistance / 2, 0]);
+		panel_bolt_and_cap_group_voids([0, -KeyDistance / 2, 0]);
 	}
 }
 
