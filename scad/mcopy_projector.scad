@@ -247,7 +247,7 @@ PART = "panel";
 if (PART == "gate_key") {
 	gate_key();
 } else if (PART == "panel") {
-	panel();
+	rotate([180, 0, 0]) panel();
 } else {
 	debug();
 }
