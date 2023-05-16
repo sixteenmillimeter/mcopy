@@ -187,6 +187,15 @@ module gate_bolt_and_nut_void (pos = [0, 0, 0]) {
 	}
 }
 
+module gate_key_set_screw_void (pos = [0, 0, 0]) {
+	translate(pos) {
+		rotate([90, 0, 0]) rotate([0, 0, 30]) m3_nut(2.5);
+		translate([0, 0, -10]) cube([5.7, 2.5, 20], center = true);
+		rotate([90, 0, 0]) cylinder(r = R(3.25), h = 10, center = true, $fn = 30); 
+		translate([0, 10, 0])rotate([90, 0, 0]) cylinder(r = R(6), h = 10, center = true, $fn = 30); 
+	}
+}
+
 module gate_key (pos = [0, 0, 0], rot = [0, 0, 0]) {
 	translate(pos) rotate(rot) {
 		difference () {
@@ -195,7 +204,7 @@ module gate_key (pos = [0, 0, 0], rot = [0, 0, 0]) {
 				translate([0, 0, 1]) cylinder(r = R(11), h = 12, center = true, $fn = 60);
 				translate([0, 0, (13 / 2) + (10 / 2)]) cylinder(r = R(BearingInnerDiameter - 0.3), h = 10, center = true, $fn = 60);
 			}
-			scale([1.02, 1.02, 1]) NEMA17_motor_shaft([0, 0, -5]);
+			scale([1.07, 1.07, 1]) NEMA17_motor_shaft([0, 0, -5]);
 			octagon_void([0, 0, 3.5]);
 			//normalization flat
 			translate([0, 27, -3.5]) cube([29, 29, 10], center = true);
@@ -204,6 +213,7 @@ module gate_key (pos = [0, 0, 0], rot = [0, 0, 0]) {
 				translate([0, (10 / 2) + (KeyWidth / 2), (13 / 2) + (10 / 2) + 6]) cube([10, 10, 10], center = true);
 				translate([0, -(10 / 2) - (KeyWidth / 2), (13 / 2) + (10 / 2) + 6]) cube([10, 10, 10], center = true);
 			}
+			gate_key_set_screw_void([0, 7, -1.5]);
 		}
 	}
 }
@@ -242,7 +252,7 @@ module projector () {
 	
 }
 
-PART = "panel";
+PART = "gate_key";
 
 if (PART == "gate_key") {
 	gate_key();
