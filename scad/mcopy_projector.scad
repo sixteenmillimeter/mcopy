@@ -12,7 +12,7 @@ FrameBoltX = (-PanelX / 2) + 8.6;
 FrameBoltY = 92.8 / 2;
 FrameBoltD = 9;
 
-KeyDistance = 57.4;
+KeyDistance = 57.4 - .2;
 KeyVoidD = BearingInnerDiameter + 0.3;
 KeyVoidD2 = 14.2;
 KeyWidth = 2.25;
@@ -27,13 +27,10 @@ NubVoidX = 3.5;
 NubX = (-PanelX / 2) + 66;
 
 module debug () {
-	difference () {
-		panel();
-		//translate([45, 0, 0]) cube([89, 200, 50], center = true);
-	}
-	//NEMA17([0, KeyDistance / 2, -50]);
+	panel();
+	NEMA17([0, KeyDistance / 2, -50]);
 	//NEMA17([0, -KeyDistance / 2, -50]);
-	//gate_key([0, KeyDistance / 2, -14], [0, 0, 45]);
+	gate_key([0, KeyDistance / 2, -14], [0, 0, 45]);
 	gate_key([0, -KeyDistance / 2, -14], [0, 0, 45]);
 }
 
@@ -66,6 +63,12 @@ module bolt_void (pos = [0, 0, 0], H = StepperMountZ + 1) {
 	}
 }
 
+module cap_void (pos = [0, 0, 0], cap = 20) {
+	translate(pos) {
+		cylinder(r = R(6.25), h = cap, center = true, $fn = 30);
+	}
+}
+
 module bolt_and_cap_void (pos = [0, 0, 0], cap = 10, bolt = 10) {
 	translate(pos) {
 		cylinder(r = R(6.25), h = cap, center = true, $fn = 30);
@@ -73,21 +76,21 @@ module bolt_and_cap_void (pos = [0, 0, 0], cap = 10, bolt = 10) {
 	}
 }
 
-module panel_bolt_and_cap_group_voids (pos = [0, 0, 0]) {
+module panel_cap_group_voids (pos = [0, 0, 0]) {
 	BoltX = NEMA17BoltSpacing / 2;
 	BoltY = NEMA17BoltSpacing / 2;
 	translate(pos) {
-		bolt_and_cap_void([BoltX, BoltY, 0]);
-		bolt_and_cap_void([-BoltX, BoltY, 0]);
-		bolt_and_cap_void([BoltX, -BoltY, 0]);
-		bolt_and_cap_void([-BoltX, -BoltY, 0]);
+		cap_void([BoltX, BoltY, 0]);
+		cap_void([-BoltX, BoltY, 0]);
+		cap_void([BoltX, -BoltY, 0]);
+		cap_void([-BoltX, -BoltY, 0]);
 	}
 }
 
-module panel_bolt_voids (pos = [0, 0, 0]) {
+module panel_cap_voids (pos = [0, 0, 0]) {
 	translate(pos) {
-		panel_bolt_and_cap_group_voids([0, KeyDistance / 2, 0]);
-		panel_bolt_and_cap_group_voids([0, -KeyDistance / 2, 0]);
+		panel_cap_group_voids([0, KeyDistance / 2, 0]);
+		panel_cap_group_voids([0, -KeyDistance / 2, 0]);
 	}
 }
 
@@ -129,25 +132,30 @@ module nub_void (pos = [0, 0, 0]) {
 module stepper_mount_block (pos = [0, 0, 0]) {
 	BoltX = NEMA17BoltSpacing / 2;
 	BoltY = NEMA17BoltSpacing / 2;
-	H = StepperMountZ;
+	H = 30;
 	InnerD = 30;
 
 	translate(pos) {
 		difference () {
 			union () {
-				cube([NEMA17OuterWidth, NEMA17OuterWidth, H], center = true);
+				translate([0, 0, -5]) cube([NEMA17OuterWidth, NEMA17OuterWidth, H], center = true);
 				LED_prop([0, 19, -4.5 + 7.5], [0, 0, 45], flip = true);
 				LED_prop([0, -19, -4.5 + 10.5], [0, 0, 45], H = 9, flip = false);
 			}
 			//corners
 			for (i = [0 : 3]) {
-				rotate([0, 0, (i * 90) + 45]) translate([29.7, 0, 0]) cube([5.5, 5.5, H + 1], center = true);
+				translate([0, 0, -5]) rotate([0, 0, (i * 90) + 45]) translate([29.7, 0, 0]) cube([5.5, 5.5, H + 1], center = true);
 			}
-			cylinder(r = R(InnerD), h = H + 1, center = true, $fn = 120);
-			bolt_void([BoltX, BoltY, 0]);
-			bolt_void([-BoltX, BoltY, 0]);
-			bolt_void([BoltX, -BoltY, 0]);
-			bolt_void([-BoltX, -BoltY, 0]);
+			translate([0, 0, -5])cylinder(r = R(InnerD), h = H + 1, center = true, $fn = 120);
+			bolt_void([BoltX, BoltY, -5], H);
+			bolt_void([-BoltX, BoltY, -5], H);
+			bolt_void([BoltX, -BoltY, -5], H);
+			bolt_void([-BoltX, -BoltY, -5], H);
+
+			bolt_and_cap_void([BoltX, BoltY, 10], H, H);
+			bolt_and_cap_void([-BoltX, BoltY, 10], H, H);
+			bolt_and_cap_void([BoltX, -BoltY, 10], H, H);
+			bolt_and_cap_void([-BoltX, -BoltY, 10], H, H);
 			//
 			LED_void([0, 19, -4.5], [0, 0, 45]);
 			LED_void([0, -19, 1.5], [0, 0, 45], true);
@@ -192,7 +200,7 @@ module gate_key_set_screw_void (pos = [0, 0, 0]) {
 		rotate([90, 0, 0]) rotate([0, 0, 30]) m3_nut(2.5);
 		translate([0, 0, -10]) cube([5.7, 2.5, 20], center = true);
 		rotate([90, 0, 0]) cylinder(r = R(3.25), h = 10, center = true, $fn = 30); 
-		translate([0, 10, 0])rotate([90, 0, 0]) cylinder(r = R(6), h = 10, center = true, $fn = 30); 
+		translate([0, 7.5, 0])rotate([90, 0, 0]) cylinder(r = R(6), h = 10, center = true, $fn = 30); 
 	}
 }
 
@@ -204,7 +212,7 @@ module gate_key (pos = [0, 0, 0], rot = [0, 0, 0]) {
 				translate([0, 0, 1]) cylinder(r = R(11), h = 12, center = true, $fn = 60);
 				translate([0, 0, (13 / 2) + (10 / 2)]) cylinder(r = R(BearingInnerDiameter - 0.3), h = 10, center = true, $fn = 60);
 			}
-			scale([1.07, 1.07, 1]) NEMA17_motor_shaft([0, 0, -5]);
+			translate([0, 0, -3]) scale([1.07, 1.07, 1]) NEMA17_motor_shaft([0, 0, -5]);
 			octagon_void([0, 0, 3.5]);
 			//normalization flat
 			translate([0, 27, -3.5]) cube([29, 29, 10], center = true);
@@ -213,7 +221,7 @@ module gate_key (pos = [0, 0, 0], rot = [0, 0, 0]) {
 				translate([0, (10 / 2) + (KeyWidth / 2), (13 / 2) + (10 / 2) + 6]) cube([10, 10, 10], center = true);
 				translate([0, -(10 / 2) - (KeyWidth / 2), (13 / 2) + (10 / 2) + 6]) cube([10, 10, 10], center = true);
 			}
-			gate_key_set_screw_void([0, 7, -1.5]);
+			gate_key_set_screw_void([0, 6, -1.5]);
 		}
 	}
 }
@@ -235,7 +243,7 @@ module panel (pos = [0, 0, 0], rot = [0, 0, 0]) {
 
 			key_void([0, KeyDistance / 2, 0]);
 			key_void([0, -KeyDistance / 2, 0]);
-			panel_bolt_voids([0, 0, -1]);
+			panel_cap_voids([0, 0, -1]);
 
 			//
 			gate_bolt_and_nut_void([GateBoltX, GateBoltY, 0]);
@@ -252,12 +260,15 @@ module projector () {
 	
 }
 
-PART = "gate_key";
+PART = "panel";
 
 if (PART == "gate_key") {
 	gate_key();
 } else if (PART == "panel") {
 	rotate([180, 0, 0]) panel();
 } else {
-	debug();
+	difference () {
+		debug();
+		translate([45-15, 0, 0]) cube([89, 200, 150], center = true);
+	}
 }
