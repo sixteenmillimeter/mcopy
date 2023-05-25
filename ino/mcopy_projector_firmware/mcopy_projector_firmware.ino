@@ -126,7 +126,7 @@ void projector () {
 
 void state () {
   String stateString = String(mcopy.CAMERA_EXPOSURE);
-  stateString += String(cameraFrame);
+  stateString += String(projectorFrame);
   stateString += String(mcopy.STATE);
   mcopy.print(stateString);
 }
