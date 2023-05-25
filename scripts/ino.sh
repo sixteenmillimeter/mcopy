@@ -22,6 +22,7 @@ SKETCHES=(
 	mcopy_cam_relay
 	mcopy_JKMM100
 	components/mcopy_light
+	mcopy_projector_firmware
 )
 
 for sketch in "${SKETCHES[@]}"; do
