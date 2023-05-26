@@ -45,8 +45,8 @@ IteadDualStepperShield steppers;
 
 void setup () {
   steppers.setup();
-  steppers.setSpeed(0, 2000);
-  steppers.setSpeed(1, 2000);
+  steppers.setSpeed(0, 500);
+  steppers.setSpeed(1, 500);
 
   pins();
   digitalWrite(LED_FWD, HIGH);
