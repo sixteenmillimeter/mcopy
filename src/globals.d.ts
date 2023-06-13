@@ -20,12 +20,14 @@ interface Device {
 
 interface Arduino { 
 	send (id : string, cmd : string) : number;
-	string (id : string, str : string) : any;
+	sendString (id : string, str : string) : any;
 	enumerate () : any;
 	connect (id : string, device : Device, state : boolean) : any;
 	verify () : any;
 	distinguish () : any;
 	fakeConnect ( id : string) : any;
+	stateAsync (device : string) : any;
+	state (serial: string) : number;
 	close () : any;
 	aliasSerial ( id : string, device : Device) : any;
 }

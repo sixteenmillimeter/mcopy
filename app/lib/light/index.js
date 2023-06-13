@@ -64,7 +64,7 @@ class Light {
         }
         await delay_1.delay(1);
         try {
-            this.arduino.string(this.id, str);
+            this.arduino.sendString(this.id, str);
         }
         catch (err) {
             this.log.error('Error sending light string', err);
