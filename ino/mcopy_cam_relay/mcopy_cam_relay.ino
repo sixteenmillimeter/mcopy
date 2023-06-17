@@ -95,8 +95,9 @@ void camera () {
 }
 
 void state () {
-  String stateString = String(mc.CAMERA_EXPOSURE);
+  String stateString = String(mc.STATE);
+  stateString += String(mc.CAMERA_EXPOSURE);
   stateString += String(cameraFrame);
   stateString += String(mc.STATE);
-  mc.print(stateString);
+  mc.sendString(stateString);
 }

@@ -224,7 +224,7 @@ class Arduino {
 		const end : number = new Date().getTime()
 		const ms : number = end - this.timer
 		let complete : any
-		//this.log.info(`${serial} -> ${data}`);
+		//this.log.info(`${serial} -> ${data}`)
 		if (this.queue[data] !== undefined) {
 			this.locks[serial] = false
 			complete = this.queue[data](ms) //execute callback
