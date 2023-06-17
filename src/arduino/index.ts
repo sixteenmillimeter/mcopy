@@ -37,6 +37,7 @@ class Arduino {
 	private known : string[] = KNOWN;
 	private alias : any = {};
 	private serial : any = { connect : {}, projector : {}, camera : {}, light : {} };
+	private hasState : any = { projector : false, camera : false, light : false };
 	private baud : number = 57600;
 	private queue : any = {};
 	private timer : number = 0;
@@ -150,11 +151,25 @@ class Arduino {
 		}
 	}
 
-	async stateAsync (device : string) : Promise<number> {
+	async stateAsync (device : string, confirm : boolean = false) : Promise<string> {
 		const cmd : string = cfg.arduino.cmd.state
 		return new Promise ((resolve, reject) => {
-			this.queue[cmd] = (ms : number) => {
-				return resolve(ms)
+			this.queue[cmd] = (state : string) => {
+				if (confirm) {
+					this.hasState[device] = true
+					this.log.info(`Device ${device} supports state [${state}]`)
+				}
+				return resolve(state)
+			}
+			if (confirm) {
+				setTimeout(function () {
+					if (typeof this.queue[cmd] !== 'undefined') {
+						delete this.queue[cmd]
+						this.hasState[device] = false
+						this.log.info(`Device ${device} does not support state`)
+						return resolve(null)
+					}
+				}.bind(this), 100)
 			}
 			return this.serial[device].write(cmd, (err : any, results : any) => {
 				if (err) {
@@ -165,18 +180,18 @@ class Arduino {
 		})
 	}
 
-	async state (serial : string) : Promise<number>{
+	async state (serial : string, confirm : boolean = false) : Promise<string>{
 		const device : any = this.alias[serial]
-		let results : number
+		let results : string
 
 		if (this.locks[serial]) {
-			return -1
+			return null
 		}
 		this.timer = new Date().getTime()
 		this.locks[serial] = true
 		await delay(cfg.arduino.serialDelay)
 		try {
-			results = await this.stateAsync(device)
+			results = await this.stateAsync(device, confirm)
 		} catch (e) {
 			return this.log.error(e)
 		}
@@ -205,7 +220,7 @@ class Arduino {
 		})
 	}
 
-	end (serial : string, data : string) : number {
+	end (serial : string, data : string) : any {
 		const end : number = new Date().getTime()
 		const ms : number = end - this.timer
 		let complete : any
@@ -216,9 +231,12 @@ class Arduino {
 			eventEmitter.emit('arduino_end', data)
 			delete this.queue[data]
 		} else if (data[0] === cfg.arduino.cmd.state) {
-			complete = this.queue[data](ms)
+			complete = this.queue[cfg.arduino.cmd.state](ms)
+			delete this.queue[cfg.arduino.cmd.state]
+			return data
 		} else if (data[0] === cfg.arduino.cmd.error) {
 			this.log.error(`Received error from device ${serial}`)
+
 			//error state
 			//stop sequence
 			//throw error in ui
@@ -265,6 +283,13 @@ class Arduino {
 					return await this.confirmEnd(d)
 				})
 			}
+			
+			try {
+				await this.state(serial, true)
+			} catch (e) {
+				this.log.error(`failed to establish state capabilities` + e)
+			}
+
 			return resolve(this.path[serial])
 		})
 	}

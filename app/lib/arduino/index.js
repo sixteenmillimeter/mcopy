@@ -30,6 +30,7 @@ class Arduino {
         this.known = KNOWN;
         this.alias = {};
         this.serial = { connect: {}, projector: {}, camera: {}, light: {} };
+        this.hasState = { projector: false, camera: false, light: false };
         this.baud = 57600;
         this.queue = {};
         this.timer = 0;
@@ -141,12 +142,26 @@ class Arduino {
             return writeSuccess;
         }
     }
-    async stateAsync(device) {
+    async stateAsync(device, confirm = false) {
         const cmd = cfg.arduino.cmd.state;
         return new Promise((resolve, reject) => {
-            this.queue[cmd] = (ms) => {
-                return resolve(ms);
+            this.queue[cmd] = (state) => {
+                if (confirm) {
+                    this.hasState[device] = true;
+                    this.log.info(`Device ${device} supports state [${state}]`);
+                }
+                return resolve(state);
             };
+            if (confirm) {
+                setTimeout(function () {
+                    if (typeof this.queue[cmd] !== 'undefined') {
+                        delete this.queue[cmd];
+                        this.hasState[device] = false;
+                        this.log.info(`Device ${device} does not support state`);
+                        return resolve(null);
+                    }
+                }.bind(this), 100);
+            }
             return this.serial[device].write(cmd, (err, results) => {
                 if (err) {
                     //this.log.error(err)
@@ -155,17 +170,17 @@ class Arduino {
             });
         });
     }
-    async state(serial) {
+    async state(serial, confirm = false) {
         const device = this.alias[serial];
         let results;
         if (this.locks[serial]) {
-            return -1;
+            return null;
         }
         this.timer = new Date().getTime();
         this.locks[serial] = true;
         await delay_1.delay(cfg.arduino.serialDelay);
         try {
-            results = await this.stateAsync(device);
+            results = await this.stateAsync(device, confirm);
         }
         catch (e) {
             return this.log.error(e);
@@ -204,7 +219,9 @@ class Arduino {
             delete this.queue[data];
         }
         else if (data[0] === cfg.arduino.cmd.state) {
-            complete = this.queue[data](ms);
+            complete = this.queue[cfg.arduino.cmd.state](ms);
+            delete this.queue[cfg.arduino.cmd.state];
+            return data;
         }
         else if (data[0] === cfg.arduino.cmd.error) {
             this.log.error(`Received error from device ${serial}`);
@@ -254,6 +271,12 @@ class Arduino {
                     d = d.replace(newlineRe, '').replace(returnRe, '');
                     return await this.confirmEnd(d);
                 });
+            }
+            try {
+                await this.state(serial, true);
+            }
+            catch (e) {
+                this.log.error(`failed to establish state capabilities` + e);
             }
             return resolve(this.path[serial]);
         });
