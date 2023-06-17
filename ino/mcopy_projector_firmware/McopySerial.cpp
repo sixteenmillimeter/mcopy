@@ -65,6 +65,10 @@ String McopySerial::getString () {
   return Serial.readString();
 }
 
+void McopySerial::sendString (String str) {
+	Serial.println(str);
+}
+
 void McopySerial::print (String message) {
 	Serial.println(message);
 }

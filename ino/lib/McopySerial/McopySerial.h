@@ -77,6 +77,7 @@ class McopySerial {
 	void confirm(char cmd);
 	String getString();
 	void print(String message);
+	void sendString(String str);
 
 	void debug (bool state);
 	void log (String message);
