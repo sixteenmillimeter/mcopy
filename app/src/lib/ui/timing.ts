@@ -66,10 +66,11 @@ class Timing {
 					pad = (profile['black'].before + profile['black'].after);
 				}
 
-				this.data['cam'] = cam 
-				this.data['cam2'] = cam 
-				this.data['cams'] = cam 
-				this.data['black'] = cam + pad
+				this.data['cam'] = cam;
+				this.data['cam2'] = cam;
+				this.data['cams'] = cam; 
+				this.data['black'] = cam + pad;
+				this.updateUI('#cam_time', cam);
 			} else if (key === 'proj') {
 				proj = 0;
 				proj += profile[key].time;
@@ -78,6 +79,7 @@ class Timing {
 				this.data['proj'] = proj;
 				this.data['proj2'] = proj;
 				this.data['projs'] = proj;
+				this.updateUI('#proj_time', proj);
 			}
 		}
 	}
@@ -89,8 +91,17 @@ class Timing {
 	//update with rolling average
 	public update (c : string, ms : number) {
 		let cmd : string = this.fromArduino[c];
+		let id : string;
 		if (typeof cmd !== 'undefined' && typeof this.data[cmd] !== 'undefined') {
 			this.data[cmd] = Math.round((this.data[cmd] + ms) / 2);
+			id = `#${cmd}_time`;
+			this.updateUI(id, this.data[cmd]);
+		}
+	}
+
+	public updateUI (id : string, ms : number) {
+		if ($(id).length) {
+			$(id).val(ms);
 		}
 	}
 

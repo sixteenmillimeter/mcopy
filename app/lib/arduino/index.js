@@ -207,6 +207,7 @@ class Arduino {
             complete = this.queue[data](ms);
         }
         else if (data[0] === cfg.arduino.cmd.error) {
+            this.log.error(`Received error from device ${serial}`);
             //error state
             //stop sequence
             //throw error in ui

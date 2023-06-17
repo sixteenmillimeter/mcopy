@@ -56,6 +56,7 @@ class Timing {
                 this.data['cam2'] = cam;
                 this.data['cams'] = cam;
                 this.data['black'] = cam + pad;
+                this.updateUI('#cam_time', cam);
             }
             else if (key === 'proj') {
                 proj = 0;
@@ -65,6 +66,7 @@ class Timing {
                 this.data['proj'] = proj;
                 this.data['proj2'] = proj;
                 this.data['projs'] = proj;
+                this.updateUI('#proj_time', proj);
             }
         }
     }
@@ -74,8 +76,16 @@ class Timing {
     //update with rolling average
     update(c, ms) {
         let cmd = this.fromArduino[c];
+        let id;
         if (typeof cmd !== 'undefined' && typeof this.data[cmd] !== 'undefined') {
             this.data[cmd] = Math.round((this.data[cmd] + ms) / 2);
+            id = `#${cmd}_time`;
+            this.updateUI(id, this.data[cmd]);
+        }
+    }
+    updateUI(id, ms) {
+        if ($(id).length) {
+            $(id).val(ms);
         }
     }
     //get current value
