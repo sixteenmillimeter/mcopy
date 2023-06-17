@@ -7,7 +7,7 @@ const { SerialPort } = require('serialport')
 const { ReadlineParser } = require('@serialport/parser-readline')
 const exec = require('child_process').exec
 
-const parser : any = new ReadlineParser({ })
+const parser : any = new ReadlineParser({ delimiter: '\r\n' })
 const newlineRe : RegExp = new RegExp('\n', 'g')
 const returnRe : RegExp = new RegExp('\r', 'g')
 
@@ -101,6 +101,7 @@ class Arduino {
 	 **/
 	async sendAsync (device : string, cmd : string) {
 		return new Promise ((resolve, reject) => {
+			console.log(`${device} -> ${cmd}`)
 			this.queue[cmd] = (ms : number) => {
 				return resolve(ms)
 			}
@@ -169,8 +170,9 @@ class Arduino {
 						this.log.info(`Device ${device} does not support state`)
 						return resolve(null)
 					}
-				}.bind(this), 100)
+				}.bind(this), 1000)
 			}
+			console.log(`${device} -> ${cmd}`)
 			return this.serial[device].write(cmd, (err : any, results : any) => {
 				if (err) {
 					//this.log.error(err)
@@ -181,7 +183,7 @@ class Arduino {
 	}
 
 	async state (serial : string, confirm : boolean = false) : Promise<string>{
-		const device : any = this.alias[serial]
+		const device : string = confirm ? this.alias['connect'] : this.alias[serial]
 		let results : string
 
 		if (this.locks[serial]) {
@@ -224,7 +226,7 @@ class Arduino {
 		const end : number = new Date().getTime()
 		const ms : number = end - this.timer
 		let complete : any
-		//this.log.info(`${serial} -> ${data}`)
+		this.log.info(`${serial} -> ${data}`)
 		if (this.queue[data] !== undefined) {
 			this.locks[serial] = false
 			complete = this.queue[data](ms) //execute callback
@@ -260,7 +262,7 @@ class Arduino {
 				path : this.path[serial],
 				autoOpen : false,
 				baudRate: cfg.arduino.baud,
-				parser: parser
+				parser
 			})
 			this.locks[device] = false
 			try {
@@ -283,19 +285,13 @@ class Arduino {
 					return await this.confirmEnd(d)
 				})
 			}
-			
-			try {
-				await this.state(serial, true)
-			} catch (e) {
-				this.log.error(`failed to establish state capabilities` + e)
-			}
 
 			return resolve(this.path[serial])
 		})
 	}
 
 	confirmEnd (data : string) {
-		//this.log.info(data)
+		this.log.info(data)
 		if (   data === cfg.arduino.cmd.connect
 			|| data === cfg.arduino.cmd.projector_identifier
 			|| data === cfg.arduino.cmd.camera_identifier
@@ -325,6 +321,9 @@ class Arduino {
 
 			this.confirmExec(null, data)
 			this.confirmExec = {}
+		} else if (data[0] === cfg.arduino.cmd.state) {
+			this.queue[cfg.arduino.cmd.state](0)
+			delete this.queue[cfg.arduino.cmd.state]
 		}
 	}
 

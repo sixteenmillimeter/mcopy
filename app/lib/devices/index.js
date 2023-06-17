@@ -127,6 +127,13 @@ class Devices {
         }
         this.remember('arduino', device, type);
         this.log.info(`Determined ${device} to be ${type}`, 'SERIAL', true, true);
+        await delay_1.delay(100);
+        try {
+            await this.arduino.state(device.toString(), true);
+        }
+        catch (err) {
+            this.log.error('Error checking state capability', err);
+        }
         return type;
     }
     /**

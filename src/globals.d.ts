@@ -26,8 +26,8 @@ interface Arduino {
 	verify () : any;
 	distinguish () : any;
 	fakeConnect ( id : string) : any;
-	stateAsync (device : string) : any;
-	state (serial: string) : number;
+	stateAsync (device : string, confirm: boolean) : any;
+	state (serial: string, confirm: boolean) : number;
 	close () : any;
 	aliasSerial ( id : string, device : Device) : any;
 }

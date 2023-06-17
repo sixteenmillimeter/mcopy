@@ -681,6 +681,9 @@ button:focus {
   min-width: 200px;
   width: 200px;
 }
+#settings > div.right input[readonly] {
+  cursor: not-allowed;
+}
 #settings > div.right .spacer {
   height: 62px;
 }
