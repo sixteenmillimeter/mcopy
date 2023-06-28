@@ -54,12 +54,9 @@ void connectBLE () {
 void loop()
 {
     now = millis();
-    cmdChar = mc.loop();
-
-    cmd(cmdChar);
 
     // Shutter
-    if (digitalRead(SHUTTTER_BTN) == LOW && connected){
+    if (connected){ //&&
         camera();
     }
 
@@ -68,27 +65,15 @@ void loop()
     }
 
     if (!bleInit && mc.connected && mc.identified) {
-        mc.log("Initializing BLE...");
+        //mc.log("Initializing BLE...");
         canon_ble.init();
         bleInit = true;
         delay(1000);
     }
 
     if (!connected && mc.connected && mc.identified) {
-        mc.log("Connecting BLE...");
+        //mc.log("Connecting BLE...");
         connectBLE();
-    }
-}
-
-void cmd (char val) {
-    if (val == mc.CAMERA && connected) {
-        camera();
-    } else if (val == mc.CAMERA_FORWARD) {
-        camera_direction(true);
-    } else if (val == mc.CAMERA_BACKWARD) {
-        camera_direction(false);
-    } else if (val == mc.STATE) {
-        state();
     }
 }
 
@@ -96,36 +81,11 @@ void camera () {
     long start = now;
     long end;
 
-    digitalWrite(GREEN_LED, HIGH);
-    digitalWrite(RED_LED, HIGH);
-    mc.log("Shutter pressed");
+    //mc.log("Shutter pressed");
 
     if(!canon_ble.trigger()){
-        mc.log("camera() failed");
+        //mc.log("camera() failed");
     }
 
     end = millis();
-    delay(cameraFrame - (end - start));
-    digitalWrite(GREEN_LED, HIGH);
-    digitalWrite(RED_LED, LOW);
-    last = millis();
-    mc.confirm(mc.CAMERA);
-}
-
-//null route direction
-void camera_direction (boolean state) {
-    if (state) {
-        mc.confirm(mc.CAMERA_FORWARD);
-        mc.log("camera_direction(true)");
-    } else {
-        mc.confirm(mc.CAMERA_BACKWARD);
-        mc.log("camera_direction(false)");
-    }
-}
-
-void state () {
-    String stateString = String(mc.CAMERA_EXPOSURE);
-    stateString += String(cameraFrame);
-    stateString += String(mc.STATE);
-    mc.print(stateString);
 }
