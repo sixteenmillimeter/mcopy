@@ -14,42 +14,48 @@
  * 
  **/
 
-#include "CanonBLERemote.h"
-#include <Arduino.h>
+#include "McopySerial.h"
 
-#define LOG_LOCAL_LEVEL ESP_LOG_INFO
-#include "esp_log.h"
-#include <esp32-hal-log.h>
+#define SHUTTTER_BTN    12
+#define RELAY_PIN       14
+#define RED_LED         23
+#define GREEN_LED       22
 
-
-const String name_remote = "mcopy";
-CanonBLERemote canon_ble(name_remote);
+McopySerial mc;
 
 volatile boolean connected = false;
 volatile boolean bleInit = false;
 
 volatile long now;
 volatile long last = -1;
+volatile long cameraFrame = 2000;
 
 volatile char cmdChar = 'z';
 
 
 void setup()
 {
-    esp_log_level_set("*", ESP_LOG_NONE);
+    pins();
+    mc.begin(mc.CAMERA_IDENTIFIER);
+
+    digitalWrite(RED_LED, HIGH);
+    digitalWrite(GREEN_LED, HIGH);
+
+    delay(42);
+
+    digitalWrite(RED_LED, LOW);
+    digitalWrite(GREEN_LED, LOW);
 }
 
-void connectBLE () {
-    do {
-        //
-    }
-    while(!canon_ble.pair(10));
+void pins () {
+    pinMode(SHUTTTER_BTN, INPUT_PULLUP);  
+    pinMode(RED_LED, OUTPUT);
+    pinMode(GREEN_LED, OUTPUT);
 
-    connected = true;
-    
-    //mc.log("Camera paired");
-    //mc.log(canon_ble.getPairedAddressString());
+    digitalWrite(RED_LED, LOW);
+    digitalWrite(GREEN_LED, LOW);
 }
+
 
 void loop()
 {
@@ -68,15 +74,12 @@ void loop()
     }
 
     if (!bleInit && mc.connected && mc.identified) {
-        mc.log("Initializing BLE...");
-        canon_ble.init();
         bleInit = true;
         delay(1000);
     }
 
     if (!connected && mc.connected && mc.identified) {
         mc.log("Connecting BLE...");
-        connectBLE();
     }
 }
 
@@ -100,9 +103,7 @@ void camera () {
     digitalWrite(RED_LED, HIGH);
     mc.log("Shutter pressed");
 
-    if(!canon_ble.trigger()){
-        mc.log("camera() failed");
-    }
+   
 
     end = millis();
     delay(cameraFrame - (end - start));
@@ -124,7 +125,8 @@ void camera_direction (boolean state) {
 }
 
 void state () {
-    String stateString = String(mc.CAMERA_EXPOSURE);
+    String stateString = String(mc.STATE);
+    stateString += String(mc.CAMERA_EXPOSURE);
     stateString += String(cameraFrame);
     stateString += String(mc.STATE);
     mc.print(stateString);
