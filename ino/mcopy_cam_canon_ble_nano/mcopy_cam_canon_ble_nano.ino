@@ -14,29 +14,40 @@
  * 
  **/
 
+#include <SoftwareSerial.h>
 #include "McopySerial.h"
 
-#define SHUTTTER_BTN    12
-#define RELAY_PIN       14
-#define RED_LED         23
-#define GREEN_LED       22
+#define SHUTTTER_BTN    5
+#define RED_LED         6
+#define GREEN_LED       7
+#define SOFTWARE_RX     10
+#define SOFTWARE_TX     11
 
 McopySerial mc;
+SoftwareSerial softPort(SOFTWARE_RX, SOFTWARE_TX);
 
+volatile boolean attached = false;
 volatile boolean connected = false;
 volatile boolean bleInit = false;
+
+volatile boolean blinkState = false;
+volatile long blinkLast = 0;
 
 volatile long now;
 volatile long last = -1;
 volatile long cameraFrame = 2000;
 
+volatile long start;
+volatile long end;
+
 volatile char cmdChar = 'z';
+volatile char sChar = 'z';
 
 
-void setup()
-{
+void setup () {
     pins();
     mc.begin(mc.CAMERA_IDENTIFIER);
+    softPort.begin(57600);
 
     digitalWrite(RED_LED, HIGH);
     digitalWrite(GREEN_LED, HIGH);
@@ -45,6 +56,7 @@ void setup()
 
     digitalWrite(RED_LED, LOW);
     digitalWrite(GREEN_LED, LOW);
+    blinkLast = millis();
 }
 
 void pins () {
@@ -57,11 +69,15 @@ void pins () {
 }
 
 
-void loop()
-{
+void loop () {
     now = millis();
     cmdChar = mc.loop();
 
+    if (softPort.available() > 0) {
+        sChar = softPort.read();
+    }
+
+    s_cmd(sChar);
     cmd(cmdChar);
 
     // Shutter
@@ -69,18 +85,16 @@ void loop()
         camera();
     }
 
-    if (connected && !canon_ble.isConnected()) {
-        connected = false;
-    }
-
     if (!bleInit && mc.connected && mc.identified) {
-        bleInit = true;
-        delay(1000);
+        softPort.println('i');
     }
 
-    if (!connected && mc.connected && mc.identified) {
+    if (bleInit && !connected && mc.connected && mc.identified) {
         mc.log("Connecting BLE...");
+        softPort.println('C');
     }
+
+    blink();
 }
 
 void cmd (char val) {
@@ -95,22 +109,39 @@ void cmd (char val) {
     }
 }
 
-void camera () {
-    long start = now;
-    long end;
+void s_cmd (char val) {
+    if (val == 'a') {
+        attached = true;
+    } else if (val == 'i') {
+        bleInit = true;
+    } else if (val == 'C') {
+        connected = true;
+        digitalWrite(RED_LED, LOW);
+        digitalWrite(GREEN_LED, HIGH);
+    } else if (val == 'd') {
+        connected = false;
+    } else if (val == 'c') {
+        camera_end();
+    }
+    sChar = 'z';
+}
 
+void camera () {
+    start = now;
     digitalWrite(GREEN_LED, HIGH);
     digitalWrite(RED_LED, HIGH);
     mc.log("Shutter pressed");
+    softPort.println('c');
+}
 
-   
-
+void camera_end () {
     end = millis();
     delay(cameraFrame - (end - start));
     digitalWrite(GREEN_LED, HIGH);
     digitalWrite(RED_LED, LOW);
     last = millis();
     mc.confirm(mc.CAMERA);
+    mc.log("camera()");
 }
 
 //null route direction
@@ -121,6 +152,20 @@ void camera_direction (boolean state) {
     } else {
         mc.confirm(mc.CAMERA_BACKWARD);
         mc.log("camera_direction(false)");
+    }
+}
+
+void blink () {
+    if (!connected) {
+        if (now >= blinkLast + 200) {
+            if (blinkState) {
+                digitalWrite(RED_LED, HIGH);
+            } else {
+                digitalWrite(RED_LED, LOW);
+            }
+            blinkState = !blinkState;
+            blinkLast = now;
+        } 
     }
 }
 

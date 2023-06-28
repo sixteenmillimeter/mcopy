@@ -17,13 +17,16 @@
 #include "CanonBLERemote.h"
 #include <Arduino.h>
 
+#define RXD2 16
+#define TXD2 -1
+
 #define LOG_LOCAL_LEVEL ESP_LOG_INFO
 #include "esp_log.h"
 #include <esp32-hal-log.h>
 
-
 const String name_remote = "mcopy";
 CanonBLERemote canon_ble(name_remote);
+HardwareSerial Serial2(1);
 
 volatile boolean connected = false;
 volatile boolean bleInit = false;
@@ -33,10 +36,10 @@ volatile long last = -1;
 
 volatile char cmdChar = 'z';
 
-
-void setup()
-{
+void setup () {
     esp_log_level_set("*", ESP_LOG_NONE);
+    delay(500);
+    Serial2.begin(57600, SERIAL_8N1, RXD2, TXD2);
 }
 
 void connectBLE () {
@@ -46,46 +49,46 @@ void connectBLE () {
     while(!canon_ble.pair(10));
 
     connected = true;
-    
-    //mc.log("Camera paired");
-    //mc.log(canon_ble.getPairedAddressString());
+    Serial2.println('C');
 }
 
-void loop()
-{
+void loop () {
     now = millis();
 
-    // Shutter
-    if (connected){ //&&
+    if (Serial2.available() > 0) {
+        cmdChar = Serial2.read();
+    }
+
+    if (connected && cmdChar == 'c') {
         camera();
+    }
+
+    if (!bleInit && !connected && cmdChar == 'i') {
+        canon_ble.init();
+        bleInit = true;
+        Serial2.println('i');
+    }
+
+    if (!connected && cmd == 'C') {
+        connectBLE();
     }
 
     if (connected && !canon_ble.isConnected()) {
         connected = false;
+        Serial2.println('d');
     }
 
-    if (!bleInit && mc.connected && mc.identified) {
-        //mc.log("Initializing BLE...");
-        canon_ble.init();
-        bleInit = true;
-        delay(1000);
-    }
-
-    if (!connected && mc.connected && mc.identified) {
-        //mc.log("Connecting BLE...");
-        connectBLE();
-    }
+    cmdChar = 'z';
 }
 
 void camera () {
     long start = now;
     long end;
 
-    //mc.log("Shutter pressed");
-
-    if(!canon_ble.trigger()){
-        //mc.log("camera() failed");
+    if (!canon_ble.trigger()) {
+        Serial2.println('E');
     }
+    Serial2.println('c');
 
     end = millis();
 }
