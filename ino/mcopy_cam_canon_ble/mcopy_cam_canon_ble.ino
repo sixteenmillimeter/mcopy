@@ -69,7 +69,7 @@ void loop () {
         Serial2.println('i');
     }
 
-    if (!connected && cmd == 'C') {
+    if (!connected && cmdChar == 'C') {
         connectBLE();
     }
 
