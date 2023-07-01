@@ -260,7 +260,7 @@ module projector () {
 	
 }
 
-PART = "panel";
+PART = "panelx";
 
 if (PART == "gate_key") {
 	gate_key();
@@ -268,7 +268,10 @@ if (PART == "gate_key") {
 	rotate([180, 0, 0]) panel();
 } else {
 	difference () {
-		debug();
-		translate([45-15, 0, 0]) cube([89, 200, 150], center = true);
+        intersection () {
+            panel();
+            translate([0, -50, 0]) cube([60, 100, 150], center = true);
+        }
+		translate([50, 0, 0]) rotate([0, 0, 45]) cube([100, 250, 150], center = true);
 	}
 }
