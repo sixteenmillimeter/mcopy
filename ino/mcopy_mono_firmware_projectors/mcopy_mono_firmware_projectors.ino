@@ -58,7 +58,7 @@ const char cmd_debug = 'd';
 const char cmd_connect = 'i';
 volatile char cmd_char = 'z';
 const char cmd_mcopy_identifier = 'm';
-const char cmd_proj_identifier = 't'; //dual projector identifier
+const char cmd_proj_identifier = 'd'; //dual projector identifier
 
 const int serialDelay = 5;
 
