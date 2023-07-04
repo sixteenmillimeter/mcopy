@@ -8,9 +8,6 @@
 #include "esp_log.h"
 #include <esp32-hal-log.h>
 
-
-HardwareSerial Serial2(1);
-
 volatile char cmd = 'z';
 
 void setup () {
