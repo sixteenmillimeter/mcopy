@@ -6,3 +6,5 @@ node_modules
 dist
 
 *.svd
+*debug_custom.json
+*debug.cfg

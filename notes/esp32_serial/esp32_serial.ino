@@ -20,6 +20,7 @@ void loop () {
     }
 
     if (cmd == 'x') {
-        Serial2.print('x');
+        Serial2.print(cmd);
     }
+    cmd = 'z';
 }
