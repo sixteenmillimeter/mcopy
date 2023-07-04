@@ -7,10 +7,12 @@ const int PROJECTOR_BWD = 4;
 const int PROJECTOR_MICROSWITCH_CLOSED = 0;
 const int PROJECTOR_MICROSWITCH_OPENED = 1;
 
+volatile long now;
 volatile long startTime = 0;
 volatile boolean writing = false;
 
 void setup () {
+  Serial.begin(57600);
   pins();
   startTime = millis();
 }
