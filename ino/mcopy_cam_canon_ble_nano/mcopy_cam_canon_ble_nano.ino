@@ -24,9 +24,8 @@
 #define SOFTWARE_TX     11
 
 McopySerial mc;
-SoftwareSerial softPort(SOFTWARE_RX, SOFTWARE_TX);
+SoftwareSerial SoftSerial(SOFTWARE_RX, SOFTWARE_TX);
 
-volatile boolean attached = false;
 volatile boolean connected = false;
 volatile boolean bleInit = false;
 
@@ -43,11 +42,13 @@ volatile long end;
 volatile char cmdChar = 'z';
 volatile char sChar = 'z';
 
+volatile bool connectedOnce = false;
+
 
 void setup () {
     pins();
     mc.begin(mc.CAMERA_IDENTIFIER);
-    softPort.begin(57600);
+    SoftSerial.begin(9600);
 
     digitalWrite(RED_LED, HIGH);
     digitalWrite(GREEN_LED, HIGH);
@@ -73,8 +74,8 @@ void loop () {
     now = millis();
     cmdChar = mc.loop();
 
-    if (softPort.available() > 0) {
-        sChar = softPort.read();
+    if (SoftSerial.available() > 0) {
+        sChar = SoftSerial.read();
     }
 
     s_cmd(sChar);
@@ -85,13 +86,10 @@ void loop () {
         camera();
     }
 
-    if (!bleInit && mc.connected && mc.identified) {
-        softPort.println('i');
-    }
-
-    if (bleInit && !connected && mc.connected && mc.identified) {
+    if (!connected && mc.connected && mc.identified && !connectedOnce) {
         mc.log("Connecting BLE...");
-        softPort.println('C');
+        SoftSerial.print('C');
+        connectedOnce = true;
     }
 
     blink();
@@ -107,19 +105,18 @@ void cmd (char val) {
     } else if (val == mc.STATE) {
         state();
     }
+    cmdChar = 'z';
 }
 
 void s_cmd (char val) {
-    if (val == 'a') {
-        attached = true;
-    } else if (val == 'i') {
-        bleInit = true;
-    } else if (val == 'C') {
+    if (val == 'C') {
         connected = true;
-        digitalWrite(RED_LED, LOW);
-        digitalWrite(GREEN_LED, HIGH);
+        digitalWrite(RED_LED, HIGH);
+        digitalWrite(GREEN_LED, LOW);
     } else if (val == 'd') {
         connected = false;
+        digitalWrite(RED_LED, LOW);
+        digitalWrite(GREEN_LED, LOW);
     } else if (val == 'c') {
         camera_end();
     }
@@ -129,16 +126,16 @@ void s_cmd (char val) {
 void camera () {
     start = now;
     digitalWrite(GREEN_LED, HIGH);
-    digitalWrite(RED_LED, HIGH);
+    digitalWrite(RED_LED, LOW);
     mc.log("Shutter pressed");
-    softPort.println('c');
+    SoftSerial.print('c');
 }
 
 void camera_end () {
     end = millis();
     delay(cameraFrame - (end - start));
-    digitalWrite(GREEN_LED, HIGH);
-    digitalWrite(RED_LED, LOW);
+    digitalWrite(GREEN_LED, LOW);
+    digitalWrite(RED_LED, HIGH);
     last = millis();
     mc.confirm(mc.CAMERA);
     mc.log("camera()");
