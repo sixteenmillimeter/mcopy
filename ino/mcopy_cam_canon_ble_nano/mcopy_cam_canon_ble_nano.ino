@@ -34,7 +34,7 @@ volatile long blinkLast = 0;
 
 volatile long now;
 volatile long last = -1;
-volatile long cameraFrame = 2000;
+volatile long cameraFrame = 3000;
 
 volatile long start;
 volatile long end;
@@ -43,6 +43,8 @@ volatile char cmdChar = 'z';
 volatile char sChar = 'z';
 
 volatile bool connectedOnce = false;
+volatile String exposureString;
+volatile long exposureTarget = 3000;
 
 
 void setup () {
@@ -102,10 +104,23 @@ void cmd (char val) {
         camera_direction(true);
     } else if (val == mc.CAMERA_BACKWARD) {
         camera_direction(false);
+    } else if (val == mc.CAMERA_EXPOSURE) {
+        exposure();
     } else if (val == mc.STATE) {
         state();
     }
     cmdChar = 'z';
+}
+
+void exposure () {
+    exposureString = mc.getString();
+    parseExposureString();
+    cameraFrame = exposureTarget;
+    mc.confirm(mc.CAMERA_EXPOSURE);
+}
+
+void parseExposureString () {
+    exposureTarget = exposureString.toInt();
 }
 
 void s_cmd (char val) {

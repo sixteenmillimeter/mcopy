@@ -32,6 +32,9 @@ volatile int cameraFrame = 2000;
 volatile char cmdChar = 'z';
 volatile long now;
 
+volatile String exposureString;
+volatile long exposureTarget = 2000;
+
 McopySerial mc;
 
 void setup () {
@@ -68,9 +71,22 @@ void cmd (char val) {
     camera_direction(false);
   } else if (val == mc.CAMERA) {
     camera();
+  } else if (val == mc.CAMERA_EXPOSURE) {
+    exposure();
   } else if (val == mc.STATE) {
     state();
   }
+}
+
+void exposure () {
+    exposureString = mc.getString();
+    parseExposureString();
+    cameraFrame = exposureTarget;
+    mc.confirm(mc.CAMERA_EXPOSURE);
+}
+
+void parseExposureString () {
+    exposureTarget = exposureString.toInt();
 }
 
 //null route direction
