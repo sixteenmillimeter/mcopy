@@ -19,6 +19,7 @@ interface Device {
 }
 
 interface Arduino { 
+	hasState : any;
 	send (id : string, cmd : string) : number;
 	sendString (id : string, str : string) : any;
 	enumerate () : any;

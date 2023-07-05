@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const intval_1 = require("intval");
 const processing_1 = require("processing");
+const delay_1 = require("delay");
 /** class representing camera functions **/
 class Camera {
     /**
@@ -157,11 +158,34 @@ class Camera {
     /**
      *
      **/
-    exposure(exposure, id) {
-        let cmd = 'E';
-        this.intval.setExposure(this.id, exposure, (ms) => {
-            this.end(cmd, id, ms);
-        });
+    async exposure(exposure, id) {
+        const cmd = this.cfg.arduino.cmd.camera_exposure;
+        const str = `${exposure}`;
+        let ms;
+        if (this.intval) {
+            return this.intval.setExposure(this.id, exposure, (ms) => {
+                return this.end(cmd, id, ms);
+            });
+        }
+        else if (this.arduino.hasState[id]) {
+            try {
+                ms = await this.arduino.send(this.id, cmd);
+            }
+            catch (err) {
+                this.log.error('Error sending camera exposure command', err);
+            }
+            await delay_1.delay(1);
+            try {
+                this.arduino.sendString(this.id, str);
+            }
+            catch (err) {
+                this.log.error('Error sending camera exposure string', err);
+            }
+            await delay_1.delay(1);
+            await ms;
+            return await this.end(cmd, id, ms);
+        }
+        return 0;
     }
     /**
      *
@@ -274,9 +298,13 @@ class Camera {
         else if (cmd === this.cfg.arduino.cmd.camerass) {
             message += 'Cameras both MOVED 1 frame each';
         }
+        else if (cmd === this.cfg.arduino.camera_exposure) {
+            message += 'Camera set exposure';
+        }
         message += ` ${ms}ms`;
         this.log.info(message);
         this.ui.send(this.id, { cmd: cmd, id: id, ms: ms });
+        return ms;
     }
 }
 module.exports = function (arduino, cfg, ui, filmout, second) {

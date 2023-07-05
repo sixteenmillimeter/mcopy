@@ -90,6 +90,18 @@ cam.end = function (c, id, ms) {
 		cam.lock = false;
 	}
 };
+
+cam.exposure = function (exposure, callback) {
+	var obj = {
+		id : uuid(),
+		exposure
+	}
+	ipcRenderer.sendSync(cam.id)
+	if (typeof callback !== 'undefined') {
+		callback();
+	}
+}
+
 cam.listen = function () {
 	'use strict';
 	ipcRenderer.on(cam.id, function (event, arg) {
