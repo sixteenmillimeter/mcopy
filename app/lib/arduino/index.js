@@ -30,7 +30,7 @@ class Arduino {
         this.known = KNOWN;
         this.alias = {};
         this.serial = { connect: {}, projector: {}, camera: {}, light: {} };
-        this.hasState = { projector: false, camera: false, light: false };
+        this.hasState = {};
         this.baud = 57600;
         this.queue = {};
         this.timer = 0;
@@ -93,7 +93,7 @@ class Arduino {
      **/
     async sendAsync(device, cmd) {
         return new Promise((resolve, reject) => {
-            //this.log.info(`${device} -> ${cmd}`)
+            this.log.info(`${device} -> ${cmd}`);
             this.queue[cmd] = (ms) => {
                 return resolve(ms);
             };
@@ -108,8 +108,9 @@ class Arduino {
     async send(serial, cmd) {
         const device = this.alias[serial];
         let results;
-        //this.log.info(`${cmd} -> ${serial}`)
+        this.log.info(`${cmd} -> ${serial}`);
         if (this.locks[serial]) {
+            this.log.warning(`Serial ${serial} is locked`);
             return false;
         }
         this.timer = new Date().getTime();
@@ -175,6 +176,8 @@ class Arduino {
     async state(serial, confirm = false) {
         const device = confirm ? this.alias['connect'] : this.alias[serial];
         let results;
+        this.log.info(serial);
+        this.log.info(device);
         if (this.locks[serial]) {
             return null;
         }
@@ -221,7 +224,7 @@ class Arduino {
             delete this.queue[data];
         }
         else if (data[0] === cfg.arduino.cmd.state) {
-            complete = this.queue[cfg.arduino.cmd.state](ms);
+            complete = this.queue[cfg.arduino.cmd.state](data);
             delete this.queue[cfg.arduino.cmd.state];
             return data;
         }
@@ -278,7 +281,6 @@ class Arduino {
         });
     }
     confirmEnd(data) {
-        this.log.info(data);
         if (data === cfg.arduino.cmd.connect
             || data === cfg.arduino.cmd.projector_identifier
             || data === cfg.arduino.cmd.camera_identifier
@@ -306,7 +308,7 @@ class Arduino {
             this.confirmExec = {};
         }
         else if (data[0] === cfg.arduino.cmd.state) {
-            this.queue[cfg.arduino.cmd.state](0);
+            this.queue[cfg.arduino.cmd.state](data);
             delete this.queue[cfg.arduino.cmd.state];
         }
     }

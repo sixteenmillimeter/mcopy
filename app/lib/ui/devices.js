@@ -33,14 +33,9 @@ class Devices {
             let devs = [];
             let notify = 'Connected to ';
             let p;
-            //@ts-ignore
-            yield delay(1000);
-            try {
-                gui.spinner(false);
-                gui.overlay(false);
-            }
-            catch (err) {
-                log.error(err);
+            if (arg.camera && arg.camera.exposure) {
+                $('#submit_cam_time').removeClass('hide');
+                $('#cam_time').removeAttr('readonly');
             }
             for (let i in arg) {
                 devs.push(arg[i].arduino);
@@ -106,6 +101,15 @@ class Devices {
             grid.state(0);
             grid.state(1);
             seq.stats();
+            //@ts-ignore
+            yield delay(1000);
+            try {
+                gui.spinner(false);
+                gui.overlay(false);
+            }
+            catch (err) {
+                log.error(err);
+            }
             return event.returnValue = true;
         });
     }

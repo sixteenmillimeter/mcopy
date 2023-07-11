@@ -462,10 +462,12 @@
           <div class="proj_time">
             <h4>Projector Time (ms)</h4>
             <input type="number" readonly id="proj_time" value="0" />
+            <button id="submit_proj_time" class="hide">✓</button>
           </div>
           <div class="cam_time">
             <h4>Camera Time (ms)</h4>
             <input type="number" readonly id="cam_time" value="0" />
+            <button id="submit_cam_time" class="hide" onclick="cam.exposure($('#cam_time').val());">✓</button>
           </div>
         </div>
       </div>

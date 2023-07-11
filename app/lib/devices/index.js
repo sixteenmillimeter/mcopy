@@ -134,6 +134,9 @@ class Devices {
         catch (err) {
             this.log.error('Error checking state capability', err);
         }
+        if (this.arduino.hasState[device.toString()]) {
+            this.arduino.hasState[type] = true;
+        }
         return type;
     }
     /**
@@ -471,9 +474,16 @@ class Devices {
         if (!this.connected.projector) {
             await this.fakeProjector();
         }
+        else if (this.arduino.hasState['projector']) {
+            p.state = true;
+        }
         p.arduino = this.connected.projector;
         if (!this.connected.camera) {
             await this.fakeCamera();
+        }
+        else if (this.arduino.hasState['camera']) {
+            c.state = true;
+            c.exposure = true;
         }
         c.arduino = this.connected.camera;
         if (!this.connected.light) {

@@ -161,28 +161,43 @@ class Camera {
     async exposure(exposure, id) {
         const cmd = this.cfg.arduino.cmd.camera_exposure;
         const str = `${exposure}`;
+        const started = +new Date();
         let ms;
+        let confirmState;
         if (this.intval) {
             return this.intval.setExposure(this.id, exposure, (ms) => {
                 return this.end(cmd, id, ms);
             });
         }
-        else if (this.arduino.hasState[id]) {
+        else if (this.arduino.hasState[this.id]) {
+            this.log.info(`Sending cmd ${cmd}`);
             try {
-                ms = await this.arduino.send(this.id, cmd);
+                ms = this.arduino.send(this.id, cmd);
             }
             catch (err) {
                 this.log.error('Error sending camera exposure command', err);
             }
             await delay_1.delay(1);
+            this.log.info(`Sending str ${str}`);
             try {
-                this.arduino.sendString(this.id, str);
+                ms = await this.arduino.sendString(this.id, str);
             }
             catch (err) {
                 this.log.error('Error sending camera exposure string', err);
             }
-            await delay_1.delay(1);
+            this.log.info(`Sent str ${str}`);
             await ms;
+            this.log.info(`Sent cmd ${cmd}`);
+            await delay_1.delay(1);
+            this.log.info(`Sending state request`);
+            try {
+                confirmState = await this.arduino.state(this.id, false);
+            }
+            catch (err) {
+                this.log.error(`Error confirming set state`, err);
+            }
+            console.dir(confirmState);
+            ms = (+new Date()) - started;
             return await this.end(cmd, id, ms);
         }
         return 0;
@@ -251,6 +266,14 @@ class Camera {
         else if (typeof arg.capper !== 'undefined') {
             try {
                 await this.cap(arg.capper, arg.id);
+            }
+            catch (err) {
+                this.log.error(err);
+            }
+        }
+        else if (typeof arg.exposure !== 'undefined') {
+            try {
+                await this.exposure(arg.exposure, arg.id);
             }
             catch (err) {
                 this.log.error(err);

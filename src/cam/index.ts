@@ -164,25 +164,41 @@ class Camera {
 	public async exposure (exposure : number, id : string) {
 		const cmd : string = this.cfg.arduino.cmd.camera_exposure;
 		const str : string = `${exposure}`;
+		const started : number = +new Date();
 		let ms : any;
+		let confirmState : any;
+
 		if (this.intval) {
 			return this.intval.setExposure(this.id, exposure, (ms : number) => {
 				return this.end(cmd, id, ms);
 			});
-		} else if (this.arduino.hasState[id]) {
+		} else if (this.arduino.hasState[this.id]) {
+			this.log.info(`Sending cmd ${cmd}`);
 			try {
-				ms = await this.arduino.send(this.id, cmd);
+				ms = this.arduino.send(this.id, cmd);
 			} catch (err) {
 				this.log.error('Error sending camera exposure command', err);
 			}
+			
 			await delay(1);
+			this.log.info(`Sending str ${str}`);
 			try {
-				this.arduino.sendString(this.id, str);
+				ms = await this.arduino.sendString(this.id, str);
 			} catch (err) {
 				this.log.error('Error sending camera exposure string', err);
 			}
-			await delay(1);
+			this.log.info(`Sent str ${str}`);
 			await ms;
+			this.log.info(`Sent cmd ${cmd}`);
+			await delay(1);
+			this.log.info(`Sending state request`);
+			try {
+				confirmState = await this.arduino.state(this.id, false);
+			} catch (err) {
+				this.log.error(`Error confirming set state`, err);
+			}
+			console.dir(confirmState);
+			ms = (+new Date()) - started;
 			return await this.end(cmd, id, ms);
 		}
 		return 0;

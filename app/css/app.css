@@ -693,6 +693,9 @@ button:focus {
 #settings > div.right .cam_time {
   height: 111px;
 }
+#settings > div.right > div {
+  width: 270px;
+}
 #settings > div > div {
   width: 360px;
 }
@@ -745,8 +748,9 @@ button:focus {
   width: 200px;
 }
 #settings button {
-  margin-top: -1px;
+  margin-top: 0px;
   float: right;
+  padding: 8px 16px 9px;
 }
 #settings input[type=radio] {
   float: right;

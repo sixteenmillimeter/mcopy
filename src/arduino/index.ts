@@ -37,7 +37,7 @@ class Arduino {
 	private known : string[] = KNOWN;
 	private alias : any = {};
 	private serial : any = { connect : {}, projector : {}, camera : {}, light : {} };
-	private hasState : any = { projector : false, camera : false, light : false };
+	private hasState : any = { };
 	private baud : number = 57600;
 	private queue : any = {};
 	private timer : number = 0;
@@ -101,7 +101,7 @@ class Arduino {
 	 **/
 	async sendAsync (device : string, cmd : string) {
 		return new Promise ((resolve, reject) => {
-			//this.log.info(`${device} -> ${cmd}`)
+			this.log.info(`${device} -> ${cmd}`)
 			this.queue[cmd] = (ms : number) => {
 				return resolve(ms)
 			}
@@ -117,8 +117,9 @@ class Arduino {
 	async send (serial : string, cmd : string) {
 		const device : any = this.alias[serial]
 		let results : any
-		//this.log.info(`${cmd} -> ${serial}`)
+		this.log.info(`${cmd} -> ${serial}`)
 		if (this.locks[serial]) {
+			this.log.warning(`Serial ${serial} is locked`)
 			return false
 		}
 		this.timer = new Date().getTime()
@@ -185,7 +186,8 @@ class Arduino {
 	async state (serial : string, confirm : boolean = false) : Promise<string>{
 		const device : string = confirm ? this.alias['connect'] : this.alias[serial]
 		let results : string
-
+		this.log.info(serial)
+		this.log.info(device)
 		if (this.locks[serial]) {
 			return null
 		}
@@ -233,7 +235,7 @@ class Arduino {
 			eventEmitter.emit('arduino_end', data)
 			delete this.queue[data]
 		} else if (data[0] === cfg.arduino.cmd.state) {
-			complete = this.queue[cfg.arduino.cmd.state](ms)
+			complete = this.queue[cfg.arduino.cmd.state](data)
 			delete this.queue[cfg.arduino.cmd.state]
 			return data
 		} else if (data[0] === cfg.arduino.cmd.error) {
@@ -291,7 +293,6 @@ class Arduino {
 	}
 
 	confirmEnd (data : string) {
-		this.log.info(data)
 		if (   data === cfg.arduino.cmd.connect
 			|| data === cfg.arduino.cmd.projector_identifier
 			|| data === cfg.arduino.cmd.camera_identifier
@@ -322,7 +323,7 @@ class Arduino {
 			this.confirmExec(null, data)
 			this.confirmExec = {}
 		} else if (data[0] === cfg.arduino.cmd.state) {
-			this.queue[cfg.arduino.cmd.state](0)
+			this.queue[cfg.arduino.cmd.state](data)
 			delete this.queue[cfg.arduino.cmd.state]
 		}
 	}
