@@ -194,6 +194,7 @@ class Arduino {
 		this.timer = new Date().getTime()
 		this.locks[serial] = true
 		await delay(cfg.arduino.serialDelay)
+		this.log.info("got here")
 		try {
 			results = await this.stateAsync(device, confirm)
 		} catch (e) {
