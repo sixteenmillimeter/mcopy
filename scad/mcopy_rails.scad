@@ -3,7 +3,7 @@ include<./common/2020_tslot.scad>;
 
 RailsSpacing = 100;
 ThreadedRodSpacing = 50;
-Length = 300;
+Length = 400;
 ThreadDiameter = 8;
 LinearMotionDiameter = 8;
 
@@ -34,7 +34,7 @@ module sled (pos = [0, 0, 0], length = 50) {
     Z = 50;
     translate(pos) difference () {
         rotate([0, 90, 0]) rounded_cube([Z, Y, X], d = 10, center = true, $fn = 50);
-        translate([0, RailsSpacing / 2, -(Z / 2) + 11]) cube([X + 1, 22, Z], center = true);
+        translate([0, RailsSpacing / 2,0]) cube([X + 1, 22, 22], center = true);
     }
 }
 
