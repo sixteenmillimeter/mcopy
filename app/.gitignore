@@ -1,6 +1,6 @@
 node_modules/*
 logs/*
 data/transfer*.json
-.appleId
-.applePwd
-.appleIdentity
+.appleId*
+.applePwd*
+.appleIdentity*
