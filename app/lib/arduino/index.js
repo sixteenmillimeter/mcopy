@@ -108,7 +108,7 @@ class Arduino {
     async send(serial, cmd) {
         const device = this.alias[serial];
         let results;
-        this.log.info(`${cmd} -> ${serial}`);
+        this.log.info(`send ${cmd} -> ${serial}`);
         if (this.locks[serial]) {
             this.log.warning(`Serial ${serial} is locked`);
             return false;
@@ -173,17 +173,21 @@ class Arduino {
             });
         });
     }
-    async state(serial, confirm = false) {
-        const device = confirm ? this.alias['connect'] : this.alias[serial];
+    async state(device, confirm = false) {
+        const serial = confirm ? this.alias['connect'] : this.alias[device];
         let results;
         this.log.info(serial);
         this.log.info(device);
-        if (this.locks[serial]) {
+        console.dir(this.locks);
+        if (typeof this.locks[serial] !== 'undefined' && this.locks[serial] === true) {
+            this.log.info("Serial is locked");
             return null;
         }
         this.timer = new Date().getTime();
         this.locks[serial] = true;
         await delay_1.delay(cfg.arduino.serialDelay);
+        if (!confirm)
+            this.log.info("got here");
         try {
             results = await this.stateAsync(device, confirm);
         }
@@ -216,7 +220,7 @@ class Arduino {
         const end = new Date().getTime();
         const ms = end - this.timer;
         let complete;
-        this.log.info(`${serial} -> ${data}`);
+        this.log.info(`end ${serial} -> ${data}`);
         if (this.queue[data] !== undefined) {
             this.locks[serial] = false;
             complete = this.queue[data](ms); //execute callback
@@ -224,12 +228,15 @@ class Arduino {
             delete this.queue[data];
         }
         else if (data[0] === cfg.arduino.cmd.state) {
+            this.locks[serial] = false;
             complete = this.queue[cfg.arduino.cmd.state](data);
+            eventEmitter.emit('arduino_end', data);
             delete this.queue[cfg.arduino.cmd.state];
             return data;
         }
         else if (data[0] === cfg.arduino.cmd.error) {
             this.log.error(`Received error from device ${serial}`);
+            this.locks[serial] = false;
             //error state
             //stop sequence
             //throw error in ui

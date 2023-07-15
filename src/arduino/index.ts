@@ -117,7 +117,7 @@ class Arduino {
 	async send (serial : string, cmd : string) {
 		const device : any = this.alias[serial]
 		let results : any
-		this.log.info(`${cmd} -> ${serial}`)
+		this.log.info(`send ${cmd} -> ${serial}`)
 		if (this.locks[serial]) {
 			this.log.warning(`Serial ${serial} is locked`)
 			return false
@@ -183,18 +183,20 @@ class Arduino {
 		})
 	}
 
-	async state (serial : string, confirm : boolean = false) : Promise<string>{
-		const device : string = confirm ? this.alias['connect'] : this.alias[serial]
+	async state (device : string, confirm : boolean = false) : Promise<string>{
+		const serial : string = confirm ? this.alias['connect'] : this.alias[device]
 		let results : string
 		this.log.info(serial)
 		this.log.info(device)
-		if (this.locks[serial]) {
+		console.dir(this.locks)
+		if (typeof this.locks[serial] !== 'undefined' && this.locks[serial] === true) {
+			this.log.info("Serial is locked")
 			return null
 		}
 		this.timer = new Date().getTime()
 		this.locks[serial] = true
 		await delay(cfg.arduino.serialDelay)
-		this.log.info("got here")
+		if (!confirm) this.log.info("got here")
 		try {
 			results = await this.stateAsync(device, confirm)
 		} catch (e) {
@@ -229,19 +231,21 @@ class Arduino {
 		const end : number = new Date().getTime()
 		const ms : number = end - this.timer
 		let complete : any
-		this.log.info(`${serial} -> ${data}`)
+		this.log.info(`end ${serial} -> ${data}`)
 		if (this.queue[data] !== undefined) {
 			this.locks[serial] = false
 			complete = this.queue[data](ms) //execute callback
 			eventEmitter.emit('arduino_end', data)
 			delete this.queue[data]
 		} else if (data[0] === cfg.arduino.cmd.state) {
+			this.locks[serial] = false
 			complete = this.queue[cfg.arduino.cmd.state](data)
+			eventEmitter.emit('arduino_end', data)
 			delete this.queue[cfg.arduino.cmd.state]
 			return data
 		} else if (data[0] === cfg.arduino.cmd.error) {
 			this.log.error(`Received error from device ${serial}`)
-
+			this.locks[serial] = false
 			//error state
 			//stop sequence
 			//throw error in ui
