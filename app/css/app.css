@@ -715,6 +715,7 @@ button:focus {
   padding: 6px 12px;
   font-size: 21px;
   min-width: 300px;
+  max-width: 300px;
 }
 #settings input[type=text] span,
 #settings input[type=number] span,
