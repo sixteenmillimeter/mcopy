@@ -87,11 +87,11 @@ module m4BoltNut (bolt = 10, nut = 3.5) {
     }
 }
 
-module lensAssemblyBellowsBoard () {
+module lensAssemblyBellowsBoard (magnets = false) {
 	//bottom
 	difference () {
         union () {
-            rotate([0, 0, 90]) bellows_camera_board();
+            rotate([0, 0, 90]) bellows_camera_board(magnets = magnets);
             translate([0, -XOffset, FrontOffset]) rotate([0, 90, 0]) cylinder(r = R(22), h = XWidth, center = true, $fn = 80);
         }
 		rotate([-90, 0, 0]) {
@@ -362,12 +362,16 @@ module debug () {
     }
 }
 
-PART = "lens_assembly_base_z";
+PART = "lens_assembly_bellows_board_magnetic";
 
 if (PART == "lens_assembly_camera_bellows_board") {
     bellows_camera_board();
+} else if (PART == "lens_assembly_camera_bellows_board_magnetic") {
+    bellows_camera_board(magnets = true);
 } else if (PART == "lens_assembly_bellows_board") {
     lensAssemblyBellowsBoard();
+} else if (PART == "lens_assembly_bellows_board_magnetic") {
+    lensAssemblyBellowsBoard(magnets = true);
 } else if (PART == "lens_assembly_threaded_z") {
     lensAssemblyThreadedZ();
 } else if (PART == "lens_assembly_linear_z") {
