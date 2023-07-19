@@ -1,5 +1,18 @@
 'use strict'
 
+/**
+ * 2023-07-16 Clarification
+ * 
+ * Previous versions of this script intermingled and even
+ * swapped the usage of the terms 'serial' and 'device'.
+ * From here on out, the terms will be used as such:
+ * 
+ * serial - a hardware address of a serial port
+ * device - common name of a type of mcopy device (eg. camera,
+ * projector, light) that is aliased to a serial port
+ * 
+ **/
+
 //import Log = require('log');
 import { delay }  from 'delay';
 

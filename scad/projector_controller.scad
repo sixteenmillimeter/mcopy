@@ -259,7 +259,7 @@ module usb_protector () {
     H = 3;
     difference () {
         rounded_cube([IN, IN, H], d = 5, center = true, $fn = 40);
-        cube([11.75, 11.75, H + 1], center = true);
+        cube([12, 12, H + 1], center = true);
     }
 }
 
