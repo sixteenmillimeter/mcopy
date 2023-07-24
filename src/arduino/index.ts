@@ -114,7 +114,7 @@ class Arduino {
 	 **/
 	async sendAsync (device : string, cmd : string) {
 		return new Promise ((resolve, reject) => {
-			this.log.info(`${device} -> ${cmd}`)
+			this.log.info(`sendAsyc ${device} -> ${cmd}`)
 			this.queue[cmd] = (ms : number) => {
 				return resolve(ms)
 			}
@@ -127,6 +127,9 @@ class Arduino {
 		})
 	}
 
+	/**
+	 * 
+	 **/
 	async send (serial : string, cmd : string) {
 		const device : any = this.alias[serial]
 		let results : any
@@ -149,6 +152,9 @@ class Arduino {
 		return results
 	}
 
+	/**
+	 * 
+	 **/
 	async sendString (serial : string, str : string) : Promise<any> {
 		const device : any = this.alias[serial]
 		let writeSuccess : any
@@ -157,6 +163,7 @@ class Arduino {
 			&& this.serial[device].fake) {
 			return this.serial[device].string(str)
 		} else {
+			this.log.info(`sendString ${device} -> ${str}`)
 			try {
 				writeSuccess = await this.writeAsync(device, str)
 			} catch (e) {
@@ -166,6 +173,9 @@ class Arduino {
 		}
 	}
 
+	/**
+	 * 
+	 **/
 	async stateAsync (device : string, confirm : boolean = false) : Promise<string> {
 		const cmd : string = cfg.arduino.cmd.state
 		return new Promise ((resolve, reject) => {
@@ -186,7 +196,7 @@ class Arduino {
 					}
 				}.bind(this), 1000)
 			}
-			//this.log.info(`${device} -> ${cmd}`)
+			this.log.info(`stateAsync ${device} -> ${cmd}`)
 			return this.serial[device].write(cmd, (err : any, results : any) => {
 				if (err) {
 					//this.log.error(err)
@@ -196,11 +206,14 @@ class Arduino {
 		})
 	}
 
+	/**
+	 * 
+	 **/
 	async state (device : string, confirm : boolean = false) : Promise<string>{
 		const serial : string = confirm ? this.alias['connect'] : this.alias[device]
 		let results : string
-		this.log.info(serial)
-		this.log.info(device)
+		this.log.info(`state device ${device}`)
+		this.log.info(`state serial ${serial}`)
 		console.dir(this.locks)
 		if (typeof this.locks[serial] !== 'undefined' && this.locks[serial] === true) {
 			this.log.info("Serial is locked")
@@ -240,6 +253,9 @@ class Arduino {
 		})
 	}
 
+	/**
+	 * 
+	 **/
 	end (serial : string, data : string) : any {
 		const end : number = new Date().getTime()
 		const ms : number = end - this.timer
@@ -251,6 +267,7 @@ class Arduino {
 			eventEmitter.emit('arduino_end', data)
 			delete this.queue[data]
 		} else if (data[0] === cfg.arduino.cmd.state) {
+			this.log.info(`end serial -> ${serial}`)
 			this.locks[serial] = false
 			complete = this.queue[cfg.arduino.cmd.state](data)
 			eventEmitter.emit('arduino_end', data)
@@ -274,6 +291,8 @@ class Arduino {
 	}
 
 	async connect (serial : string, device : string, confirm : any) : Promise<any> {
+		this.log.info(`connect device ${device}`)
+		this.log.info(`connect serial ${serial}`)
 		return new Promise(async (resolve, reject) => {
 			let connectSuccess : any
 			this.path[serial] = device
@@ -291,7 +310,7 @@ class Arduino {
 				this.log.error('failed to open: ' + e)
 				return reject(e)
 			}
-			//this.log.info(`Opened connection with ${this.path[serial]} as ${serial}`)
+			this.log.info(`Opened connection with ${this.path[serial]} as ${serial}`)
 			if (!confirm) {
 				this.serial[device].on('data', async (data : Buffer) => {
 					let d = data.toString('utf8')

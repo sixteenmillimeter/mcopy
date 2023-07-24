@@ -156,8 +156,8 @@ class Devices {
         return true;
     }
     /**
- *
- **/
+     *
+     **/
     async fakeCamera() {
         this.connected.camera = '/dev/fake';
         try {
@@ -204,8 +204,8 @@ class Devices {
         return true;
     }
     /**
-    *
-    **/
+     *
+     **/
     async connectDevice(device, type) {
         let closeSuccess;
         let connectSuccess;
@@ -434,8 +434,8 @@ class Devices {
         return connectSuccess;
     }
     /**
-    *
-    **/
+     *
+     **/
     //Cases for 1 or 2 arduinos connected
     async all(devices) {
         let c = {};
@@ -505,8 +505,8 @@ class Devices {
         return this.ready(p, c, l, cs, ps, capper);
     }
     /**
-    *
-    **/
+     *
+     **/
     remember(which, device, type) {
         let deviceEntry;
         const match = this.settings.state.devices.filter((dev) => {
@@ -525,8 +525,8 @@ class Devices {
         }
     }
     /**
-    *
-    **/
+     *
+     **/
     ready(projector, camera, light, camera_second, projector_second, capper) {
         let args = {
             camera,

@@ -172,7 +172,7 @@ class Devices {
 		this.log.info('Connected to fake PROJECTOR device', 'SERIAL', true, true)
 		return true
 	}
-		/**
+	/**
 	 * 
 	 **/
 	private async fakeCamera () {
@@ -218,7 +218,7 @@ class Devices {
 		this.log.info('Connected to fake CAPPER device', 'SERIAL', true, true)
 		return true
 	}
-	 /**
+	/**
 	 * 
 	 **/
 	private async connectDevice (device : Device, type : any) {
@@ -419,7 +419,7 @@ class Devices {
 		}
 		return connectSuccess
 	}
-	 /**
+	/**
 	 * 
 	 **/
 	//Cases for 1 or 2 arduinos connected
@@ -498,7 +498,7 @@ class Devices {
 		}
 		return this.ready(p, c, l, cs, ps, capper)
 	}
-	 /**
+	/**
 	 * 
 	 **/
 	private remember (which : string, device : any, type : string) {
@@ -518,7 +518,7 @@ class Devices {
 			this.settings.save()
 		}
 	}
-	 /**
+	/**
 	 * 
 	 **/
 	private ready (projector : any, camera : any, light : any, camera_second : any, projector_second : any, capper : any) {
@@ -566,7 +566,7 @@ class Devices {
 		return true
 	}
 
-	 /**
+	/**
 	 * 
 	 **/
 
