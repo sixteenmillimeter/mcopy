@@ -91,13 +91,23 @@ cam.end = function (c, id, ms) {
 	}
 };
 
-cam.exposure = function (exposure) {
+cam.exposure = async function (exposure) {
 	var obj = {
 		id : uuid(),
 		exposure
 	};
-	log.info(`Setting exposure: ${exposure}`);
-	ipcRenderer.sendSync(cam.id, obj);
+	var change = false;
+	try {
+		change = await gui.confirm(`Are you sure you want to set camera exposure to ${exposure}ms?`);
+	} catch (err) {
+		log.error(err);
+	}
+	if (change) {
+		log.info(`Setting exposure: ${exposure}`);
+		ipcRenderer.sendSync(cam.id, obj);
+	} else {
+		timing.updateUI('#cam_time', timing.data['cam']);
+	}
 }
 
 cam.listen = function () {
