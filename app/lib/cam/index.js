@@ -164,13 +164,15 @@ class Camera {
         const started = +new Date();
         let ms;
         let confirmState;
+        let parts;
+        let confirmExposure;
         if (this.intval) {
             return this.intval.setExposure(this.id, exposure, (ms) => {
+                this.ui.send('timing', { c: 'c', ms: exposure });
                 return this.end(cmd, id, ms);
             });
         }
         else if (this.arduino.hasState[this.id]) {
-            this.log.info(`Sending cmd ${cmd}`);
             try {
                 ms = this.arduino.send(this.id, cmd);
             }
@@ -178,25 +180,29 @@ class Camera {
                 this.log.error('Error sending camera exposure command', err);
             }
             await delay_1.delay(1);
-            this.log.info(`Sending str ${str}`);
             try {
                 ms = await this.arduino.sendString(this.id, str);
             }
             catch (err) {
                 this.log.error('Error sending camera exposure string', err);
             }
-            this.log.info(`Sent str ${str}`);
             await ms;
-            this.log.info(`Sent cmd ${cmd}`);
             await delay_1.delay(1);
-            this.log.info(`Sending state request`);
             try {
                 confirmState = await this.arduino.state(this.id, false);
             }
             catch (err) {
                 this.log.error(`Error confirming set state`, err);
             }
-            console.dir(confirmState);
+            parts = this.arduino.stateStr[this.id].split('G');
+            if (parts.length > 1) {
+                parts = parts[1].split('H');
+                confirmExposure = parseInt(parts[0]);
+                if (!isNaN(confirmExposure)) {
+                    this.log.info(`Exposure successfully set to ${confirmExposure}ms`);
+                    this.ui.send('timing', { c: 'c', ms: exposure });
+                }
+            }
             ms = (+new Date()) - started;
             return await this.end(cmd, id, ms);
         }

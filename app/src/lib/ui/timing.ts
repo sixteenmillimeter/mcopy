@@ -7,9 +7,7 @@ interface TimingData {
 }
 
 class Timing {
-	public data : TimingData = {
-
-	}
+	public data : TimingData = {}
 
 	private fromArduino : any = {
 		'c' : 'cam',
@@ -44,6 +42,20 @@ class Timing {
 
 	constructor () {
 
+	}
+
+	public init () {
+		this.listen();
+	}
+
+	private listen () {
+		ipcRenderer.on('timing', this.timing.bind(this));
+	}
+
+	private timing (event : any, arg : any) {
+		if (arg.c) {
+			this.update(arg.c, parseInt(arg.ms), true);
+		}
 	}
 
 	public reset (profile : any) {
@@ -89,11 +101,15 @@ class Timing {
 	}
 
 	//update with rolling average
-	public update (c : string, ms : number) {
+	public update (c : string, ms : number, force : boolean = false) {
 		let cmd : string = this.fromArduino[c];
 		let id : string;
 		if (typeof cmd !== 'undefined' && typeof this.data[cmd] !== 'undefined') {
-			this.data[cmd] = Math.round((this.data[cmd] + ms) / 2);
+			if (force) {
+				this.data[cmd] = ms;
+			} else {
+				this.data[cmd] = Math.round((this.data[cmd] + ms) / 2);
+			}
 			id = `#${cmd}_time`;
 			this.updateUI(id, this.data[cmd]);
 		}

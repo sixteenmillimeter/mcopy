@@ -33,6 +33,17 @@ class Timing {
             'PBPF': 'projs'
         };
     }
+    init() {
+        this.listen();
+    }
+    listen() {
+        ipcRenderer.on('timing', this.timing.bind(this));
+    }
+    timing(event, arg) {
+        if (arg.c) {
+            this.update(arg.c, parseInt(arg.ms), true);
+        }
+    }
     reset(profile) {
         const keys = Object.keys(profile);
         const cmds = Object.keys(cfg.cmd);
@@ -74,11 +85,16 @@ class Timing {
         this.data = timing;
     }
     //update with rolling average
-    update(c, ms) {
+    update(c, ms, force = false) {
         let cmd = this.fromArduino[c];
         let id;
         if (typeof cmd !== 'undefined' && typeof this.data[cmd] !== 'undefined') {
-            this.data[cmd] = Math.round((this.data[cmd] + ms) / 2);
+            if (force) {
+                this.data[cmd] = ms;
+            }
+            else {
+                this.data[cmd] = Math.round((this.data[cmd] + ms) / 2);
+            }
             id = `#${cmd}_time`;
             this.updateUI(id, this.data[cmd]);
         }

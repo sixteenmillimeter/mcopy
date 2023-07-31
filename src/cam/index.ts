@@ -167,13 +167,15 @@ class Camera {
 		const started : number = +new Date();
 		let ms : any;
 		let confirmState : any;
+		let parts : string[];
+		let confirmExposure : number;
 
 		if (this.intval) {
 			return this.intval.setExposure(this.id, exposure, (ms : number) => {
+				this.ui.send('timing', { c : 'c', ms : exposure });
 				return this.end(cmd, id, ms);
 			});
 		} else if (this.arduino.hasState[this.id]) {
-			this.log.info(`Sending cmd ${cmd}`);
 			try {
 				ms = this.arduino.send(this.id, cmd);
 			} catch (err) {
@@ -181,23 +183,31 @@ class Camera {
 			}
 			
 			await delay(1);
-			this.log.info(`Sending str ${str}`);
+
 			try {
 				ms = await this.arduino.sendString(this.id, str);
 			} catch (err) {
 				this.log.error('Error sending camera exposure string', err);
 			}
-			this.log.info(`Sent str ${str}`);
 			await ms;
-			this.log.info(`Sent cmd ${cmd}`);
 			await delay(1);
-			this.log.info(`Sending state request`);
+
 			try {
 				confirmState = await this.arduino.state(this.id, false);
 			} catch (err) {
 				this.log.error(`Error confirming set state`, err);
 			}
-			console.dir(confirmState);
+
+			parts = this.arduino.stateStr[this.id].split('G')
+			if (parts.length > 1) {
+				parts = parts[1].split('H')
+				confirmExposure = parseInt(parts[0])
+				if (!isNaN(confirmExposure)) {
+					this.log.info(`Exposure successfully set to ${confirmExposure}ms`)
+					this.ui.send('timing', { c : 'c', ms : exposure })
+				}
+			}
+
 			ms = (+new Date()) - started;
 			return await this.end(cmd, id, ms);
 		}

@@ -59,6 +59,7 @@ class Projector {
                 this.log.error(`Error setting ${this.id} direction`, err);
             }
         }
+        console.dir(ms);
         return await this.end(cmd, id, ms);
     }
     /**
@@ -166,7 +167,7 @@ class Projector {
         }
         message += ` ${ms}ms`;
         this.log.info(message, 'PROJECTOR');
-        return await this.ui.send(this.id, { cmd: cmd, id: id, ms: ms });
+        return await this.ui.send(this.id, { cmd, id, ms });
     }
 }
 module.exports = function (arduino, cfg, ui, filmout, second) {
