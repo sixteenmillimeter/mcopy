@@ -53,7 +53,7 @@ class Timing {
 	}
 
 	private timing (event : any, arg : any) {
-		if (arg.c) {
+		if (typeof arg.c !== 'undefined') {
 			this.update(arg.c, parseInt(arg.ms), true);
 		}
 	}
@@ -94,6 +94,7 @@ class Timing {
 				this.updateUI('#proj_time', proj);
 			}
 		}
+		log.info('reset')
 	}
 
 	public restore (timing : TimingData) {
@@ -104,14 +105,25 @@ class Timing {
 	public update (c : string, ms : number, force : boolean = false) {
 		let cmd : string = this.fromArduino[c];
 		let id : string;
+		log.info(c)
+		log.info(cmd)
 		if (typeof cmd !== 'undefined' && typeof this.data[cmd] !== 'undefined') {
 			if (force) {
+				log.info(`Forcing update of timing, ${ms}`);
 				this.data[cmd] = ms;
 			} else {
 				this.data[cmd] = Math.round((this.data[cmd] + ms) / 2);
 			}
 			id = `#${cmd}_time`;
 			this.updateUI(id, this.data[cmd]);
+		} else if (typeof cmd !== 'undefined' && force) {
+			//first update
+			setTimeout(function () {
+				log.info(`Forcing update of timing, ${ms}`);
+				this.data[cmd] = ms;
+				id = `#${cmd}_time`;
+				this.updateUI(id, this.data[cmd]);
+			}.bind(this), 5000);
 		}
 	}
 

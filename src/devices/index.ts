@@ -111,8 +111,7 @@ class Devices {
 		let connectSuccess : any
 		let verifySuccess : any
 		let device : any
-		let exposure : number
-		let parts : string[]
+
 		//this.log.info(`distinguish() ${serial}`)
 		try {
 			connectSuccess = await this.arduino.connect('connect', serial, true)
@@ -151,20 +150,6 @@ class Devices {
 			await this.arduino.state(device, true)
 		} catch (err) {
 			this.log.error('Error checking state capability', err)
-		}
-
-		if (this.arduino.hasState[device]) {
-			if (device.indexOf('camera') !== -1) {
-				parts = this.arduino.stateStr[device].split('G')
-				if (parts.length > 1) {
-					parts = parts[1].split('H')
-					exposure = parseInt(parts[0])
-					if (!isNaN(exposure)) {
-						this.log.info(`Timing for [${device}] = ${exposure}`)
-						this.ui.send('timing', { c : 'c', ms : exposure })
-					}
-				}
-			}
 		}
 
 		return device
@@ -445,6 +430,8 @@ class Devices {
 		let ps : any = {}
 		let capper : any = {}
 		let checklist : any[] = []
+		let exposure : number
+		let parts : string[]
 
 		this.connected = {
 			projector : false,
@@ -482,6 +469,17 @@ class Devices {
 		if (!this.connected.camera) {
 			await this.fakeCamera()
 		} else if (this.arduino.hasState['camera']) {
+			if (device.indexOf('camera') !== -1) {
+				parts = this.arduino.stateStr[device].split('G')
+				if (parts.length > 1) {
+					parts = parts[1].split('H')
+					exposure = parseInt(parts[0])
+					if (!isNaN(exposure)) {
+						this.log.info(`Timing for [${device}] = ${exposure}`)
+						this.ui.send('timing', { c : 'c', ms : exposure })
+					}
+				}
+			}
 			c.state = true
 			c.exposure = true
 		}

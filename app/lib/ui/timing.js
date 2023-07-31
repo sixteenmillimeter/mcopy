@@ -40,7 +40,7 @@ class Timing {
         ipcRenderer.on('timing', this.timing.bind(this));
     }
     timing(event, arg) {
-        if (arg.c) {
+        if (typeof arg.c !== 'undefined') {
             this.update(arg.c, parseInt(arg.ms), true);
         }
     }
@@ -80,6 +80,7 @@ class Timing {
                 this.updateUI('#proj_time', proj);
             }
         }
+        log.info('reset');
     }
     restore(timing) {
         this.data = timing;
@@ -88,8 +89,11 @@ class Timing {
     update(c, ms, force = false) {
         let cmd = this.fromArduino[c];
         let id;
+        log.info(c);
+        log.info(cmd);
         if (typeof cmd !== 'undefined' && typeof this.data[cmd] !== 'undefined') {
             if (force) {
+                log.info(`Forcing update of timing, ${ms}`);
                 this.data[cmd] = ms;
             }
             else {
@@ -97,6 +101,15 @@ class Timing {
             }
             id = `#${cmd}_time`;
             this.updateUI(id, this.data[cmd]);
+        }
+        else if (typeof cmd !== 'undefined' && force) {
+            //first update
+            setTimeout(function () {
+                log.info(`Forcing update of timing, ${ms}`);
+                this.data[cmd] = ms;
+                id = `#${cmd}_time`;
+                this.updateUI(id, this.data[cmd]);
+            }.bind(this), 5000);
         }
     }
     updateUI(id, ms) {
