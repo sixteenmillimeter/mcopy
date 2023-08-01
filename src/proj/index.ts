@@ -64,6 +64,7 @@ class Projector {
 				this.log.error(`Error setting ${this.id} direction`, err)
 			}
 		}
+		console.dir(ms)
 		return await this.end(cmd, id, ms)
 	}
 
@@ -129,7 +130,7 @@ class Projector {
 	 *
 	 **/
 	async end (cmd : string, id : string, ms : number) {
-		let message : string = '';
+		let message : string = ''
 		if (cmd === this.cfg.arduino.cmd.projector_forward) {
 			message = 'Projector set to FORWARD'
 		} else if (cmd === this.cfg.arduino.cmd.projector_backward) {
@@ -159,7 +160,7 @@ class Projector {
 		}
 		message += ` ${ms}ms`
 		this.log.info(message, 'PROJECTOR')
-		return await this.ui.send(this.id, {cmd: cmd, id : id, ms: ms})
+		return await this.ui.send(this.id, { cmd, id, ms })
 	}
 }
 

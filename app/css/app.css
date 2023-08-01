@@ -668,12 +668,39 @@ button:focus {
 }
 #settings > div {
   width: 300px;
-  margin: 0 auto;
+}
+#settings > div.left {
+  float: left;
+  padding-left: 30px;
+}
+#settings > div.right {
+  float: right;
+  padding-right: 30px;
+}
+#settings > div.right input[type=number] {
+  min-width: 200px;
+  width: 200px;
+}
+#settings > div.right input[readonly] {
+  cursor: not-allowed;
+}
+#settings > div.right .spacer {
+  height: 62px;
+}
+#settings > div.right .proj_time {
+  height: 111px;
+}
+#settings > div.right .cam_time {
+  height: 111px;
+}
+#settings > div.right > div {
+  width: 270px;
 }
 #settings > div > div {
   width: 360px;
 }
 #settings input[type=text],
+#settings input[type=number],
 #settings select {
   display: block;
   border-radius: 5px;
@@ -688,26 +715,32 @@ button:focus {
   padding: 6px 12px;
   font-size: 21px;
   min-width: 300px;
+  max-width: 300px;
 }
 #settings input[type=text] span,
+#settings input[type=number] span,
 #settings select span {
   display: block;
   font-size: 16px;
   font-weight: 200;
 }
 #settings input[type=text]:active,
+#settings input[type=number]:active,
 #settings select:active,
 #settings input[type=text] .active,
+#settings input[type=number] .active,
 #settings select .active {
   background: #fff;
   color: #272b30;
   outline: none;
 }
 #settings input[type=text]:focus,
+#settings input[type=number]:focus,
 #settings select:focus {
   outline: none;
 }
 #settings input[type=text].active,
+#settings input[type=number].active,
 #settings select.active {
   border-color: #DAE035;
   color: #DAE035;
@@ -716,8 +749,9 @@ button:focus {
   width: 200px;
 }
 #settings button {
-  margin-top: -1px;
+  margin-top: 0px;
   float: right;
+  padding: 8px 16px 9px;
 }
 #settings input[type=radio] {
   float: right;

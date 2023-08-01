@@ -186,7 +186,10 @@
       "capper_on": "A",
       "capper_off": "B",
       "takeup_forward": "D",
-      "takeup_backward": "E"
+      "takeup_backward": "F",
+      "error" : "E",
+      "camera_exposure" : "G",
+      "state" : "H"
     }
   }
 }

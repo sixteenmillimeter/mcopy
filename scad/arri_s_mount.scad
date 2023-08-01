@@ -1,5 +1,7 @@
 include <./common.scad>;
 
+PART="mount";
+
 Z = 100 - 14.5;
 
 baseX = 134.5;
@@ -83,4 +85,6 @@ module center_fitting () {
 //translate([0, 0, (baseZ/2) + (Z/2) + 5]) mount();
 //translate([0, 0, (baseZ/2) + Z + 9]) 
 //center_fitting();
-mount();
+if (PART == "mount") {
+    mount();
+}

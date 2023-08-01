@@ -81,7 +81,7 @@ cam.end = function (c, id, ms) {
 		gui.counterUpdate('cam2', cam.second.pos);
 	}
 	timing.update(c, ms);
-	gui.counterUpdate('cam', cam.pos)
+	gui.counterUpdate('cam', cam.pos);
 	if (typeof cam.queue[id] !== 'undefined') {
 		if (typeof cam.queue[id].callback !== 'undefined') {
 			cam.queue[id].callback(ms);
@@ -90,6 +90,26 @@ cam.end = function (c, id, ms) {
 		cam.lock = false;
 	}
 };
+
+cam.exposure = async function (exposure) {
+	var obj = {
+		id : uuid(),
+		exposure
+	};
+	var change = false;
+	try {
+		change = await gui.confirm(`Are you sure you want to set camera exposure to ${exposure}ms?`);
+	} catch (err) {
+		log.error(err);
+	}
+	if (change) {
+		log.info(`Setting exposure: ${exposure}`);
+		ipcRenderer.sendSync(cam.id, obj);
+	} else {
+		timing.updateUI('#cam_time', timing.data['cam']);
+	}
+}
+
 cam.listen = function () {
 	'use strict';
 	ipcRenderer.on(cam.id, function (event, arg) {

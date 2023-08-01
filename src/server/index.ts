@@ -1,3 +1,5 @@
+'use strict'
+
 import WebSocket, { WebSocketServer } from 'ws'
 import express, { Express, Request, Response, Application } from 'express'
 import { readFile } from 'fs/promises'
@@ -53,9 +55,11 @@ class Server {
 	private queue : ServerQueue = {}
 	private interval : ReturnType<typeof setInterval>
 	private intervalPeriod : number = 10000 //10 sec
+	private ui : any;
 
-	constructor () {
+	constructor (uiInput : any) {
 		this.init()
+		this.ui = uiInput;
 	}
 
 	async init () {
@@ -91,8 +95,9 @@ class Server {
 			this.log.error(err)
 			return
 		}
-		this.wss.on('connection', async function (ws : WebSocket) {
-			ws.on("message", function (data : string ) {
+		this.wss.on('connection', async function (ws : WebSocket, req: any) {
+			const address : string = req.socket.remoteAddress;
+			ws.on('message', function (data : string ) {
 				let obj : any = JSON.parse(data)
 				//this.log.info(data)
 				if (obj.id && this.queue[obj.id]) {
@@ -106,10 +111,12 @@ class Server {
 
     		ws.on('close', function () {
     			this.log.info('Client disconnected')
+    			this.notify('Client disconnected', `No longer forwarding digital display to client ${address}`)
     		}.bind(this))
 
     		await this.cmd(ws, 'mcopy')
     		this.log.info('Client connected')
+    		this.notify('Client connected', `Forwarding digital display to client: ${address}`)
 
 		}.bind(this))
 		this.log.info(`Websocket server started!`)
@@ -200,8 +207,8 @@ class Server {
 		return false
 	}
 
-	public async displayImage (src : string) {
-		let key
+	public async displayImage (src : string) : Promise<boolean> {
+		let key : string
 		if (this.useServer()) {
 			key = basename(src)
 			this.addProxy(key, src)
@@ -237,8 +244,12 @@ class Server {
 			//setTimeout() ?
 		}.bind(this))
 	}
+
+	private notify (title : string, message : string) {
+		this.ui.send('gui', { notify : { title, message }});
+	}
 }
 
-module.exports = function () {
-	return new Server()
+module.exports = function (ui : any) {
+	return new Server(ui)
 }

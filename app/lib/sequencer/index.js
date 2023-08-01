@@ -1,7 +1,11 @@
 'use strict';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const Log = require("log");
 const electron_1 = require("electron");
+const delay_1 = __importDefault(require("delay"));
 /** @module lib/sequencer **/
 let seq;
 class Sequencer {
@@ -160,7 +164,7 @@ class Sequencer {
                 }
                 //UI initiates pause, not planned
                 while (this.paused) {
-                    await delay(42);
+                    await delay_1.default(42);
                 }
                 if (typeof this.arr[y] === 'undefined') {
                     continue;

@@ -8,10 +8,10 @@
  * @returns {Promise} Promise to resolve after timeout
  **/
 
-function delay (ms : number) {
+export function delay (ms : number) {
 	return new Promise((resolve : any) => {
 		return setTimeout(resolve, ms);
 	});
 }
 
-module.exports.delay = delay;
+module.exports = { delay };

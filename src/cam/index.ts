@@ -161,11 +161,57 @@ class Camera {
 	/**
 	 *
 	 **/
-	public exposure (exposure : number, id : string) {
-		let cmd : string = 'E';
-		this.intval.setExposure(this.id, exposure, (ms : number) => {
-			this.end(cmd, id, ms);
-		});
+	public async exposure (exposure : number, id : string) {
+		const cmd : string = this.cfg.arduino.cmd.camera_exposure;
+		const str : string = `${exposure}`;
+		const started : number = +new Date();
+		let ms : any;
+		let confirmState : any;
+		let parts : string[];
+		let confirmExposure : number;
+
+		if (this.intval) {
+			return this.intval.setExposure(this.id, exposure, (ms : number) => {
+				this.ui.send('timing', { c : 'c', ms : exposure });
+				return this.end(cmd, id, ms);
+			});
+		} else if (this.arduino.hasState[this.id]) {
+			try {
+				ms = this.arduino.send(this.id, cmd);
+			} catch (err) {
+				this.log.error('Error sending camera exposure command', err);
+			}
+			
+			await delay(1);
+
+			try {
+				ms = await this.arduino.sendString(this.id, str);
+			} catch (err) {
+				this.log.error('Error sending camera exposure string', err);
+			}
+			await ms;
+			await delay(1);
+
+			try {
+				confirmState = await this.arduino.state(this.id, false);
+			} catch (err) {
+				this.log.error(`Error confirming set state`, err);
+			}
+
+			parts = this.arduino.stateStr[this.id].split('G')
+			if (parts.length > 1) {
+				parts = parts[1].split('H')
+				confirmExposure = parseInt(parts[0])
+				if (!isNaN(confirmExposure)) {
+					this.log.info(`Exposure successfully set to ${confirmExposure}ms`)
+					this.ui.send('timing', { c : 'c', ms : exposure })
+				}
+			}
+
+			ms = (+new Date()) - started;
+			return await this.end(cmd, id, ms);
+		}
+		return 0;
 	}
 
 	/**
@@ -230,6 +276,12 @@ class Camera {
 			} catch (err) {
 				this.log.error(err)
 			}
+		} else if (typeof arg.exposure !== 'undefined') {
+			try {
+				await this.exposure(arg.exposure, arg.id);
+			} catch (err) {
+				this.log.error(err);
+			}
 		}
 		event.returnValue = true
 	}
@@ -265,10 +317,13 @@ class Camera {
 			message += ' 1 frame';
 		} else if (cmd === this.cfg.arduino.cmd.camerass) {
 			message += 'Cameras both MOVED 1 frame each';
+		} else if (cmd === this.cfg.arduino.camera_exposure) {
+			message += 'Camera set exposure';
 		}
 		message += ` ${ms}ms`
 		this.log.info(message);
 		this.ui.send(this.id, {cmd: cmd, id : id, ms: ms});
+		return ms;
 	}
 }
 

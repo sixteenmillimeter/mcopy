@@ -1,11 +1,23 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * 2023-07-16 Clarification
+ *
+ * Previous versions of this script intermingled and even
+ * swapped the usage of the terms 'serial' and 'device'.
+ * From here on out, the terms will be used as such:
+ *
+ * serial - a hardware address of a serial port
+ * device - common name of a type of mcopy device (eg. camera,
+ * projector, light) that is aliased to a serial port
+ *
+ **/
 //import Log = require('log');
 const delay_1 = require("delay");
 const { SerialPort } = require('serialport');
 const { ReadlineParser } = require('@serialport/parser-readline');
 const exec = require('child_process').exec;
-const parser = new ReadlineParser({});
+const parser = new ReadlineParser({ delimiter: '\r\n' });
 const newlineRe = new RegExp('\n', 'g');
 const returnRe = new RegExp('\r', 'g');
 let eventEmitter;
@@ -29,12 +41,13 @@ class Arduino {
         this.path = {};
         this.known = KNOWN;
         this.alias = {};
-        this.serial = { connect: {}, projector: {}, camera: {}, light: {} };
+        this.serial = {};
+        this.hasState = {};
         this.baud = 57600;
         this.queue = {};
         this.timer = 0;
-        this.lock = false;
         this.locks = {};
+        this.stateStr = {};
         this.errorState = errorState;
         this.init();
     }
@@ -92,54 +105,121 @@ class Arduino {
      **/
     async sendAsync(device, cmd) {
         return new Promise((resolve, reject) => {
+            this.log.info(`sendAsync ${cmd} -> ${device}`);
             this.queue[cmd] = (ms) => {
                 return resolve(ms);
             };
-            return this.serial[device].write(cmd, (err, results) => {
+            this.log.info(`Device: ${device}`);
+            return this.serial[this.alias[device]].write(cmd, (err, results) => {
                 if (err) {
-                    //console.error(err)
+                    //this.log.error(err)
                     return reject(err);
                 }
             });
         });
     }
-    async send(serial, cmd) {
-        const device = this.alias[serial];
-        let results;
-        //console.log(`${cmd} -> ${serial}`)
-        if (this.locks[serial]) {
-            return false;
+    /**
+     *
+     **/
+    async send(device, cmd) {
+        const serial = this.alias[device];
+        let ms;
+        this.log.info(`send ${cmd} -> ${device}`);
+        if (this.isLocked(serial)) {
+            this.log.warn(`send Serial ${serial} is locked`);
+            return null;
         }
         this.timer = new Date().getTime();
-        this.locks[serial] = true;
+        this.lock(serial);
         await delay_1.delay(cfg.arduino.serialDelay);
         try {
-            results = await this.sendAsync(device, cmd);
+            ms = await this.sendAsync(device, cmd);
         }
         catch (e) {
-            return console.error(e);
+            return this.log.error(e);
         }
-        this.locks[serial] = false;
+        this.unlock(serial);
         await eventEmitter.emit('arduino_send', cmd);
-        return results;
+        return ms;
     }
-    async string(serial, str) {
-        const device = this.alias[serial];
+    /**
+     *
+     **/
+    async sendString(device, str) {
         let writeSuccess;
         await delay_1.delay(cfg.arduino.serialDelay);
-        if (typeof this.serial[device].fake !== 'undefined'
-            && this.serial[device].fake) {
-            return this.serial[device].string(str);
+        if (typeof this.serial[this.alias[device]].fake !== 'undefined'
+            && this.serial[this.alias[device]].fake) {
+            return this.serial[this.alias[device]].string(str);
         }
         else {
+            this.log.info(`sendString ${str} -> ${device}`);
             try {
                 writeSuccess = await this.writeAsync(device, str);
             }
             catch (e) {
-                return console.error(e);
+                return this.log.error(e);
             }
+            this.unlock(this.alias[device]);
             return writeSuccess;
         }
+    }
+    /**
+     *
+     **/
+    async stateAsync(device, confirm = false) {
+        const cmd = cfg.arduino.cmd.state;
+        const serial = confirm ? this.alias['connect'] : this.alias[device];
+        return new Promise((resolve, reject) => {
+            this.queue[cmd] = (state) => {
+                this.stateStr[device] = state;
+                if (confirm) {
+                    this.hasState[device] = true;
+                    this.log.info(`Device ${device} supports state [${state}]`);
+                }
+                return resolve(state);
+            };
+            if (confirm) {
+                setTimeout(function () {
+                    if (typeof this.queue[cmd] !== 'undefined') {
+                        delete this.queue[cmd];
+                        this.hasState[device] = false;
+                        this.log.info(`Device ${device} does not support state`);
+                        return resolve(null);
+                    }
+                }.bind(this), 1000);
+            }
+            this.log.info(`stateAsync ${cmd} -> ${device}`);
+            return this.serial[serial].write(cmd, (err, results) => {
+                if (err) {
+                    //this.log.error(err)
+                    return reject(err);
+                }
+            });
+        });
+    }
+    /**
+     *
+     **/
+    async state(device, confirm = false) {
+        const serial = confirm ? this.alias['connect'] : this.alias[device];
+        let results;
+        if (this.isLocked(serial)) {
+            this.log.warn(`state Serial ${serial} is locked`);
+            return null;
+        }
+        this.timer = new Date().getTime();
+        this.lock(serial);
+        await delay_1.delay(cfg.arduino.serialDelay);
+        try {
+            results = await this.stateAsync(device, confirm);
+        }
+        catch (e) {
+            return this.log.error(e);
+        }
+        this.unlock(serial);
+        await eventEmitter.emit('arduino_state', cfg.arduino.cmd.state);
+        return results;
     }
     /**
      * Send a string to an Arduino using async/await
@@ -151,7 +231,7 @@ class Arduino {
      **/
     async writeAsync(device, str) {
         return new Promise((resolve, reject) => {
-            this.serial[device].write(str, function (err, results) {
+            this.serial[this.alias[device]].write(str, function (err, results) {
                 if (err) {
                     return reject(err);
                 }
@@ -159,60 +239,75 @@ class Arduino {
             });
         });
     }
+    /**
+     *
+     **/
     end(serial, data) {
         const end = new Date().getTime();
         const ms = end - this.timer;
         let complete;
-        //console.log(`${serial} -> ${data}`);
+        //this.log.info(`end ${serial} -> ${data}`)
         if (this.queue[data] !== undefined) {
-            this.locks[serial] = false;
+            this.unlock(serial);
             complete = this.queue[data](ms); //execute callback
             eventEmitter.emit('arduino_end', data);
             delete this.queue[data];
         }
-        else if (data === 'E') {
+        else if (data[0] === cfg.arduino.cmd.state) {
+            //this.log.info(`end serial -> ${serial}`)
+            this.unlock(serial);
+            complete = this.queue[cfg.arduino.cmd.state](data);
+            eventEmitter.emit('arduino_end', data);
+            delete this.queue[cfg.arduino.cmd.state];
+            return data;
+        }
+        else if (data[0] === cfg.arduino.cmd.error) {
+            this.log.error(`Received error from device ${serial}`);
+            this.unlock(serial);
             //error state
             //stop sequence
             //throw error in ui
         }
         else {
-            //console.log('Received stray "' + data + '"'); //silent to user
+            //this.log.info('Received stray "' + data + '"') //silent to user
         }
         return ms;
     }
-    aliasSerial(serial, device) {
-        //this.log.info(`Making "${serial}" an alias of ${device}`);
-        this.alias[serial] = device;
+    aliasSerial(device, serial) {
+        //this.log.info(`Making "${serial}" an alias of ${device}`)
+        this.alias[device] = serial;
     }
-    async connect(serial, device, confirm) {
+    async connect(device, serial, confirm) {
+        //this.log.info(`connect device ${device}`)
+        //this.log.info(`connect serial ${serial}`)
         return new Promise(async (resolve, reject) => {
             let connectSuccess;
-            this.path[serial] = device;
-            this.alias[serial] = device;
-            this.serial[device] = new SerialPort({
-                path: this.path[serial],
+            this.path[device] = serial;
+            this.aliasSerial(device, serial);
+            this.serial[serial] = new SerialPort({
+                path: serial,
                 autoOpen: false,
                 baudRate: cfg.arduino.baud,
-                parser: parser
+                parser
             });
-            this.locks[device] = false;
+            this.unlock(serial);
             try {
                 connectSuccess = await this.openArduino(device);
             }
             catch (e) {
-                console.error('failed to open: ' + e);
+                this.log.error('failed to open: ' + e);
                 return reject(e);
             }
-            //console.log(`Opened connection with ${this.path[serial]} as ${serial}`);
+            this.log.info(`Opened connection with ${this.path[device]} as ${device}`);
             if (!confirm) {
-                this.serial[device].on('data', async (data) => {
+                this.serial[this.alias[device]].on('data', async (data) => {
                     let d = data.toString('utf8');
                     d = d.replace(newlineRe, '').replace(returnRe, '');
                     return this.end(serial, d);
                 });
             }
             else {
-                this.serial[device].on('data', async (data) => {
+                this.serial[this.alias[device]].on('data', async (data) => {
                     let d = data.toString('utf8');
                     d = d.replace(newlineRe, '').replace(returnRe, '');
                     return await this.confirmEnd(d);
@@ -222,7 +317,6 @@ class Arduino {
         });
     }
     confirmEnd(data) {
-        //console.dir(data)
         if (data === cfg.arduino.cmd.connect
             || data === cfg.arduino.cmd.projector_identifier
             || data === cfg.arduino.cmd.camera_identifier
@@ -248,11 +342,17 @@ class Arduino {
             || data === cfg.arduino.cmd.camera_capper_projectors_identifier) {
             this.confirmExec(null, data);
             this.confirmExec = {};
+            this.unlock(this.alias['connect']);
+        }
+        else if (data[0] === cfg.arduino.cmd.state) {
+            this.queue[cfg.arduino.cmd.state](data);
+            delete this.queue[cfg.arduino.cmd.state];
+            this.unlock(this.alias['connect']);
         }
     }
     async verify() {
         return new Promise(async (resolve, reject) => {
-            const device = this.alias['connect'];
+            const device = 'connect';
             let writeSuccess;
             this.confirmExec = function (err, data) {
                 if (data === cfg.arduino.cmd.connect) {
@@ -274,7 +374,7 @@ class Arduino {
     }
     async distinguish() {
         return new Promise(async (resolve, reject) => {
-            const device = this.alias['connect'];
+            const device = 'connect';
             let writeSuccess;
             let type;
             this.confirmExec = function (err, data) {
@@ -342,7 +442,7 @@ class Arduino {
         });
     }
     async close() {
-        const device = this.alias['connect'];
+        const device = 'connect';
         let closeSuccess;
         try {
             closeSuccess = await this.closeArduino(device);
@@ -352,11 +452,10 @@ class Arduino {
         }
         return closeSuccess;
     }
-    ;
-    async fakeConnect(serial) {
-        const device = '/dev/fake';
-        this.alias[serial] = device;
-        this.serial[device] = {
+    async fakeConnect(device) {
+        const serial = '/dev/fake';
+        this.aliasSerial(device, serial);
+        this.serial[serial] = {
             write: async function (cmd, cb) {
                 const t = {
                     c: cfg.arduino.cam.time + cfg.arduino.cam.delay,
@@ -378,7 +477,7 @@ class Arduino {
             },
             fake: true
         };
-        //console.log('Connected to fake arduino! Not real! Does not exist!');
+        //this.log.info('Connected to fake arduino! Not real! Does not exist!')
         return true;
     }
     /**
@@ -390,7 +489,7 @@ class Arduino {
      **/
     async openArduino(device) {
         return new Promise((resolve, reject) => {
-            return this.serial[device].open((err) => {
+            return this.serial[this.alias[device]].open((err) => {
                 if (err) {
                     return reject(err);
                 }
@@ -407,13 +506,24 @@ class Arduino {
      **/
     async closeArduino(device) {
         return new Promise((resolve, reject) => {
-            return this.serial[device].close((err) => {
+            return this.serial[this.alias[device]].close((err) => {
                 if (err) {
                     return reject(err);
                 }
                 return resolve(true);
             });
         });
+    }
+    lock(serial) {
+        //this.log.info(`Locked serial ${serial}`)
+        this.locks[serial] = true;
+    }
+    unlock(serial) {
+        //this.log.info(`Unlocked serial ${serial}`)
+        this.locks[serial] = false;
+    }
+    isLocked(serial) {
+        return typeof this.locks[serial] !== 'undefined' && this.locks[serial] === true;
     }
 }
 if (typeof module !== 'undefined' && module.parent) {

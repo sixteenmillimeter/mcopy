@@ -7,9 +7,7 @@ interface TimingData {
 }
 
 class Timing {
-	public data : TimingData = {
-
-	}
+	public data : TimingData = {}
 
 	private fromArduino : any = {
 		'c' : 'cam',
@@ -46,6 +44,20 @@ class Timing {
 
 	}
 
+	public init () {
+		this.listen();
+	}
+
+	private listen () {
+		ipcRenderer.on('timing', this.timing.bind(this));
+	}
+
+	private timing (event : any, arg : any) {
+		if (typeof arg.c !== 'undefined') {
+			this.update(arg.c, parseInt(arg.ms), true);
+		}
+	}
+
 	public reset (profile : any) {
 		const keys : string[] = Object.keys(profile);
 		const cmds : string[] = Object.keys(cfg.cmd);
@@ -66,10 +78,11 @@ class Timing {
 					pad = (profile['black'].before + profile['black'].after);
 				}
 
-				this.data['cam'] = cam 
-				this.data['cam2'] = cam 
-				this.data['cams'] = cam 
-				this.data['black'] = cam + pad
+				this.data['cam'] = cam;
+				this.data['cam2'] = cam;
+				this.data['cams'] = cam; 
+				this.data['black'] = cam + pad;
+				this.updateUI('#cam_time', cam);
 			} else if (key === 'proj') {
 				proj = 0;
 				proj += profile[key].time;
@@ -78,8 +91,10 @@ class Timing {
 				this.data['proj'] = proj;
 				this.data['proj2'] = proj;
 				this.data['projs'] = proj;
+				this.updateUI('#proj_time', proj);
 			}
 		}
+		log.info('reset')
 	}
 
 	public restore (timing : TimingData) {
@@ -87,10 +102,34 @@ class Timing {
 	}
 
 	//update with rolling average
-	public update (c : string, ms : number) {
+	public update (c : string, ms : number, force : boolean = false) {
 		let cmd : string = this.fromArduino[c];
+		let id : string;
+		log.info(c)
+		log.info(cmd)
 		if (typeof cmd !== 'undefined' && typeof this.data[cmd] !== 'undefined') {
-			this.data[cmd] = Math.round((this.data[cmd] + ms) / 2);
+			if (force) {
+				log.info(`Forcing update of timing, ${ms}`);
+				this.data[cmd] = ms;
+			} else {
+				this.data[cmd] = Math.round((this.data[cmd] + ms) / 2);
+			}
+			id = `#${cmd}_time`;
+			this.updateUI(id, this.data[cmd]);
+		} else if (typeof cmd !== 'undefined' && force) {
+			//first update
+			setTimeout(function () {
+				log.info(`Forcing update of timing, ${ms}`);
+				this.data[cmd] = ms;
+				id = `#${cmd}_time`;
+				this.updateUI(id, this.data[cmd]);
+			}.bind(this), 5000);
+		}
+	}
+
+	public updateUI (id : string, ms : number) {
+		if ($(id).length) {
+			$(id).val(ms);
 		}
 	}
 

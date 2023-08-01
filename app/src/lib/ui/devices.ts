@@ -2,7 +2,6 @@
 
 /// <reference path ="jquery.d.ts"/> 
 
-
 let devices : Devices;
 
 class Devices {
@@ -29,15 +28,12 @@ class Devices {
 		let devs : any[] = [];
 		let notify : string = 'Connected to ';
 		let p : any;
-		//@ts-ignore
-		await delay(1000);
 
-		try {
-			gui.spinner(false);
-			gui.overlay(false);
-		} catch (err) {
-			log.error(err);
+		if (arg.camera && arg.camera.exposure) {
+			$('#submit_cam_time').removeClass('hide');
+			$('#cam_time').removeAttr('readonly');
 		}
+
 		for (let i in arg) {
 			devs.push(arg[i].arduino);
 			if (arg[i].arduino && arg[i].arduino !== '/dev/fake') {
@@ -57,7 +53,7 @@ class Devices {
 		if (notify !== 'Connected to ') {
 			gui.notify('DEVICES', notify);
 		} else {
-			gui.notify('DEVICES', 'Connected to mock devices')
+			gui.notify('DEVICES', 'Connected to mock devices');
 		}
 
 		if (devs.length > 0) {
@@ -105,12 +101,22 @@ class Devices {
 		grid.state(1);
 		seq.stats();
 
+		//@ts-ignore
+		await delay(1000);
+
+		try {
+			gui.spinner(false);
+			gui.overlay(false);
+		} catch (err) {
+			log.error(err);
+		}
+
 		return event.returnValue = true;
 	}
 
 	profiles () {
 		const keys : string[] = Object.keys(cfg.profiles);
-		const elem : any = $('#profile')
+		const elem : any = $('#profile');
 		let opt;
 		elem.empty();
 		for (let key of keys) {

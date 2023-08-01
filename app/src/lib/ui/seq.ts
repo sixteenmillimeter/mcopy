@@ -2,7 +2,6 @@
 
 /// <reference path ="jquery.d.ts"/> 
 
-declare var gui : any;
 declare var cfg : any;
 declare var log : any;
 declare var w2popup : any;
@@ -215,8 +214,6 @@ class Sequence {
 			if (!step) continue
 			c = step.cmd;
 			ms += timing.get(c);
-			ms += cfg.arduino.serialDelay;
-			ms += cfg.arduino.sequenceDelay;
 
 			if (c === cfg.cmd.camera_forward || c === cfg.cmd.black_forward) {
 				cam_total++;

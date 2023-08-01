@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -10,7 +10,7 @@ const path_1 = require("path");
 const uuid_1 = require("uuid");
 const Log = require("log");
 class Server {
-    constructor() {
+    constructor(uiInput) {
         this.id = 'server';
         this.isActive = false;
         this.templates = [
@@ -29,6 +29,7 @@ class Server {
         this.queue = {};
         this.intervalPeriod = 10000; //10 sec
         this.init();
+        this.ui = uiInput;
     }
     async init() {
         this.log = await Log({ label: this.id });
@@ -59,8 +60,9 @@ class Server {
             this.log.error(err);
             return;
         }
-        this.wss.on('connection', async function (ws) {
-            ws.on("message", function (data) {
+        this.wss.on('connection', async function (ws, req) {
+            const address = req.socket.remoteAddress;
+            ws.on('message', function (data) {
                 let obj = JSON.parse(data);
                 //this.log.info(data)
                 if (obj.id && this.queue[obj.id]) {
@@ -73,9 +75,11 @@ class Server {
             }.bind(this));
             ws.on('close', function () {
                 this.log.info('Client disconnected');
+                this.notify('Client disconnected', `No longer forwarding digital display to client ${address}`);
             }.bind(this));
             await this.cmd(ws, 'mcopy');
             this.log.info('Client connected');
+            this.notify('Client connected', `Forwarding digital display to client: ${address}`);
         }.bind(this));
         this.log.info(`Websocket server started!`);
         this.log.info(`WSS [ ws://localhost:${this.wsPort} ]`);
@@ -190,8 +194,11 @@ class Server {
             //setTimeout() ?
         }.bind(this));
     }
+    notify(title, message) {
+        this.ui.send('gui', { notify: { title, message } });
+    }
 }
-module.exports = function () {
-    return new Server();
+module.exports = function (ui) {
+    return new Server(ui);
 };
 //# sourceMappingURL=index.js.map

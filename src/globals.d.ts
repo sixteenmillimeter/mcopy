@@ -15,17 +15,24 @@ declare module 'winston';
 declare module 'frame';
 
 interface Device {
-	arduino : string;
+	serial : string;
+	device : string;
 }
 
 interface Arduino { 
+	hasState : any;
+	alias : any;
+	serial : any;
+	stateStr : any;
 	send (id : string, cmd : string) : number;
-	string (id : string, str : string) : any;
+	sendString (id : string, str : string) : any;
 	enumerate () : any;
-	connect (id : string, device : Device, state : boolean) : any;
+	connect (device : string, serial : string, state : boolean) : any;
 	verify () : any;
 	distinguish () : any;
 	fakeConnect ( id : string) : any;
+	stateAsync (device : string, confirm: boolean) : any;
+	state (serial: string, confirm: boolean) : number;
 	close () : any;
-	aliasSerial ( id : string, device : Device) : any;
+	aliasSerial ( device : string, serial : string) : any;
 }

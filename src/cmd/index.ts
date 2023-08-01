@@ -636,6 +636,16 @@ class Commands {
 		}
 		return ms;
 	}
+
+	public async camera_exposure (cmd : any) {
+		let ms : number;
+		try {
+			ms = await this.cam.exposure(cmd.light);
+		} catch (err) {
+			throw err;
+		}
+		return ms;
+	}
 }
 
 module.exports = function (cfg : any, proj : any, cam : any, light : any, alert : any, cam2 : any, proj2 : any, capper : any) {

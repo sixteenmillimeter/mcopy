@@ -56,34 +56,34 @@ class Devices {
      *
      **/
     async enumerate() {
-        let devices;
+        let serials;
         try {
-            devices = await this.arduino.enumerate();
+            serials = await this.arduino.enumerate();
         }
         catch (err) {
             this.log.warn(err, 'SERIAL', false, true);
             await delay_1.delay(1000);
             return this.all([]);
         }
-        this.log.info(`Found ${devices.length} USB devices`, 'SERIAL', true, true);
-        devices = this.favor(devices);
-        return await this.all(devices);
+        this.log.info(`Found ${serials.length} USB devices`, 'SERIAL', true, true);
+        serials = this.favor(serials);
+        return await this.all(serials);
     }
     /**
      *
      **/
-    favor(devices) {
+    favor(serials) {
         const past = this.settings.state.devices.filter((device) => {
-            if (device.arduino) {
+            if (device.serial) {
                 return device;
             }
         }).map((device) => {
-            return device.arduino;
+            return device.serial;
         });
         if (past.length === 0) {
-            return devices;
+            return serials;
         }
-        devices.sort((a, b) => {
+        serials.sort((a, b) => {
             if (past.indexOf(a) !== -1 && past.indexOf(b) === -1) {
                 return 1;
             }
@@ -92,17 +92,18 @@ class Devices {
             }
             return 0;
         });
-        return devices;
+        return serials;
     }
     /**
      *
      **/
-    async distinguish(device) {
+    async distinguish(serial) {
         let connectSuccess;
         let verifySuccess;
-        let type;
+        let device;
+        //this.log.info(`distinguish() ${serial}`)
         try {
-            connectSuccess = await this.arduino.connect('connect', device, true);
+            connectSuccess = await this.arduino.connect('connect', serial, true);
         }
         catch (err) {
             this.log.error('Error connecting', err);
@@ -116,18 +117,25 @@ class Devices {
             this.log.error('Error verifying device', err);
             return null;
         }
-        this.log.info(`Verified ${device} as mcopy device`, 'SERIAL', true, true);
+        this.log.info(`Verified ${serial} as mcopy device`, 'SERIAL', true, true);
         await delay_1.delay(1000);
         try {
-            type = await this.arduino.distinguish();
+            device = await this.arduino.distinguish();
         }
         catch (err) {
             this.log.error('Error distinguishing device', err);
             return null;
         }
-        this.remember('arduino', device, type);
-        this.log.info(`Determined ${device} to be ${type}`, 'SERIAL', true, true);
-        return type;
+        this.remember('arduino', device, serial);
+        this.log.info(`Determined ${device} to be ${device}`, 'SERIAL', true, true);
+        await delay_1.delay(100);
+        try {
+            await this.arduino.state(device, true);
+        }
+        catch (err) {
+            this.log.error('Error checking state capability', err);
+        }
+        return device;
     }
     /**
      *
@@ -146,8 +154,8 @@ class Devices {
         return true;
     }
     /**
- *
- **/
+     *
+     **/
     async fakeCamera() {
         this.connected.camera = '/dev/fake';
         try {
@@ -194,9 +202,9 @@ class Devices {
         return true;
     }
     /**
-    *
-    **/
-    async connectDevice(device, type) {
+     *
+     **/
+    async connectDevice(device, serial) {
         let closeSuccess;
         let connectSuccess;
         try {
@@ -206,10 +214,10 @@ class Devices {
             this.log.error('Error closing arduino connection', err);
             return false;
         }
-        if (type === 'projector') {
-            this.connected.projector = device;
+        if (device === 'projector') {
+            this.connected.projector = serial;
             try {
-                connectSuccess = await this.arduino.connect('projector', device, false);
+                connectSuccess = await this.arduino.connect('projector', serial, false);
             }
             catch (err) {
                 this.log.error('Error connecting to projector', err);
@@ -217,10 +225,10 @@ class Devices {
             }
             this.log.info(`Connected to ${device} as PROJECTOR`, 'SERIAL', true, true);
         }
-        else if (type === 'camera') {
-            this.connected.camera = device;
+        else if (device === 'camera') {
+            this.connected.camera = serial;
             try {
-                connectSuccess = await this.arduino.connect('camera', device, false);
+                connectSuccess = await this.arduino.connect('camera', serial, false);
             }
             catch (err) {
                 this.log.error('Error connecting to camera', err);
@@ -228,10 +236,10 @@ class Devices {
             }
             this.log.info(`Connected to ${device} as CAMERA`, 'SERIAL', true, true);
         }
-        else if (type === 'light') {
-            this.connected.light = device;
+        else if (device === 'light') {
+            this.connected.light = serial;
             try {
-                connectSuccess = await this.arduino.connect('light', device, false);
+                connectSuccess = await this.arduino.connect('light', serial, false);
             }
             catch (err) {
                 this.log.error('Error connecting to light', err);
@@ -239,12 +247,12 @@ class Devices {
             }
             this.log.info(`Connected to ${device} as LIGHT`, 'SERIAL', true, true);
         }
-        else if (type === 'projector,light') {
-            this.connected.projector = device;
-            this.connected.light = device;
-            this.arduino.aliasSerial('light', device);
+        else if (device === 'projector,light') {
+            this.connected.projector = serial;
+            this.connected.light = serial;
+            this.arduino.aliasSerial('light', serial);
             try {
-                connectSuccess = await this.arduino.connect('projector', device, false);
+                connectSuccess = await this.arduino.connect('projector', serial, false);
             }
             catch (err) {
                 this.log.error('Error connecting to projector and light', err);
@@ -252,14 +260,14 @@ class Devices {
             }
             this.log.info(`Connected to ${device} as PROJECTOR + LIGHT`, 'SERIAL', true, true);
         }
-        else if (type === 'projector,camera,light') {
-            this.connected.projector = device;
-            this.connected.camera = device;
-            this.connected.light = device;
-            this.arduino.aliasSerial('camera', device);
-            this.arduino.aliasSerial('light', device);
+        else if (device === 'projector,camera,light') {
+            this.connected.projector = serial;
+            this.connected.camera = serial;
+            this.connected.light = serial;
+            this.arduino.aliasSerial('camera', serial);
+            this.arduino.aliasSerial('light', serial);
             try {
-                connectSuccess = await this.arduino.connect('projector', device, false);
+                connectSuccess = await this.arduino.connect('projector', serial, false);
             }
             catch (err) {
                 this.log.error('Error connecting to projector, camera and light', err);
@@ -267,12 +275,12 @@ class Devices {
             }
             this.log.info(`Connected to ${device} as PROJECTOR + CAMERA + LIGHT`, 'SERIAL', true, true);
         }
-        else if (type === 'projector,camera') {
-            this.connected.projector = device;
-            this.connected.camera = device;
-            this.arduino.aliasSerial('camera', device);
+        else if (device === 'projector,camera') {
+            this.connected.projector = serial;
+            this.connected.camera = serial;
+            this.arduino.aliasSerial('camera', serial);
             try {
-                connectSuccess = await this.arduino.connect('projector', device, false);
+                connectSuccess = await this.arduino.connect('projector', serial, false);
             }
             catch (err) {
                 this.log.error('Error connecting to projector and camera', err);
@@ -280,10 +288,10 @@ class Devices {
             }
             this.log.info(`Connected to ${device} as PROJECTOR + CAMERA`, 'SERIAL', true, true);
         }
-        else if (type === 'projector_second') {
-            this.connected.projector_second = device;
+        else if (device === 'projector_second') {
+            this.connected.projector_second = serial;
             try {
-                connectSuccess = await this.arduino.connect('projector_second', device, false);
+                connectSuccess = await this.arduino.connect('projector_second', serial, false);
             }
             catch (err) {
                 this.log.error('Error connecting to secondary projector', err);
@@ -291,130 +299,130 @@ class Devices {
             }
             this.log.info(`Connected to ${device} as PROJECTOR_SECOND`, 'SERIAL', true, true);
         }
-        else if (type === 'projector,projector_second') {
-            this.connected.projector = device;
-            this.connected.projector_second = device;
-            this.arduino.aliasSerial('projector_second', device);
+        else if (device === 'projector,projector_second') {
+            this.connected.projector = serial;
+            this.connected.projector_second = serial;
+            this.arduino.aliasSerial('projector_second', serial);
             try {
-                connectSuccess = await this.arduino.connect('projector', device, false);
+                connectSuccess = await this.arduino.connect('projector', serial, false);
             }
             catch (err) {
                 this.log.error('Error connecting to projector and secondary projector', err);
                 return false;
             }
         }
-        else if (type === 'camera_second') {
-            this.connected.camera_second = device;
+        else if (device === 'camera_second') {
+            this.connected.camera_second = serial;
             try {
-                connectSuccess = await this.arduino.connect('camera_second', device, false);
+                connectSuccess = await this.arduino.connect('camera_second', serial, false);
             }
             catch (err) {
                 console.error(err);
                 return false;
             }
         }
-        else if (type === 'camera,camera_second') {
-            this.connected.camera = device;
-            this.connected.camera_second = device;
-            this.arduino.aliasSerial('camera_second', device);
+        else if (device === 'camera,camera_second') {
+            this.connected.camera = serial;
+            this.connected.camera_second = serial;
+            this.arduino.aliasSerial('camera_second', serial);
             try {
-                connectSuccess = await this.arduino.connect('camera', device, false);
+                connectSuccess = await this.arduino.connect('camera', serial, false);
             }
             catch (err) {
                 this.log.error('Error connecting to camera, camera_secondary and projector', err);
                 return false;
             }
         }
-        else if (type === 'camera,projector,projector_second') {
-            this.connected.camera = device;
-            this.connected.projector = device;
-            this.connected.projector_second = device;
-            this.arduino.aliasSerial('projector', device);
-            this.arduino.aliasSerial('projector_second', device);
+        else if (device === 'camera,projector,projector_second') {
+            this.connected.camera = serial;
+            this.connected.projector = serial;
+            this.connected.projector_second = serial;
+            this.arduino.aliasSerial('projector', serial);
+            this.arduino.aliasSerial('projector_second', serial);
             try {
-                connectSuccess = await this.arduino.connect('camera', device, false);
+                connectSuccess = await this.arduino.connect('camera', serial, false);
             }
             catch (err) {
                 this.log.error('Error connecting to camera, projector and projector_second', err);
                 return false;
             }
         }
-        else if (type === 'camera,camera_second,projector') {
-            this.connected.camera = device;
-            this.connected.camera_second = device;
-            this.connected.projector = device;
-            this.arduino.aliasSerial('camera_second', device);
-            this.arduino.aliasSerial('projector', device);
+        else if (device === 'camera,camera_second,projector') {
+            this.connected.camera = serial;
+            this.connected.camera_second = serial;
+            this.connected.projector = serial;
+            this.arduino.aliasSerial('camera_second', serial);
+            this.arduino.aliasSerial('projector', serial);
             try {
-                connectSuccess = await this.arduino.connect('camera', device, false);
+                connectSuccess = await this.arduino.connect('camera', serial, false);
             }
             catch (err) {
                 this.log.error('Error connecting to camera, camera_second and projector', err);
                 return false;
             }
         }
-        else if (type === 'camera,camera_second,projector,projector_second') {
-            this.connected.camera = device;
-            this.connected.camera_second = device;
-            this.connected.projector = device;
-            this.connected.projector_second = device;
-            this.arduino.aliasSerial('camera_second', device);
-            this.arduino.aliasSerial('projector', device);
-            this.arduino.aliasSerial('projector_second', device);
+        else if (device === 'camera,camera_second,projector,projector_second') {
+            this.connected.camera = serial;
+            this.connected.camera_second = serial;
+            this.connected.projector = serial;
+            this.connected.projector_second = serial;
+            this.arduino.aliasSerial('camera_second', serial);
+            this.arduino.aliasSerial('projector', serial);
+            this.arduino.aliasSerial('projector_second', serial);
             try {
-                connectSuccess = await this.arduino.connect('camera', device, false);
+                connectSuccess = await this.arduino.connect('camera', serial, false);
             }
             catch (err) {
                 this.log.error('Error connecting to camera, camera_second, projector and projector_second', err);
                 return false;
             }
         }
-        else if (type === 'capper') {
-            this.connected.capper = device;
+        else if (device === 'capper') {
+            this.connected.capper = serial;
             try {
-                connectSuccess = await this.arduino.connect('capper', device, false);
+                connectSuccess = await this.arduino.connect('capper', serial, false);
             }
             catch (err) {
                 this.log.error('Error connecting capper', err);
                 return false;
             }
         }
-        else if (type === 'camera,capper') {
-            this.connected.camera = device;
-            this.connected.capper = device;
-            this.arduino.aliasSerial('capper', device);
+        else if (device === 'camera,capper') {
+            this.connected.camera = serial;
+            this.connected.capper = serial;
+            this.arduino.aliasSerial('capper', serial);
             try {
-                connectSuccess = await this.arduino.connect('camera', device, false);
+                connectSuccess = await this.arduino.connect('camera', serial, false);
             }
             catch (err) {
                 this.log.error('Error connecting to camera and capper', err);
                 return false;
             }
         }
-        else if (type === 'camera,capper,projector') {
-            this.connected.camera = device;
-            this.connected.capper = device;
-            this.connected.projector = device;
-            this.arduino.aliasSerial('capper', device);
-            this.arduino.aliasSerial('projector', device);
+        else if (device === 'camera,capper,projector') {
+            this.connected.camera = serial;
+            this.connected.capper = serial;
+            this.connected.projector = serial;
+            this.arduino.aliasSerial('capper', serial);
+            this.arduino.aliasSerial('projector', serial);
             try {
-                connectSuccess = await this.arduino.connect('camera', device, false);
+                connectSuccess = await this.arduino.connect('camera', serial, false);
             }
             catch (err) {
                 this.log.error('Error connecting to camera, capper and projector', err);
                 return false;
             }
         }
-        else if (type === 'camera,capper,projector,projector_second') {
-            this.connected.camera = device;
-            this.connected.capper = device;
-            this.connected.projector = device;
-            this.connected.projector_second = device;
-            this.arduino.aliasSerial('capper', device);
-            this.arduino.aliasSerial('projector', device);
-            this.arduino.aliasSerial('projector_second', device);
+        else if (device === 'camera,capper,projector,projector_second') {
+            this.connected.camera = serial;
+            this.connected.capper = serial;
+            this.connected.projector = serial;
+            this.connected.projector_second = serial;
+            this.arduino.aliasSerial('capper', serial);
+            this.arduino.aliasSerial('projector', serial);
+            this.arduino.aliasSerial('projector_second', serial);
             try {
-                connectSuccess = await this.arduino.connect('camera', device, false);
+                connectSuccess = await this.arduino.connect('camera', serial, false);
             }
             catch (err) {
                 this.log.error('Error connecting to camera, capper, projector and projector_second', err);
@@ -424,19 +432,21 @@ class Devices {
         return connectSuccess;
     }
     /**
-    *
-    **/
+     *
+     **/
     //Cases for 1 or 2 arduinos connected
-    async all(devices) {
+    async all(serials) {
         let c = {};
         let p = {};
         let l = {};
-        let type;
+        let device;
         let d;
         let cs = {};
         let ps = {};
         let capper = {};
         let checklist = [];
+        let exposure;
+        let parts;
         this.connected = {
             projector: false,
             camera: false,
@@ -444,16 +454,16 @@ class Devices {
             projector_second: false,
             capper: false
         };
-        for (let device of devices) {
+        for (let serial of serials) {
             try {
-                type = await this.distinguish(device);
+                device = await this.distinguish(serial);
             }
             catch (err) {
                 this.log.error('Error distinguishing device', err);
                 throw err;
             }
             try {
-                await this.connectDevice(device, type);
+                await this.connectDevice(device, serial);
             }
             catch (err) {
                 this.log.error('Error connecting to device', err);
@@ -464,9 +474,27 @@ class Devices {
         if (!this.connected.projector) {
             await this.fakeProjector();
         }
+        else if (this.arduino.hasState['projector']) {
+            p.state = true;
+        }
         p.arduino = this.connected.projector;
         if (!this.connected.camera) {
             await this.fakeCamera();
+        }
+        else if (this.arduino.hasState['camera']) {
+            if (device.indexOf('camera') !== -1) {
+                parts = this.arduino.stateStr[device].split('G');
+                if (parts.length > 1) {
+                    parts = parts[1].split('H');
+                    exposure = parseInt(parts[0]);
+                    if (!isNaN(exposure)) {
+                        this.log.info(`Timing for [${device}] = ${exposure}`);
+                        this.ui.send('timing', { c: 'c', ms: exposure });
+                    }
+                }
+            }
+            c.state = true;
+            c.exposure = true;
         }
         c.arduino = this.connected.camera;
         if (!this.connected.light) {
@@ -485,31 +513,33 @@ class Devices {
         if (this.settings.state.camera && this.settings.state.camera.intval) {
             c.intval = this.settings.state.camera.intval;
         }
+        //console.dir(this.arduino.alias);
+        //console.dir(this.arduino.serial);
         return this.ready(p, c, l, cs, ps, capper);
     }
     /**
-    *
-    **/
-    remember(which, device, type) {
+     *
+     **/
+    remember(device, serial, type) {
         let deviceEntry;
         const match = this.settings.state.devices.filter((dev) => {
-            if (dev[which] && dev[which] === device) {
+            if (dev[device] && dev[device] === serial) {
                 return dev;
             }
         });
         if (match.length === 0) {
             deviceEntry = {
-                type
+                device,
+                serial
             };
-            deviceEntry[which] = device;
             this.settings.state.devices.push(deviceEntry);
             this.settings.update('devices', this.settings.state.devices);
             this.settings.save();
         }
     }
     /**
-    *
-    **/
+     *
+     **/
     ready(projector, camera, light, camera_second, projector_second, capper) {
         let args = {
             camera,

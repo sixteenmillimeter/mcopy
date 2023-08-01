@@ -57,4 +57,5 @@ async function init () {
 	seq.init();
 	capper.init();
 	alertObj.init();
+	timing.init();
 };

@@ -4,18 +4,46 @@
 	}
 	> div{
 		width: 300px;
-		margin: 0 auto;
+		&.left{
+			float: left;
+			padding-left: 30px;
+		}
+		&.right{
+			float: right;
+			padding-right: 30px;
+			input[type=number] {
+				min-width: 200px;
+				width: 200px;
+			}
+			input[readonly]{
+				cursor: not-allowed;
+			}
+			.spacer{
+				height: 62px;
+			}
+			.proj_time{
+				height: 111px;
+			}
+			.cam_time{
+				height: 111px;
+			}
+			& > div {
+				width: 270px;
+			}
+		}
 	}
 	> div > div{
 		width: 360px;
 	}
-	input[type=text], 
+	input[type=text],
+	input[type=number], 
 	select{
 		.button();
 		display: inline-block;
 		padding: 6px 12px;
 		font-size: 21px;
 		min-width: 300px;
+		max-width: 300px;
 		&.active{
 			border-color: @SELECTED;
 			color: @SELECTED;
@@ -25,8 +53,9 @@
 		width: 200px;
 	}
 	button{
-		margin-top: -1px;
-    	float: right;
+		margin-top: 0px;
+		float: right;
+		padding: 8px 16px 9px;
 	}
 	input[type=radio]{
 		float: right;

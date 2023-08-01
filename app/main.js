@@ -117,7 +117,7 @@ var init = async function () {
 		log.error('Error enumerating connected devices', err)
 	}
 
-	server = require('server')()
+	server = require('server')(mainWindow.webContents)
 	light = require('light')(arduino, cfg, mainWindow.webContents)
 	filmout = require('filmout')(display, server, ffmpeg, ffprobe, mainWindow.webContents, light)
 	cam = require('cam')(arduino, cfg, mainWindow.webContents, filmout)

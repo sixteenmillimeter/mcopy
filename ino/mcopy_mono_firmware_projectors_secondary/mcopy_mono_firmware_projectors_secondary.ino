@@ -19,9 +19,9 @@
 
 boolean debug_state = false;
 
-const int proj_fwd_pin = 12;
-const int proj_bwd_pin = 11;
-const int proj_pin = 10;
+const int proj_fwd_pin = 6;
+const int proj_bwd_pin = 5;
+const int proj_pin = 4;
 
 const int proj_momentary = 60;
 const int proj_time = 950; //secondary projector speed
