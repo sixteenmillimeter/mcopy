@@ -1,5 +1,5 @@
 {
-  "version": "1.7.21",
+  "version": "1.7.22",
   "ext_port": 1111,
   "profiles": {
     "mcopy": {
@@ -187,9 +187,9 @@
       "capper_off": "B",
       "takeup_forward": "D",
       "takeup_backward": "F",
-      "error" : "E",
-      "camera_exposure" : "G",
-      "state" : "H"
+      "error": "E",
+      "camera_exposure": "G",
+      "state": "H"
     }
   }
 }
