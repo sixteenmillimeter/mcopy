@@ -57,6 +57,8 @@ class Arduino {
 	private locks : any = {};
 	private confirmExec : any;
 	private errorState : Function;
+	private keys : string[];
+	private values : string[];
 
 	public stateStr : any = {};
 
@@ -68,11 +70,14 @@ class Arduino {
 	async init () {
 		const Log = require('log');
 		this.log = await Log({ label : 'arduino' });
+		this.keys = Object.keys(cfg.arduino.cmd);
+		this.values = this.keys.map(key => cfg.arduino.cmd[key]);
 	}
 
 	/**
 	 * Enumerate all connected devices that might be Arduinos
 	 *
+	 * @async
 	 * @returns {Promise} Resolves after enumerating
 	 **/
 	public async enumerate () : Promise<string[]>{
@@ -108,9 +113,10 @@ class Arduino {
 	/**
 	 * Send a command to an Arduino using async/await
 	 *
-	 * @param  {string}  device 	Arduino identifier
+	 * @param  {string}  device 	The Arduino device identifier
 	 * @param  {string}  cmd 		Single character command to send
 	 *
+	 * @async
 	 * @returns {Promise} Resolves after sending
 	 **/
 	private async sendAsync (device : string, cmd : string) : Promise<number> {
@@ -130,7 +136,15 @@ class Arduino {
 	}
 
 	/**
-	 * 
+	 * Sends a command to the specified Arduino and waits for a response.
+	 * Handles the communication lock to prevent sending multiple commands simultaneously.
+	 * Emits an 'arduino_send' event after successfully sending the command.
+	 *
+	 * @async
+	 * @param {string} device - The Arduino device identifier.
+	 * @param {string} cmd - The command to be sent to the Arduino.
+	 * @returns {Promise<boolean|string>} Returns 'false' if the communication is locked, otherwise returns the response from the device.
+	 * @throws {Error} Throws an error if the sendAsync method encounters an error.
 	 **/
 	public async send (device : string, cmd : string) : Promise<any> {
 		const serial : any = this.alias[device]
@@ -155,7 +169,15 @@ class Arduino {
 	}
 
 	/**
-	 * 
+	 * Sends a string to the specified Arduino.
+	 * Handles different types of devices, including fake devices for testing purposes.
+	 * Waits for a specified delay before sending the string.
+	 *
+	 * @async
+	 * @param {string} device - The Arduino device identifier.
+	 * @param {string} str - The string to be sent to the Arduino.
+	 * @returns {Promise<boolean|string>} Returns 'true' if the string is sent successfully, otherwise returns an error message.
+	 * @throws {Error} Throws an error if the writeAsync method encounters an error.
 	 **/
 	public async sendString (device : string, str : string) : Promise<any> {
 		let writeSuccess : any
@@ -256,9 +278,15 @@ class Arduino {
 		})
 	}
 
-	/**
-	 * 
-	 **/
+    /**
+     * Handles the end of communication with the Arduino.
+     * Calculates the time taken for the communication, executes the callback,
+     * and emits an 'arduino_end' event. Handles errors and stray data received.
+     *
+     * @param {string} serial - The serial address of the Arduino device.
+     * @param {string} data - The data received from the Arduino.
+     * @returns {any} The time taken for the communication in milliseconds.
+     **/
 	private end (serial : string, data : string) : any {
 		const end : number = new Date().getTime()
 		const ms : number = end - this.timer
@@ -279,20 +307,42 @@ class Arduino {
 		} else if (data[0] === cfg.arduino.cmd.error) {
 			this.log.error(`Received error from device ${serial}`)
 			this.unlock(serial)
+			this.error(serial, data)
 			//error state
 			//stop sequence
 			//throw error in ui
 		} else {
-			//this.log.info('Received stray "' + data + '"') //silent to user
+			this.log.info('Received stray "' + data + '"') //silent to user
 		}
 		return ms
 	}
+    private error(serial : string, data : string) {
+        this.log.error("ERROR", data)
+    }
 
+    /**
+     * Associates an alias with an Arduinos serial address.
+     * Used to map multi-purpose devices onto the same serial connection.
+     *
+     * @param {string} device - The serial number of the target Arduino.
+     * @param {string} serial - The alias to be associated with the target device.
+     **/
 	public aliasSerial (device : string, serial : string) {
 		//this.log.info(`Making "${serial}" an alias of ${device}`)
 		this.alias[device] = serial;
 	}
-
+    /**
+     * Connects to an Arduino using its serial number.
+     * Sets up the SerialPort instance and path for the device, and handles data communication.
+     * Handles opening the connection and emitting 'arduino_end' or 'confirmEnd' events upon receiving data.
+     *
+     * @async
+     * @param {string} device - The device identifier (common name).
+     * @param {string} serial - The serial address of the target Arduino (e.g., COM port on Windows).
+     * @param {function} confirm - A callback function to be executed upon receiving confirmation data.
+     * @returns {Promise<string>} Resolves with the device path if the connection is successful.
+     * @throws {Error} Rejects with an error message if the connection fails.
+     **/
 	public async connect (device : string, serial : string, confirm : any) : Promise<any> {
 		//this.log.info(`connect device ${device}`)
 		//this.log.info(`connect serial ${serial}`)
@@ -310,7 +360,7 @@ class Arduino {
 			try {
 				connectSuccess = await this.openArduino(device) 
 			} catch (e) {
-				this.log.error('failed to open: ' + e)
+				this.log.error(`Failed to open ${device} @ ${serial}: ` + e)
 				return reject(e)
 			}
 			this.log.info(`Opened connection with ${this.path[device]} as ${device}`)
@@ -331,35 +381,14 @@ class Arduino {
 			return resolve(this.path[serial])
 		})
 	}
-
+    /**
+     * Handles the confirmation data received from an Arduino.
+     * Executes the confirmation callback function if the received data is present in the list of expected values.
+     *
+     * @param {string} data - The data received from the Arduino.
+     **/
 	private confirmEnd (data : string) {
-		if (   data === cfg.arduino.cmd.connect
-			|| data === cfg.arduino.cmd.projector_identifier
-			|| data === cfg.arduino.cmd.camera_identifier
-			|| data === cfg.arduino.cmd.light_identifier
-			|| data === cfg.arduino.cmd.projector_light_identifier
-			|| data === cfg.arduino.cmd.projector_camera_light_identifier
-			|| data === cfg.arduino.cmd.projector_camera_identifier
-
-			|| data === cfg.arduino.cmd.projector_second_identifier
-			|| data === cfg.arduino.cmd.projectors_identifier
-			|| data === cfg.arduino.cmd.projector_second_forward
-			|| data === cfg.arduino.cmd.projector_second_backward
-			|| data === cfg.arduino.cmd.projector_second
-			|| data === cfg.arduino.cmd.projectors
-
-			|| data === cfg.arduino.cmd.camera_second_identifier
-			|| data === cfg.arduino.cmd.cameras_identifier
-			|| data === cfg.arduino.cmd.camera_second_forward
-			|| data === cfg.arduino.cmd.camera_second_backward
-			|| data === cfg.arduino.cmd.camera_second
-			|| data === cfg.arduino.cmd.cameras
-
-			|| data === cfg.arduino.cmd.capper_identifier
-			|| data === cfg.arduino.cmd.camera_capper_identifier
-			|| data === cfg.arduino.cmd.camera_capper_projector_identifier
-			|| data === cfg.arduino.cmd.camera_capper_projectors_identifier) {
-
+		if (this.values.indexOf(data) !== -1) {
 			this.confirmExec(null, data)
 			this.confirmExec = {}
 			this.unlock(this.alias['connect'])
@@ -369,7 +398,14 @@ class Arduino {
 			this.unlock(this.alias['connect'])
 		}
 	}
-
+    /**
+     * Verifies the connection to an Arduino by sending a connect command.
+     * The confirmation callback checks if the received data matches the expected connect command.
+     *
+     * @async
+     * @returns {Promise<boolean>} Resolves with 'true' if the connection is verified successfully.
+     * @throws {Error} Rejects with an error message if the connection verification fails.
+     **/
 	public async verify () {
 		return new Promise(async (resolve, reject) => {
 			const device : string = 'connect'
@@ -392,8 +428,15 @@ class Arduino {
 			return resolve(writeSuccess)
 		})
 	}
-
-	public async distinguish () {
+    /**
+     * Distinguishes the type of Arduino connected.
+     * Sends a command to the device to identify its type and resolves the promise with the received type.
+     *
+     * @async
+     * @returns {Promise<string>} Resolves with the type of the connected Arduino-based device.
+     * @throws {Error} Rejects with an error message if the distinguish operation fails.
+     **/
+	public async distinguish () : Promise<string> {
 		return new Promise(async (resolve, reject) => {
 			const device : string = 'connect'
 			let writeSuccess : any
@@ -447,8 +490,14 @@ class Arduino {
 			}
 		})
 	}
-
-	public async close () {
+    /**
+     * Closes the connection to an Arduino.
+     *
+     * @async
+     * @returns {Promise<boolean>} Resolves with 'true' if the connection is closed successfully.
+     * @throws {Error} Throws an error if the closeArduino method encounters an error.
+     **/
+	public async close () : Promise<boolean> {
 		const device : string = 'connect'
 		let closeSuccess : boolean
 		try {
@@ -458,7 +507,14 @@ class Arduino {
 		}
 		return closeSuccess
 	}
-
+    /**
+     * Establishes a fake connection to an Arduino for testing purposes.
+     * Creates a fake SerialPort instance with custom write and string methods.
+     *
+     * @async
+     * @param {string} serial - The device identifier of the fake Arduino.
+     * @returns {Promise<boolean>} Resolves with 'true' if the fake connection is established successfully.
+     **/
 	public async fakeConnect (device : string) {
 		const serial : string = '/dev/fake'
 		this.aliasSerial(device, serial)
