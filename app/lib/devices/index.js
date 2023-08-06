@@ -146,8 +146,8 @@ class Devices {
             await this.arduino.fakeConnect('projector');
         }
         catch (err) {
-            console.error(err);
-            this.log.error(`Error connecting to fake PRONECTOR device`, 'SERIAL', true, true);
+            this.log.error(`Error connecting to fake PROjECTOR device`, 'SERIAL', true, true);
+            this.log.error(err);
             return false;
         }
         this.log.info('Connected to fake PROJECTOR device', 'SERIAL', true, true);
@@ -162,8 +162,8 @@ class Devices {
             await this.arduino.fakeConnect('camera');
         }
         catch (err) {
-            console.error(err);
             this.log.error(`Error connecting to fake CAMERA device`, 'SERIAL', true, true);
+            this.log.error(err);
             return false;
         }
         this.log.info('Connected to fake CAMERA device', 'SERIAL', true, true);
@@ -178,8 +178,8 @@ class Devices {
             await this.arduino.fakeConnect('light');
         }
         catch (err) {
-            console.error(err);
             this.log.error(`Error connecting to fake LIGHT device`, 'SERIAL', true, true);
+            this.log.error(err);
             return false;
         }
         this.log.info('Connected to fake LIGHT device', 'SERIAL', true, true);
@@ -194,8 +194,8 @@ class Devices {
             await this.arduino.fakeConnect('capper');
         }
         catch (err) {
-            console.error(err);
             this.log.error(`Error connecting to fake CAPPER device`, 'SERIAL', true, true);
+            this.log.error(err);
             return false;
         }
         this.log.info('Connected to fake CAPPER device', 'SERIAL', true, true);
@@ -317,7 +317,7 @@ class Devices {
                 connectSuccess = await this.arduino.connect('camera_second', serial, false);
             }
             catch (err) {
-                console.error(err);
+                this.log.error(err);
                 return false;
             }
         }
@@ -513,8 +513,6 @@ class Devices {
         if (this.settings.state.camera && this.settings.state.camera.intval) {
             c.intval = this.settings.state.camera.intval;
         }
-        //console.dir(this.arduino.alias);
-        //console.dir(this.arduino.serial);
         return this.ready(p, c, l, cs, ps, capper);
     }
     /**
