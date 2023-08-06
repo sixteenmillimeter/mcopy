@@ -7,6 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = require("path");
 const url_1 = require("url");
 const delay_1 = require("delay");
+const Log = require("log");
 const { BrowserWindow } = require('electron');
 class WebView {
     constructor(platform, display) {
@@ -31,6 +32,7 @@ class WebView {
             pathname: pagePath,
             protocol: 'file:'
         });
+        this.init();
         if (!display.primary) {
             prefs.x = display.x + 50;
             prefs.y = display.y + 50;
@@ -51,6 +53,9 @@ class WebView {
         this.ipc = require('electron').ipcMain;
         this.ipc.on('display_load', this.onLoad.bind(this));
     }
+    async init() {
+        this.log = await Log({ label: 'devices' });
+    }
     async open() {
         this.digitalWindow.show();
         this.showing = true;
@@ -64,14 +69,14 @@ class WebView {
     async show(src) {
         const normalSrc = path_1.normalize(path_1.join(src));
         if (!this.digitalWindow) {
-            console.warn(`Cannot show "${src}" because window does not exist`);
+            this.log.warn(`Cannot show "${src}" because window does not exist`);
             return false;
         }
         try {
             this.digitalWindow.webContents.send('display', { src: normalSrc });
         }
         catch (err) {
-            console.error(err);
+            this.log.error(err);
         }
         this.showing = true;
         return new Promise(function (resolve) {
@@ -86,7 +91,7 @@ class WebView {
     }
     async focus() {
         if (!this.digitalWindow) {
-            console.warn(`Cannot show focus screen because window does not exist`);
+            this.log.warn(`Cannot show focus screen because window does not exist`);
             return false;
         }
         await delay_1.delay(500);
@@ -94,12 +99,12 @@ class WebView {
             this.digitalWindow.webContents.send('focus', { focus: true });
         }
         catch (err) {
-            console.error(err);
+            this.log.error(err);
         }
     }
     async field(ratio) {
         if (!this.digitalWindow) {
-            console.warn(`Cannot show field guide because window does not exist`);
+            this.log.warn(`Cannot show field guide because window does not exist`);
             return false;
         }
         await delay_1.delay(500);
@@ -107,12 +112,12 @@ class WebView {
             this.digitalWindow.webContents.send('field', { field: true, ratio });
         }
         catch (err) {
-            console.error(err);
+            this.log.error(err);
         }
     }
     async meter() {
         if (!this.digitalWindow) {
-            console.warn(`Cannot show meter screen because window does not exist`);
+            this.log.warn(`Cannot show meter screen because window does not exist`);
             return false;
         }
         await delay_1.delay(500);
@@ -120,7 +125,7 @@ class WebView {
             this.digitalWindow.webContents.send('meter', { meter: true });
         }
         catch (err) {
-            console.error(err);
+            this.log.error(err);
         }
     }
     hide() {

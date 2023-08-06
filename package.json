@@ -1,6 +1,6 @@
 {
   "name": "mcopy",
-  "version": "1.7.22",
+  "version": "1.7.23",
   "description": "Small gauge film optical printer platform",
   "main": "build.js",
   "directories": {
