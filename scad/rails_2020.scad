@@ -53,7 +53,22 @@ module T_nut_void (pos = [0, 0, 0], rot = [0, 0, 0]) {
     translate(pos) rotate(rot) {
         cylinder(r = R(TNutDiameter2 + 0.1), h = TNutVoid + .01, center = true, $fn = 60);
         translate([0, 0, -(TNutVoid / 2) + (6 / 2)]) cylinder(r = R(TNutDiameter1 + 0.1), h = 6.01, center = true, $fn = 60);
+        translate([8, 0, 0]) cylinder(r = R(3), h = 10, center = true, $fn = 30);
+        translate([-8, 0, 0]) cylinder(r = R(3), h = 10, center = true, $fn = 30);
+        translate([0, 8, 0]) cylinder(r = R(3), h = 10, center = true, $fn = 30);
+        translate([0, -8, 0]) cylinder(r = R(3), h = 10, center = true, $fn = 30);
     }
+}
+
+module bearing_void (pos = [0, 0, 0], Width = 8, Hole = true, Fuzz = 0.1) {
+    $fn = 80;
+	innerD = 8.05;
+	outerD = 22.1 - .4;
+	
+	color("blue") translate (pos) difference () {
+		cylinder(r = R(outerD) + Fuzz, h = Width, center = true);
+		if (Hole) cylinder(r = R(innerD) - Fuzz, h = Width + 1, center = true);
+	}
 }
 
 module rail_end (pos = [0, 0, 0], rot = [90, 0, 0], Motors = true) {
@@ -102,20 +117,20 @@ module sled (pos = [0, 0, 0], rot = [90, 0, 0], Length = 50) {
     Y = 50;
     Z = Length;
     translate(pos) rotate(rot) difference () {
-        translate([0, 5, 0]) rounded_cube([X, Y, Z], d = 10, center = true, $fn = 50);
+        translate([0, 10, 0]) rounded_cube([X, Y, Z], d = 10, center = true, $fn = 50);
         //extrusion rails
         translate([-RailSpacing / 2, 0, 0]) cube([21, 21, Z + 1], center = true);
         translate([RailSpacing / 2, 0, 0]) cube([21, 21, Z + 1], center = true);
         //linear motion rod void
-        cylinder(r = R(LinearMotionDiameter + 0.2), h = Z + 1, center = true, $fn = 60);
+        cylinder(r = R(LinearMotionDiameter + 1), h = Z + 1, center = true, $fn = 60);
         
         //linear motion rod bearing voids
         translate([0, 0, (Length / 2) - (LinearBearingHeight / 2) + 0.01]) cylinder(r = R(LinearBearingOuterDiameter + 0.2), h = LinearBearingHeight, center = true, $fn = 100);
         translate([0, 0, -(Length / 2) + (LinearBearingHeight / 2) - 0.01]) cylinder(r = R(LinearBearingOuterDiameter + 0.2), h = LinearBearingHeight, center = true, $fn = 100);
         
         //threaded rod voids
-        translate([ThreadedRodSpacing / 2, 0, 0]) cylinder(r = R(ThreadDiameter + 0.2), h = Z + 1, center = true, $fn = 60);
-        translate([-ThreadedRodSpacing / 2, 0, 0]) cylinder(r = R(ThreadDiameter + 0.2), h = Z + 1, center = true, $fn = 60);
+        translate([ThreadedRodSpacing / 2, 0, 0]) cylinder(r = R(ThreadDiameter + 1), h = Z + 1, center = true, $fn = 60);
+        translate([-ThreadedRodSpacing / 2, 0, 0]) cylinder(r = R(ThreadDiameter + 1), h = Z + 1, center = true, $fn = 60);
         
     }
 }
@@ -134,15 +149,38 @@ module lens_sled (pos = [0, 0, 0], rot = [90, 0, 0]) {
             T_nut_void ([LensDriveX, 0, -(Y / 2) + (TNutVoid / 2) - 0.01]);
             //camera drive passthrough
             translate([-LensDriveX, 0, 0]) cylinder(r = R(ThreadDiameter + 1), h = Y + 1, center = true, $fn = 60);
+            //
+            translate([RailSpacing / 2, 21.5, 10]) rotate([0, 90, 0]) {
+                difference () {
+                    cylinder(r = R(26), h = 11, center = true, $fn = 100);
+                    cylinder(r = R(7.75), h = 11 + 1, center = true, $fn = 100);
+                }
+            }
         }
         
         //debug
-        translate([-ThreadedRodSpacing / 2, 0, -(Y / 2) + 8.4]) T_nut();
+        //translate([-ThreadedRodSpacing / 2, 0, -(Y / 2) + 8.4]) T_nut();
         //translate([-ThreadedRodSpacing / 2, 0, (Y / 2) - 7.5]) rotate([180, 0, 0]) T_nut();
     }
-
 }
 
+module bearing_roller () {
+    A = 5.75;
+    D1 = 25.4;
+    D2 = 24;
+    difference () {
+        union () {
+            cylinder(r = R(D2), h = 10, center = true, $fn = 100);
+            cylinder(r = R(D1), h = A, center = true, $fn = 100);
+            translate([0, 0, (A / 2) + (1 / 2)]) cylinder(r1 = R(D1), r2 = R(D2), h = 1, center = true, $fn = 100);
+            translate([0, 0, -(A / 2) - (1 / 2)]) cylinder(r2 = R(D1), r1 = R(D2), h = 1, center = true, $fn = 100);
+        }
+        translate([0, 0, 1]) bearing_void(Hole = false, Fuzz = 0.3, Width = 9.01);
+        cylinder(r = R(19.5), h = 10 + 1, center = true, $fn = 100);
+    }
+}
+
+//translate([50 , -90 - 10, 22]) rotate([0, 90, 0]) bearing_void();
 //rail_end();
 //camera_sled([0, -90, 0]);
 //lens_sled([0, -90, 0]);
@@ -150,8 +188,12 @@ module lens_sled (pos = [0, 0, 0], rot = [90, 0, 0]) {
 //intersection() {
     //lens_sled([0, -90, 0]);
     //translate([-30, -90 + 30 - 1, 10]) cube([90, 60, 45], center = true);
-    //translate([0, -90, 50]) cube([200, 100, 100], center = true); 
+    //translate([150, -90, 50]) cube([200, 100, 100], center = true); 
 //}
+
+//translate([RailSpacing / 2, -90 - 10, 21.5]) rotate([0, 90, 0]) 
+bearing_roller();
+//bearing_roller();
 
 //debug
 //translate([-RailSpacing / 2, 0, 0]) rotate([90, 0, 0]) rail_debug(175);
