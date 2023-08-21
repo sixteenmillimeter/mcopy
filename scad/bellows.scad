@@ -122,18 +122,18 @@ module bellows_board_magnetic(H = 3) {
     }
 }
 
-PART = "bellows_lens_board";
+PART = "lens_board";
 
-if (!LIBRARY && PART == "bellows_camera_board") {
+if (!LIBRARY && PART == "camera_board") {
     bellows_camera_board();
-} else if (!LIBRARY && PART == "bellows_camera_board_magnetic") {
+} else if (!LIBRARY && PART == "camera_board_magnetic") {
     bellows_camera_board(magnets = true);
 } else if (!LIBRARY && PART == "camera_mount") {
     camera_mount();
-} else if (!LIBRARY && PART == "bellows_lens_board") {
+} else if (!LIBRARY && PART == "lens_board") {
     bellows_lens_board();
-} else if (!LIBRARY && PART == "bellows_lens_board_magnetic") {
+} else if (!LIBRARY && PART == "lens_board_magnetic") {
     bellows_lens_board(magnets = true);
-} else if (!LIBRARY && PART == "bellows_board_magnetic") {
+} else if (!LIBRARY && PART == "board_magnetic") {
     bellows_board_magnetic();
 }
