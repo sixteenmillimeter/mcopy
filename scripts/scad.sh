@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ./scripts/common.sh
+
 FILES=(
 	arri_s
 	bellows
@@ -8,25 +10,11 @@ FILES=(
 	mcopy_projector
 )
 
-openscadPart () {
-	openscad -o "./stl/${3}" -D"PART=\"${2}\"" "./scad/${1}"
-	echo "Compiled ${3} from ${1}"
-	if [ -f "./scad/common/c14n_stl.py" ]; then
-		python3 ./scad/common/c14n_stl.py "./stl/${3}"
-		echo "Normalized ${3}"
-	fi
-}
-
-listParts () {
-	cat "${1}" | grep 'PART ==' | grep -v 'debug' | awk -F'"' '{print $2}'
-}
-
-allParts () {
-	PARTS=($(listParts "scad/${1}.scad"))
-	for part in "${PARTS[@]}"; do
-		echo opencadPart "${1}.scad" "${part}" "${1}_${part}.stl"
-	done
-}
+PARALLEL=0
+HAS_PARALLEL=$(which parallel)
+if [[ "${HAS_PARALLEL}" != "" ]]; then
+	PARALLEL=1
+fi
 
 if [[ "${1}" == "all" ]]; then
 	for file in "${FILES[@]}"; do
@@ -34,7 +22,11 @@ if [[ "${1}" == "all" ]]; then
 	done
 else
 	if [ -f "scad/${1}.scad" ]; then
-		allParts "${1}"
+		if [ ${PARALLEL} -eq 1 ]; then
+			parallelParts "${1}"
+		else
+			allParts "${1}"
+		fi
 	elif [[ "${1}" != "" ]]; then
 		echo "File scad/${1}.scad not found"
 		exit 2
