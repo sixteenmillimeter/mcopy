@@ -4,7 +4,7 @@
 
 include <./common/common.scad>;
 
-PART="cpc_9pin_socket";
+PART="9pin_socket";
 
 FN = 120;
 
@@ -163,13 +163,13 @@ module debug () {
 	}
 }
 
-if (PART == "cpc_9pin_plug") {
+if (PART == "9pin_plug") {
 	cpc_9pin_plug();
-} else if (PART == "cpc_9pin_plug_collar") {
+} else if (PART == "9pin_plug_collar") {
 	cpc_9pin_plug_collar();
-} else if (PART == "cpc_9pin_plug_back") {
+} else if (PART == "9pin_plug_back") {
 	cpc_9pin_plug_back();
-} else if (PART == "cpc_9pin_socket") {
+} else if (PART == "9pin_socket") {
 	cpc_9pin_socket();
 } else {
 	debug();
