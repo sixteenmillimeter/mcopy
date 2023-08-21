@@ -11,10 +11,11 @@ include <./common/common.scad>
 include <./common/motors.scad>
 include <./common/rods.scad>
 
-RailSpacing = 100;
+RailSpacing = 160;
 ThreadedRodSpacing = 50;
-RailEndX = 140;
+RailEndX = RailSpacing + 40;
 TNutVoid = 17;
+BoltSpacingX = 110;
 
 module rail_debug (H = 175) {
     color("lime") linear_extrude(height=H) {
@@ -107,8 +108,8 @@ module rail_end (pos = [0, 0, 0], rot = [90, 0, 0], Motors = true) {
         translate([0, 0, 5]) cylinder(r = R(ThreadDiameter), h = 40, center = true, $fn = 50);
         
         //mounting bolts
-        translate([70 / 2, 0, 40]) rotate([90, 0, 0]) cylinder(r = R(10), h = 150, center = true, $fn = 40);
-        translate([-70 / 2, 0, 40]) rotate([90, 0, 0]) cylinder(r = R(10), h = 150, center = true, $fn = 40);
+        translate([BoltSpacingX / 2, 0, 40]) rotate([90, 0, 0]) cylinder(r = R(10), h = 150, center = true, $fn = 40);
+        translate([-BoltSpacingX / 2, 0, 40]) rotate([90, 0, 0]) cylinder(r = R(10), h = 150, center = true, $fn = 40);
     }
 }
 
