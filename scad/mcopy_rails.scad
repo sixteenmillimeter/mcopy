@@ -192,7 +192,7 @@ module bearing_roller () {
 //}
 
 //translate([RailSpacing / 2, -90 - 10, 21.5]) rotate([0, 90, 0]) 
-bearing_roller();
+//bearing_roller();
 //bearing_roller();
 
 //debug
@@ -201,3 +201,9 @@ bearing_roller();
 
 //translate([ThreadedRodSpacing / 2, 40, 0]) rotate([90, 0, 0])  color("blue") NEMA17();
 //translate([-ThreadedRodSpacing / 2, 40, 0]) rotate([90, 0, 0])  color("blue") NEMA17();
+
+PART = "rail_end";
+
+if (PART == "rail_end") {
+    rail_end();
+}
