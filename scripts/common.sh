@@ -13,5 +13,5 @@ allParts () {
 
 parallelParts () {
 	PARTS=($(listParts "scad/${1}.scad"))
-	parallel --use-cpus-instead-of-cores bash ./scripts/openscadPart.sh "${1}.scad" "{}" "${1}_{}.stl" ::: "${PARTS[@]}"
+	parallel --use-cpus-instead-of-cores -j -1 bash ./scripts/openscadPart.sh "${1}.scad" "{}" "${1}_{}.stl" ::: "${PARTS[@]}"
 }

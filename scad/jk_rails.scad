@@ -1,6 +1,6 @@
 include <./common.scad>;
 
-RAIL_SPACING = 100;
+RAIL_SPACING = 160;
 RAIL_H = 70;
 RAIL_LEN = 400;
 RAIL_D=25.4;
