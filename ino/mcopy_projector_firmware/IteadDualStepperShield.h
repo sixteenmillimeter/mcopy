@@ -1,7 +1,6 @@
 #ifndef IteadDualStepperShield_h
 #define IteadDualStepperShield_h
 
-
 #include <Arduino.h>
 
 class IteadDualStepperShield {

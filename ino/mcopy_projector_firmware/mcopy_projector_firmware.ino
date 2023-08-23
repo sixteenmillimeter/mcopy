@@ -21,9 +21,10 @@
   Y02A - Blue
   Y02B - Red
 */
-
+#include "McopyProjector.h"
 #include "McopySerial.h"
 #include "IteadDualStepperShield.h"
+
 
 //CAMERA CONSTANTS
 const int BUTTON = 7;
@@ -41,17 +42,16 @@ volatile bool direction = true;
 volatile long start;
 
 McopySerial mcopy;
-IteadDualStepperShield steppers;
+McopyProjector projector;
 
 void setup () {
-  steppers.setup();
-  steppers.setSpeed(0, 500);
-  steppers.setSpeed(1, 500);
+
 
   pins();
   digitalWrite(LED_FWD, HIGH);
   digitalWrite(LED_BWD, HIGH);
   mcopy.begin(mcopy.PROJECTOR_IDENTIFIER);
+  projector.begin();
   delay(42);
   digitalWrite(LED_FWD, LOW);
   digitalWrite(LED_BWD, LOW);
@@ -62,7 +62,7 @@ void loop () {
   cmdChar = mcopy.loop();
   cmd(cmdChar);
   if (digitalRead(BUTTON) == LOW) {
-    projector();
+    projector_frame();
   }
 }
 
@@ -76,12 +76,12 @@ void pins () {
 }
 
 void cmd (char val) {
-  if (val == mcopy.CAMERA_FORWARD) {
+  if (val == mcopy.PROJECTOR_FORWARD) {
     projector_direction(true);
-  } else if (val == mcopy.CAMERA_BACKWARD) {
+  } else if (val == mcopy.PROJECTOR_BACKWARD) {
     projector_direction(false);
   } else if (val == mcopy.PROJECTOR) {
-    projector();
+    projector_frame();
   } else if (val == mcopy.STATE) {
     state();
   }
@@ -92,13 +92,11 @@ void projector_direction (boolean state) {
   if (state) {
     mcopy.confirm(mcopy.PROJECTOR_FORWARD);
     mcopy.log("projector_direction(true)");
-    steppers.setDir(0, 1);
-    steppers.setDir(1, 1);
+    projector.setDirection(true);
   } else {
     mcopy.confirm(mcopy.PROJECTOR_BACKWARD);
     mcopy.log("projector_direction(false)");
-    steppers.setDir(0, 0);
-    steppers.setDir(1, 0);
+    projector.setDirection(false);
   }
 }
 
@@ -116,10 +114,10 @@ void projector_timing_end () {
   }
 }
 
-void projector () {
+void projector_frame () {
   int LED = direction ? LED_FWD : LED_BWD;
   digitalWrite(LED, HIGH);
-  steppers.stepBoth(PROJECTOR_STEPS);
+  projector.frame(direction);
   mcopy.confirm(mcopy.PROJECTOR);
   digitalWrite(LED, LOW);
 }
