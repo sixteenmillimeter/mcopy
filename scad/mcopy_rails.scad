@@ -150,10 +150,11 @@ module camera_sled (pos = [0, 0, 0], rot = [0, 0, 0]) {
 module sled_bearing_void (pos = [0, 0, 0], rot = [0, 0, 0]) {
     translate(pos) rotate(rot) {
         cylinder(r = R(27), h = 11, center = true, $fn = 120);
+        translate([0, -27 / 2, 0]) cube([27, 27, 11 ], center = true, $fn = 60);
         cylinder(r = R(8.3), h = 16, center = true, $fn = 80);
-        translate([0, -10, 0]) cube([8.3, 20, 16 ], center = true, $fn = 60);
+        translate([0, -50, 0]) cube([8.3, 100, 16 ], center = true, $fn = 60);
         cylinder(r = R(5.2), h = 40, center = true, $fn = 60);
-        translate([0, 0, 28]) cylinder(r = R(8.3), h = 30, center = true, $fn = 60);
+        translate([0, 0, 27]) cylinder(r = R(9), h = 30, center = true, $fn = 60);
     }
 }
 
@@ -233,7 +234,7 @@ module debug () {
     //camera_sled([0, -90, 0]);
     difference () {
         lens_sled([0, -90, 0]);
-        translate([ 50 + (RailSpacing / 2), -90, 0]) cube([100, 100, 100], center = true);
+        translate([ 50 + (RailSpacing / 2), -90 - 50, 0]) cube([100, 100, 100], center = true);
         //translate([ -50 - (RailSpacing / 2), -90, 0]) cube([100, 100, 100], center = true);
     }
     
@@ -260,7 +261,7 @@ module debug () {
     //translate([-ThreadedRodSpacing / 2, 40, 0]) rotate([90, 0, 0])  color("blue") NEMA17();
 }
 
-PART = "lens_sled";
+PART = "bearing_rollerx";
 
 if (PART == "rail_end") {
     rail_end();
