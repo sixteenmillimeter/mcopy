@@ -15,7 +15,7 @@ RailSpacing = 100; //160
 ThreadedRodSpacing = 50;
 RailEndX = RailSpacing + 40;
 TNutVoid = 17;
-BoltSpacingX = 110;
+BoltSpacingX = RailSpacing - 30;
 
 module rail_debug (H = 175) {
     color("lime") linear_extrude(height=H) {
@@ -72,46 +72,57 @@ module bearing_void (pos = [0, 0, 0], Width = 8, Hole = true, Fuzz = 0.1) {
 	}
 }
 
+module mounting_bolt_void (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    translate(pos) rotate(rot) {
+        cylinder(r = R(10), h = 150, center = true, $fn = 40);
+        translate([0, 0, 0]) cylinder(r = R(20), h = 8, center = true, $fn = 60);
+    }
+}
+
 module rail_end (pos = [0, 0, 0], rot = [90, 0, 0], Motors = true) {
     Z = 95;
     RailVoid = 20.4;
-    translate(pos) rotate(rot) difference () {
+    translate(pos) rotate(rot) {
         difference () {
-            translate([0, -10, 20]) rounded_cube([RailEndX, Z, 80], d = 10, center = true, $fn = 50);
-            translate([0, 10, 50]) rotate([0, 90, 0]) rounded_cube([60, Z, RailEndX + 1], d = 10, center = true, $fn = 50);
-        }
-        
-        //rails
-        translate([-RailSpacing / 2, 0, 5]) cube([RailVoid, RailVoid, 40], center = true);
-        translate([RailSpacing / 2, 0, 5]) cube([RailVoid, RailVoid, 40], center = true);
-        
-        //rails bolts
-        bolt_voids_2020([-RailSpacing / 2, 0, 0]);
-        rotate([0, 180, 0]) bolt_voids_2020([-RailSpacing / 2, 0, 0]);
-        if (Motors) {
-        
-            //camera drive motor
-            translate([ThreadedRodSpacing / 2, 0, 0]) {
-                cylinder(r = R(NEMA17PadD + 0.5), h = 60, center = true, $fn = 100);
-                bolt_voids_motor([0, 0, 16 - 21]);
+            difference () {
+                translate([0, -10, 20]) rounded_cube([RailEndX, Z, 80], d = 10, center = true, $fn = 50);
+                translate([0, 10, 50]) rotate([0, 90, 0]) rounded_cube([60, Z, RailEndX + 1], d = 10, center = true, $fn = 50);
             }
             
-            //lens drive motor
-            translate([-ThreadedRodSpacing / 2, 0, 0]) {
-                cylinder(r = R(NEMA17PadD + 0.5), h = 60, center = true, $fn = 100);
-                bolt_voids_motor([0, 0, 16 - 21]);
+            //rails
+            translate([-RailSpacing / 2, 0, 5]) cube([RailVoid, RailVoid, 40], center = true);
+            translate([RailSpacing / 2, 0, 5]) cube([RailVoid, RailVoid, 40], center = true);
+            
+            //rails bolts
+            bolt_voids_2020([-RailSpacing / 2, 0, -15 + 5 + 6 ]);
+            rotate([0, 180, 0]) bolt_voids_2020([-RailSpacing / 2, 0,  -15 + 5 + 6]);
+            
+            if (Motors) {
+                //camera drive motor
+                translate([ThreadedRodSpacing / 2, 0, 0]) {
+                    cylinder(r = R(NEMA17PadD + 0.5), h = 60, center = true, $fn = 100);
+                    bolt_voids_motor([0, 0, 16 - 21]);
+                }
+                
+                //lens drive motor
+                translate([-ThreadedRodSpacing / 2, 0, 0]) {
+                    cylinder(r = R(NEMA17PadD + 0.5), h = 60, center = true, $fn = 100);
+                    bolt_voids_motor([0, 0, 16 - 21]);
+                }
+            } else {
+                translate([-ThreadedRodSpacing / 2, 0, 0]) cylinder(r = R(LinearBearingOuterDiameter + 0.5), h = 60, center = true, $fn = 100);
+                translate([-ThreadedRodSpacing / 2, 0, 0]) cylinder(r = R(LinearBearingOuterDiameter + 0.5), h = 60, center = true, $fn = 100);
             }
-        } else {
-            translate([-ThreadedRodSpacing / 2, 0, 0]) cylinder(r = R(LinearBearingOuterDiameter + 0.5), h = 60, center = true, $fn = 100);
-            translate([-ThreadedRodSpacing / 2, 0, 0]) cylinder(r = R(LinearBearingOuterDiameter + 0.5), h = 60, center = true, $fn = 100);
+            
+            //linear motion rod
+            translate([0, 0, 5]) cylinder(r = R(ThreadDiameter), h = 40, center = true, $fn = 50);
+            
+            //mounting bolts
+            mounting_bolt_void([BoltSpacingX / 2, -41, 40], [90, 0, 0]);
+            mounting_bolt_void([-BoltSpacingX / 2, -41, 40], [90, 0, 0]);
         }
-        
-        //linear motion rod
-        translate([0, 0, 5]) cylinder(r = R(ThreadDiameter), h = 40, center = true, $fn = 50);
-        
-        //mounting bolts
-        translate([BoltSpacingX / 2, 0, 40]) rotate([90, 0, 0]) cylinder(r = R(10), h = 150, center = true, $fn = 40);
-        translate([-BoltSpacingX / 2, 0, 40]) rotate([90, 0, 0]) cylinder(r = R(10), h = 150, center = true, $fn = 40);
+        end_2020([-RailSpacing / 2, 0, -15 + 2.4]);
+        end_2020([RailSpacing / 2, 0, -15 + 2.4]);
     }
 }
 
@@ -150,10 +161,11 @@ module camera_sled (pos = [0, 0, 0], rot = [0, 0, 0]) {
 module sled_bearing_void (pos = [0, 0, 0], rot = [0, 0, 0]) {
     translate(pos) rotate(rot) {
         cylinder(r = R(27), h = 11, center = true, $fn = 120);
+        translate([0, -27 / 2, 0]) cube([27, 27, 11 ], center = true, $fn = 60);
         cylinder(r = R(8.3), h = 16, center = true, $fn = 80);
-        translate([0, -10, 0]) cube([8.3, 20, 16 ], center = true, $fn = 60);
+        translate([0, -50, 0]) cube([8.3, 100, 16 ], center = true, $fn = 60);
         cylinder(r = R(5.2), h = 40, center = true, $fn = 60);
-        translate([0, 0, 28]) cylinder(r = R(8.3), h = 30, center = true, $fn = 60);
+        translate([0, 0, 27]) cylinder(r = R(9), h = 30, center = true, $fn = 60);
     }
 }
 
@@ -171,6 +183,7 @@ module lens_sled (pos = [0, 0, 0], rot = [90, 0, 0]) {
     Y = 40;
     LensDriveX = -ThreadedRodSpacing / 2;
     RailVoid = 20.4;
+    LensFrameM3VoidsZ = (60 / 2) + (40 / 2) - 12.5 + 5 + 6;
     translate(pos) rotate(rot) {
         difference () {
             union () {
@@ -191,13 +204,32 @@ module lens_sled (pos = [0, 0, 0], rot = [90, 0, 0]) {
             translate([-RailSpacing / 2, 53.5, 0]) cube([RailVoid, 32, RailVoid], center = true);
             
             //
-            lens_sled_m3_bolt_voids([(RailEndX / 2) - (Y / 2), (60 / 2) + (40 / 2) - 5, 0]);
-            lens_sled_m3_bolt_voids([(-RailEndX / 2) + (Y / 2), (60 / 2) + (40 / 2) - 5, 0]);
+            lens_sled_m3_bolt_voids([(RailEndX / 2) - (Y / 2), LensFrameM3VoidsZ, 0]);
+            lens_sled_m3_bolt_voids([(-RailEndX / 2) + (Y / 2), LensFrameM3VoidsZ, 0]);
         }
         
+        //rail ends for snug fit
+        end_2020([(RailEndX / 2) - (Y / 2), LensFrameM3VoidsZ - (6 / 2) - 5.1, 0], [90, 0, 0]);
+         end_2020([(-RailEndX / 2) + (Y / 2), LensFrameM3VoidsZ - (6 / 2) - 5.1, 0], [90, 0, 0]);
         //debug
         //translate([-ThreadedRodSpacing / 2, 0, -(Y / 2) + 8.4]) T_nut();
         //translate([-ThreadedRodSpacing / 2, 0, (Y / 2) - 7.5]) rotate([180, 0, 0]) T_nut();
+    }
+}
+
+module end_2020 (pos = [0, 0, 0], rot = [0, 0, 0], Z = 5) {
+    translate(pos) rotate(rot) {
+        difference () {
+            union () {
+                cube([24, 5, Z], center = true);
+                cube([5, 24, Z], center = true);
+                cube([16.6, 11, Z], center = true);
+                cube([11, 16.5, Z], center = true);
+            }
+            cube([8, 8, Z + 1], center = true);
+            rotate([0, 0, 45]) cube([2, 40, Z + 1], center = true);
+            rotate([0, 0, -45]) cube([2, 40, Z + 1], center = true);
+        }
     }
 }
 
@@ -231,11 +263,11 @@ module debug () {
     //translate([50 , -90 - 10, 22]) rotate([0, 90, 0]) bearing_void();
     rail_end();
     //camera_sled([0, -90, 0]);
-    difference () {
+    /*difference () {
         lens_sled([0, -90, 0]);
-        translate([ 50 + (RailSpacing / 2), -90, 0]) cube([100, 100, 100], center = true);
+        translate([ 50 + (RailSpacing / 2), -90 - 50, 0]) cube([100, 100, 100], center = true);
         //translate([ -50 - (RailSpacing / 2), -90, 0]) cube([100, 100, 100], center = true);
-    }
+    }*/
     
     //color("green") translate([RailSpacing / 2, -90 + 15, 20]) rotate([0, 0, 0]) linear_extrude(height=100) 2020_profile();
     //difference () {
@@ -260,7 +292,8 @@ module debug () {
     //translate([-ThreadedRodSpacing / 2, 40, 0]) rotate([90, 0, 0])  color("blue") NEMA17();
 }
 
-PART = "lens_sled";
+
+PART = "bearing_rollerx";
 
 if (PART == "rail_end") {
     rail_end();
