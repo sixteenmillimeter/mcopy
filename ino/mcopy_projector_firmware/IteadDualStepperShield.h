@@ -31,8 +31,8 @@ class IteadDualStepperShield {
   void setSpeed(uint8_t motor, uint16_t speed);
 
   //full
-  void step(uint8_t motor, uint16_t steps, uint8_t dir);
-  void stepBoth(uint16_t steps);
+  void step(uint8_t motor, uint64_t steps, uint8_t dir);
+  void stepBoth(uint64_t steps);
   void onestep(uint8_t motor, uint8_t dir);
 
   void release();

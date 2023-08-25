@@ -61,7 +61,7 @@ void IteadDualStepperShield::_both () {
 		delayMicroseconds(_usStepA);
 	}
 }
-void IteadDualStepperShield::step (uint8_t motor, uint16_t steps, uint8_t dir) {
+void IteadDualStepperShield::step (uint8_t motor, uint64_t steps, uint8_t dir) {
 	uint8_t stepPin = motor == 0 ? _stepA : _stepB;
 	setDir(motor, dir);
 	for (int i = 0; i < steps; i++) {
@@ -74,7 +74,7 @@ void IteadDualStepperShield::onestep (uint8_t motor, uint8_t dir) {
 	_single(stepPin);
 }
 
-void IteadDualStepperShield::stepBoth (uint16_t steps) {
+void IteadDualStepperShield::stepBoth (uint64_t steps) {
 	for (int i = 0; i < steps; i++) {
 		_both();
 	}

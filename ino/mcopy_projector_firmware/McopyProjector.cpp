@@ -16,11 +16,11 @@ void McopyProjector::begin () {
 void McopyProjector::setDirection (bool dir) {
 	_dir = dir;
 	if (_dir) {
-		steppers.setDir(0, 1);
-    	steppers.setDir(1, 1);
+		steppers.setDir(0, FORWARD);
+    	steppers.setDir(1, FORWARD);
 	} else {
-		steppers.setDir(0, 0);
-    	steppers.setDir(1, 0);
+		steppers.setDir(0, BACKWARD);
+    	steppers.setDir(1, BACKWARD);
 	}
 }
 
@@ -28,34 +28,46 @@ void McopyProjector::frame (bool dir) {
 	if (dir != _dir) {
 		setDirection(dir);
 	}
-	steppers.stepBoth(_stepsPerFrame);
+	steppers.step(FEED, _stepsPerFrame, _dir ? FORWARD : BACKWARD);
 	_posTakeup += dir ? _stepsPerFrame : -_stepsPerFrame;
 	_posFeed += dir ? _stepsPerFrame : -_stepsPerFrame;
 }
 
-void McopyProjector::adjust(uint8_t motor, int32_t steps) {
+void McopyProjector::adjust(uint8_t motor, int64_t steps) {
+	uint64_t s = abs(steps);
 	if (steps < 0) {
-		steppers.setDir(motor, 0);
+		steppers.setDir(motor, BACKWARD);
 	} else {
-		steppers.setDir(motor, 1);
+		steppers.setDir(motor, FORWARD);
 	}
-	steppers.step(motor, abs(steps));
+	steppers.step(motor, s, _dir ? FORWARD : BACKWARD);
 	if (motor == 0) {
 		_posTakeup += steps;
 	} else if (motor == 1) {
 		_posFeed += steps;
 	}
+	//restore set direction after adjustment
+	steppers.setDir(motor, _dir ? FORWARD : BACKWARD);
 }
 
-void McopyProjector::adjustBoth(int32_t steps) {
+void McopyProjector::adjustBoth(int64_t steps) {
+	uint64_t s = abs(steps);
 	if (steps < 0) {
-		steppers.setDir(0, 0);
-		steppers.setDir(1, 0);
+		steppers.setDir(TAKEUP, BACKWARD);
+		steppers.setDir(FEED,   BACKWARD);
 	} else {
-		steppers.setDir(0, 1);
-		steppers.setDir(1, 1);
+		steppers.setDir(TAKEUP, FORWARD);
+		steppers.setDir(FEED, FORWARD);
 	}
-	steppers.stepBoth(abs(steps));
+	steppers.stepBoth(s);
 	_posTakeup += steps;
 	_posFeed += steps;
+
+	//restore set direction after adjustment
+	steppers.setDir(TAKEUP, _dir ? FORWARD : BACKWARD);
+	steppers.setDir(FEED, _dir ? FORWARD : BACKWARD);
+}
+
+void McopyProjector::frames(bool dir, uint64_t count) {
+
 }
