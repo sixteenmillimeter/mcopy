@@ -31,16 +31,20 @@
 #define FEED_DIR_PIN 7
 #define FEED_STEP_PIN 6
 
+#define TAKEUP_SETTING_A 4
+#define TAKEUP_SETTING_B 5
+#define FEED_SETTING_A 8
+#define FEED_SETTING_B 9
+
 AccelStepper takeup(AccelStepper::DRIVER, TAKEUP_STEP_PIN, TAKEUP_DIR_PIN);
 AccelStepper feed(AccelStepper::DRIVER, FEED_STEP_PIN, FEED_DIR_PIN);
 
-//CAMERA CONSTANTS
-const int BUTTON = 7;
-const int LED_FWD = 8;
-const int LED_BWD = 9;
+//PROJECTOR CONSTANTS
+const int BUTTON = 10;
+const int LED_FWD = 11;
+const int LED_BWD = 12;
 
 const int PROJECTOR_MOMENT = 240;
-const int PROJECTOR_STEPS = 25;
 
 //VARIABLES
 volatile int projectorFrame = -1;
@@ -50,7 +54,7 @@ volatile bool direction = true;
 volatile long start;
 
 McopySerial mcopy;
-McopyProjector projector(takeup, feed);
+McopyProjector projector(takeup, feed, TAKEUP_SETTING_A, TAKEUP_SETTING_B, FEED_SETTING_A, FEED_SETTING_B);
 
 void setup () {
   pins();
@@ -77,6 +81,11 @@ void pins () {
   pinMode(LED_FWD, OUTPUT);
   pinMode(LED_BWD, OUTPUT);
   pinMode(BUTTON, INPUT_PULLUP);
+
+  pinMode(TAKEUP_SETTING_A, OUTPUT);
+  pinMode(TAKEUP_SETTING_B, OUTPUT);
+  pinMode(FEED_SETTING_A, OUTPUT);
+  pinMode(FEED_SETTING_B, OUTPUT);
 
   digitalWrite(LED_FWD, LOW);
   digitalWrite(LED_BWD, LOW);

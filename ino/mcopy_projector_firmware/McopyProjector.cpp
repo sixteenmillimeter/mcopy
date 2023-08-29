@@ -2,9 +2,14 @@
 
 #include "McopyProjector.h"
 
-McopyProjector::McopyProjector (AccelStepper takeup, AccelStepper feed) {
+McopyProjector::McopyProjector (AccelStepper takeup, AccelStepper feed, uint8_t takeupSettingA, uint8_t takeupSettingB, uint8_t feedSettingA, uint8_t feedSettingB) {
 	_takeup = takeup;
 	_feed = feed;
+
+	_takeupSettingA = takeupSettingA;
+	_takeupSettingB = takeupSettingB;
+	_feedSettingA = feedSettingA;
+	_feedSettingB = feedSettingB;
 }
 
 void McopyProjector::begin () {
@@ -15,6 +20,8 @@ void McopyProjector::begin () {
     _feed.setMaxSpeed(_speed);
     _feed.setSpeed(_speed);
     _feed.setAcceleration(1000.0);
+
+    setStepperMode(1);
 }
 
 void McopyProjector::setDirection (bool dir) {
@@ -78,5 +85,35 @@ void McopyProjector::loop () {
 			_takeup.run();
     		_feed.run();
 		}
+	}
+}
+
+//https://wiki.iteadstudio.com/Arduino_Dual_Step_Motor_Driver_Shield
+void McopyProjector::setStepperMode (uint8_t mode) {
+	switch (mode) {
+		case 1 :
+			digitalWrite(_takeupSettingA, LOW);
+			digitalWrite(_takeupSettingB, LOW);
+			digitalWrite(_feedSettingA, LOW);
+			digitalWrite(_feedSettingB, LOW);
+			break;
+		case 2 :
+			digitalWrite(_takeupSettingA, HIGH);
+			digitalWrite(_takeupSettingB, LOW);
+			digitalWrite(_feedSettingA, HIGH);
+			digitalWrite(_feedSettingB, LOW);
+			break;
+		case 4 :
+			digitalWrite(_takeupSettingA, LOW);
+			digitalWrite(_takeupSettingB, HIGH);
+			digitalWrite(_feedSettingA, LOW);
+			digitalWrite(_feedSettingB, HIGH);
+			break;
+		case 8 :
+			digitalWrite(_takeupSettingA, HIGH);
+			digitalWrite(_takeupSettingB, HIGH);
+			digitalWrite(_feedSettingA, HIGH);
+			digitalWrite(_feedSettingB, HIGH);
+			break;
 	}
 }
