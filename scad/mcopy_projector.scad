@@ -26,14 +26,10 @@ NubVoidD = 5.5;
 NubVoidX = 3.5;
 NubX = (-PanelX / 2) + 66;
 
-module debug () {
-	panel();
-	NEMA17([0, KeyDistance / 2, -50]);
-	//NEMA17([0, -KeyDistance / 2, -50]);
-	gate_key([0, KeyDistance / 2, -14], [0, 0, 45]);
-	gate_key([0, -KeyDistance / 2, -14], [0, 0, 45]);
-}
-
+LEDD = 5.0;
+LEDPin = 0.6;
+LEDPinSpacing = 2.54;
+LEDH = 8.6;
 
 module bearing_void (pos = [0, 0, 0], width= 8) {
 	fuzz = 0.3;
@@ -119,6 +115,48 @@ module LED_prop (pos = [0, 0, 0], rot = [0, 0, 0], H = 15, flip = false) {
 			translate([13, 0, 0]) cube([40, 7, H], center = true);
 		}
 	}
+}
+
+module LED (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    $fn = 90;
+    D = LEDD;
+    H = LEDH;
+    translate(pos) rotate(rot) {
+        cylinder(r = (D / 2), h = H - (D / 2), center = true);
+        translate([0, 0, (H / 2) - (D / 4)]) sphere(r = D / 2);
+        translate([0, 0, -(H / 2) + (D / 4) + (1 / 2)]) difference () {
+            cylinder(r = (6 / 2), h = 1, center = true);
+            translate([5.5, 0, 0]) cube([6, 6, 1 + 1], center = true);
+        }
+        translate([-LEDPinSpacing / 2, 0, -(29.5 / 2) - (H / 2) + 2]) cube([LEDPin, LEDPin, 29.5], center = true);
+        translate([LEDPinSpacing / 2, 0, -(27 / 2) - (H / 2) + 2]) cube([LEDPin, LEDPin, 27], center = true);
+    }
+}
+
+module LED_housing (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    $fn = 90;
+    D = LEDD + 0.2;
+    H = LEDH;
+    Opening = 3;
+    translate(pos) rotate(rot) {
+        difference () {
+            union() {
+                cube([D + 3, D + 3, 10], center = true);
+                translate([0, 0, -4]) cube([D + 3, D + 3, 10], center = true);
+                translate([0, 5, -6]) cube([D + 3, 15, 6], center = true);
+            }
+            translate([0, 0, -(10 / 2) + (H / 2) - 1.301]) union () {
+                cylinder(r = (D / 2), h = H - (D / 2), center = true);
+                translate([0, 0, (H / 2) - (D / 4)]) sphere(r = D / 2);
+            }
+            cylinder(r = (Opening / 2), h = 10 + 1, center = true);
+            translate([0, 0, -7]) cylinder(r = (6.02 / 2), h = 4.01, center = true);
+            translate([0, 7.5, -8]) difference () {
+                cube([6.02, 15, 3], center = true);
+                cube([1.5, 15 + 1, 3 + 1], center = true);
+            }
+        }
+    }
 }
 
 module nub_void (pos = [0, 0, 0]) {
@@ -258,6 +296,14 @@ module panel (pos = [0, 0, 0], rot = [0, 0, 0]) {
 
 module projector () {
 	
+}
+
+module debug () {
+	panel();
+	NEMA17([0, KeyDistance / 2, -50]);
+	//NEMA17([0, -KeyDistance / 2, -50]);
+	gate_key([0, KeyDistance / 2, -14], [0, 0, 45]);
+	gate_key([0, -KeyDistance / 2, -14], [0, 0, 45]);
 }
 
 PART = "panelx";
