@@ -23,8 +23,16 @@
 */
 #include "McopyProjector.h"
 #include "McopySerial.h"
-#include "IteadDualStepperShield.h"
+#include <AccelStepper.h>
 
+#define TAKEUP_DIR_PIN 3
+#define TAKEUP_STEP_PIN 2
+
+#define FEED_DIR_PIN 7
+#define FEED_STEP_PIN 6
+
+AccelStepper takeup(AccelStepper::DRIVER, TAKEUP_STEP_PIN, TAKEUP_DIR_PIN);
+AccelStepper feed(AccelStepper::DRIVER, FEED_STEP_PIN, FEED_DIR_PIN);
 
 //CAMERA CONSTANTS
 const int BUTTON = 7;
@@ -42,11 +50,9 @@ volatile bool direction = true;
 volatile long start;
 
 McopySerial mcopy;
-McopyProjector projector;
+McopyProjector projector(takeup, feed);
 
 void setup () {
-
-
   pins();
   digitalWrite(LED_FWD, HIGH);
   digitalWrite(LED_BWD, HIGH);
@@ -64,6 +70,7 @@ void loop () {
   if (digitalRead(BUTTON) == LOW) {
     projector_frame();
   }
+  projector.loop();
 }
 
 void pins () {

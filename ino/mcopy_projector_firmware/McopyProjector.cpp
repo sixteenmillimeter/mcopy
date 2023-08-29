@@ -1,73 +1,82 @@
 /// Mcopy Projector Class
 
 #include "McopyProjector.h"
-#include "IteadDualStepperShield.h"
 
-McopyProjector::McopyProjector () {
-
+McopyProjector::McopyProjector (AccelStepper takeup, AccelStepper feed) {
+	_takeup = takeup;
+	_feed = feed;
 }
 
 void McopyProjector::begin () {
-	steppers.setup();
-	steppers.setSpeed(0, _speed);
-	steppers.setSpeed(1, _speed);
+    _takeup.setMaxSpeed(_speed);
+    _takeup.setSpeed(_speed);
+    _takeup.setAcceleration(1000.0);
+   
+    _feed.setMaxSpeed(_speed);
+    _feed.setSpeed(_speed);
+    _feed.setAcceleration(1000.0);
 }
 
 void McopyProjector::setDirection (bool dir) {
 	_dir = dir;
-	if (_dir) {
-		steppers.setDir(0, FORWARD);
-    	steppers.setDir(1, FORWARD);
-	} else {
-		steppers.setDir(0, BACKWARD);
-    	steppers.setDir(1, BACKWARD);
-	}
 }
 
 void McopyProjector::frame (bool dir) {
 	if (dir != _dir) {
 		setDirection(dir);
 	}
-	steppers.step(FEED, _stepsPerFrame, _dir ? FORWARD : BACKWARD);
-	_posTakeup += dir ? _stepsPerFrame : -_stepsPerFrame;
-	_posFeed += dir ? _stepsPerFrame : -_stepsPerFrame;
+
+	int64_t takeupGoal = _takeup.currentPosition();
+	int64_t feedGoal = _feed.currentPosition();
+		
+	takeupGoal += _dir ? _stepsPerFrame : -_stepsPerFrame;
+	feedGoal += _dir ? _stepsPerFrame : -_stepsPerFrame;
+
+	_takeup.moveTo(takeupGoal);
+	_feed.moveTo(feedGoal);
+
+	_running = true;
+
 }
 
 void McopyProjector::adjust(uint8_t motor, int64_t steps) {
 	uint64_t s = abs(steps);
-	if (steps < 0) {
-		steppers.setDir(motor, BACKWARD);
-	} else {
-		steppers.setDir(motor, FORWARD);
-	}
-	steppers.step(motor, s, _dir ? FORWARD : BACKWARD);
+
+	//moveTo
 	if (motor == 0) {
 		_posTakeup += steps;
 	} else if (motor == 1) {
 		_posFeed += steps;
 	}
-	//restore set direction after adjustment
-	steppers.setDir(motor, _dir ? FORWARD : BACKWARD);
 }
 
-void McopyProjector::adjustBoth(int64_t steps) {
+void McopyProjector::adjustBoth (int64_t steps) {
 	uint64_t s = abs(steps);
-	if (steps < 0) {
-		steppers.setDir(TAKEUP, BACKWARD);
-		steppers.setDir(FEED,   BACKWARD);
-	} else {
-		steppers.setDir(TAKEUP, FORWARD);
-		steppers.setDir(FEED, FORWARD);
-	}
-	steppers.stepBoth(s);
+	
+	//steppers.stepBoth(s);
 	_posTakeup += steps;
 	_posFeed += steps;
 
-	//restore set direction after adjustment
-	steppers.setDir(TAKEUP, _dir ? FORWARD : BACKWARD);
-	steppers.setDir(FEED, _dir ? FORWARD : BACKWARD);
 }
 
-void McopyProjector::frames(bool dir, uint64_t count) {
-
+void McopyProjector::loop () {
+	if (_running) {
+		if (_takeup.distanceToGo() == 0 && _feed.distanceToGo() == 0) {
+			//frame done
+			_running = false;
+			_posTakeup += _dir ? _stepsPerFrame : -_stepsPerFrame;
+			_posFeed += _dir ? _stepsPerFrame : -_stepsPerFrame;
+		} else {
+			_takeup.run();
+    		_feed.run();
+		}
+	} else if (_adjusting) {
+		if (_takeup.distanceToGo() == 0 && _feed.distanceToGo() == 0) {
+			//adjustment done
+			_adjusting = false;
+		} else {
+			_takeup.run();
+    		_feed.run();
+		}
+	}
 }

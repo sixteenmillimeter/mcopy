@@ -2,18 +2,19 @@
 #define MCOPY_PROJECTOR
 
 #include <Arduino.h>
-#include "IteadDualStepperShield.h"
+#include <AccelStepper.h>
 
 class McopyProjector {
 
 	private:
 
-	IteadDualStepperShield steppers;
+	AccelStepper _takeup;
+	AccelStepper _feed;
 
-	uint8_t _motorSteps = 200;
+	uint8_t _motorSteps = 1600; //microstepped
 	uint8_t _frames = 8;
 	uint8_t _stepsPerFrame = 25; //round(_motorSteps / _frames);
-	uint16_t _speed = 300;
+	float _speed = 500.0;
 
 	int64_t _posTakeup = 0;
 	int64_t _posFeed = 0;
@@ -26,17 +27,20 @@ class McopyProjector {
 
 	bool _dir = true;
 
+	bool _running = false;
+	bool _adjusting = false;
+
 	public:
 
-	McopyProjector();
+	McopyProjector(AccelStepper takeup, AccelStepper feed);
 	void begin();
 	//0 = takeup, 1 = feed
 	void adjust(uint8_t motor, int64_t steps);
 	void adjustBoth(int64_t steps);
 	//true = forward, false = back
 	void frame(bool dir);
-	void frames(bool dir, uint64_t count);
 	void setDirection(bool dir);
+	void loop();
 };
 
 #endif
