@@ -32,8 +32,8 @@ module m3_bolt_void (pos = [0, 0, 0], BoltH = 20, CapH = 3) {
 	}
 }
 
-module bolt_voids_2020 (pos = [0, 0, 0]) {
-    translate(pos) {
+module bolt_voids_2020 (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    translate(pos) rotate (rot) {
         //translate([0, -25, 0]) rotate([90, 0, 0]) m3_bolt_void(CapH = 6);
         translate([0, 20, 0]) rotate([-90, 0, 0]) m3_bolt_void(CapH = 20);
         translate([-16, 0, 0]) rotate([0, -90, 0]) m3_bolt_void(CapH = 6, BoltH = 10);
@@ -94,8 +94,8 @@ module rail_end (pos = [0, 0, 0], rot = [90, 0, 0], Motors = true) {
             translate([RailSpacing / 2, 0, 5]) cube([RailVoid, RailVoid, 40], center = true);
             
             //rails bolts
-            bolt_voids_2020([-RailSpacing / 2, 0, -15 + 5 + 6 ]);
-            rotate([0, 180, 0]) bolt_voids_2020([-RailSpacing / 2, 0,  -15 + 5 + 6]);
+            bolt_voids_2020([-RailSpacing / 2, 0, -15 + 5 + 7 ]);
+            bolt_voids_2020([RailSpacing / 2, 0, -15 + 5 + 7], [0, 180, 0]);
             
             if (Motors) {
                 //camera drive motor
@@ -110,8 +110,8 @@ module rail_end (pos = [0, 0, 0], rot = [90, 0, 0], Motors = true) {
                     bolt_voids_motor([0, 0, 16 - 21]);
                 }
             } else {
-                translate([-ThreadedRodSpacing / 2, 0, 0]) cylinder(r = R(LinearBearingOuterDiameter + 0.5), h = 60, center = true, $fn = 100);
-                translate([-ThreadedRodSpacing / 2, 0, 0]) cylinder(r = R(LinearBearingOuterDiameter + 0.5), h = 60, center = true, $fn = 100);
+                translate([ThreadedRodSpacing / 2, 0, 0]) cylinder(r = R(LinearBearingOuterDiameter + 0.4), h = 60, center = true, $fn = 100);
+                translate([-ThreadedRodSpacing / 2, 0, 0]) cylinder(r = R(LinearBearingOuterDiameter + 0.4), h = 60, center = true, $fn = 100);
             }
             
             //linear motion rod
@@ -293,10 +293,12 @@ module debug () {
 }
 
 
-PART = "bearing_rollerx";
+PART = "rail_end";
 
 if (PART == "rail_end") {
     rail_end();
+} else if (PART == "rail_end_idle") {
+    rail_end(Motors = false);
 } else if (PART == "lens_sled") {
     lens_sled();
 } else if (PART == "bearing_roller") {
