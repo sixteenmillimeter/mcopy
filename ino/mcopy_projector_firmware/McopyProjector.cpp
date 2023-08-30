@@ -21,6 +21,11 @@ void McopyProjector::begin () {
     _feed.setSpeed(_speed);
     _feed.setAcceleration(1000.0);
 
+    pinMode(_takeupSettingA, OUTPUT);
+	pinMode(_takeupSettingB, OUTPUT);
+	pinMode(_feedSettingA, OUTPUT);
+	pinMode(_feedSettingB, OUTPUT);
+
     setStepperMode(1);
 }
 

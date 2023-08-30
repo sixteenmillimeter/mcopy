@@ -4,6 +4,23 @@
 #include <Arduino.h>
 #include <AccelStepper.h>
 
+/**
+ * D2 X Step
+ * D3  X Direction
+ * D4  X MS1 setting
+ * D5  X MS2 setting
+ * D6  Y Step
+ * D7  Y Direction
+ * D8  Y MS1 setting
+ * D9  Y MS2 setting
+ *
+ * MS1(X/Y)  MS2(X/Y)  Description
+ * L         L         Full step
+ * H         L         Half step
+ * L         H         Quarter step
+ * H         H         Eighth STEP
+ **/
+
 class McopyProjector {
 
 	private:

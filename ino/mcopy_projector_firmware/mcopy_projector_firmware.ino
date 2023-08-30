@@ -31,6 +31,12 @@
 #define FEED_DIR_PIN 7
 #define FEED_STEP_PIN 6
 
+#define TAKEUP_SETTINGS_A 4
+#define TAKEUP_SETTINGS_B 5
+
+#define FEED_SETTINGS_A 8
+#define FEED_SETTINGS_B 9
+
 AccelStepper takeup(AccelStepper::DRIVER, TAKEUP_STEP_PIN, TAKEUP_DIR_PIN);
 AccelStepper feed(AccelStepper::DRIVER, FEED_STEP_PIN, FEED_DIR_PIN);
 
@@ -50,7 +56,7 @@ volatile bool direction = true;
 volatile long start;
 
 McopySerial mcopy;
-McopyProjector projector(takeup, feed);
+McopyProjector projector(takeup, feed, TAKEUP_SETTINGS_A, TAKEUP_SETTINGS_B, FEED_SETTINGS_A, FEED_SETTINGS_B);
 
 void setup () {
   pins();
