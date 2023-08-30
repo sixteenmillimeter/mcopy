@@ -13,7 +13,7 @@ class McopyProjector {
 
 	uint8_t _motorSteps = 1600; //microstepped
 	uint8_t _frames = 8;
-	uint8_t _stepsPerFrame = 50; //round(_motorSteps / _frames);
+	uint8_t _stepsPerFrame = 25; //round(_motorSteps / _frames);
 	float _speed = 500.0;
 
 	int64_t _posTakeup = 0;

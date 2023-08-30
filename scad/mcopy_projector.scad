@@ -348,7 +348,7 @@ module debug () {
     
 }
 
-PART = "gate_keyx";
+PART = "gate_key";
 
 if (PART == "gate_key") {
 	gate_key();
