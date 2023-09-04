@@ -93,15 +93,17 @@ module panel_cap_voids (pos = [0, 0, 0]) {
 module LED_void (pos = [0, 0, 0], rot = [0, 0, 0], flip = false) {
 	LEDVoidD = 5;
 	LightVoidD = 2.5;
+    EmitterZ = 39.5;
+    ReceiverZ = 65;
 	translate(pos) rotate(rot) {
 		rotate([0, 90, 0]) {
 			cylinder(r = R(LightVoidD), h = 80, center = true, $fn = 40);
 			if (flip) {
-				translate([0, 0, -37.5]) cylinder(r = R(LEDVoidD), h = 80, center = true, $fn = 40);
-				translate([0, 0, 65]) cylinder(r = R(LEDVoidD), h = 80, center = true, $fn = 40);
+				translate([0, 0, -EmitterZ]) cylinder(r = R(LEDVoidD), h = 80, center = true, $fn = 40);
+				translate([0, 0, ReceiverZ]) cylinder(r = R(LEDVoidD), h = 80, center = true, $fn = 40);
 			} else {
-				translate([0, 0, 37.5]) cylinder(r = R(LEDVoidD), h = 80, center = true, $fn = 40);
-				translate([0, 0, -65]) cylinder(r = R(LEDVoidD), h = 80, center = true, $fn = 40);
+				translate([0, 0, EmitterZ]) cylinder(r = R(LEDVoidD), h = 80, center = true, $fn = 40);
+				translate([0, 0, -ReceiverZ]) cylinder(r = R(LEDVoidD), h = 80, center = true, $fn = 40);
 			}
 		}
 	}
@@ -178,7 +180,7 @@ module stepper_mount_block (pos = [0, 0, 0]) {
 			union () {
 				translate([0, 0, -5]) cube([NEMA17OuterWidth, NEMA17OuterWidth, H], center = true);
 				LED_prop([0, 19, -4.5 + 7.5], [0, 0, 45], flip = true);
-				LED_prop([0, -19, -4.5 + 10.5], [0, 0, 45], H = 9, flip = false);
+				LED_prop([0, -19, -4.5 + 11.5], [0, 0, 45], H = 9, flip = false);
 			}
 			//corners
 			for (i = [0 : 3]) {
@@ -229,7 +231,8 @@ module octagon_void (pos = [0, 0, 0], D = 25, H = 5.01) {
 
 module gate_bolt_and_nut_void (pos = [0, 0, 0]) {
 	translate(pos) {
-		cylinder(r = R(5), h = PanelZ + 1, center = true, $fn = 40);
+		cylinder(r = R(5.2), h = PanelZ + 1, center = true, $fn = 40);
+        translate([0, 0, -1.5]) hex(9.2, 4.5);
 	}
 }
 
@@ -283,14 +286,6 @@ module gate_key (pos = [0, 0, 0], rot = [0, 0, 0]) {
 			gate_key_set_screw_void([0, 6, -2.5]);
 			gate_key_set_screw_void([0, 6, -10]);
 		}
-		/*translate([0, 0, 3]) {
-			for (i = [0 : 7]) {
-				rotate([0, 0, i * (360 / 8)]) {
-					translate([OctoVoidX, 0, 0]) rotate([0, 45, 0]) cube([2, 35, 2], center = true);
-					//translate([OctoVoidX, 0, 0]) rotate([90, 0, 0]) cylinder(r = R(2), h = 35, center = true, $fn = 30);
-				}
-			}
-		}*/
 	}
 }
 
@@ -321,7 +316,11 @@ module panel (pos = [0, 0, 0], rot = [0, 0, 0]) {
 			//
 			nub_void([NubX, 0, 0]);
 		}
-		stepper_mount([0, 0, -(StepperMountZ / 2) - (PanelZ / 2)]);
+        difference () {
+            stepper_mount([0, 0, -(StepperMountZ / 2) - (PanelZ / 2)]);
+            translate([GateBoltX, GateBoltY, -20]) hex(9.2, 50);
+            translate([GateBoltX, -GateBoltY, -20]) hex(9.2, 50);
+        }
 	}
 }
 
@@ -340,16 +339,16 @@ module debug () {
 		union () {
 	        intersection () {
 	            panel();
-	            translate([0, -50, 0]) cube([60, 100, 150], center = true);
+	            //translate([0, -50, 0]) cube([60, 100, 150], center = true);
 	        }
 	        
 	    }
 		//translate([50, 0, 0]) rotate([0, 0, 45]) cube([100, 250, 150], center = true);
 	}
-    gate_key([0, -KeyDistance / 2, -13.5], [0, 0, 45]);
+    color("black") gate_key([0, -KeyDistance / 2, -13.5], [0, 0, 0]);
 }
 
-PART = "gate_key";
+PART = "gate_keyx";
 
 if (PART == "gate_key") {
 	gate_key();
