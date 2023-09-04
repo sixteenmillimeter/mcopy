@@ -196,7 +196,7 @@ module stepper_mount_block (pos = [0, 0, 0]) {
 			bolt_and_cap_void([-BoltX, -BoltY, 10], H, H);
 			//
 			LED_void([0, 17.25, -4.5], [0, 0, 45]);
-			LED_void([0, -17.25, 1.5], [0, 0, 45], true);
+			LED_void([0, -17.25, 2.5], [0, 0, 45], true);
 		}
 	}
 }
@@ -259,17 +259,18 @@ module gate_key (pos = [0, 0, 0], rot = [0, 0, 0]) {
 			translate([0, 0, -3]) scale([1.07, 1.07, 1]) {
                 NEMA17_motor_shaft([0, 0, -5]);
             }
-			//octagon_void([0, 0, 3.5]);
-			translate([0, 0, OctoVoidZ]) {
+			octagon_void([0, 0, 3.5], D = 24);
+			/*translate([0, 0, OctoVoidZ]) {
 				for (i = [0 : 7]) {
 					rotate([0, 0, i * (360 / 8)]) {
 						translate([OctoVoidX, 0, 0]) rotate([0, 45, 0]) cube([2, 35, 2], center = true);
 						//translate([OctoVoidX, 0, 0]) rotate([90, 0, 0]) cylinder(r = R(2), h = 35, center = true, $fn = 30);
 					}
 				}
-			}
-			//normalization flat
-			translate([0, 27, -3.5 - (Extension / 2)]) cube([29, 29, 10 + Extension + 1], center = true);
+			}*/
+            
+			//registration flat
+			translate([0, 26.5, -3.5 - (Extension / 2)]) cube([29, 29, 10 + Extension + 1], center = true);
 			//key
 			rotate ([0, 0, 45]) {
 				translate([0,  (10 / 2) + (KeyWidth / 2), KeyZ]) cube([10, 10, 10], center = true);
@@ -341,11 +342,11 @@ module debug () {
 	            panel();
 	            translate([0, -50, 0]) cube([60, 100, 150], center = true);
 	        }
-	        gate_key([0, -KeyDistance / 2, -13.5], [0, 0, 0]);
+	        
 	    }
-		translate([50, 0, 0]) rotate([0, 0, 45]) cube([100, 250, 150], center = true);
+		//translate([50, 0, 0]) rotate([0, 0, 45]) cube([100, 250, 150], center = true);
 	}
-    
+    gate_key([0, -KeyDistance / 2, -13.5], [0, 0, 45]);
 }
 
 PART = "gate_key";
