@@ -331,7 +331,7 @@ module projector () {
 module debug () {
 	//panel();
 	//NEMA17([0, KeyDistance / 2, -50]);
-	NEMA17([0, -KeyDistance / 2, -50]);
+	//NEMA17([0, -KeyDistance / 2, -50]);
 	//gate_key([0, KeyDistance / 2, -14], [0, 0, 45]);
 	//gate_key([0, -KeyDistance / 2, -14], [0, 0, 45]);
 	
@@ -339,13 +339,13 @@ module debug () {
 		union () {
 	        intersection () {
 	            panel();
-	            //translate([0, -50, 0]) cube([60, 100, 150], center = true);
+	            translate([0, -50, 0]) cube([60, 100, 150], center = true);
 	        }
 	        
 	    }
 		//translate([50, 0, 0]) rotate([0, 0, 45]) cube([100, 250, 150], center = true);
 	}
-    color("black") gate_key([0, -KeyDistance / 2, -13.5], [0, 0, 0]);
+    //color("black") gate_key([0, -KeyDistance / 2, -13.5], [0, 0, 0]);
 }
 
 PART = "gate_keyx";
