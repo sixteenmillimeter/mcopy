@@ -265,8 +265,16 @@ module lens_sled (pos = [0, 0, 0], rot = [90, 0, 0]) {
             lens_sled_m5_bolt_nut_voids([(-RailEndX / 2) + (40 / 2), 0, -16], [0, -90, 0]);
         }
         //rail ends for snug fit
-        end_2020([LensFrameSpacingX, LensFrameM3VoidsZ - (6 / 2) - 5.1, 0], [90, 0, 0]);
-        end_2020([-LensFrameSpacingX, LensFrameM3VoidsZ - (6 / 2) - 5.1, 0], [90, 0, 0]);
+        
+        difference () {
+            end_2020([LensFrameSpacingX, LensFrameM3VoidsZ - (6 / 2) - 5.1, 0], [90, 0, 0]);
+            translate([LensFrameSpacingX, LensFrameM3VoidsZ - (6 / 2) - 5.1, 13]) rotate([0, 45, 0]) cube([20, 20, 20], center = true);
+        }
+        
+        difference () {
+            end_2020([-LensFrameSpacingX, LensFrameM3VoidsZ - (6 / 2) - 5.1, 0], [90, 0, 0]);
+            translate([-LensFrameSpacingX, LensFrameM3VoidsZ - (6 / 2) - 5.1, 13]) rotate([0, 45, 0]) cube([20, 20, 20], center = true);
+        }
         //debug
         //translate([-ThreadedRodSpacing / 2, 0, -(Y / 2) + 8.4]) T_nut();
         //translate([-ThreadedRodSpacing / 2, 0, (Y / 2) - 7.5]) rotate([180, 0, 0]) T_nut();
