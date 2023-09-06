@@ -1,9 +1,10 @@
 //
 // JK lens assembly
 //
-include <./common.scad>;
+include <./common/common.scad>;
 include <./bellows.scad>;
 include <./knurledFinishLib_v2.scad>;
+use <2020_profile.scad>;
 
 PART = "";
 
@@ -35,6 +36,16 @@ LinearMotionZ = 14;
 
 XPosition = 0;
 ZPosition = 0;
+
+RailSpacingX = 100;
+RailEndX = RailSpacingX + 72;
+LensFrameSpacingX = (RailEndX / 2) - (40 / 2);
+
+module rail_debug (H = 175) {
+    color("lime") linear_extrude(height=H) {
+        2020_profile();
+    }
+}
 
 module linearBearing (padD = 0, padH = 0) {
 	difference () {
@@ -351,18 +362,22 @@ module debug () {
     translate([-ZOffset/2, BackOffset, -((RodLength + 20)/2)+31])  lensAssemblyThreadedCollar();
 	translate([ZOffset/2, BackOffset, 0]) linearMotionRod(RodLength);
     
-    translate([0, BackOffset, -70]) lensAssemblyBaseZ();
+    //translate([0, BackOffset, -70]) lensAssemblyBaseZ();
     
     translate([0, 130, 0]) rotate([90, 0, 0]) bellows_camera_board();
     translate([0, 130/2, 0]) color("blue") {
         difference () {
-            cube([70, 130-10, 70], center = true);
+            cube([70, 130 - 10, 70], center = true);
             cube([40, 130 + 1, 40], center = true);
         }
     }
+    
+    translate([LensFrameSpacingX + 20, 15, -100]) rail_debug(200);
+    translate([-LensFrameSpacingX - 20, 15, -100]) rail_debug(200);
+    translate([-100, 35, 90]) rotate([0, 90, 0]) rail_debug(200);
 }
 
-PART = "lens_assembly_bellows_board_magnetic";
+PART = "lens_assembly_bellows_board_magneticx";
 
 if (PART == "lens_assembly_camera_bellows_board") {
     bellows_camera_board();

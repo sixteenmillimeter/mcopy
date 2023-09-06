@@ -8,6 +8,7 @@ FILES=(
 	cpc_connectors
 	mcopy_rails
 	mcopy_projector
+	mcopy_lens_assembly
 )
 
 PARALLEL=0
