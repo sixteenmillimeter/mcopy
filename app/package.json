@@ -38,7 +38,7 @@
     "@types/codemirror": "^5.60.5",
     "@types/jquery": "^3.5.14",
     "chai": "^4.3.6",
-    "electron": "^19.0.1",
+    "electron": "^22.3.21",
     "electron-installer-common": "^0.10.3",
     "electron-installer-dmg": "^4.0.0",
     "electron-packager": "^15.5.1",
