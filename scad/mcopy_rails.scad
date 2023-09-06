@@ -218,10 +218,10 @@ module lens_sled_m3_bolt_voids (pos = [0, 0, 0], rot = [0, 0, 0]) {
     }
 }
 
-module lens_sled_m5_bolt_nut_voids (pos = [0, 0, 0], rot = [0, 0, 0]) {
+module lens_sled_m5_bolt_nut_voids (pos = [0, 0, 0], rot = [0, 0, 0], Angle = 360/12) {
     translate(pos) rotate(rot) {
         cylinder(r = R(5.2), h = 40, center = true, $fn = 40);
-        translate([0, 0, -3.5]) rotate([0, 0, 360/12]) hex(9.2, 5);
+        translate([0, 0, -3.5]) rotate([0, 0, Angle]) hex(9.2, 5);
     }
 }
 
@@ -238,6 +238,7 @@ module lens_sled (pos = [0, 0, 0], rot = [90, 0, 0]) {
                 sled(rot = [0, 0, 0], Length = Y);
                 translate([(RailEndX / 2) - (Y / 2), (60 / 2) + (40 / 2) - 5, 0]) cube([Y, 30,  Y], center = true);
                 translate([-(RailEndX / 2) + (Y / 2), (60 / 2) + (40 / 2) - 5, 0]) cube([Y, 30,  Y], center = true);
+                translate([LensFrameSpacingX - 35 - 25, 48, 0]) cube([10, 21, 40], center = true);
             }
             T_nut_void ([LensDriveX, 0, (Y / 2) - (TNutVoid / 2) + 0.01], [180, 0, 0]);
             T_nut_void ([LensDriveX, 0, -(Y / 2) + (TNutVoid / 2) - 0.01]);
@@ -263,6 +264,18 @@ module lens_sled (pos = [0, 0, 0], rot = [90, 0, 0]) {
             lens_sled_m5_bolt_nut_voids([(RailEndX / 2) - (40 / 2), 0, -16], [0, 90, 0]);
             lens_sled_m5_bolt_nut_voids([(-RailEndX / 2) + (40 / 2), 0, 16], [0, -90, 0]);
             lens_sled_m5_bolt_nut_voids([(-RailEndX / 2) + (40 / 2), 0, -16], [0, -90, 0]);
+            
+            //motor void
+            translate([LensFrameSpacingX - 35, 50 + 37.5, 0]) cube([42.25, 100, 42.25], center = true);
+            //threaded rod void
+            translate([LensFrameSpacingX - 35, 50 + 37.5 - 10, 0]) rotate([90, 0, 0]) cylinder(r = R(9), h = 100, center = true, $fn = 60);
+            
+            //motor bolts
+            lens_sled_m5_bolt_nut_voids([LensFrameSpacingX - 35 - 27, 50, 12], [0, -90, 0], Angle = 0);
+            lens_sled_m5_bolt_nut_voids([LensFrameSpacingX - 35 - 27, 50, -12], [0, -90, 0], Angle = 0);
+            
+            //linear bolts
+            translate([-LensFrameSpacingX + 35, 50 + 37.5 - 10, 0]) rotate([90, 0, 0]) cylinder(r = R(8.6), h = 100, center = true, $fn = 60);
         }
         //rail ends for snug fit
         
@@ -278,6 +291,7 @@ module lens_sled (pos = [0, 0, 0], rot = [90, 0, 0]) {
         //debug
         //translate([-ThreadedRodSpacing / 2, 0, -(Y / 2) + 8.4]) T_nut();
         //translate([-ThreadedRodSpacing / 2, 0, (Y / 2) - 7.5]) rotate([180, 0, 0]) T_nut();
+        //translate([LensFrameSpacingX - 35, 40, 0]) rotate([-90, 0, 0]) NEMA17(H = 20);
     }
 }
 
@@ -371,7 +385,7 @@ if (PART == "rail_end") {
 } else if (PART == "rail_end_idle") {
     rail_end(Motors = false);
 } else if (PART == "lens_sled") {
-    lens_sled();
+    rotate([-90, 0, 0]) lens_sled();
 } else if (PART == "bearing_roller") {
     bearing_roller();
 } else if (PART == "bearing_roller_inner") {
