@@ -345,7 +345,8 @@ module debug () {
 	    }
 		//translate([50, 0, 0]) rotate([0, 0, 45]) cube([100, 250, 150], center = true);
 	}
-    color("black") gate_key([0, -KeyDistance / 2, -13.5], [0, 0, 0]);
+    gate_key([0, -KeyDistance / 2, -13.5], [0, 0, 30]);
+    
 }
 
 PART = "gate_keyx";
