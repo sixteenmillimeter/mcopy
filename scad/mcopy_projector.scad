@@ -92,7 +92,7 @@ module panel_cap_voids (pos = [0, 0, 0]) {
 
 module LED_void (pos = [0, 0, 0], rot = [0, 0, 0], flip = false) {
 	LEDVoidD = 5;
-	LightVoidD = 2.5;
+	LightVoidD = 3;
     EmitterZ = 39.5;
     ReceiverZ = 65;
 	translate(pos) rotate(rot) {
@@ -338,14 +338,14 @@ module debug () {
     difference () {
 		union () {
 	        intersection () {
-	            panel();
-	            translate([0, -50, 0]) cube([60, 100, 150], center = true);
+	            //panel();
+	            //translate([0, -50, 0]) cube([60, 100, 150], center = true);
 	        }
 	        
 	    }
 		//translate([50, 0, 0]) rotate([0, 0, 45]) cube([100, 250, 150], center = true);
 	}
-    //color("black") gate_key([0, -KeyDistance / 2, -13.5], [0, 0, 0]);
+    color("black") gate_key([0, -KeyDistance / 2, -13.5], [0, 0, 0]);
 }
 
 PART = "gate_keyx";
