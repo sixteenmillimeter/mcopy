@@ -362,7 +362,7 @@ module debug () {
 		//translate([50, 0, 0]) rotate([0, 0, 45]) cube([100, 250, 150], center = true);
         translate([0, 0, -75 - 10]) cube([100, 250, 150], center = true);
 	}
-   gate_key([0, -KeyDistance / 2, -13.5], [0, 0, 360/16]);
+
 }
 
 PART = "gate_key";
