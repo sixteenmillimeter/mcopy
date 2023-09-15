@@ -229,6 +229,21 @@ module octagon_void (pos = [0, 0, 0], D = 25, H = 5.01) {
 	}
 }
 
+module circular_void (pos = [0, 0, 0], rot = [0, 0, 0], D = 25, H = 5.01) {
+    Fin = 2;
+    translate(pos) rotate([rot[0], rot[1], rot[2] + (3 * (360 / 8)) ]) {
+		difference () {
+			cylinder(r = R(D + 10), h = H, center = true);
+            //difference () {
+                cylinder(r = R(D), h = H + 1, center = true, $fn = 120);
+                for (i = [0: 6]) {
+                    rotate([0, 0, i * (360 / 8)]) translate([15 / 2, 0, 0]) cube([15, Fin, H + 1 + 1], center = true);
+                }
+            //}
+		}
+	}
+}
+
 module gate_bolt_and_nut_void (pos = [0, 0, 0]) {
 	translate(pos) {
 		cylinder(r = R(5.2), h = PanelZ + 1, center = true, $fn = 40);
@@ -262,7 +277,8 @@ module gate_key (pos = [0, 0, 0], rot = [0, 0, 0]) {
 			translate([0, 0, -3]) scale([1.07, 1.07, 1]) {
                 NEMA17_motor_shaft([0, 0, -5]);
             }
-			octagon_void([0, 0, 3.5], D = 24);
+			octagon_void([0, 0, 3.5], D = 23.5);
+            //circular_void([0, 0, 3.5], D = 22);
 			/*translate([0, 0, OctoVoidZ]) {
 				for (i = [0 : 7]) {
 					rotate([0, 0, i * (360 / 8)]) {
@@ -338,17 +354,18 @@ module debug () {
     difference () {
 		union () {
 	        intersection () {
-	            //panel();
-	            //translate([0, -50, 0]) cube([60, 100, 150], center = true);
+	            panel();
+	            translate([0, -50, 0]) cube([60, 100, 150], center = true);
 	        }
 	        
 	    }
 		//translate([50, 0, 0]) rotate([0, 0, 45]) cube([100, 250, 150], center = true);
+        translate([0, 0, -75 - 10]) cube([100, 250, 150], center = true);
 	}
-    color("black") gate_key([0, -KeyDistance / 2, -13.5], [0, 0, 0]);
+   gate_key([0, -KeyDistance / 2, -13.5], [0, 0, 360/16]);
 }
 
-PART = "gate_keyx";
+PART = "gate_key";
 
 if (PART == "gate_key") {
 	gate_key();
