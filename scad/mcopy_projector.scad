@@ -96,7 +96,7 @@ module LED_void (pos = [0, 0, 0], rot = [0, 0, 0], flip = false) {
     EmitterZ = 39.5;
     ReceiverZ = 65;
 	translate(pos) rotate(rot) {
-		rotate([0, 90, 0]) {
+		rotate([0, -90, 0]) {
 			cylinder(r = R(LightVoidD), h = 80, center = true, $fn = 40);
 			if (flip) {
 				translate([0, 0, -EmitterZ]) cylinder(r = R(LEDVoidD), h = 80, center = true, $fn = 40);
@@ -169,18 +169,18 @@ module nub_void (pos = [0, 0, 0]) {
 	}
 }
 
-module stepper_mount_block (pos = [0, 0, 0]) {
+module stepper_mount_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
 	BoltX = NEMA17BoltSpacing / 2;
 	BoltY = NEMA17BoltSpacing / 2;
 	H = 30;
 	InnerD = 30;
 
-	translate(pos) {
+	translate(pos) rotate(rot) {
 		difference () {
 			union () {
 				translate([0, 0, -5]) cube([NEMA17OuterWidth, NEMA17OuterWidth, H], center = true);
-				LED_prop([0, 19, -4.5 + 7.5], [0, 0, 45], flip = true);
-				LED_prop([0, -19, -4.5 + 11.5], [0, 0, 45], H = 9, flip = false);
+				LED_prop([0, -19, -4.5 + 7.5], [0, 0, 45], flip = false);
+				//LED_prop([0, -19, -4.5 + 11.5], [0, 0, 45], H = 9, flip = false);
 			}
 			//corners
 			for (i = [0 : 3]) {
@@ -197,8 +197,8 @@ module stepper_mount_block (pos = [0, 0, 0]) {
 			bolt_and_cap_void([BoltX, -BoltY, 10], H, H);
 			bolt_and_cap_void([-BoltX, -BoltY, 10], H, H);
 			//
-			LED_void([0, 17.25, -4.5], [0, 0, 45]);
-			LED_void([0, -17.25, 2.5], [0, 0, 45], true);
+			LED_void([0, -17.25, -4.5], [0, 0, 45]);
+			//LED_void([0, -17.25, 2.5], [0, 0, 45], true);
 		}
 	}
 }
@@ -206,7 +206,7 @@ module stepper_mount_block (pos = [0, 0, 0]) {
 module stepper_mount (pos = [0, 0, 0]) {
 	//NEMA17BoltSpacing = 31;
 	translate(pos) {
-		stepper_mount_block([0, KeyDistance / 2, 0]);
+		stepper_mount_block([0, KeyDistance / 2, 0], [0, 0, 90]);
 		stepper_mount_block([0, -KeyDistance / 2, 0]);
 	}
 }
@@ -260,7 +260,7 @@ module gate_key_set_screw_void (pos = [0, 0, 0]) {
 	}
 }
 
-module gate_key (pos = [0, 0, 0], rot = [0, 0, 0]) {
+module gate_key (pos = [0, 0, 0], rot = [0, 0, 0], KeyRot = 0) {
 	Extension = 8.75;
 	KeyZ =  (13 / 2) + (10 / 2) + 6;
 	OctoVoidX = 12;
@@ -277,7 +277,7 @@ module gate_key (pos = [0, 0, 0], rot = [0, 0, 0]) {
 			translate([0, 0, -3]) scale([1.07, 1.07, 1]) {
                 NEMA17_motor_shaft([0, 0, -5]);
             }
-			octagon_void([0, 0, 3.5], D = 23.5);
+			//octagon_void([0, 0, 3.5], D = 23.5);
             //circular_void([0, 0, 3.5], D = 22);
 			/*translate([0, 0, OctoVoidZ]) {
 				for (i = [0 : 7]) {
@@ -289,9 +289,9 @@ module gate_key (pos = [0, 0, 0], rot = [0, 0, 0]) {
 			}*/
             
 			//registration flat
-			translate([0, 26.5, -3.5 - (Extension / 2)]) cube([29, 29, 10 + Extension + 1], center = true);
+			translate([0, 25, -3.5 - (Extension / 2)]) cube([29, 29, 20 + Extension + 1], center = true);
 			//key
-			rotate ([0, 0, 45]) {
+			rotate ([0, 0, 45 + KeyRot]) {
 				translate([0,  (10 / 2) + (KeyWidth / 2), KeyZ]) cube([10, 10, 10], center = true);
 				translate([0, -(10 / 2) - (KeyWidth / 2), KeyZ]) cube([10, 10, 10], center = true);
 			}
@@ -304,6 +304,7 @@ module gate_key (pos = [0, 0, 0], rot = [0, 0, 0]) {
 		}
 	}
 }
+
 
 module panel (pos = [0, 0, 0], rot = [0, 0, 0]) {
 	translate(pos) rotate(rot) {
@@ -348,19 +349,19 @@ module debug () {
 	//panel();
 	//NEMA17([0, KeyDistance / 2, -50]);
 	//NEMA17([0, -KeyDistance / 2, -50]);
-	//gate_key([0, KeyDistance / 2, -14], [0, 0, 45]);
-	//gate_key([0, -KeyDistance / 2, -14], [0, 0, 45]);
+	gate_key([0, KeyDistance / 2, -14], [0, 0, -90 + 45], KeyRot=90);
+	gate_key([0, -KeyDistance / 2, -14], [0, 0, 180 + 45 ]);
 	
     difference () {
 		union () {
 	        intersection () {
 	            panel();
-	            translate([0, -50, 0]) cube([60, 100, 150], center = true);
+	            //translate([0, -50, 0]) cube([60, 100, 150], center = true);
 	        }
 	        
 	    }
 		//translate([50, 0, 0]) rotate([0, 0, 45]) cube([100, 250, 150], center = true);
-        translate([0, 0, -75 - 10]) cube([100, 250, 150], center = true);
+      translate([0, 0, -82.5 - 10]) cube([100, 250, 150], center = true);
 	}
 
 }
@@ -368,7 +369,7 @@ module debug () {
 PART = "gate_key";
 
 if (PART == "gate_key") {
-	gate_key();
+	gate_key(KeyRot = 90);
 } else if (PART == "panel") {
 	rotate([180, 0, 0]) panel();
 } else {

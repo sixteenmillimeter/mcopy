@@ -28,10 +28,11 @@ class McopyProjector {
 	AccelStepper _takeup;
 	AccelStepper _feed;
 
-	uint8_t _motorSteps = 1600; //microstepped
+	uint16_t _motorSteps = 1600; //microstepped
 	uint8_t _frames = 8;
-	uint8_t _stepsPerFrame = 25; //round(_motorSteps / _frames);
-	float _speed = 500.0;
+	uint16_t _stepsPerFrame = 25; //round(_motorSteps / _frames);
+	uint8_t _mode = 1;
+	float _speed = 2000.0;
 
 	int64_t _posTakeup = 0;
 	int64_t _posFeed = 0;
@@ -47,6 +48,10 @@ class McopyProjector {
 	bool _running = false;
 	bool _adjusting = false;
 
+	long readVcc();
+	long analogReadAccurate (int pin);
+	long analogReadAccurateAverage (int pin);
+
 	public:
 
 	McopyProjector(AccelStepper takeup, AccelStepper feed,  uint8_t takeupSettingA, uint8_t takeupSettingB, uint8_t feedSettingA, uint8_t feedSettingB);
@@ -59,6 +64,8 @@ class McopyProjector {
 	void setDirection(bool dir);
 	void setStepperMode(uint8_t mode);
 	void loop();
+	void home();
+
 };
 
 #endif

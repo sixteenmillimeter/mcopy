@@ -37,6 +37,11 @@
 #define FEED_SETTINGS_A 8
 #define FEED_SETTINGS_B 9
 
+#define TAKEUP_EMITTER 17
+#define TAKEUP_RECEIVER A8
+#define FEED_EMITTER 18
+#define FEED_RECEIVER A9
+
 AccelStepper takeup(AccelStepper::DRIVER, TAKEUP_STEP_PIN, TAKEUP_DIR_PIN);
 AccelStepper feed(AccelStepper::DRIVER, FEED_STEP_PIN, FEED_DIR_PIN);
 
@@ -76,7 +81,7 @@ void loop () {
   if (digitalRead(BUTTON) == LOW) {
     projector_frame();
   }
-  projector.loop();
+  //projector.loop();
 }
 
 void pins () {
