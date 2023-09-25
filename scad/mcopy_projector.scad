@@ -170,9 +170,13 @@ module nub_void (pos = [0, 0, 0]) {
 	}
 }
 
-module stepper_mount_block_positive (pos = [0, 0, 0]) {
+module stepper_mount_block_positive (pos = [0, 0, 0], H) {
     translate(pos) difference() {
-        
+        cube([NEMA17OuterWidth, NEMA17OuterWidth, H], center = true);
+    	//corners
+        for (i = [0 : 3]) {
+            rotate([0, 0, (i * 90) + 45]) translate([29.7, 0, 0]) cube([5.5, 5.5, H + 1], center = true);
+        }
     }
 }
 
@@ -186,14 +190,11 @@ module stepper_mount_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
 	translate(pos) rotate(rot) {
 		difference () {
 			union () {
-				translate([0, 0, -5]) cube([NEMA17OuterWidth, NEMA17OuterWidth, H], center = true);
+				stepper_mount_block_positive([0, 0, -5], H);
 				LED_prop([0, -19, -4.5 + 7.5], [0, 0, 45], flip = false);
 				//LED_prop([0, -19, -4.5 + 11.5], [0, 0, 45], H = 9, flip = false);
 			}
-			//corners
-			for (i = [0 : 3]) {
-				translate([0, 0, -5]) rotate([0, 0, (i * 90) + 45]) translate([29.7, 0, 0]) cube([5.5, 5.5, H + 1], center = true);
-			}
+
 			translate([0, 0, -5])cylinder(r = R(InnerD), h = H + 1, center = true, $fn = 120);
 			bolt_void([BoltX, BoltY, -5], H);
 			bolt_void([-BoltX, BoltY, -5], H);
