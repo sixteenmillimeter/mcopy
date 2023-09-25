@@ -413,7 +413,7 @@ module debug () {
 
 }
 
-PART = "orbital_mount";
+PART = "panel";
 
 if (PART == "gate_key") {
 	gate_key(KeyRot = 90);
