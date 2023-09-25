@@ -1,5 +1,6 @@
 include <./common/common.scad>;
 include <./common/motors.scad>;
+include <./common/2020_tslot.scad>;
 
 PanelX = 89;
 PanelY = 125;
@@ -65,10 +66,10 @@ module cap_void (pos = [0, 0, 0], cap = 20) {
 	}
 }
 
-module bolt_and_cap_void (pos = [0, 0, 0], cap = 10, bolt = 10) {
-	translate(pos) {
+module bolt_and_cap_void (pos = [0, 0, 0], rot = [0, 0, 0], cap = 10, bolt = 10) {
+	translate(pos) rotate(rot) {
 		cylinder(r = R(6.25), h = cap, center = true, $fn = 30);
-		translate([0, 0, -(cap / 2) - (bolt / 2)]) cylinder(r = R(3.5), h = bolt, center = true, $fn = 30);
+		translate([0, 0, -(cap / 2) - (bolt / 2) + 0.1]) cylinder(r = R(3.5), h = bolt, center = true, $fn = 30);
 	}
 }
 
@@ -169,9 +170,16 @@ module nub_void (pos = [0, 0, 0]) {
 	}
 }
 
+module stepper_mount_block_positive (pos = [0, 0, 0]) {
+    translate(pos) difference() {
+        
+    }
+}
+
 module stepper_mount_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
 	BoltX = NEMA17BoltSpacing / 2;
 	BoltY = NEMA17BoltSpacing / 2;
+    BoltCapZ = 11;
 	H = 30;
 	InnerD = 30;
 
@@ -192,10 +200,10 @@ module stepper_mount_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
 			bolt_void([BoltX, -BoltY, -5], H);
 			bolt_void([-BoltX, -BoltY, -5], H);
 
-			bolt_and_cap_void([BoltX, BoltY, 10], H, H);
-			bolt_and_cap_void([-BoltX, BoltY, 10], H, H);
-			bolt_and_cap_void([BoltX, -BoltY, 10], H, H);
-			bolt_and_cap_void([-BoltX, -BoltY, 10], H, H);
+			bolt_and_cap_void([BoltX, BoltY, BoltCapZ], cap = H, bolt = H);
+			bolt_and_cap_void([-BoltX, BoltY, BoltCapZ], cap = H, bolt = H);
+			bolt_and_cap_void([BoltX, -BoltY, BoltCapZ], cap = H, bolt = H);
+			bolt_and_cap_void([-BoltX, -BoltY, BoltCapZ], cap = H, bolt =H);
 			//
 			LED_void([0, -17.25, -4.5], [0, 0, 45]);
 			//LED_void([0, -17.25, 2.5], [0, 0, 45], true);
@@ -306,7 +314,8 @@ module gate_key (pos = [0, 0, 0], rot = [0, 0, 0], KeyRot = 0) {
 }
 
 
-module panel (pos = [0, 0, 0], rot = [0, 0, 0]) {
+module panel (pos = [0, 0, 0], rot = [0, 0, 0], Mounts = "2020") {
+    MountBoltsX = (-PanelX / 2) + 10;
 	translate(pos) rotate(rot) {
 		difference () {
 			union () {
@@ -314,9 +323,15 @@ module panel (pos = [0, 0, 0], rot = [0, 0, 0]) {
 				translate([0, KeyDistance / 2, -(10 / 2) + (PanelZ / 2)]) cylinder(r = R(31), h = 10, center = true, $fn = 90);
 				translate([0, -KeyDistance / 2, -(10 / 2) + (PanelZ / 2)]) cylinder(r = R(31), h = 10, center = true, $fn = 90);;
 			}
-			//front bolts
-			front_bolt_void([FrameBoltX, FrameBoltY, 0]);
-			front_bolt_void([FrameBoltX, -FrameBoltY, 0]);
+            if (Mounts == "JK") {
+                //front bolts
+                front_bolt_void([FrameBoltX, FrameBoltY, 0]);
+                front_bolt_void([FrameBoltX, -FrameBoltY, 0]);
+            } else if (Mounts == "2020") {
+                bolt_and_cap_void([MountBoltsX, 0, 4.5]);
+                bolt_and_cap_void([MountBoltsX, (PanelY / 2) - 10, 4.5]);
+                bolt_and_cap_void([MountBoltsX, (-PanelY / 2) + 10, 4.5]);
+            }
 			//key + bearing voids
 			bearing_void([0, KeyDistance / 2, (PanelZ / 2) - (8 / 2) - 2], 8.01);
 			bearing_void([0, -KeyDistance / 2, (PanelZ / 2) - (8 / 2) - 2], 8.01);
@@ -338,7 +353,36 @@ module panel (pos = [0, 0, 0], rot = [0, 0, 0]) {
             translate([GateBoltX, GateBoltY, -20]) hex(9.2, 50);
             translate([GateBoltX, -GateBoltY, -20]) hex(9.2, 50);
         }
+        
 	}
+}
+
+module orbital_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    OuterD = 136;
+    InnerD = 126;
+    VoidD = 96;
+    BottomZ = 5;
+    TopZ = 4;
+    Notch = 0.5;
+    Notches = 60;
+    BoltsX = 53;
+    BoltsY = 25;
+    $fn = 300;
+    translate(pos) rotate(rot) {
+		difference () {
+            cylinder(r = R(OuterD), h = BottomZ + TopZ, center = true);
+            cylinder(r = R(VoidD), h = BottomZ + TopZ + 1, center = true);
+            translate([0, 0, BottomZ - (TopZ / 2) - 0.49]) difference () {
+                cylinder(r = R(OuterD) + 1, h = TopZ, center = true);
+                cylinder(r = R(InnerD), h = TopZ + 1, center = true);
+            }
+            for (i = [0 : Notches - 1]) {
+                rotate([0, 0, i * (360 / Notches)]) translate([OuterD / 2, 0, 0]) rotate([0, 0, 45]) cube([Notch, Notch, BottomZ + TopZ + 1], center = true); 
+            }
+            bolt_and_cap_void([BoltsX, BoltsY, -4], [180, 0, 0]);
+            bolt_and_cap_void([BoltsX, -BoltsY, -4], [180, 0, 0]);
+        }
+    }
 }
 
 module projector () {
@@ -361,17 +405,21 @@ module debug () {
 	        
 	    }
 		//translate([50, 0, 0]) rotate([0, 0, 45]) cube([100, 250, 150], center = true);
-      translate([0, 0, -82.5 - 10]) cube([100, 250, 150], center = true);
+      //translate([0, 0, -82.5 - 10]) cube([100, 250, 150], center = true);
 	}
+    color("red") translate([(-PanelX / 2) + 10, 0, (-PanelZ / 2) -10]) rotate([90, 0, 0]) 2020_tslot(PanelY);
+    orbital_mount([(-PanelX / 2) - 4.5, 0, 40], [0, 90, 0]);
 
 }
 
-PART = "gate_key";
+PART = "orbital_mount";
 
 if (PART == "gate_key") {
 	gate_key(KeyRot = 90);
 } else if (PART == "panel") {
 	rotate([180, 0, 0]) panel();
+} else if (PART == "orbital_mount") {
+    orbital_mount();
 } else {
     debug();
 }
