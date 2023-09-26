@@ -46,12 +46,11 @@ AccelStepper takeup(AccelStepper::DRIVER, TAKEUP_STEP_PIN, TAKEUP_DIR_PIN);
 AccelStepper feed(AccelStepper::DRIVER, FEED_STEP_PIN, FEED_DIR_PIN);
 
 //CAMERA CONSTANTS
-const int BUTTON = 7;
-const int LED_FWD = 8;
-const int LED_BWD = 9;
+const int BUTTON = 19;
+const int LED_FWD = 20;
+const int LED_BWD = 21;
 
 const int PROJECTOR_MOMENT = 240;
-const int PROJECTOR_STEPS = 25;
 
 //VARIABLES
 volatile int projectorFrame = -1;
@@ -61,7 +60,11 @@ volatile bool direction = true;
 volatile long start;
 
 McopySerial mcopy;
-McopyProjector projector(takeup, feed, TAKEUP_SETTINGS_A, TAKEUP_SETTINGS_B, FEED_SETTINGS_A, FEED_SETTINGS_B);
+McopyProjector projector(takeup, feed, 
+  TAKEUP_SETTINGS_A, TAKEUP_SETTINGS_B, 
+  FEED_SETTINGS_A, FEED_SETTINGS_B,
+  TAKEUP_EMITTER, TAKEUP_RECEIVER,
+  FEED_EMITTER, FEED_RECEIVER);
 
 void setup () {
   pins();
@@ -72,6 +75,7 @@ void setup () {
   delay(42);
   digitalWrite(LED_FWD, LOW);
   digitalWrite(LED_BWD, LOW);
+  projector.home();
 }
 
 void loop () {
@@ -81,7 +85,7 @@ void loop () {
   if (digitalRead(BUTTON) == LOW) {
     projector_frame();
   }
-  //projector.loop();
+  projector.loop();
 }
 
 void pins () {
@@ -134,6 +138,7 @@ void projector_timing_end () {
 
 void projector_frame () {
   int LED = direction ? LED_FWD : LED_BWD;
+  mcopy.log("projector_direction(false)");
   digitalWrite(LED, HIGH);
   projector.frame(direction);
   mcopy.confirm(mcopy.PROJECTOR);
@@ -146,7 +151,7 @@ void state () {
   stateString += String(mcopy.STATE);
   mcopy.print(stateString);
 }
-
+/*
 long readVcc() {
   long result;
   // Read 1.1V reference against AVcc
@@ -175,3 +180,4 @@ long analogReadAccurateAverage (int pin) {
   }
   return sum / (double) count;
 }
+*/

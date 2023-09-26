@@ -28,20 +28,30 @@ class McopyProjector {
 	AccelStepper _takeup;
 	AccelStepper _feed;
 
-	uint16_t _motorSteps = 1600; //microstepped
-	uint8_t _frames = 8;
-	uint16_t _stepsPerFrame = 25; //round(_motorSteps / _frames);
-	uint8_t _mode = 1;
-	float _speed = 2000.0;
+	const uint16_t _motorSteps = 200; //full steps
+	const uint8_t _frames = 8;
+	const uint16_t _stepsPerFrame = 25; //round(_motorSteps / _frames);
+	const float _speed = 2000.0;
+
+	volatile uint8_t _mode = 1;
 
 	int64_t _posTakeup = 0;
 	int64_t _posFeed = 0;
+	//X
+	uint8_t _takeupSettingA;
+	uint8_t _takeupSettingB;
+	//Y
+	uint8_t _feedSettingA;
+	uint8_t _feedSettingB;
+	//X
+	uint8_t _takeupEmitter;
+	uint8_t _takeupReceiver;
+	//Y
+	uint8_t _feedEmitter;
+	uint8_t _feedReceiver;
 
-
-	uint8_t _takeupSettingA = 4;
-	uint8_t _takeupSettingB = 5;
-	uint8_t _feedSettingA = 8;
-	uint8_t _feedSettingB = 9;
+	long _feedSamples[200]; 
+	long _takeupSamples[200]; 
 
 	bool _dir = true;
 
@@ -49,12 +59,17 @@ class McopyProjector {
 	bool _adjusting = false;
 
 	long readVcc();
-	long analogReadAccurate (int pin);
-	long analogReadAccurateAverage (int pin);
+	long analogReadAccurate (uint8_t &pin);
+	long analogReadAccurateAverage (uint8_t &pin);
+	uint16_t findPeak(long (&arr)[200], uint16_t &steps);
 
 	public:
 
-	McopyProjector(AccelStepper takeup, AccelStepper feed,  uint8_t takeupSettingA, uint8_t takeupSettingB, uint8_t feedSettingA, uint8_t feedSettingB);
+	McopyProjector(AccelStepper takeup, AccelStepper feed,  
+		uint8_t takeupSettingA, uint8_t takeupSettingB, 
+		uint8_t feedSettingA, uint8_t feedSettingB,
+		uint8_t takeupEmitter, uint8_t takeupReceiver,
+		uint8_t feedEmitter, uint8_t feedReceiver);
 	void begin();
 	//0 = takeup, 1 = feed
 	void adjust(uint8_t motor, int64_t steps);
@@ -65,6 +80,8 @@ class McopyProjector {
 	void setStepperMode(uint8_t mode);
 	void loop();
 	void home();
+	void firstPass();
+	void centerPass();
 
 };
 

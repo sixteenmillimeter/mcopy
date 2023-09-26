@@ -2,7 +2,11 @@
 
 #include "McopyProjector.h"
 
-McopyProjector::McopyProjector (AccelStepper takeup, AccelStepper feed, uint8_t takeupSettingA, uint8_t takeupSettingB, uint8_t feedSettingA, uint8_t feedSettingB) {
+McopyProjector::McopyProjector (AccelStepper takeup, AccelStepper feed, 
+		uint8_t takeupSettingA, uint8_t takeupSettingB, 
+		uint8_t feedSettingA, uint8_t feedSettingB,
+		uint8_t takeupEmitter, uint8_t takeupReceiver,
+		uint8_t feedEmitter, uint8_t feedReceiver) {
 	_takeup = takeup;
 	_feed = feed;
 
@@ -10,23 +14,32 @@ McopyProjector::McopyProjector (AccelStepper takeup, AccelStepper feed, uint8_t 
 	_takeupSettingB = takeupSettingB;
 	_feedSettingA = feedSettingA;
 	_feedSettingB = feedSettingB;
+	_takeupEmitter = takeupEmitter;
+	_takeupReceiver = takeupReceiver;
+	_feedEmitter = feedEmitter;
+	_feedReceiver = feedReceiver;
 }
 
 void McopyProjector::begin () {
-    _takeup.setMaxSpeed(_speed);
-    _takeup.setSpeed(_speed);
-    _takeup.setAcceleration(1000.0);
-   
-    _feed.setMaxSpeed(_speed);
-    _feed.setSpeed(_speed);
-    _feed.setAcceleration(1000.0);
+  _takeup.setMaxSpeed(_speed);
+  _takeup.setSpeed(_speed);
+  _takeup.setAcceleration(1000.0);
+ 
+  _feed.setMaxSpeed(_speed);
+  _feed.setSpeed(_speed);
+  _feed.setAcceleration(1000.0);
 
-    pinMode(_takeupSettingA, OUTPUT);
+  pinMode(_takeupSettingA, OUTPUT);
 	pinMode(_takeupSettingB, OUTPUT);
 	pinMode(_feedSettingA, OUTPUT);
 	pinMode(_feedSettingB, OUTPUT);
+	pinMode(_takeupEmitter, OUTPUT);
+	pinMode(_feedEmitter, OUTPUT);
+	pinMode(_takeupReceiver, INPUT);
+	pinMode(_feedReceiver, INPUT);
 
-    setStepperMode(1);
+	//keep at 1 for now
+  setStepperMode(1);
 }
 
 void McopyProjector::setDirection (bool dir) {
@@ -53,13 +66,12 @@ void McopyProjector::frame (bool dir) {
 
 	while (running) {
 		if (_takeup.distanceToGo() == 0 && _feed.distanceToGo() == 0) {
-			//frame done
 			running = false;
 			_posTakeup = takeupGoal;
 			_posFeed += feedGoal;
 		} else {
 			_takeup.run();
-    		_feed.run();
+    	_feed.run();
 		}
 	}
 
@@ -95,9 +107,11 @@ void McopyProjector::loop () {
 			_running = false;
 			_posTakeup += _dir ? _stepsPerFrame : -_stepsPerFrame;
 			_posFeed += _dir ? _stepsPerFrame : -_stepsPerFrame;
+			Serial.println(_count);
 		} else {
 			_takeup.run();
     		_feed.run();
+    		_count++;
 		}
 	} else if (_adjusting) {
 		if (_takeup.distanceToGo() == 0 && _feed.distanceToGo() == 0) {
@@ -107,7 +121,8 @@ void McopyProjector::loop () {
 			_takeup.run();
     		_feed.run();
 		}
-	}*/
+	}
+	*/
 }
 
 //https://wiki.iteadstudio.com/Arduino_Dual_Step_Motor_Driver_Shield
@@ -141,6 +156,58 @@ void McopyProjector::setStepperMode (uint8_t mode) {
 	}
 }
 
+void McopyProjector::home () {
+	uint16_t steps = _motorSteps * _mode;
+	long reading;
+	//
+	for (uint16_t i = 0; i < steps; i++) {
+		reading = analogReadAccurateAverage(_takeupReceiver);
+		_takeupSamples[i] = reading;
+		if (i < steps - 1) {
+			_takeup.move(1);
+			_takeup.runToPosition();
+		}
+	}
+	//
+	for (uint16_t i = 0; i < steps; i++) {
+		Serial.print(i);
+		Serial.print(", ");
+		Serial.println(_takeupSamples[i]);
+	}
+	uint16_t peak = findPeak(_takeupSamples, steps);
+	Serial.print("peak: ");
+	Serial.println(peak);
+	uint16_t offset = abs(200 - peak);
+	Serial.print("offset: ");
+	Serial.println(offset);
+	if (offset != 0) {
+		for (uint16_t i = 0; i < offset; i++) {
+			_takeup.move(-1);
+			_takeup.runToPosition();
+		}
+		for (uint16_t i = 0; i < 25; i++) {
+			_takeup.move(-1);
+			_takeup.runToPosition();
+		}
+	}
+	for (uint16_t i = 0; i < 50; i++) {
+		reading = analogReadAccurateAverage(_takeupReceiver);
+		_takeupSamples[i] = reading;
+		if (i < steps - 1) {
+			_takeup.move(1);
+			_takeup.runToPosition();
+		}
+	}
+	uint16_t peak2 = findPeak(_takeupSamples, 50);
+	uint16_t offset2 = abs(50 - peak2);
+	if (offset2 != 0) {
+		for (uint16_t i = 0; i < offset2; i++) {
+			_takeup.move(-1);
+			_takeup.runToPosition();
+		}
+	}
+}
+
 long McopyProjector::readVcc() {
   long result;
   // Read 1.1V reference against AVcc
@@ -154,18 +221,30 @@ long McopyProjector::readVcc() {
   return result;
 }
 
-long McopyProjector::analogReadAccurate (int pin) {
+long McopyProjector::analogReadAccurate (uint8_t &pin) {
   double Vcc = readVcc() / 1000.0;
   double ADCValue = analogRead(pin);
   return (ADCValue / 1024.0) * Vcc;
 }
 
-long McopyProjector::analogReadAccurateAverage (int pin) {
-  int count = 3;
+long McopyProjector::analogReadAccurateAverage (uint8_t &pin) {
+  uint8_t count = 3;
   double sum = 0.0;
-  for (int i = 0; i < count; i++) {
+  for (uint8_t i = 0; i < count; i++) {
     sum += analogReadAccurate(pin);
     delay(1);
   }
   return sum / (double) count;
+}
+
+uint16_t McopyProjector::findPeak(long (&arr)[200], uint16_t &steps) {
+	uint16_t maxI = 0;
+	long max = 0;
+	for (uint16_t i = 0; i < steps; i++) {
+		if (arr[i] > max) {
+			maxI = i;
+			max = arr[i];
+		}
+	}
+	return maxI;
 }
