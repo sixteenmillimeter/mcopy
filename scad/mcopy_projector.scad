@@ -19,6 +19,7 @@ KeyVoidD2 = 14.2;
 KeyWidth = 2.25;
 
 StepperMountZ = 20;
+StepperMountInnerD = 30;
 
 GateBoltX = (-PanelX / 2) + 54;
 GateBoltY = 105 / 2;
@@ -31,6 +32,14 @@ LEDD = 5.0;
 LEDPin = 0.6;
 LEDPinSpacing = 2.54;
 LEDH = 8.6;
+
+ServoX = 55;
+ServoY = 7;
+ServoBoltD = 4.5;
+ServoZ = 20;
+ServoSpaceZ = 9.5;
+ServoSpaceX = 48;
+ServoVoidX = 40.5;
 
 module bearing_void (pos = [0, 0, 0], width= 8) {
 	fuzz = 0.3;
@@ -99,6 +108,7 @@ module LED_void (pos = [0, 0, 0], rot = [0, 0, 0], flip = false) {
 	translate(pos) rotate(rot) {
 		rotate([0, -90, 0]) {
 			cylinder(r = R(LightVoidD), h = 80, center = true, $fn = 40);
+            /*
 			if (flip) {
 				translate([0, 0, -EmitterZ]) cylinder(r = R(LEDVoidD), h = 80, center = true, $fn = 40);
 				translate([0, 0, ReceiverZ]) cylinder(r = R(LEDVoidD), h = 80, center = true, $fn = 40);
@@ -106,6 +116,7 @@ module LED_void (pos = [0, 0, 0], rot = [0, 0, 0], flip = false) {
 				translate([0, 0, EmitterZ]) cylinder(r = R(LEDVoidD), h = 80, center = true, $fn = 40);
 				translate([0, 0, -ReceiverZ]) cylinder(r = R(LEDVoidD), h = 80, center = true, $fn = 40);
 			}
+            */
 		}
 	}
 }
@@ -136,27 +147,31 @@ module LED (pos = [0, 0, 0], rot = [0, 0, 0]) {
     }
 }
 
-module LED_housing (pos = [0, 0, 0], rot = [0, 0, 0]) {
+module LED_housing (pos = [0, 0, 0], rot = [0, 0, 0], OffsetZ = 0, Void = true) {
     $fn = 90;
     D = LEDD + 0.2;
     H = LEDH;
     Opening = 3;
     translate(pos) rotate(rot) {
-        difference () {
-            union() {
-                cube([D + 3, D + 3, 10], center = true);
-                translate([0, 0, -4]) cube([D + 3, D + 3, 10], center = true);
-                translate([0, 5, -6]) cube([D + 3, 15, 6], center = true);
-            }
-            translate([0, 0, -(10 / 2) + (H / 2) - 1.301]) union () {
-                cylinder(r = (D / 2), h = H - (D / 2), center = true);
-                translate([0, 0, (H / 2) - (D / 4)]) sphere(r = D / 2);
-            }
-            cylinder(r = (Opening / 2), h = 10 + 1, center = true);
-            translate([0, 0, -7]) cylinder(r = (6.02 / 2), h = 4.01, center = true);
-            translate([0, 7.5, -8]) difference () {
-                cube([6.02, 15, 3], center = true);
-                cube([1.5, 15 + 1, 3 + 1], center = true);
+        translate([0, 0, OffsetZ]) {
+            difference () {
+                union() {
+                    cube([D + 3, D + 3, 10], center = true);
+                    translate([0, 0, -4]) cube([D + 3, D + 3, 10], center = true);
+                    translate([0, 5, -6]) cube([D + 3, 15, 6], center = true);
+                }
+                if (Void) {
+                    translate([0, 0, -(10 / 2) + (H / 2) - 1.301]) union () {
+                        cylinder(r = (D / 2), h = H - (D / 2), center = true);
+                        translate([0, 0, (H / 2) - (D / 4)]) sphere(r = D / 2);
+                    }
+                    cylinder(r = (Opening / 2), h = 10 + 1, center = true);
+                    translate([0, 0, -7]) cylinder(r = (6.02 / 2), h = 4.01, center = true);
+                    translate([0, 7.5, -8]) difference () {
+                        cube([6.02, 15, 3], center = true);
+                        cube([1.5, 15 + 1, 3 + 1], center = true);
+                    }
+                }
             }
         }
     }
@@ -185,18 +200,25 @@ module stepper_mount_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
 	BoltY = NEMA17BoltSpacing / 2;
     BoltCapZ = 11;
 	H = 30;
-	InnerD = 30;
+	InnerD = StepperMountInnerD;
 
 	translate(pos) rotate(rot) {
 		difference () {
 			union () {
 				stepper_mount_block_positive([0, 0, -5], H);
-				LED_prop([0, -19, -4.5 + 7.5], [0, 0, 45], flip = false);
+                //top
+				//LED_prop([0, -19, -4.5 + 7.5], [0, 0, 45], flip = false);
+                //bottom
 				//LED_prop([0, -19, -4.5 + 11.5], [0, 0, 45], H = 9, flip = false);
 			}
 
-			translate([0, 0, -5])cylinder(r = R(InnerD), h = H + 1, center = true, $fn = 120);
-			bolt_void([BoltX, BoltY, -5], H);
+			translate([0, 0, -5]) cylinder(r = R(InnerD), h = H + 1, center = true, $fn = 120);
+			
+            LED_housing([0, -17.25, -4.5], [90, -90, 134], Void = false);
+            LED_housing([0, -17.25, -4.5], [-90, 90, 134], OffsetZ = -24.25, Void = false);
+              
+            
+            bolt_void([BoltX, BoltY, -5], H);
 			bolt_void([-BoltX, BoltY, -5], H);
 			bolt_void([BoltX, -BoltY, -5], H);
 			bolt_void([-BoltX, -BoltY, -5], H);
@@ -205,10 +227,13 @@ module stepper_mount_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
 			bolt_and_cap_void([-BoltX, BoltY, BoltCapZ], cap = H, bolt = H);
 			bolt_and_cap_void([BoltX, -BoltY, BoltCapZ], cap = H, bolt = H);
 			bolt_and_cap_void([-BoltX, -BoltY, BoltCapZ], cap = H, bolt =H);
-			//
+			//top
 			LED_void([0, -17.25, -4.5], [0, 0, 45]);
+            //bottom
 			//LED_void([0, -17.25, 2.5], [0, 0, 45], true);
 		}
+        color("blue") LED_housing([0, -17.25, -4.5], [90, -90, 134], Void = true);
+        color("blue") LED_housing([0, -17.25, -4.5], [-90, 90, 134], OffsetZ = -24.25, Void = true);
 	}
 }
 
@@ -380,10 +405,53 @@ module orbital_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
             for (i = [0 : Notches - 1]) {
                 rotate([0, 0, i * (360 / Notches)]) translate([OuterD / 2, 0, 0]) rotate([0, 0, 45]) cube([Notch, Notch, BottomZ + TopZ + 1], center = true); 
             }
+            for (i = [0 : 3]) {
+                rotate([0, 0, i * (360 / 4)]) translate([OuterD / 2, 0, 0]) rotate([0, 0, 45]) cube([1, 1, BottomZ + TopZ + 1], center = true); 
+            }
             bolt_and_cap_void([BoltsX, BoltsY, -4], [180, 0, 0]);
             bolt_and_cap_void([BoltsX, -BoltsY, -4], [180, 0, 0]);
         }
     }
+}
+
+module servo_mount_bolt_void (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    translate (pos) rotate (rot) {
+        cylinder(r = ServoBoltD / 2, h = ServoY + 1, center = true, $fn = 60);
+    }
+}
+
+module servo_mount_old (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    translate (pos) rotate (rot) {
+        difference () {
+            translate([1.5, 0, 0]) rotate([90, 0, 0]) rounded_cube([ServoX + 3, ServoZ+20, ServoY ], d = 4, center = true, $fn = 40);
+            cube([ServoVoidX, ServoY + 1, ServoZ + 1], center = true);
+            translate([0, ServoY - 1, 0]) cube([ServoX + 1, ServoY, 1], center = true);
+            
+            servo_mount_bolt_void ([ServoSpaceX / 2, 0, ServoSpaceZ / 2], [90, 90, 0]);
+            servo_mount_bolt_void([-ServoSpaceX / 2, 0, ServoSpaceZ / 2], [90, 90, 0]);
+            servo_mount_bolt_void ([ServoSpaceX / 2, 0, -ServoSpaceZ / 2], [90, 90, 0]);
+            servo_mount_bolt_void ([-ServoSpaceX / 2, 0, -ServoSpaceZ / 2], [90, 90, 0]);
+        }
+    }
+    //debug
+    //translate([(55 / 2)-17.5, 0, 0]) sphere(r = 6 / 2, $fn = 60);
+}
+
+module servo_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    translate (pos) rotate (rot) {
+        //difference () {
+            //translate([1.5, 0, 0]) rotate([90, 0, 0]) rounded_cube([ServoX + 3, ServoZ+20, ServoY ], d = 4, center = true, $fn = 40);
+            cube([ServoVoidX, ServoY + 1, ServoZ + 1], center = true);
+            translate([0, ServoY - 1, 0]) cube([ServoX + 1, ServoY, 1], center = true);
+            
+            translate([ServoSpaceX / 2, 0, ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
+        translate([-ServoSpaceX / 2, 0, ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
+        translate([ServoSpaceX / 2, 0, -ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
+        translate([-ServoSpaceX / 2, 0, -ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
+        //}
+    }
+    //debug
+    //translate([(55 / 2)-17.5, 0, 0]) sphere(r = 6 / 2, $fn = 60);
 }
 
 module projector () {
@@ -410,10 +478,11 @@ module debug () {
 	}
     color("red") translate([(-PanelX / 2) + 10, 0, (-PanelZ / 2) -10]) rotate([90, 0, 0]) 2020_tslot(PanelY);
     orbital_mount([(-PanelX / 2) - 4.5, 0, 40], [0, 90, 0]);
+    color("green") servo_mount([40, 0, -30], [90, 0, 0]);
 
 }
 
-PART = "panel";
+PART = "panelx";
 
 if (PART == "gate_key") {
 	gate_key(KeyRot = 90);
