@@ -1,6 +1,7 @@
 include <./common/common.scad>;
 include <./common/motors.scad>;
 include <./common/2020_tslot.scad>;
+include <./rack_and_pinion.scad>;
 
 PanelX = 89;
 PanelY = 125;
@@ -25,7 +26,7 @@ GateBoltX = (-PanelX / 2) + 54;
 GateBoltY = 105 / 2;
 
 NubVoidD = 5.5;
-NubVoidX = 3.5;
+NubVoidX = 7.5;
 NubX = (-PanelX / 2) + 66;
 
 LEDD = 5.0;
@@ -185,6 +186,13 @@ module nub_void (pos = [0, 0, 0]) {
 	}
 }
 
+module nub_rails (pos = [0, 0, 0]) {
+    translate(pos) {
+        translate([0, 6, 0]) cube([30, 3, 5], center = true);
+        translate([0, -6, 0]) cube([30, 3, 5], center = true);
+    }
+}
+
 module stepper_mount_block_positive (pos = [0, 0, 0], H) {
     translate(pos) difference() {
         cube([NEMA17OuterWidth, NEMA17OuterWidth, H], center = true);
@@ -232,8 +240,8 @@ module stepper_mount_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
             //bottom
 			//LED_void([0, -17.25, 2.5], [0, 0, 45], true);
 		}
-        color("blue") LED_housing([0, -17.25, -4.5], [90, -90, 134], Void = true);
-        color("blue") LED_housing([0, -17.25, -4.5], [-90, 90, 134], OffsetZ = -24.25, Void = true);
+        //color("blue") LED_housing([0, -17.25, -4.5], [90, -90, 134], Void = true);
+        //color("blue") LED_housing([0, -17.25, -4.5], [-90, 90, 134], OffsetZ = -24.25, Void = true);
 	}
 }
 
@@ -374,12 +382,16 @@ module panel (pos = [0, 0, 0], rot = [0, 0, 0], Mounts = "2020") {
 			//
 			nub_void([NubX, 0, 0]);
 		}
+        
+        nub_rails([28.25, 0, -5]);
+        servo_mount([33, 8, -45], [0, 90, 0]);
+        
         difference () {
             stepper_mount([0, 0, -(StepperMountZ / 2) - (PanelZ / 2)]);
             translate([GateBoltX, GateBoltY, -20]) hex(9.2, 50);
             translate([GateBoltX, -GateBoltY, -20]) hex(9.2, 50);
         }
-        
+        color("red") cube([30, 8.8, 10], center = true);
 	}
 }
 
@@ -420,35 +432,33 @@ module servo_mount_bolt_void (pos = [0, 0, 0], rot = [0, 0, 0]) {
     }
 }
 
-module servo_mount_old (pos = [0, 0, 0], rot = [0, 0, 0]) {
-    translate (pos) rotate (rot) {
-        difference () {
-            translate([1.5, 0, 0]) rotate([90, 0, 0]) rounded_cube([ServoX + 3, ServoZ+20, ServoY ], d = 4, center = true, $fn = 40);
-            cube([ServoVoidX, ServoY + 1, ServoZ + 1], center = true);
-            translate([0, ServoY - 1, 0]) cube([ServoX + 1, ServoY, 1], center = true);
-            
-            servo_mount_bolt_void ([ServoSpaceX / 2, 0, ServoSpaceZ / 2], [90, 90, 0]);
-            servo_mount_bolt_void([-ServoSpaceX / 2, 0, ServoSpaceZ / 2], [90, 90, 0]);
-            servo_mount_bolt_void ([ServoSpaceX / 2, 0, -ServoSpaceZ / 2], [90, 90, 0]);
-            servo_mount_bolt_void ([-ServoSpaceX / 2, 0, -ServoSpaceZ / 2], [90, 90, 0]);
-        }
-    }
-    //debug
-    //translate([(55 / 2)-17.5, 0, 0]) sphere(r = 6 / 2, $fn = 60);
-}
-
+//MG995
 module servo_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
     translate (pos) rotate (rot) {
-        //difference () {
-            //translate([1.5, 0, 0]) rotate([90, 0, 0]) rounded_cube([ServoX + 3, ServoZ+20, ServoY ], d = 4, center = true, $fn = 40);
+        difference () {
+            union () {
+                translate([1.5, 0, 0]) rotate([90, 0, 0]) rounded_cube([ServoX + 3, ServoZ+10, ServoY ], d = 4, center = true, $fn = 40);
+                difference () {
+                    translate([-34, 0, 0]) cube([17, ServoY, ServoZ + 10 ], center = true, $fn = 40);
+                    translate([-19, 0, 0]) cube([17, ServoY + 1, 20 ], center = true, $fn = 40);
+                }
+            }
             cube([ServoVoidX, ServoY + 1, ServoZ + 1], center = true);
             translate([0, ServoY - 1, 0]) cube([ServoX + 1, ServoY, 1], center = true);
             
-            translate([ServoSpaceX / 2, 0, ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
+        translate([ServoSpaceX / 2, 0, ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
         translate([-ServoSpaceX / 2, 0, ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
         translate([ServoSpaceX / 2, 0, -ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
         translate([-ServoSpaceX / 2, 0, -ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
-        //}
+            
+            //void for motor
+            translate([0, 7.5, -15]) rotate([45, 0, 0]) cube([ServoX+20, 10, 10], center = true);
+            //cut off end
+            translate([0, 0, 15.4]) cube([ServoX+30, 10, 10], center = true);
+            //cut off top
+            translate([30, 0, 0]) cube([20, 10, 40], center = true);
+        }
+        
     }
     //debug
     //translate([(55 / 2)-17.5, 0, 0]) sphere(r = 6 / 2, $fn = 60);
@@ -462,23 +472,25 @@ module debug () {
 	//panel();
 	//NEMA17([0, KeyDistance / 2, -50]);
 	//NEMA17([0, -KeyDistance / 2, -50]);
-	gate_key([0, KeyDistance / 2, -14], [0, 0, -90 + 45], KeyRot=90);
-	gate_key([0, -KeyDistance / 2, -14], [0, 0, 180 + 45 ]);
+	//gate_key([0, KeyDistance / 2, -14], [0, 0, -90 + 45], KeyRot=90);
+	//gate_key([0, -KeyDistance / 2, -14], [0, 0, 180 + 45 ]);
 	
     difference () {
 		union () {
 	        intersection () {
 	            panel();
+                //one mount
 	            //translate([0, -50, 0]) cube([60, 100, 150], center = true);
+                //
+                translate([35, 5, 0]) cube([60, 25, 150], center = true);
 	        }
 	        
 	    }
 		//translate([50, 0, 0]) rotate([0, 0, 45]) cube([100, 250, 150], center = true);
       //translate([0, 0, -82.5 - 10]) cube([100, 250, 150], center = true);
 	}
-    color("red") translate([(-PanelX / 2) + 10, 0, (-PanelZ / 2) -10]) rotate([90, 0, 0]) 2020_tslot(PanelY);
-    orbital_mount([(-PanelX / 2) - 4.5, 0, 40], [0, 90, 0]);
-    color("green") servo_mount([40, 0, -30], [90, 0, 0]);
+    //color("red") translate([(-PanelX / 2) + 10, 0, (-PanelZ / 2) -10]) rotate([90, 0, 0]) 2020_tslot(PanelY);
+    //orbital_mount([(-PanelX / 2) - 4.5, 0, 40], [0, 90, 0]);
 
 }
 
