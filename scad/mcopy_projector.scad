@@ -494,7 +494,7 @@ module debug () {
 
 }
 
-PART = "panelx";
+PART = "panel";
 
 if (PART == "gate_key") {
 	gate_key(KeyRot = 90);
