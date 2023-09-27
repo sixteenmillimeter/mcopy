@@ -232,8 +232,8 @@ module stepper_mount_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
             //bottom
 			//LED_void([0, -17.25, 2.5], [0, 0, 45], true);
 		}
-        color("blue") LED_housing([0, -17.25, -4.5], [90, -90, 134], Void = true);
-        color("blue") LED_housing([0, -17.25, -4.5], [-90, 90, 134], OffsetZ = -24.25, Void = true);
+        //color("blue") LED_housing([0, -17.25, -4.5], [90, -90, 134], Void = true);
+        //color("blue") LED_housing([0, -17.25, -4.5], [-90, 90, 134], OffsetZ = -24.25, Void = true);
 	}
 }
 
@@ -482,7 +482,7 @@ module debug () {
 
 }
 
-PART = "panelx";
+PART = "panel";
 
 if (PART == "gate_key") {
 	gate_key(KeyRot = 90);
