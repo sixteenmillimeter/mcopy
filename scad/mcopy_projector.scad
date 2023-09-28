@@ -153,6 +153,7 @@ module LED_housing (pos = [0, 0, 0], rot = [0, 0, 0], OffsetZ = 0, Void = true) 
     D = LEDD + 0.2;
     H = LEDH;
     Opening = 3;
+    //LED_housing([0, -17.25, -4.5], [90, -90, 134], Void = true);
     translate(pos) rotate(rot) {
         translate([0, 0, OffsetZ]) {
             difference () {
@@ -173,6 +174,7 @@ module LED_housing (pos = [0, 0, 0], rot = [0, 0, 0], OffsetZ = 0, Void = true) 
                         cube([1.5, 15 + 1, 3 + 1], center = true);
                     }
                 }
+                translate([0, -12.5, 12.25]) rotate([0, 90, 0]) cylinder(r = R(StepperMountInnerD + 1), h = 50 + 1, center = true, $fn = 120);
             }
         }
     }
@@ -208,7 +210,6 @@ module stepper_mount_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
 	BoltY = NEMA17BoltSpacing / 2;
     BoltCapZ = 11;
 	H = 30;
-	InnerD = StepperMountInnerD;
 
 	translate(pos) rotate(rot) {
 		difference () {
@@ -220,7 +221,7 @@ module stepper_mount_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
 				//LED_prop([0, -19, -4.5 + 11.5], [0, 0, 45], H = 9, flip = false);
 			}
 
-			translate([0, 0, -5]) cylinder(r = R(InnerD), h = H + 1, center = true, $fn = 120);
+			translate([0, 0, -5]) cylinder(r = R(StepperMountInnerD), h = H + 1, center = true, $fn = 120);
 			
             LED_housing([0, -17.25, -4.5], [90, -90, 134], Void = false);
             LED_housing([0, -17.25, -4.5], [-90, 90, 134], OffsetZ = -24.25, Void = false);
@@ -240,8 +241,8 @@ module stepper_mount_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
             //bottom
 			//LED_void([0, -17.25, 2.5], [0, 0, 45], true);
 		}
-        //color("blue") LED_housing([0, -17.25, -4.5], [90, -90, 134], Void = true);
-        //color("blue") LED_housing([0, -17.25, -4.5], [-90, 90, 134], OffsetZ = -24.25, Void = true);
+        color("blue") LED_housing([0, -17.25, -4.5], [90, -90, 134], Void = true);
+        color("green") LED_housing([0, -17.25, -4.5], [-90, 90, 134], OffsetZ = -24.25, Void = true);
 	}
 }
 
@@ -446,10 +447,10 @@ module servo_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
             cube([ServoVoidX, ServoY + 1, ServoZ + 1], center = true);
             translate([0, ServoY - 1, 0]) cube([ServoX + 1, ServoY, 1], center = true);
             
-        translate([ServoSpaceX / 2, 0, ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
-        translate([-ServoSpaceX / 2, 0, ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
-        translate([ServoSpaceX / 2, 0, -ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
-        translate([-ServoSpaceX / 2, 0, -ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
+            translate([ServoSpaceX / 2, 0, ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
+            translate([-ServoSpaceX / 2, 0, ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
+            translate([ServoSpaceX / 2, 0, -ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
+            translate([-ServoSpaceX / 2, 0, -ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
             
             //void for motor
             translate([0, 7.5, -15]) rotate([45, 0, 0]) cube([ServoX+20, 10, 10], center = true);
@@ -482,7 +483,7 @@ module debug () {
                 //one mount
 	            //translate([0, -50, 0]) cube([60, 100, 150], center = true);
                 //
-                translate([35, 5, 0]) cube([60, 25, 150], center = true);
+                //translate([35, 5, 0]) cube([60, 25, 150], center = true);
 	        }
 	        
 	    }
@@ -494,12 +495,14 @@ module debug () {
 
 }
 
-PART = "panel";
+PART = "led_housing";
 
 if (PART == "gate_key") {
 	gate_key(KeyRot = 90);
 } else if (PART == "panel") {
 	rotate([180, 0, 0]) panel();
+} else if (PART == "led_housing"){
+    LED_housing();
 } else if (PART == "orbital_mount") {
     orbital_mount();
 } else {
