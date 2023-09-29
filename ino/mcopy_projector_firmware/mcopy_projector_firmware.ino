@@ -75,7 +75,7 @@ void setup () {
   delay(42);
   digitalWrite(LED_FWD, LOW);
   digitalWrite(LED_BWD, LOW);
-  projector.home();
+  //projector.home();
 }
 
 void loop () {

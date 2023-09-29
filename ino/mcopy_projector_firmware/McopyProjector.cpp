@@ -47,7 +47,7 @@ void McopyProjector::setDirection (bool dir) {
 }
 
 void McopyProjector::frame (bool dir) {
-	uint16_t spf = _stepsPerFrame * _mode; //scaled
+	int16_t spf = _stepsPerFrame * _mode; //scaled
 	bool running = true;
 	if (dir != _dir) {
 		setDirection(dir);
@@ -157,6 +157,7 @@ void McopyProjector::setStepperMode (uint8_t mode) {
 }
 
 void McopyProjector::home () {
+	/*
 	uint16_t steps = _motorSteps * _mode;
 	long reading;
 	//
@@ -205,7 +206,7 @@ void McopyProjector::home () {
 			_takeup.move(-1);
 			_takeup.runToPosition();
 		}
-	}
+	}*/
 }
 
 long McopyProjector::readVcc() {
