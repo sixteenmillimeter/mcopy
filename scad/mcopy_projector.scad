@@ -180,6 +180,10 @@ module LED_housing (pos = [0, 0, 0], rot = [0, 0, 0], OffsetZ = 0, Void = true) 
     }
 }
 
+module LED_enclosure (pos = [0, 0, 0], rot = [0, 0, 0]) {
+
+}
+
 module nub_void (pos = [0, 0, 0]) {
 	translate(pos) {
 		translate([NubVoidX / 2, 0, 0]) cylinder(r = R(NubVoidD), h = PanelZ + 1, center = true, $fn = 50);
@@ -241,8 +245,6 @@ module stepper_mount_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
             //bottom
 			//LED_void([0, -17.25, 2.5], [0, 0, 45], true);
 		}
-        color("blue") LED_housing([0, -17.25, -4.5], [90, -90, 134], Void = true);
-        color("green") LED_housing([0, -17.25, -4.5], [-90, 90, 134], OffsetZ = -24.25, Void = true);
 	}
 }
 
@@ -475,6 +477,14 @@ module debug () {
 	//NEMA17([0, -KeyDistance / 2, -50]);
 	//gate_key([0, KeyDistance / 2, -14], [0, 0, -90 + 45], KeyRot=90);
 	//gate_key([0, -KeyDistance / 2, -14], [0, 0, 180 + 45 ]);
+    translate([0, -KeyDistance / 2, -13]) {
+        color("blue") LED_housing([0, -17.25, -4.5], [90, -90, 134], Void = true);
+        color("green") LED_housing([0, -17.25, -4.5], [-90, 90, 134], OffsetZ = -24.25, Void = true);
+    }
+    /*translate([0, KeyDistance / 2, 0]) {
+        color("blue") LED_housing([0, -17.25, -4.5], [90, -90, 134], Void = true);
+        color("green") LED_housing([0, -17.25, -4.5], [-90, 90, 134], OffsetZ = -24.25, Void = true);
+    }*/
 	
     difference () {
 		union () {
@@ -495,7 +505,7 @@ module debug () {
 
 }
 
-PART = "led_housing";
+PART = "led_housingx";
 
 if (PART == "gate_key") {
 	gate_key(KeyRot = 90);
