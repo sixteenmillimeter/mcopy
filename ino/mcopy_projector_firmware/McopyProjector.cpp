@@ -157,56 +157,110 @@ void McopyProjector::setStepperMode (uint8_t mode) {
 }
 
 void McopyProjector::home () {
-	/*
 	uint16_t steps = _motorSteps * _mode;
-	long reading;
-	//
+	uint16_t quarter = steps / 4;
+	uint16_t eighth = quarter / 2;
+	uint16_t takeupPeak = 0;
+	uint16_t feedPeak = 0;
+	uint16_t takeupOffset = 0;
+	uint16_t feedOffset = 0;
+	long takeupReading = 0.0;
+	long feedReading = 0.0;
+
+	emitters(true);
+	delay(10);
+
 	for (uint16_t i = 0; i < steps; i++) {
-		reading = analogReadAccurateAverage(_takeupReceiver);
-		_takeupSamples[i] = reading;
+		takeupReading = analogReadAccurateAverage(_takeupReceiver);
+		feedReading = analogReadAccurateAverage(_feedReceiver);
+		_takeupSamples[i] = takeupReading;
+		_feedSamples[i] = feedReading;
 		if (i < steps - 1) {
 			_takeup.move(1);
+			_feed.move(1);
 			_takeup.runToPosition();
+			_feed.runToPosition();
 		}
 	}
-	//
+
 	for (uint16_t i = 0; i < steps; i++) {
 		Serial.print(i);
 		Serial.print(", ");
-		Serial.println(_takeupSamples[i]);
+		Serial.print(_takeupSamples[i]);
+		Serial.print(", ");
+		Serial.println(_feedSamples[i]);
 	}
-	uint16_t peak = findPeak(_takeupSamples, steps);
-	Serial.print("peak: ");
-	Serial.println(peak);
-	uint16_t offset = abs(200 - peak);
-	Serial.print("offset: ");
-	Serial.println(offset);
-	if (offset != 0) {
-		for (uint16_t i = 0; i < offset; i++) {
+
+	takeupPeak = findPeak(_takeupSamples, steps);
+	feedPeak = findPeak(_feedSamples, steps);
+	Serial.print("  takeup peak: ");
+	Serial.println(takeupPeak);
+	Serial.print("    feed peak: ");
+	Serial.println(feedPeak);
+
+	takeupOffset = abs(steps - takeupPeak);
+	feedOffset = abs(steps - takeupPeak);
+
+	Serial.print("takeup offset: ");
+	Serial.println(takeupOffset);
+	Serial.print("  feed offset: ");
+	Serial.println(feedOffset);
+
+	if (takeupOffset > 0) {
+		for (uint16_t i = 0; i < takeupOffset; i++) {
 			_takeup.move(-1);
 			_takeup.runToPosition();
 		}
-		for (uint16_t i = 0; i < 25; i++) {
-			_takeup.move(-1);
-			_takeup.runToPosition();
+	}
+	if (feedOffset > 0) {
+		for (uint16_t i = 0; i < feedOffset; i++) {
+			_feed.move(-1);
+			_feed.runToPosition();
 		}
 	}
-	for (uint16_t i = 0; i < 50; i++) {
-		reading = analogReadAccurateAverage(_takeupReceiver);
-		_takeupSamples[i] = reading;
+
+	for (uint16_t i = 0; i < eighth; i++) {
+		_takeup.move(-1);
+		_feed.move(-1);
+		_takeup.runToPosition();
+		_feed.runToPosition();
+	}
+
+	for (uint16_t i = 0; i < quarter; i++) {
+		takeupReading = analogReadAccurateAverage(_takeupReceiver);
+		feedReading = analogReadAccurateAverage(_feedReceiver);
+		_takeupSamples[i] = takeupReading;
+		_feedSamples[i] = feedReading;
 		if (i < steps - 1) {
 			_takeup.move(1);
+			_feed.move(1);
 			_takeup.runToPosition();
+			_feed.runToPosition();
 		}
 	}
-	uint16_t peak2 = findPeak(_takeupSamples, 50);
-	uint16_t offset2 = abs(50 - peak2);
-	if (offset2 != 0) {
-		for (uint16_t i = 0; i < offset2; i++) {
+
+	emitters(false);
+	
+	takeupPeak = findPeak(_takeupSamples, quarter);
+	feedPeak = findPeak(_feedSamples, quarter);
+	takeupOffset = abs(quarter - takeupPeak);
+	feedOffset = abs(quarter - feedPeak);
+	
+	if (takeupOffset > 0) {
+		for (uint16_t i = 0; i < takeupOffset; i++) {
 			_takeup.move(-1);
 			_takeup.runToPosition();
 		}
-	}*/
+	}
+	if (feedOffset > 0) {
+		for (uint16_t i = 0; i < feedOffset; i++) {
+			_feed.move(-1);
+			_feed.runToPosition();
+		}
+	}
+
+	_posTakeup = 0;
+	_posFeed = 0;
 }
 
 long McopyProjector::readVcc() {
@@ -248,4 +302,9 @@ uint16_t McopyProjector::findPeak(long (&arr)[200], uint16_t &steps) {
 		}
 	}
 	return maxI;
+}
+
+void McopyProjector::emitters (bool enabled) {
+	digitalWrite(_takeupEmitter, enabled ? HIGH : LOW);
+	digitalWrite(_feedEmitter, enabled ? HIGH : LOW);
 }
