@@ -162,6 +162,7 @@ module LED_housing (pos = [0, 0, 0], rot = [0, 0, 0], OffsetZ = 0, Void = true) 
                     translate([0, 0, -4]) cube([D + 3, D + 3, 10], center = true);
                     translate([0, 5, -6]) cube([D + 3, 15, 6], center = true);
                 }
+                translate([0, 14, -9]) rotate([45, 0, 0]) cube([20, 15, 10], center = true);
                 if (Void) {
                     translate([0, 0, -(10 / 2) + (H / 2) - 1.301]) union () {
                         cylinder(r = (D / 2), h = H - (D / 2), center = true);
@@ -181,7 +182,20 @@ module LED_housing (pos = [0, 0, 0], rot = [0, 0, 0], OffsetZ = 0, Void = true) 
 }
 
 module LED_enclosure (pos = [0, 0, 0], rot = [0, 0, 0]) {
-
+	translate(pos) rotate(rot) {
+		difference () {
+			translate([9, -9, 0]) cube([50, 50, 20], center = true);
+			translate([0, 0, 3]) difference () {
+				cube([63, 63, 20 + 1], center = true);
+				translate([-77, 0, 0]) rotate([0, 0, 45]) cube([63, 163, 20 + 1 + 1], center = true);
+				translate([0, 77, 0]) rotate([0, 0, 45]) cube([63, 163, 20 + 1 + 1], center = true);
+				translate([48, -48, 0]) rotate([0, 0, 45]) cube([63, 63, 20 + 1 + 1], center = true);
+			}
+			translate([50, -50, 0]) rotate([0, 0, 45]) cube([63, 63, 20 + 1 + 1], center = true);
+			translate([44, -44, 0]) rotate([0, 45, 45]) cube([6, 63, 6], center = true);
+			scale([1.01, 1.01, 1]) stepper_mount_block_positive(H = 20 + 1);
+		}
+	}
 }
 
 module nub_void (pos = [0, 0, 0]) {
@@ -350,7 +364,6 @@ module gate_key (pos = [0, 0, 0], rot = [0, 0, 0], KeyRot = 0) {
 	}
 }
 
-
 module panel (pos = [0, 0, 0], rot = [0, 0, 0], Mounts = "2020") {
     MountBoltsX = (-PanelX / 2) + 10;
 	translate(pos) rotate(rot) {
@@ -477,13 +490,14 @@ module debug () {
 	//NEMA17([0, -KeyDistance / 2, -50]);
 	//gate_key([0, KeyDistance / 2, -14], [0, 0, -90 + 45], KeyRot=90);
 	//gate_key([0, -KeyDistance / 2, -14], [0, 0, 180 + 45 ]);
-    translate([0, -KeyDistance / 2, -13]) {
-        color("blue") LED_housing([0, -17.25, -4.5], [90, -90, 134], Void = true);
-        color("green") LED_housing([0, -17.25, -4.5], [-90, 90, 134], OffsetZ = -24.25, Void = true);
+    translate([0, -KeyDistance / 2, 0]) {
+        color("blue") LED_housing([0, -17.25, -4.5 - 13], [90, -90, 134], Void = true);
+        color("green") LED_housing([0, -17.25, -4.5 - 13], [-90, 90, 134], OffsetZ = -24.25, Void = true);
+    	LED_enclosure([0, 0, -15]);
     }
     /*translate([0, KeyDistance / 2, 0]) {
-        color("blue") LED_housing([0, -17.25, -4.5], [90, -90, 134], Void = true);
-        color("green") LED_housing([0, -17.25, -4.5], [-90, 90, 134], OffsetZ = -24.25, Void = true);
+        color("blue") LED_housing([0, -17.25, -4.5 - 13], [90, -90, 134], Void = true);
+        color("green") LED_housing([0, -17.25, -4.5 - 13], [-90, 90, 134], OffsetZ = -24.25, Void = true);
     }*/
 	
     difference () {
@@ -498,14 +512,14 @@ module debug () {
 	        
 	    }
 		//translate([50, 0, 0]) rotate([0, 0, 45]) cube([100, 250, 150], center = true);
-      //translate([0, 0, -82.5 - 10]) cube([100, 250, 150], center = true);
+    	//translate([0, 0, -82.5 - 10]) cube([100, 250, 150], center = true);
 	}
     //color("red") translate([(-PanelX / 2) + 10, 0, (-PanelZ / 2) -10]) rotate([90, 0, 0]) 2020_tslot(PanelY);
     //orbital_mount([(-PanelX / 2) - 4.5, 0, 40], [0, 90, 0]);
 
 }
 
-PART = "led_housingx";
+PART = "led_enclosure";
 
 if (PART == "gate_key") {
 	gate_key(KeyRot = 90);
@@ -513,6 +527,8 @@ if (PART == "gate_key") {
 	rotate([180, 0, 0]) panel();
 } else if (PART == "led_housing"){
     LED_housing();
+} else if (PART == "led_enclosure"){
+    LED_enclosure();
 } else if (PART == "orbital_mount") {
     orbital_mount();
 } else {
