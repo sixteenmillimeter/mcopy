@@ -17,7 +17,7 @@ FrameBoltD = 9;
 KeyDistance = 57.4 - .2;
 KeyVoidD = BearingInnerDiameter + 0.3;
 KeyVoidD2 = 14.2;
-KeyWidth = 2.25;
+KeyWidth = 2.5; //2.25;
 
 StepperMountZ = 20;
 StepperMountInnerD = 30;
@@ -36,7 +36,7 @@ LEDH = 8.6;
 
 ServoX = 55;
 ServoY = 7;
-ServoBoltD = 4.5;
+ServoBoltD = 3.5;
 ServoZ = 20;
 ServoSpaceZ = 9.5;
 ServoSpaceX = 48;
@@ -76,10 +76,10 @@ module cap_void (pos = [0, 0, 0], cap = 20) {
 	}
 }
 
-module bolt_and_cap_void (pos = [0, 0, 0], rot = [0, 0, 0], cap = 10, bolt = 10) {
+module bolt_and_cap_void (pos = [0, 0, 0], rot = [0, 0, 0], cap = 10, bolt = 10, pad = 0) {
 	translate(pos) rotate(rot) {
-		cylinder(r = R(6.25), h = cap, center = true, $fn = 30);
-		translate([0, 0, -(cap / 2) - (bolt / 2) + 0.1]) cylinder(r = R(3.5), h = bolt, center = true, $fn = 30);
+		cylinder(r = R(6.25) + pad, h = cap, center = true, $fn = 30);
+		translate([0, 0, -(cap / 2) - (bolt / 2) + 0.1]) cylinder(r = R(3.5) + pad, h = bolt, center = true, $fn = 30);
 	}
 }
 
@@ -365,6 +365,8 @@ module gate_key (pos = [0, 0, 0], rot = [0, 0, 0], KeyRot = 0) {
 }
 
 module panel (pos = [0, 0, 0], rot = [0, 0, 0], Mounts = "2020") {
+	RegistrationBoltsX = -52;
+    RegistrationBoltsY = 15;
     MountBoltsX = (-PanelX / 2) + 10;
 	translate(pos) rotate(rot) {
 		difference () {
@@ -381,7 +383,13 @@ module panel (pos = [0, 0, 0], rot = [0, 0, 0], Mounts = "2020") {
                 bolt_and_cap_void([MountBoltsX, 0, 4.5]);
                 bolt_and_cap_void([MountBoltsX, (PanelY / 2) - 10, 4.5]);
                 bolt_and_cap_void([MountBoltsX, (-PanelY / 2) + 10, 4.5]);
+            
+                bolt_and_cap_void([RegistrationBoltsX, RegistrationBoltsY, -1.15], [0, -90, 0], pad = -0.3);
+        		bolt_and_cap_void([RegistrationBoltsX, -RegistrationBoltsY, -1.15], [0, -90, 0], pad = -0.3);
             }
+            //registration line
+            translate([-50, 0, 3]) rotate([45, 0, 0]) cube([20, 1, 1], center = true);
+
 			//key + bearing voids
 			bearing_void([0, KeyDistance / 2, (PanelZ / 2) - (8 / 2) - 2], 8.01);
 			bearing_void([0, -KeyDistance / 2, (PanelZ / 2) - (8 / 2) - 2], 8.01);
@@ -407,7 +415,7 @@ module panel (pos = [0, 0, 0], rot = [0, 0, 0], Mounts = "2020") {
             translate([GateBoltX, GateBoltY, -20]) hex(9.2, 50);
             translate([GateBoltX, -GateBoltY, -20]) hex(9.2, 50);
         }
-        color("red") cube([30, 8.8, 10], center = true);
+        //color("red") cube([30, 8.8, 10], center = true);
 	}
 }
 
@@ -419,13 +427,20 @@ module orbital_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
     TopZ = 4;
     Notch = 0.5;
     Notches = 60;
-    BoltsX = 53;
-    BoltsY = 25;
+
+    ExtrusionBoltsX = 53;
+    ExtrusionBoltsY = 25;
+
+    RegistrationBoltsX = 41;
+    RegistrationBoltsY = 15;
     $fn = 300;
     translate(pos) rotate(rot) {
 		difference () {
             cylinder(r = R(OuterD), h = BottomZ + TopZ, center = true);
-            cylinder(r = R(VoidD), h = BottomZ + TopZ + 1, center = true);
+            difference () {
+            	cylinder(r = R(VoidD), h = BottomZ + TopZ + 1, center = true);
+        		translate([105, 0, 0]) cube([OuterD, OuterD, BottomZ + TopZ + 1 + 1], center = true);
+        	}
             translate([0, 0, BottomZ - (TopZ / 2) - 0.49]) difference () {
                 cylinder(r = R(OuterD) + 1, h = TopZ, center = true);
                 cylinder(r = R(InnerD), h = TopZ + 1, center = true);
@@ -436,9 +451,14 @@ module orbital_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
             for (i = [0 : 3]) {
                 rotate([0, 0, i * (360 / 4)]) translate([OuterD / 2, 0, 0]) rotate([0, 0, 45]) cube([1, 1, BottomZ + TopZ + 1], center = true); 
             }
-            bolt_and_cap_void([BoltsX, BoltsY, -4], [180, 0, 0]);
-            bolt_and_cap_void([BoltsX, -BoltsY, -4], [180, 0, 0]);
+            bolt_and_cap_void([ExtrusionBoltsX, ExtrusionBoltsY, -4], [180, 0, 0]);
+            bolt_and_cap_void([ExtrusionBoltsX, -ExtrusionBoltsY, -4], [180, 0, 0]);
+            bolt_and_cap_void([RegistrationBoltsX, RegistrationBoltsY, -4], [180, 0, 0]);
+        	bolt_and_cap_void([RegistrationBoltsX, -RegistrationBoltsY, -4], [180, 0, 0]);
+        	//registration line
+        	translate([37, 0, 0]) rotate([0, 0, 45]) cube([1, 1, 20], center = true);
         }
+
     }
 }
 
@@ -446,6 +466,24 @@ module servo_mount_bolt_void (pos = [0, 0, 0], rot = [0, 0, 0]) {
     translate (pos) rotate (rot) {
         cylinder(r = ServoBoltD / 2, h = ServoY + 1, center = true, $fn = 60);
     }
+}
+
+module servo_mount_bolts_void () {
+	X = ServoSpaceX / 2;
+	Z = ServoSpaceZ / 2;
+	translate([ X, 0,  Z]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
+    translate([-X, 0,  Z]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
+    translate([ X, 0, -Z]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
+    translate([-X, 0, -Z]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
+
+    translate([-X, -7, -Z]) rotate([90, 90, 0]) cylinder(r = R(6), h = 10, center = true, $fn = 60);
+    translate([-X, -7,  Z]) rotate([90, 90, 0]) cylinder(r = R(6), h = 10, center = true, $fn = 60);
+}
+
+module servo_mount_void () {
+    cube([ServoVoidX, ServoY, ServoZ + 1], center = true);
+    translate([0, ServoY - 1, 0]) cube([ServoX + 1, ServoY, 1], center = true);
+    servo_mount_bolts_void();
 }
 
 //MG995
@@ -459,25 +497,46 @@ module servo_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
                     translate([-19, 0, 0]) cube([17, ServoY + 1, 20 ], center = true, $fn = 40);
                 }
             }
-            cube([ServoVoidX, ServoY + 1, ServoZ + 1], center = true);
-            translate([0, ServoY - 1, 0]) cube([ServoX + 1, ServoY, 1], center = true);
+            servo_mount_void();
             
-            translate([ServoSpaceX / 2, 0, ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
-            translate([-ServoSpaceX / 2, 0, ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
-            translate([ServoSpaceX / 2, 0, -ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
-            translate([-ServoSpaceX / 2, 0, -ServoSpaceZ / 2]) rotate([90, 90, 0]) cylinder(r = R(ServoBoltD), h = ServoY + 1, center = true, $fn = 60);
-            
-            //void for motor
+            //angled void for motor
             translate([0, 7.5, -15]) rotate([45, 0, 0]) cube([ServoX+20, 10, 10], center = true);
             //cut off end
             translate([0, 0, 15.4]) cube([ServoX+30, 10, 10], center = true);
             //cut off top
             translate([30, 0, 0]) cube([20, 10, 40], center = true);
+            bolt_and_cap_void([-35, 0, 20], [0, 0, 0], bolt = 15);
+            translate([-35, 0, 6]) m3_nut(2.5);
+        	translate([-35, 5, 6]) cube([6.75, 10, 2.5], center = true);
         }
-        
     }
     //debug
     //translate([(55 / 2)-17.5, 0, 0]) sphere(r = 6 / 2, $fn = 60);
+}
+
+module servo_mount_cover (pos = [0, 0, 0], rot = [0, 0, 0]) {
+	translate (pos) rotate (rot) {
+        difference () {
+            union () {
+                translate([1.5, 0, -1.5]) rotate([90, 0, 0]) rounded_cube([ServoX + 3, ServoZ + 10 + 3, ServoY ], d = 4, center = true, $fn = 40);
+                difference () {
+                    translate([-34, 0, 0]) cube([17, ServoY, ServoZ + 10 ], center = true, $fn = 40);
+                    translate([-19, 0, 0]) cube([17, ServoY + 1, 20 ], center = true, $fn = 40);
+                }
+                difference () {
+                	translate([1.5, -3, -1.5]) rotate([90, 0, 0]) rounded_cube([ServoX + 3, ServoZ + 10 + 3, ServoY ], d = 4, center = true, $fn = 40);
+                	translate([-13.25, -3, 0]) cube([ServoX + 3 + 1, ServoY + 1, ServoZ + 10 + 7], center = true);
+                	translate([0, -3, 5]) cube([ServoX + 3 + 5, ServoY + 1, ServoZ + 10], center = true);
+                }
+            }
+            servo_mount_void();
+            servo_mount();
+            translate([-22.25 - 4, 0, -15.4]) cube([ServoX+30, 10, 10], center = true);
+        	bolt_and_cap_void([-35, 0, 20], [0, 0, 0]);
+        	translate([-35, 0, 0]) cube([20, 20, 20], center = true);
+        }
+
+	}
 }
 
 module projector () {
@@ -490,11 +549,11 @@ module debug () {
 	//NEMA17([0, -KeyDistance / 2, -50]);
 	//gate_key([0, KeyDistance / 2, -14], [0, 0, -90 + 45], KeyRot=90);
 	//gate_key([0, -KeyDistance / 2, -14], [0, 0, 180 + 45 ]);
-    translate([0, -KeyDistance / 2, 0]) {
+    /*translate([0, -KeyDistance / 2, 0]) {
         color("blue") LED_housing([0, -17.25, -4.5 - 13], [90, -90, 134], Void = true);
         color("green") LED_housing([0, -17.25, -4.5 - 13], [-90, 90, 134], OffsetZ = -24.25, Void = true);
     	LED_enclosure([0, 0, -15]);
-    }
+    }*/
     /*translate([0, KeyDistance / 2, 0]) {
         color("blue") LED_housing([0, -17.25, -4.5 - 13], [90, -90, 134], Void = true);
         color("green") LED_housing([0, -17.25, -4.5 - 13], [-90, 90, 134], OffsetZ = -24.25, Void = true);
@@ -507,7 +566,7 @@ module debug () {
                 //one mount
 	            //translate([0, -50, 0]) cube([60, 100, 150], center = true);
                 //
-                //translate([35, 5, 0]) cube([60, 25, 150], center = true);
+                translate([35, 5, 0]) cube([60, 25, 150], center = true);
 	        }
 	        
 	    }
@@ -516,15 +575,17 @@ module debug () {
 	}
     //color("red") translate([(-PanelX / 2) + 10, 0, (-PanelZ / 2) -10]) rotate([90, 0, 0]) 2020_tslot(PanelY);
     //orbital_mount([(-PanelX / 2) - 4.5, 0, 40], [0, 90, 0]);
-
+    color("red") servo_mount_cover([33, 8+10, -45], [0, 90, 0]);
 }
 
-PART = "led_enclosure";
+PART = "panel";
 
 if (PART == "gate_key") {
-	gate_key(KeyRot = 90);
+	gate_key(KeyRot = 0);
 } else if (PART == "panel") {
 	rotate([180, 0, 0]) panel();
+} else if (PART == "servo_mount_cover"){
+	servo_mount_cover([0, 0, 0], [0, 90, 0]);
 } else if (PART == "led_housing"){
     LED_housing();
 } else if (PART == "led_enclosure"){
