@@ -303,10 +303,14 @@ module circular_void (pos = [0, 0, 0], rot = [0, 0, 0], D = 25, H = 5.01) {
 	}
 }
 
-module gate_bolt_and_nut_void (pos = [0, 0, 0]) {
+module gate_bolt_and_nut_void (pos = [0, 0, 0], Bolt = "m5") {
 	translate(pos) {
 		cylinder(r = R(5.2), h = PanelZ + 1, center = true, $fn = 40);
-        translate([0, 0, -1.5]) hex(9.2, 4.5);
+        if (Bolt == "m5") {
+        	translate([0, 0, -1.5]) hex(9.2, 4.5);
+    	} else if (Bolt == "#10-24") {
+    		translate([0, 0, -1.5]) hex(10.6, 3.5);
+    	}
 	}
 }
 
@@ -364,7 +368,12 @@ module gate_key (pos = [0, 0, 0], rot = [0, 0, 0], KeyRot = 0) {
 	}
 }
 
-module panel (pos = [0, 0, 0], rot = [0, 0, 0], Mounts = "2020") {
+echo("panel");
+echo("BOM: ", "(8) M3x20mm");
+echo("BOM: ", "(5) M3x15mm");
+echo("BOM: ", "(1) M3 nut");
+echo("BOM: ", "(2) #10-24 nut");
+module panel (pos = [0, 0, 0], rot = [0, 0, 0], Mounts = "2020", Bolts = "#10-24") {
 	RegistrationBoltsX = -52;
     RegistrationBoltsY = 15;
     MountBoltsX = (-PanelX / 2) + 10;
@@ -400,8 +409,8 @@ module panel (pos = [0, 0, 0], rot = [0, 0, 0], Mounts = "2020") {
 			panel_cap_voids([0, 0, -1]);
 
 			//
-			gate_bolt_and_nut_void([GateBoltX, GateBoltY, 0]);
-			gate_bolt_and_nut_void([GateBoltX, -GateBoltY, 0]);
+			gate_bolt_and_nut_void([GateBoltX, GateBoltY, 0], Bolt = "#10-24");
+			gate_bolt_and_nut_void([GateBoltX, -GateBoltY, 0], Bolt = "#10-24");
 
 			//
 			nub_void([NubX, 0, 0]);
@@ -412,13 +421,16 @@ module panel (pos = [0, 0, 0], rot = [0, 0, 0], Mounts = "2020") {
         
         difference () {
             stepper_mount([0, 0, -(StepperMountZ / 2) - (PanelZ / 2)]);
-            translate([GateBoltX, GateBoltY, -20]) hex(9.2, 50);
-            translate([GateBoltX, -GateBoltY, -20]) hex(9.2, 50);
+            translate([GateBoltX, GateBoltY, -20]) hex(10.6, 50);
+            translate([GateBoltX, -GateBoltY, -20]) hex(10.6, 50);
         }
         //color("red") cube([30, 8.8, 10], center = true);
 	}
 }
 
+echo("orbital_mount");
+echo("BOM: ", "(2) M3x12mm");
+echo("BOM: ", "(2) M3x7mm");
 module orbital_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
     OuterD = 136;
     InnerD = 126;
@@ -547,14 +559,21 @@ module servo_mount_cover (pos = [0, 0, 0], rot = [0, 0, 0]) {
 }
 
 module servo_gear (pos = [0, 0, 0], rot = [0, 0, 0]) {
+	InsertD = 20.4;
+	InsertZ = 3;
+	BoltSpacing = 14;
 	translate(pos) rotate(rot) {
 		difference () {
 			union () {
 				translate([0, -32, -4.4]) rad_und_zahnstange(modul, laenge_stange, zahnzahl_ritzel, hoehe_stange, bohrung_ritzel, breite, eingriffswinkel, schraegungswinkel, zusammen_gebaut, optimiert);
 				cylinder(r = R(28), h = 8.8, center = true, $fn = 50);
 			}
-			cylinder(r = R(5.8), h = 40, center = true);
-			bolt_and_cap_void([0, 10, 8.8 - 3.5]);
+			cylinder(r = R(7.5), h = 40, center = true);
+			bolt_and_cap_void([0, BoltSpacing / 2, 10], pad = -0.3);
+			bolt_and_cap_void([0, -BoltSpacing / 2, 10], pad = -0.3);
+			bolt_and_cap_void([BoltSpacing / 2, 0, 10], pad = -0.3);
+			bolt_and_cap_void([-BoltSpacing / 2, 0, 10], pad = -0.3);
+			translate([0, 0, (8.8 / 2) - (3 / 2) + 0.01]) cylinder(r = R(InsertD), h = InsertZ, center = true);
 		}
 		//cylinder(r = R(1), h = 20, center = true);
 	}
@@ -600,10 +619,11 @@ module debug () {
 	            panel();
                 //one mount
 	            //translate([0, -50, 0]) cube([60, 100, 150], center = true);
-                //
-                translate([35, 5, 0]) cube([60, 25, 150], center = true);
+                //servo mount
+                //translate([35, 5, 0]) cube([60, 25, 150], center = true);
+	        	//bolt sizing
+	        	translate([GateBoltX, GateBoltY, 0]) cube([20, 20, 20], center = true);
 	        }
-	        
 	    }
 		//translate([50, 0, 0]) rotate([0, 0, 45]) cube([100, 250, 150], center = true);
     	//translate([0, 0, -82.5 - 10]) cube([100, 250, 150], center = true);
@@ -611,11 +631,11 @@ module debug () {
     //color("red") translate([(-PanelX / 2) + 10, 0, (-PanelZ / 2) -10]) rotate([90, 0, 0]) 2020_tslot(PanelY);
     //orbital_mount([(-PanelX / 2) - 4.5, 0, 40], [0, 90, 0]);
     //servo_mount_cover([33, 8+10, -45], [0, 90, 0]);
-    color([0.5,0.5,0,0.8]) servo_gear([33, 0, -32.5 + 7.75 - 10], [90, 0, 0]);
-    nub_rack([-6, 0, -15], [-90, 0, 0]);
+    //color([0.5,0.5,0,0.8]) servo_gear([33, 0, -32.5 + 7.75 - 10], [90, 0, 0]);
+    //nub_rack([-6, 0, -15], [-90, 0, 0]);
 }
 
-PART = "nub_rackx";
+PART = "panel";
 
 if (PART == "gate_key") {
 	gate_key(KeyRot = 0);
