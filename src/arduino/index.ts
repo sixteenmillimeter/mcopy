@@ -388,7 +388,7 @@ class Arduino {
      * @param {string} data - The data received from the Arduino.
      **/
 	private confirmEnd (data : string) {
-		if (this.values.indexOf(data) !== -1) {
+		if (this.values.indexOf(data) !== -1 && typeof this.confirmExec === 'function') {
 			this.confirmExec(null, data)
 			this.confirmExec = {}
 			this.unlock(this.alias['connect'])
