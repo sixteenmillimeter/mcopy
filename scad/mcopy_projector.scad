@@ -431,6 +431,8 @@ module panel (pos = [0, 0, 0], rot = [0, 0, 0], Mounts = "2020", Bolts = "#10-24
 echo("orbital_mount");
 echo("BOM: ", "(2) M3x12mm");
 echo("BOM: ", "(2) M3x7mm");
+echo("BOM: ", "(2) T-Slot Nut");
+echo("BOM: ", "(1) 2020 Extrusion x ", PanelY, "mm");
 module orbital_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
     OuterD = 136;
     InnerD = 126;
@@ -560,7 +562,7 @@ module servo_mount_cover (pos = [0, 0, 0], rot = [0, 0, 0]) {
 
 module servo_gear (pos = [0, 0, 0], rot = [0, 0, 0]) {
 	InsertD = 20.4;
-	InsertZ = 3;
+	InsertZ = 5;
 	BoltSpacing = 14;
 	translate(pos) rotate(rot) {
 		difference () {
@@ -568,12 +570,13 @@ module servo_gear (pos = [0, 0, 0], rot = [0, 0, 0]) {
 				translate([0, -32, -4.4]) rad_und_zahnstange(modul, laenge_stange, zahnzahl_ritzel, hoehe_stange, bohrung_ritzel, breite, eingriffswinkel, schraegungswinkel, zusammen_gebaut, optimiert);
 				cylinder(r = R(28), h = 8.8, center = true, $fn = 50);
 			}
-			cylinder(r = R(7.5), h = 40, center = true);
+			translate([0, 0, (8.8 / 2) - InsertZ - (2.5/2) + 0.02]) cylinder(r = R(9.2), h = 2.5, center = true);
+			cylinder(r = R(5.9), h = 40, center = true);
 			bolt_and_cap_void([0, BoltSpacing / 2, 10], pad = -0.3);
 			bolt_and_cap_void([0, -BoltSpacing / 2, 10], pad = -0.3);
 			bolt_and_cap_void([BoltSpacing / 2, 0, 10], pad = -0.3);
 			bolt_and_cap_void([-BoltSpacing / 2, 0, 10], pad = -0.3);
-			translate([0, 0, (8.8 / 2) - (3 / 2) + 0.01]) cylinder(r = R(InsertD), h = InsertZ, center = true);
+			translate([0, 0, (8.8 / 2) - (InsertZ / 2) + 0.01]) cylinder(r = R(InsertD), h = InsertZ, center = true);
 		}
 		//cylinder(r = R(1), h = 20, center = true);
 	}
@@ -635,7 +638,7 @@ module debug () {
     //nub_rack([-6, 0, -15], [-90, 0, 0]);
 }
 
-PART = "panel";
+PART = "servo_gear";
 
 if (PART == "gate_key") {
 	gate_key(KeyRot = 0);
