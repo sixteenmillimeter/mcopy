@@ -583,7 +583,7 @@ module servo_gear (pos = [0, 0, 0], rot = [0, 0, 0]) {
 }
 
 module nub_rack (pos = [0, 0, 0], rot = [0, 0, 0]) {
-	H = 9.25 + 2.75;
+	H = 9.25 + 2.4;
 	Len = 50;
 	translate(pos) rotate(rot) {
 		difference () {
@@ -638,7 +638,7 @@ module debug () {
     //nub_rack([-6, 0, -15], [-90, 0, 0]);
 }
 
-PART = "servo_gear";
+PART = "nub_rack";
 
 if (PART == "gate_key") {
 	gate_key(KeyRot = 0);
