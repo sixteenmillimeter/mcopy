@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <AccelStepper.h>
+#include <Servo.h>
 
 /**
  * D2 X Step
@@ -28,10 +29,15 @@ class McopyProjector {
 	AccelStepper _takeup;
 	AccelStepper _feed;
 
+	Servo _servo;
+
 	const uint16_t _motorSteps = 200; //full steps
 	const uint8_t _frames = 8;
 	const uint16_t _stepsPerFrame = 25; //round(_motorSteps / _frames);
 	const float _speed = 2000.0;
+
+	const uint8_t _servoHome = 90;
+	const uint8_t _servoAway = 60;
 
 	volatile uint8_t _mode = 1;
 
@@ -49,6 +55,8 @@ class McopyProjector {
 	//Y
 	uint8_t _feedEmitter;
 	uint8_t _feedReceiver;
+
+	uint8_t _servoPin;
 
 	long _feedSamples[200]; 
 	long _takeupSamples[200]; 
@@ -70,7 +78,8 @@ class McopyProjector {
 		uint8_t takeupSettingA, uint8_t takeupSettingB, 
 		uint8_t feedSettingA, uint8_t feedSettingB,
 		uint8_t takeupEmitter, uint8_t takeupReceiver,
-		uint8_t feedEmitter, uint8_t feedReceiver);
+		uint8_t feedEmitter, uint8_t feedReceiver,
+		uint8_t servoPin);
 	void begin();
 	//0 = takeup, 1 = feed
 	void adjust(uint8_t motor, int64_t steps);

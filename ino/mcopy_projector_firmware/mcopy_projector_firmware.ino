@@ -42,6 +42,8 @@
 #define FEED_EMITTER 18
 #define FEED_RECEIVER A9
 
+#define SERVO_PIN 14
+
 AccelStepper takeup(AccelStepper::DRIVER, TAKEUP_STEP_PIN, TAKEUP_DIR_PIN);
 AccelStepper feed(AccelStepper::DRIVER, FEED_STEP_PIN, FEED_DIR_PIN);
 
@@ -64,7 +66,8 @@ McopyProjector projector(takeup, feed,
   TAKEUP_SETTINGS_A, TAKEUP_SETTINGS_B, 
   FEED_SETTINGS_A, FEED_SETTINGS_B,
   TAKEUP_EMITTER, TAKEUP_RECEIVER,
-  FEED_EMITTER, FEED_RECEIVER);
+  FEED_EMITTER, FEED_RECEIVER,
+  SERVO_PIN);
 
 void setup () {
   pins();
@@ -75,6 +78,7 @@ void setup () {
   delay(42);
   digitalWrite(LED_FWD, LOW);
   digitalWrite(LED_BWD, LOW);
+  
   //projector.home();
 }
 
@@ -83,9 +87,9 @@ void loop () {
   cmdChar = mcopy.loop();
   cmd(cmdChar);
   if (digitalRead(BUTTON) == LOW) {
-    projector_frame();
+    //projector_frame();
   }
-  projector.loop();
+  //projector.loop();
 }
 
 void pins () {

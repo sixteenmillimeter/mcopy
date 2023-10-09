@@ -6,7 +6,8 @@ McopyProjector::McopyProjector (AccelStepper takeup, AccelStepper feed,
 		uint8_t takeupSettingA, uint8_t takeupSettingB, 
 		uint8_t feedSettingA, uint8_t feedSettingB,
 		uint8_t takeupEmitter, uint8_t takeupReceiver,
-		uint8_t feedEmitter, uint8_t feedReceiver) {
+		uint8_t feedEmitter, uint8_t feedReceiver,
+		uint8_t servoPin) {
 	_takeup = takeup;
 	_feed = feed;
 
@@ -18,6 +19,7 @@ McopyProjector::McopyProjector (AccelStepper takeup, AccelStepper feed,
 	_takeupReceiver = takeupReceiver;
 	_feedEmitter = feedEmitter;
 	_feedReceiver = feedReceiver;
+	_servoPin = servoPin;
 }
 
 void McopyProjector::begin () {
@@ -40,6 +42,9 @@ void McopyProjector::begin () {
 
 	//keep at 1 for now
   setStepperMode(1);
+
+  _servo.attach(_servoPin);
+  _servo.write(_servoHome);
 }
 
 void McopyProjector::setDirection (bool dir) {
@@ -64,6 +69,9 @@ void McopyProjector::frame (bool dir) {
 
 	_running = true;
 
+	_servo.write(_servoAway);
+	delay(20);
+	
 	while (running) {
 		if (_takeup.distanceToGo() == 0 && _feed.distanceToGo() == 0) {
 			running = false;
@@ -74,6 +82,9 @@ void McopyProjector::frame (bool dir) {
     	_feed.run();
 		}
 	}
+	
+	delay(20);
+	_servo.write(_servoHome);
 
 	_running = false;
 
