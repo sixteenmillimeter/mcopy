@@ -12,6 +12,7 @@ include <./common/motors.scad>
 include <./common/rods.scad>
 
 RailSpacing = 100; //160
+RailVoid = 20.4;
 ThreadedRodSpacing = 50;
 RailEndX = RailSpacing + 72;
 TNutVoid = 17;
@@ -34,8 +35,8 @@ module m3_bolt_void (pos = [0, 0, 0], BoltH = 20, CapH = 3) {
 
 module bolt_voids_2020 (pos = [0, 0, 0], rot = [0, 0, 0]) {
     translate(pos) rotate (rot) {
-        //translate([0, -25, 0]) rotate([90, 0, 0]) m3_bolt_void(CapH = 6);
-       translate([0, 25, 0]) rotate([-90, 0, 0]) m3_bolt_void(CapH = 20);
+        translate([0, -25, 0]) rotate([90, 0, 0]) m3_bolt_void(CapH = 6);
+        translate([0, 25, 0]) rotate([-90, 0, 0]) m3_bolt_void(CapH = 20);
         translate([-25, 0, 0]) rotate([0, -90, 0]) m3_bolt_void(CapH = 6, BoltH = 20);
     }
 }
@@ -79,7 +80,7 @@ module mounting_bolt_void (pos = [0, 0, 0], rot = [0, 0, 0]) {
     }
 }
 
-module rail_end (pos = [0, 0, 0], rot = [90, 0, 0], Motors = true) {
+module rail_end (pos = [0, 0, 0], rot = [90, 0, 0], Motors = true, Projector = false) {
     Z = 95;
     RailVoid = 20.4;
     translate(pos) rotate(rot) {
@@ -126,6 +127,10 @@ module rail_end (pos = [0, 0, 0], rot = [90, 0, 0], Motors = true) {
     }
 }
 
+echo("sled");
+echo("BOM: ", "(2) T8 Nut");
+echo("BOM: ", "(1 or 2) Linear bearing");
+echo("BOM: ", "(4 or 8) Radial bearings ()");
 module sled (pos = [0, 0, 0], rot = [90, 0, 0], Length = 60) {
     X = RailEndX;
     Y = 60;
@@ -225,10 +230,19 @@ module lens_sled_m5_bolt_nut_voids (pos = [0, 0, 0], rot = [0, 0, 0], Angle = 36
     }
 }
 
+module extrusion_block (pos = [0, 0, 0], rot = [0, 0, 0], Y = 40, Z = 30) {
+    translate(pos) rotate(rot) {
+        difference () {
+            cube([Y, Z,  Y], center = true);
+            cube([RailVoid, Z + 1, RailVoid], center = true);
+        }
+        end_2020([0, 0, 0], [90, 0, 0]);
+    }
+}
+
 module lens_sled (pos = [0, 0, 0], rot = [90, 0, 0]) {
     Y = 40;
     LensDriveX = -ThreadedRodSpacing / 2;
-    RailVoid = 20.4;
     LensFrameSpacingX = (RailEndX / 2) - (Y / 2);
     LensFrameM3VoidsZ = (60 / 2) + (40 / 2) - 12.5 + 5 + 6;
     
@@ -236,8 +250,8 @@ module lens_sled (pos = [0, 0, 0], rot = [90, 0, 0]) {
         difference () {
             union () {
                 sled(rot = [0, 0, 0], Length = Y);
-                translate([(RailEndX / 2) - (Y / 2), (60 / 2) + (40 / 2) - 5, 0]) cube([Y, 30,  Y], center = true);
-                translate([-(RailEndX / 2) + (Y / 2), (60 / 2) + (40 / 2) - 5, 0]) cube([Y, 30,  Y], center = true);
+                extrusion_block([LensFrameSpacingX, (60 / 2) + (40 / 2) - 5, 0]);
+                extrusion_block([-LensFrameSpacingX, (60 / 2) + (40 / 2) - 5, 0]);
                 translate([LensFrameSpacingX - 35 - 25, 48, 0]) cube([10, 21, 40], center = true);
             }
             T_nut_void ([LensDriveX, 0, (Y / 2) - (TNutVoid / 2) + 0.01], [180, 0, 0]);
@@ -250,10 +264,6 @@ module lens_sled (pos = [0, 0, 0], rot = [90, 0, 0]) {
             
             side_sled_bearing_void([(RailSpacing / 2) + 21.5, 0, 0], [90, -90, 0]);
             side_sled_bearing_void([-(RailSpacing / 2) - 21.5, 0, 0], [-90, -90, 0]);
-            
-            //lens carriage frame
-            translate([LensFrameSpacingX, 53.5, 0]) cube([RailVoid, 32, RailVoid], center = true);
-            translate([-LensFrameSpacingX, 53.5, 0]) cube([RailVoid, 32, RailVoid], center = true);
             
             //
             lens_sled_m3_bolt_voids([(RailEndX / 2) - (Y / 2), LensFrameM3VoidsZ, 0]);
@@ -378,12 +388,12 @@ module debug () {
 }
 
 
-PART = "lens_sled";
+PART = "rail_end_idle";
 
 if (PART == "rail_end") {
     rail_end();
 } else if (PART == "rail_end_idle") {
-    rail_end(Motors = false);
+    rail_end(Motors = false, Projector = true);
 } else if (PART == "lens_sled") {
     rotate([-90, 0, 0]) lens_sled();
 } else if (PART == "bearing_roller") {
