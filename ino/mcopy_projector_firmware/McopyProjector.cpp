@@ -210,7 +210,7 @@ void McopyProjector::home () {
 	Serial.println(feedPeak);
 
 	takeupOffset = abs(steps - takeupPeak);
-	feedOffset = abs(steps - takeupPeak);
+	feedOffset = abs(steps - feedPeak);
 
 	Serial.print("takeup offset: ");
 	Serial.println(takeupOffset);
