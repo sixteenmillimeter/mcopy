@@ -11,7 +11,7 @@ include <./common/common.scad>
 include <./common/motors.scad>
 include <./common/rods.scad>
 
-RailSpacing = 100; //160
+RailSpacing = 140; //100
 RailVoid = 20.4;
 ThreadedRodSpacing = 50;
 RailEndX = RailSpacing + 72;
@@ -230,13 +230,15 @@ module lens_sled_m5_bolt_nut_voids (pos = [0, 0, 0], rot = [0, 0, 0], Angle = 36
     }
 }
 
-module extrusion_block (pos = [0, 0, 0], rot = [0, 0, 0], Y = 40, Z = 30) {
+module extrusion_block (pos = [0, 0, 0], rot = [0, 0, 0], Y = 40, Z = 30, End = false) {
     translate(pos) rotate(rot) {
         difference () {
             cube([Y, Z,  Y], center = true);
             cube([RailVoid, Z + 1, RailVoid], center = true);
         }
-        end_2020([0, 0, 0], [90, 0, 0]);
+        if (End) {
+            end_2020([0, 0, 0], [90, 0, 0]);
+        }
     }
 }
 
@@ -351,11 +353,11 @@ module debug () {
     //translate([50 , -90 - 10, 22]) rotate([0, 90, 0]) bearing_void();
     //rail_end();
     //camera_sled([0, -90, 0]);
-    difference () {
-        lens_sled([0, -90, 0]);
-        translate([ 50 + (RailSpacing / 2), -90 - 50, 0]) cube([100, 100, 100], center = true);
+    //difference () {
+        //lens_sled([0, -90, 0]);
+        //translate([ 50 + (RailSpacing / 2), -90 - 50, 0]) cube([100, 100, 100], center = true);
         //translate([ -50 - (RailSpacing / 2), -90, 0]) cube([100, 100, 100], center = true);
-    }
+    //}
     
     //color("green") translate([RailSpacing / 2, -90 + 15, 20]) rotate([0, 0, 0]) linear_extrude(height=100) 2020_profile();
     //difference () {
@@ -365,7 +367,7 @@ module debug () {
         //translate([150, -90, 50]) cube([200, 100, 100], center = true); 
     //}
 
-    translate([RailSpacing / 2, -90, 21.5]) rotate([0, 90, 0]) {
+    /*translate([RailSpacing / 2, -90, 21.5]) rotate([0, 90, 0]) {
         bearing_roller();
         bearing_roller_inner();
     }
@@ -376,6 +378,7 @@ module debug () {
     }
     
     color("blue") side_lens_sled_bearing_plate([(RailSpacing / 2) + 23.5, -90, 0]);
+    */
     
     //bearing_roller();
 
@@ -388,7 +391,7 @@ module debug () {
 }
 
 
-PART = "rail_end_idle";
+PART = "lens_sledx";
 
 if (PART == "rail_end") {
     rail_end();
