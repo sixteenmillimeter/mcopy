@@ -43,16 +43,16 @@ class McopyProjector {
 
 	int64_t _posTakeup = 0;
 	int64_t _posFeed = 0;
-	//X
+	//Y
 	uint8_t _takeupSettingA;
 	uint8_t _takeupSettingB;
-	//Y
+	//X
 	uint8_t _feedSettingA;
 	uint8_t _feedSettingB;
-	//X
+	//Y
 	uint8_t _takeupEmitter;
 	uint8_t _takeupReceiver;
-	//Y
+	//X
 	uint8_t _feedEmitter;
 	uint8_t _feedReceiver;
 
