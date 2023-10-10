@@ -8,3 +8,5 @@ dist
 *.svd
 *debug_custom.json
 *debug.cfg
+
+notes/mphd
