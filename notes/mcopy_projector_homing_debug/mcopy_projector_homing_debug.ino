@@ -107,12 +107,25 @@ void home () {
 	uint16_t eighth = quarter / 2;
 	uint16_t takeupPeak = 0;
 	uint16_t feedPeak = 0;
-	uint16_t takeupOffset = 0;
-	uint16_t feedOffset = 0;
+	int16_t takeupOffset = 0;
+	int16_t feedOffset = 0;
 	long takeupReading = 0.0;
 	long feedReading = 0.0;
 
 	Serial.println("home()");
+
+	takeupReading = analogReadAccurateAverage(TAKEUP_RECEIVER);
+	feedReading = analogReadAccurateAverage(FEED_RECEIVER);
+
+	if (takeupReading > 2) {
+		_takeup.move(-25);
+		_takeup.runToPosition();
+	}
+
+	if (feedReading > 2) {
+		_feed.move(-25);
+		_feed.runToPosition();
+	}
 
 	delay(10);
 
@@ -131,9 +144,9 @@ void home () {
 
 	for (uint16_t i = 0; i < steps; i++) {
 		Serial.print(i);
-		Serial.print(", ");
+		Serial.print(",");
 		Serial.print(_takeupSamples[i]);
-		Serial.print(", ");
+		Serial.print(",");
 		Serial.println(_feedSamples[i]);
 	}
 
@@ -153,16 +166,12 @@ void home () {
 	Serial.println(feedOffset);
 
 	if (takeupOffset > 0) {
-		for (uint16_t i = 0; i < takeupOffset; i++) {
-			_takeup.move(-1);
-			_takeup.runToPosition();
-		}
+		_takeup.move(takeupOffset < steps/2 ? -takeupOffset : steps - takeupOffset);
+		_takeup.runToPosition();
 	}
 	if (feedOffset > 0) {
-		for (uint16_t i = 0; i < feedOffset; i++) {
-			_feed.move(-1);
-			_feed.runToPosition();
-		}
+		_feed.move(feedOffset < steps/2 ? -feedOffset : steps - feedOffset);
+		_feed.runToPosition();
 	}
 	/*
 	for (uint16_t i = 0; i < eighth; i++) {
