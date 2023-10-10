@@ -80,7 +80,7 @@ long analogReadAccurate (uint8_t pin) {
 }
 
 long analogReadAccurateAverage (uint8_t pin) {
-	uint8_t count = 3;
+	uint8_t count = 5;
 	double sum = 0.0;
 	for (uint8_t i = 0; i < count; i++) {
 		sum += analogReadAccurate(pin);

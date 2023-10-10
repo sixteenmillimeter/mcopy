@@ -4,7 +4,7 @@
 
   Hardware
 
-  Arduino Uno
+  Arduino Mega
   Itead Dual Stepper Shield
   2x NEMA17 Stepper Motors
 
