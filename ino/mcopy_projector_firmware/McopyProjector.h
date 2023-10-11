@@ -69,6 +69,7 @@ class McopyProjector {
 	long readVcc();
 	long analogReadAccurate (uint8_t &pin);
 	long analogReadAccurateAverage (uint8_t &pin);
+	long analogReadAverage (uint8_t &pin);
 	uint16_t findPeak(long (&arr)[200], uint16_t &steps);
 	void emitters(bool enabled);
 

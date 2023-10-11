@@ -1,5 +1,5 @@
 {
-  "version": "1.8.59",
+  "version": "1.8.60",
   "ext_port": 1111,
   "profiles": {
     "mcopy": {
@@ -190,7 +190,8 @@
       "error": "E",
       "camera_exposure": "G",
       "state": "H",
-      "home": "I"
+      "home": "I",
+      "offset": "O"
     }
   }
 }

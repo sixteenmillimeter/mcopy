@@ -303,6 +303,16 @@ long McopyProjector::analogReadAccurateAverage (uint8_t &pin) {
   return sum / (double) count;
 }
 
+long McopyProjector::analogReadAverage (uint8_t &pin) {
+	uint8_t count = 3;
+	double sum = 0.0;
+	for (uint8_t i = 0; i < count; i++) {
+		sum += analogRead(pin);
+		delay(1);
+	}
+	return sum / (double) count;
+}
+
 uint16_t McopyProjector::findPeak(long (&arr)[200], uint16_t &steps) {
 	uint16_t maxI = 0;
 	long max = 0;
