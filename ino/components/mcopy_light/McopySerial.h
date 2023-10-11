@@ -49,6 +49,7 @@ class McopySerial {
 	const char CONNECT = 'i';
 	const char DEBUG = 'd';
 	const char ERROR = 'E';
+	const char HOME = 'I';
 	const char LIGHT = 'l';
 	const char LIGHT_IDENTIFIER = 'o';
 	const char MCOPY_IDENTIFIER = 'm';
