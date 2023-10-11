@@ -78,8 +78,6 @@ void setup () {
   delay(42);
   digitalWrite(LED_FWD, LOW);
   digitalWrite(LED_BWD, LOW);
-  
-  //projector.home();
 }
 
 void loop () {
@@ -110,6 +108,8 @@ void cmd (char val) {
     projector_frame();
   } else if (val == mcopy.STATE) {
     state();
+  } else if (val == mcopy.HOME) {
+    projector.home();
   }
 }
 
