@@ -41,6 +41,8 @@ RailSpacingX = 100;
 RailEndX = RailSpacingX + 72;
 LensFrameSpacingX = (RailEndX / 2) - (40 / 2);
 
+echo(LensFrameSpacingX, "mm");
+
 module rail_debug (H = 175) {
     color("lime") linear_extrude(height=H) {
         2020_profile();
@@ -98,6 +100,17 @@ module m4BoltNut (bolt = 10, nut = 3.5) {
     }
 }
 
+module lensAssembyBellowBoardLinearBearingMount (X = 0) {
+	difference () {
+		translate([X, XOffset, FrontOffset]) rotate([0, 90, 0]) cylinder(r = R(25), h = 24, center = true, $fn = 80);
+		rotate([-90, 0, 0]) {
+			translate([X, -FrontOffset, XOffset]) rotate([0, 90, 0]) linearBearing(0.25);
+		}
+        translate([X, XOffset, -10.5]) cube([24 + 1,30, 15], center = true);
+		rotate([-90, 0, 0]) translate([X, -FrontOffset, XOffset]) rotate([0, 90, 0]) linearMotionRod(RodLength);	
+	}
+}
+
 module lensAssemblyBellowsBoard (magnets = false) {
 	//bottom
 	difference () {
@@ -128,14 +141,8 @@ module lensAssemblyBellowsBoard (magnets = false) {
 	}
 
 	//top
-	difference () {
-		translate([0, XOffset, FrontOffset]) rotate([0, 90, 0]) cylinder(r = R(25), h = 24, center = true, $fn = 80);
-		rotate([-90, 0, 0]) {
-			translate([0, -FrontOffset, XOffset]) rotate([0, 90, 0]) linearBearing(0.25);
-		}
-        translate([0, XOffset, -10.5]) cube([24 + 1,30, 15], center = true);
-		rotate([-90, 0, 0]) translate([0, -FrontOffset, XOffset]) rotate([0, 90, 0]) linearMotionRod(RodLength);	
-	}
+	lensAssembyBellowBoardLinearBearingMount(12);
+	lensAssembyBellowBoardLinearBearingMount(-12);
 }
 
 module topLinearAttachmentBlock () {
@@ -350,7 +357,8 @@ module debug () {
 
 	   	translate([XPosition, 0, 0]) {
 	    	rotate([90, 0, 0]) lensAssemblyBellowsBoard();
-	    	translate([0, 0, 40]) rotate([0, 90, 0]) color("green") linearBearing();
+	    	translate([12, 0, 38]) rotate([0, 90, 0]) color("green") linearBearing();
+	    	translate([-12, 0, 38]) rotate([0, 90, 0]) color("green") linearBearing();
 	    	translate([-22.5, 0, -XOffset]) rotate([0, 90, 0]) TNut();
 	    	translate([22.5, 0, -XOffset]) rotate([0, -90, 0]) TNut();
 	    }
