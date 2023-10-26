@@ -19,6 +19,7 @@ TNutVoid = 17;
 BoltSpacingX = RailSpacing - 30;
 
 LensFrameSpacingX = 100;
+LensRodsOffsetZ = -15;
 
 module rail_debug (H = 175) {
     color("lime") linear_extrude(height=H) {
@@ -231,7 +232,6 @@ module lens_sled (pos = [0, 0, 0], rot = [90, 0, 0]) {
     LensFrameBlockY = (60 / 2) + (40 / 2) - 5;
     LensFrameM3VoidsZ = (60 / 2) + (40 / 2) - 12.5 + 5 + 6;
     LensFrameOffsetZ = 20;
-    LensRodsOffsetZ = -15;
 
     BearingsSpacing = 28;
     BearingM5Spacing = 62;
@@ -313,7 +313,7 @@ module side_lens_sled_bearing_plate (pos = [0, 0, 0], rot = [0, 0, 0]) {
     translate(pos) rotate(rot) {
         difference () {
             cube([25, Y, 15.9], center = true);
-            
+
             //sides
             translate([-9, 52, 0]) cube([25, Y, 15.9 + 1], center = true);
             translate([-9, -52, 0]) cube([25, Y, 15.9 + 1], center = true);
@@ -419,13 +419,13 @@ module corner_outer_bracket (pos = [0, 0, 0], rot = [0, 0, 0], Rotate = false, S
                 translate([-(W / 2) - (T / 2) - 0.2 + 1, 0, (H / 2) - 4.5]) cube([T, 5.5, H], center = true);
                 //
                 if (!Rotate || Side == "right") {
-                    translate([8.3, (W / 2) + (T / 2), (40 / 2) - T])difference () {
+                    translate([8.35, (W / 2) + (T / 2), (40 / 2) - T])difference () {
                         cube([H + 0.4, T, H], center = true);
                         translate([0, 0, 33.5]) rotate([0, 45, 0]) cube([H * 3, T + 1, H], center = true);
                     }
                 }
                 if (!Rotate || Side == "left") {
-                    translate([8.3, -(W / 2) - (T / 2), (40 / 2) - T])difference () {
+                    translate([8.35, -(W / 2) - (T / 2) , (40 / 2) - T])difference () {
                         cube([H + 0.4, T, H], center = true);
                         translate([0, 0, 33.5]) rotate([0, 45, 0]) cube([H * 3, T + 1, H], center = true);
                     }
@@ -444,8 +444,58 @@ module corner_outer_bracket (pos = [0, 0, 0], rot = [0, 0, 0], Rotate = false, S
 }
 
 module lens_frame_top_gantry (pos = [0, 0, 0], rot = [0, 0, 0]) {
-    corner_outer_bracket([75, -20, 260], [180, 90, 0],  Rotate = false);
-    corner_outer_bracket([-75, -20, 260], [0, 90, 0],  Rotate = false);
+    translate(pos) rotate(rot) {
+        difference() {
+            union () {
+                corner_outer_bracket([(LensFrameSpacingX / 2) + 14.65, 0, 8.85], [180, 0, 180],  Rotate = false);
+                corner_outer_bracket([(-LensFrameSpacingX / 2) - 14.65, 0, 8.85], [180, 0, 0],  Rotate = false);
+                
+                translate([0, 0, 11.85]) cube([71, 26.3, 3], center = true);
+                translate([0, 0, 11.85-1]) cube([71, 5.5, 3], center = true);
+
+                translate([0, -11.65, 11.85 - 10]) cube([120, 3, 20], center = true);
+                translate([0, 11.65, 11.85 - 5]) cube([120, 3, 10], center = true);
+                
+                //threaded rod
+                translate([53, 31, 8.35]) difference() {
+                    cube([50, 40, 10], center = true);
+                    translate([-20, 20, 0]) rotate([0, 0, 45]) cube([70, 40, 10 + 1], center = true); 
+                }
+                translate([LensFrameSpacingX - 35, -LensRodsOffsetZ + 20, -3]) cylinder(r = R(22), h = 25, center = true, $fn = 120);
+                
+                //linear rod
+                translate([-53, 31, 8.35]) difference() {
+                    cube([50, 40, 10], center = true);
+                    translate([20, 20, 0]) rotate([0, 0, -45]) cube([70, 40, 10 + 1], center = true);
+                }
+                translate([-LensFrameSpacingX + 35 - 2, -LensRodsOffsetZ + 20, -3]) cube([22, 19, 15], center = true);
+            }
+
+            translate([LensFrameSpacingX - 35, -LensRodsOffsetZ + 20, -5]) {
+                linear_bearing(padD = 0.2);
+                translate([0, 0, 2]) linear_bearing(padD = 0.2);
+                cylinder(r = R(ThreadDiameter + 1), h = 40, center = true, $fn = 60);
+            }
+
+            translate([-LensFrameSpacingX + 35, -LensRodsOffsetZ + 20, -5]) {
+                cylinder(r = R(ThreadDiameter + 0.1), h = 40, center = true, $fn = 60);
+            }
+
+            //center bolt
+            m3_bolt_void([0, 0, 12.75]);
+            translate([0, 0, 6.35]) cube([7, 7, 8], center = true); 
+            
+            //linear rod m4 bolt void
+            translate([-73, 35, -3]) {
+                translate([0, 0, -10]) cube([3.1, 8.25, 20], center = true);
+                rotate([90, 0, 90]) {
+                    m4_nut();
+                    cylinder(r = R(4), h = 15, center = true, $fn = 30);
+                }
+            }
+        }
+    }
+
 }
 
 module debug () {
@@ -460,10 +510,14 @@ module debug () {
     
     color("green") translate([(LensFrameSpacingX / 2) + 15, -20, 50]) rotate([0, 0, 0]) linear_extrude(height=200) 2020_profile();
     color("green") translate([-(LensFrameSpacingX / 2) - 15, -20, 50]) rotate([0, 0, 0]) linear_extrude(height=200) 2020_profile();
-    color("green") translate([-(LensFrameSpacingX + 30 + 20) / 2, -20, 260]) rotate([0, 90, 0]) linear_extrude(height = LensFrameSpacingX + 30 + 20) 2020_profile();
+    //color("green") translate([-(LensFrameSpacingX + 30 + 20) / 2, -20, 260]) rotate([0, 90, 0]) linear_extrude(height = LensFrameSpacingX + 30 + 20) 2020_profile();
+    
+    color("blue") translate([LensFrameSpacingX - 35, -LensRodsOffsetZ, 140]) cylinder(r = R(9), h = 300, center = true, $fn = 60);
+    color("blue") translate([-LensFrameSpacingX + 35, -LensRodsOffsetZ, 140]) cylinder(r = R(9), h = 300, center = true, $fn = 60);
+
     //difference () {
     //intersection() {
-        lens_sled([0, 0, 0]);
+        //lens_sled([0, 0, 0]);
         //cube([132, 1, 100], center = true);
         //translate([-30, -90 + 30 - 1, 10]) cube([90, 60, 45], center = true);
         //translate([150, -90, 50]) cube([200, 100, 100], center = true); 
@@ -482,6 +536,7 @@ module debug () {
     */
     color("blue") side_lens_sled_bearing_plate([(RailSpacing / 2) + 23.5 + 20, 0, 0]);
     
+    lens_frame_top_gantry([0, -20, 260]);
     
     //bearing_roller();
 
@@ -499,14 +554,14 @@ module debug () {
 }
 
 
-PART = "side_lens_sled_bearing_plate";
+PART = "lens_frame_top_gantry";
 
 if (PART == "rail_end") {
     rail_end();
 } else if (PART == "rail_end_idle") {
     rail_end(Motors = false, Projector = true);
 } else if (PART == "lens_sled") {
-    rotate([-90, 0, 0]) lens_sled();
+    rotate([90, 0, 0]) lens_sled();
 } else if (PART == "bearing_roller") {
     bearing_roller();
 } else if (PART == "bearing_roller_inner") {
@@ -519,6 +574,8 @@ if (PART == "rail_end") {
     corner_outer_bracket();
 } else if (PART == "corner_outer_bracket_rotated") {
     corner_outer_bracket(Rotate = true);
+} else if (PART == "lens_frame_top_gantry") {
+    lens_frame_top_gantry(rot = [180, 0, 0]);
 } else {
     debug();
 }
