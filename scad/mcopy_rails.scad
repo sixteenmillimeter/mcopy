@@ -554,7 +554,7 @@ module debug () {
 }
 
 
-PART = "lens_frame_top_gantry";
+PART = "bearing_roller_inner";
 
 if (PART == "rail_end") {
     rail_end();

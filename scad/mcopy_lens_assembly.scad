@@ -385,7 +385,7 @@ module debug () {
     translate([-100, 35, 90]) rotate([0, 90, 0]) rail_debug(200);
 }
 
-PART = "lens_assembly_bellows_board_magneticx";
+PART = "lens_assembly_bellows_board_magnetic";
 
 if (PART == "lens_assembly_camera_bellows_board") {
     bellows_camera_board();

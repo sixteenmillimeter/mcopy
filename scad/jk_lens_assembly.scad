@@ -362,7 +362,7 @@ module debug () {
     }
 }
 
-PART = "lens_assembly_bellows_board_magnetic";
+PART = "";
 
 if (PART == "lens_assembly_camera_bellows_board") {
     bellows_camera_board();
@@ -385,5 +385,5 @@ if (PART == "lens_assembly_camera_bellows_board") {
 } else if (PART == "lens_assembly_threaded_collar") {
     lensAssemblyThreadedCollar(6, 0.2);
 } else {
-    debug();
+    echo("DEPRECATED: see mcopy_lens_assembly");
 }
