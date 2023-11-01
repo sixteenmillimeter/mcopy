@@ -11,6 +11,8 @@ include <./common/common.scad>
 include <./common/motors.scad>
 include <./common/rods.scad>
 
+IN = 25.4;
+
 RailSpacing = 110; //100
 RailVoid = 20.4;
 ThreadedRodSpacing = 50;
@@ -20,6 +22,8 @@ BoltSpacingX = RailSpacing - 30;
 
 LensFrameSpacingX = 100;
 LensRodsOffsetZ = -15;
+
+ProjectorFrameSpacingX = (5 * IN) - 20;
 
 module rail_debug (H = 175) {
     color("lime") linear_extrude(height=H) {
@@ -36,11 +40,13 @@ module m3_bolt_void (pos = [0, 0, 0], rot = [0, 0, 0], BoltH = 20, CapH = 3) {
 	}
 }
 
-module bolt_voids_2020 (pos = [0, 0, 0], rot = [0, 0, 0]) {
+module bolt_voids_2020 (pos = [0, 0, 0], rot = [0, 0, 0], Projector = false) {
     translate(pos) rotate (rot) {
-        translate([0, -25, 0]) rotate([90, 0, 0]) m3_bolt_void(CapH = 6);
-        translate([0, 25, 0]) rotate([-90, 0, 0]) m3_bolt_void(CapH = 20);
-        translate([-25, 0, 0]) rotate([0, -90, 0]) m3_bolt_void(CapH = 6, BoltH = 20);
+        translate([0, -25, 0]) rotate([90, 0, 0]) m3_bolt_void(CapH = 36);
+        if (Projector == false) {
+            translate([0, 25, 0]) rotate([-90, 0, 0]) m3_bolt_void(CapH = 36);
+        }
+        translate([-25, 0, 0]) rotate([0, -90, 0]) m3_bolt_void(CapH = 36);
     }
 }
 
@@ -98,8 +104,8 @@ module rail_end (pos = [0, 0, 0], rot = [90, 0, 0], Motors = true, Projector = f
             translate([RailSpacing / 2, 0, 5]) cube([RailVoid, RailVoid, 40], center = true);
             
             //rails bolts
-            bolt_voids_2020([-RailSpacing / 2, 0, -15 + 5 + 7 ]);
-            bolt_voids_2020([RailSpacing / 2, 0, -15 + 5 + 7], [0, 180, 0]);
+            bolt_voids_2020([-RailSpacing / 2, 0, -15 + 5 + 7 ], Projector = Projector);
+            bolt_voids_2020([RailSpacing / 2, 0, -15 + 5 + 7], [0, 180, 0], Projector = Projector);
             
             if (Motors) {
                 //camera drive motor
@@ -127,6 +133,9 @@ module rail_end (pos = [0, 0, 0], rot = [90, 0, 0], Motors = true, Projector = f
         }
         end_2020([-RailSpacing / 2, 0, -15 + 2.4]);
         end_2020([RailSpacing / 2, 0, -15 + 2.4]);
+    }
+    if (Projector) {
+        translate([]) cube([1, 1, 100], center = true);
     }
 }
 
@@ -554,12 +563,12 @@ module debug () {
 }
 
 
-PART = "bearing_roller_inner";
+PART = "rail_end";
 
 if (PART == "rail_end") {
-    rail_end();
+    rail_end(Projector = true);
 } else if (PART == "rail_end_idle") {
-    rail_end(Motors = false, Projector = true);
+    rail_end(Motors = false, Projector = false);
 } else if (PART == "lens_sled") {
     rotate([90, 0, 0]) lens_sled();
 } else if (PART == "bearing_roller") {
