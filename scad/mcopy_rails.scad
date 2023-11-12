@@ -528,13 +528,13 @@ module projector_orbital_brace (pos = [0, 0, 0], rot = [0, 0, 0]) {
     Z = 9;
     PlateD = OrbitalPlateD;
     InnerD = 63.5;
-    M5SpacingX = 75;
-    M5SpacingY = 120;
+    M5SpacingX = 70;
+    M5SpacingY = 123;
     M3BoltY = 20;
     Corner = 20;
     VoidD = 11.25;
-    VoidX = -45.5;
-    VoidY = 34.25;
+    VoidX = -25.5;
+    VoidY = 40.25;
     translate(pos) rotate(rot) difference() {
         cube([X, Y, Z], center = true);
         //corners
@@ -668,7 +668,7 @@ module debug () {
 }
 
 
-PART = "projector_orbital_brace_corner";
+PART = "projector_orbital_brace";
 
 if (PART == "rail_end") {
     rail_end(Projector = true);

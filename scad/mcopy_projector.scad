@@ -438,7 +438,7 @@ module orbital_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
     InnerD = 126;
     VoidD = 96;
     BottomZ = 5;
-    TopZ = 4;
+    TopZ = 6;
     Notch = 0.5;
     Notches = 60;
 
@@ -455,7 +455,7 @@ module orbital_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
             	cylinder(r = R(VoidD), h = BottomZ + TopZ + 1, center = true);
         		translate([105, 0, 0]) cube([OuterD, OuterD, BottomZ + TopZ + 1 + 1], center = true);
         	}
-            translate([0, 0, BottomZ - (TopZ / 2) - 0.49]) difference () {
+            translate([0, 0, BottomZ - (TopZ / 2) + 0.51]) difference () {
                 cylinder(r = R(OuterD) + 1, h = TopZ, center = true);
                 cylinder(r = R(InnerD), h = TopZ + 1, center = true);
             }
@@ -638,7 +638,7 @@ module debug () {
     //nub_rack([-6, 0, -15], [-90, 0, 0]);
 }
 
-PART = "nub_rack";
+PART = "orbital_mount";
 
 if (PART == "gate_key") {
 	gate_key(KeyRot = 0);
