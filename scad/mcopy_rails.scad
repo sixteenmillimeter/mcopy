@@ -25,7 +25,7 @@ LensRodsOffsetZ = -15;
 
 ProjectorFrameSpacingX = (5 * IN) - 20;
 
-OrbitalPlateD = 136;
+OrbitalPlateD = 137;
 
 module m5_nut (H = 5, DIAG = 9.1) {
     hex(diag = DIAG, h = H);
@@ -141,14 +141,16 @@ module rail_end (pos = [0, 0, 0], rot = [90, 0, 0], Motors = true, Projector = f
         end_2020([RailSpacing / 2, 0, -15 + 2.4]);
     }
     if (Projector) {
-        difference () {
-            union () {
-                extrusion_block([ProjectorFrameSpacingX / 2, 0, 52], [90, 0, 0], End = true);
-                extrusion_block([-ProjectorFrameSpacingX / 2, 0, 52], [90, 0, 0], End = true);
+        translate(pos) rotate([rot[0] - 90, rot[1], rot[2]]) {
+            difference () {
+                union () {
+                    extrusion_block([ProjectorFrameSpacingX / 2, 0, 52], [90, 0, 0], End = true);
+                    extrusion_block([-ProjectorFrameSpacingX / 2, 0, 52], [90, 0, 0], End = true);
+                }
+                //bolts for upright linear extrusions
+                lens_sled_m3_bolt_voids([ProjectorFrameSpacingX / 2, 0, 55], [90, 0, 0]);
+                lens_sled_m3_bolt_voids([-ProjectorFrameSpacingX / 2, 0, 55], [90, 0, 0]);
             }
-            //bolts for upright linear extrusions
-            lens_sled_m3_bolt_voids([ProjectorFrameSpacingX / 2, 0, 55], [90, 0, 0]);
-            lens_sled_m3_bolt_voids([-ProjectorFrameSpacingX / 2, 0, 55], [90, 0, 0]);
         }
     }
 }
@@ -524,12 +526,12 @@ module lens_frame_top_gantry (pos = [0, 0, 0], rot = [0, 0, 0]) {
 
 module projector_orbital_brace (pos = [0, 0, 0], rot = [0, 0, 0]) {
     X = 5 * IN;
-    Y = 150;
+    Y = 160;
     Z = 9;
     PlateD = OrbitalPlateD;
     InnerD = 63.5;
-    M5SpacingX = 70;
-    M5SpacingY = 123;
+    M5SpacingX = 70 - 18; // - 12
+    M5SpacingY = 123 + 8.5;// + 6
     M3BoltY = 20;
     Corner = 20;
     VoidD = 11.25;
@@ -599,14 +601,26 @@ module projector_orbital_brace_corner (pos = [0, 0, 0], rot = [0, 0, 0]) {
 
 module debug () {
     //translate([50 , -90 - 10, 22]) rotate([0, 90, 0]) bearing_void();
-    //rail_end(Projector = true);
-    //color("green") translate([(ProjectorFrameSpacingX / 2), 0, 50]) rotate([0, 0, 0]) linear_extrude(height=240) 2020_profile();
-    //color("green") translate([-(ProjectorFrameSpacingX / 2), 0, 50]) rotate([0, 0, 0]) linear_extrude(height=240) 2020_profile();
-    //color("green") translate([-((ProjectorFrameSpacingX - 20) / 2), 0, 280]) rotate([0, 90, 0]) linear_extrude(height=ProjectorFrameSpacingX-20) 2020_profile();
-    //projector_orbital_brace([0, 14.5, 180], [90, 0, 0]);
-    //translate([0, 0, 110]) cube([10, 10, 150], center = true); 
-    //corner_bracket([30, 0, 260], [0, 180, 90]);
-    //corner_outer_bracket([55, 0, 290], [0, 180, 0]);
+    rail_end([0, 20, 0], Projector = true);
+    color("green") translate([(ProjectorFrameSpacingX / 2), 0, 37.25]) rotate([0, 0, 0]) linear_extrude(height=255) 2020_profile();
+    color("green") translate([-(ProjectorFrameSpacingX / 2), 0, 37.35]) rotate([0, 0, 0]) linear_extrude(height=255) 2020_profile();
+    echo("cross", ProjectorFrameSpacingX-20, "mm");
+    color("green") translate([-((ProjectorFrameSpacingX - 20) / 2), 0, 282.25]) rotate([0, 90, 0]) linear_extrude(height=ProjectorFrameSpacingX-20) 2020_profile();
+    
+    projector_orbital_brace([0, 14.5, 180], [90, 0, 0]);
+    translate ([0, 14.5, 180]) rotate([90, 0, 0]) {
+        projector_orbital_brace_corner([0, -105, -8], [0, 0, -90]);
+    
+        //translate([35-9, -62-3.5, 0]) cylinder(r = R(5), h = 30, center = true, $fn = 60);
+    }
+
+    translate([0, 0, 110]) cube([10, 10, 150], center = true); 
+    
+    corner_bracket([30, 0, 260], [0, 180, 90]);
+    corner_outer_bracket([55, 10, 290], [0, 180, 0]);
+
+    corner_bracket([-30, 0, 260], [180, 0, 90]);
+    corner_outer_bracket([-55, 0, 290], [180, 0, 0]);
     //camera_sled([0, -90, 0]);
     //difference () {
         //lens_sled([0, -90, 0]);
@@ -663,8 +677,8 @@ module debug () {
         }
         translate([0, 0, 10]) cube([50, 30, 10], center = true);
     }*/
-    projector_orbital_brace();
-    projector_orbital_brace_corner([0, 0, -8]);
+    //projector_orbital_brace();
+    //projector_orbital_brace_corner([0, 0, -8]);
 }
 
 
