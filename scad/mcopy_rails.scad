@@ -66,6 +66,28 @@ module bolt_voids_motor (pos = [0, 0, 0]) {
     }
 }
 
+module bolt_nut_voids_motor (pos = [0, 0, 0]) {
+    Corner = NEMA17BoltSpacing / 2;
+    translate(pos) {
+        translate([Corner, Corner, 0]) {
+            m3_bolt_void(CapH = 30, BoltH = 40);
+            translate([0, 0, -20]) m3_nut();
+        }
+        translate([Corner, -Corner, 0]) {
+            m3_bolt_void(CapH = 30, BoltH = 40);
+            translate([0, 0, -20]) m3_nut();
+        }
+        translate([-Corner, Corner, 0]) {
+            m3_bolt_void(CapH = 30, BoltH = 40);
+            translate([0, 0, -20]) m3_nut();
+        }
+        translate([-Corner, -Corner, 0]) {
+            m3_bolt_void(CapH = 30, BoltH = 40);
+            translate([0, 0, -20]) m3_nut();
+        }
+    }
+}
+
 module T_nut_void (pos = [0, 0, 0], rot = [0, 0, 0]) {
     translate(pos) rotate(rot) {
         cylinder(r = R(TNutDiameter2 + 0.1), h = TNutVoid + .01, center = true, $fn = 60);
@@ -599,6 +621,34 @@ module projector_orbital_brace_corner (pos = [0, 0, 0], rot = [0, 0, 0]) {
     }
 }
 
+module rail_end_idle_roller_plug (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    H = 13.8;
+    translate(pos) rotate(rot) {
+        difference () {
+            union () {
+                cylinder(r = R(15), h = H, center = true, $fn = 80);
+                translate([0, 0, -(H / 2) + (1.5 / 2)]) cylinder(r = R(20), h = 1.5, center = true, $fn = 80);
+            }
+            cylinder(r = R(10), h = H + 1, center = true, $fn = 80);
+        }
+    }
+}
+
+module rail_end_idle_motor_plug (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    H = 45;
+    translate(pos) rotate(rot) {
+        difference () {
+            union () {
+                cylinder(r = R(NEMA17PadD), h = H, center = true, $fn = 100);
+                translate([0, 0, -(H / 2) + (5 / 2)]) rounded_cube([43, 43, 5], d = 8, center = true, $fn = 40);
+            }
+            cylinder(r = R(10), h = H + 1, center = true, $fn = 80);
+            bolt_nut_voids_motor([0, 0, -2]);
+            translate([0, 0, 10.6]) linear_bearing(padD = 0.2);
+        }
+    }
+}
+
 module debug () {
     //translate([50 , -90 - 10, 22]) rotate([0, 90, 0]) bearing_void();
     rail_end([0, 20, 0], Projector = true);
@@ -681,8 +731,25 @@ module debug () {
     //projector_orbital_brace_corner([0, 0, -8]);
 }
 
+module rail_sizing (L = 300) {
+    SpacingY = L - 30;
+    RailL = L;
+    difference () {
+        rail_end([0, SpacingY / 2, 0], Motors = false, Projector = false);
+        translate([0, SpacingY / 2, 25]) cube([200, 200, 50], center = true);
+    }
+    difference () {
+        rail_end([0, -SpacingY / 2, 0], [90, 0, 180], Projector = true);
+        translate([0, -SpacingY / 2, 25]) cube([200, 200, 50], center = true);
+    }
+    translate([55, RailL / 2, 0]) rotate([90, 0, 0]) linear_extrude(height=RailL) 2020_profile();
+    rotate([90, 0, 0]) color("green") cylinder(r = R(ThreadDiameter), h = L, center = true, $fn = 60);
+    lens_sled();
+    translate([25, -35+17, 0]) rotate([90, 0, 0]) color("green") cylinder(r = R(ThreadDiameter), h = L, center = true, $fn = 60);
+}
 
-PART = "projector_orbital_brace";
+
+PART = "rail_end_idle_motor_plug";
 
 if (PART == "rail_end") {
     rail_end(Projector = true);
@@ -707,7 +774,12 @@ if (PART == "rail_end") {
 } else if (PART == "projector_orbital_brace") {
     projector_orbital_brace(rot = [180, 0, 0]);
 } else if (PART == "projector_orbital_brace_corner") {
-    projector_orbital_brace_corner(); 
+    projector_orbital_brace_corner();
+} else if (PART == "rail_end_idle_roller_plug") {
+    rail_end_idle_roller_plug();
+} else if (PART == "rail_end_idle_motor_plug") {
+    rail_end_idle_motor_plug();
 } else {
-    debug();
+    //debug();
+    rail_sizing();
 }
