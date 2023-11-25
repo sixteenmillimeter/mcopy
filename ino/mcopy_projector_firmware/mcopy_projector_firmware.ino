@@ -11,11 +11,13 @@
   Wiring
   
   (Will vary from motor to motor)
+  FEED
   X01A - Green
   X01B - Black
   X02A - Blue
   X02B - Red
 
+  TAKEUP
   Y01A - Green
   Y01B - Black
   Y02A - Blue
@@ -24,6 +26,7 @@
 #include "McopyProjector.h"
 #include "McopySerial.h"
 #include <AccelStepper.h>
+
 
 #define TAKEUP_DIR_PIN 3
 #define TAKEUP_STEP_PIN 2
@@ -42,7 +45,7 @@
 #define FEED_EMITTER 18
 #define FEED_RECEIVER A9
 
-#define SERVO_PIN 14
+#define SERVO_PIN 19
 
 AccelStepper takeup(AccelStepper::DRIVER, TAKEUP_STEP_PIN, TAKEUP_DIR_PIN);
 AccelStepper feed(AccelStepper::DRIVER, FEED_STEP_PIN, FEED_DIR_PIN);
