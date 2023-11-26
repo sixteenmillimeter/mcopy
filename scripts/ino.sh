@@ -21,6 +21,7 @@ SKETCHES=(
 	mcopy_cam_canon_ble_nano
 	mcopy_cam_relay
 	mcopy_JKMM100
+	mcopy_JKMM100_work
 	components/mcopy_light
 	mcopy_projector_firmware
 )

@@ -51,6 +51,7 @@ const int PROJECTOR_FRAME = 600;
 const int PROJECTOR_MICROSWITCH_CLOSED = 0;
 const int PROJECTOR_MICROSWITCH_OPENED = 1;
 const int PROJECTOR_HALF_TIME = 450;
+const int PROJECTOR_STOP_DELAY = 15;
 
 //PROJECTOR VARIABLES
 boolean proj_dir = true; 
@@ -135,11 +136,11 @@ void proj_stop () {
   if (digitalRead(PROJECTOR_MICROSWITCH) == PROJECTOR_MICROSWITCH_CLOSED) {
     if (proj_dir) {
       digitalWrite(PROJECTOR_BWD, HIGH);
-      delay(15);
+      delay(PROJECTOR_STOP_DELAY);
       digitalWrite(PROJECTOR_BWD, LOW);
     } else {
       digitalWrite(PROJECTOR_FWD, HIGH);
-      delay(15);
+      delay(PROJECTOR_STOP_DELAY);
       digitalWrite(PROJECTOR_FWD, LOW);
     }
   }
