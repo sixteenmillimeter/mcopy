@@ -51,7 +51,7 @@ const int PROJECTOR_FRAME = 600;
 const int PROJECTOR_MICROSWITCH_CLOSED = 0;
 const int PROJECTOR_MICROSWITCH_OPENED = 1;
 const int PROJECTOR_HALF_TIME = 450;
-const int PROJECTOR_STOP_DELAY = 15;
+const int PROJECTOR_STOP_DELAY = 1;
 
 //PROJECTOR VARIABLES
 boolean proj_dir = true; 
@@ -132,16 +132,24 @@ void proj_stop () {
   digitalWrite(PROJECTOR_BWD, LOW);
   digitalWrite(LED_FWD, LOW);
   digitalWrite(LED_BWD, LOW);
-
+  int correctionLoops = 0;
   if (digitalRead(PROJECTOR_MICROSWITCH) == PROJECTOR_MICROSWITCH_CLOSED) {
     if (proj_dir) {
-      digitalWrite(PROJECTOR_BWD, HIGH);
-      delay(PROJECTOR_STOP_DELAY);
+      while (digitalRead(PROJECTOR_MICROSWITCH) == PROJECTOR_MICROSWITCH_CLOSED) {
+        digitalWrite(PROJECTOR_BWD, HIGH);
+        delay(PROJECTOR_STOP_DELAY);
+        correctionLoops++;
+      }
       digitalWrite(PROJECTOR_BWD, LOW);
+      mc.log("correctionLoops: " + String(correctionLoops));
     } else {
-      digitalWrite(PROJECTOR_FWD, HIGH);
-      delay(PROJECTOR_STOP_DELAY);
+      while (digitalRead(PROJECTOR_MICROSWITCH) == PROJECTOR_MICROSWITCH_CLOSED) {
+        digitalWrite(PROJECTOR_FWD, HIGH);
+        delay(PROJECTOR_STOP_DELAY);
+        correctionLoops++;
+      }
       digitalWrite(PROJECTOR_FWD, LOW);
+      mc.log("correctionLoops: " + String(correctionLoops));
     }
   }
 
