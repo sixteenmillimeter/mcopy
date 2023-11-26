@@ -53,6 +53,7 @@ class McopySerial {
 	const char LIGHT = 'l';
 	const char LIGHT_IDENTIFIER = 'o';
 	const char MCOPY_IDENTIFIER = 'm';
+	const char OFFSET = 'O';
 	const char PROJECTOR = 'p';
 	const char PROJECTOR_BACKWARD = 'h';
 	const char PROJECTOR_CAMERA_IDENTIFIER = 's';
