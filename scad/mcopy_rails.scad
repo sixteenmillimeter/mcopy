@@ -563,13 +563,15 @@ module bearing_roller (pos = [0, 0, 0], rot = [0, 0, 0]) {
     }
 }
 
-module bearing_roller_inner (pos = [0, 0, 0], rot = [0, 0, 0]) {
+module bearing_roller_inner (pos = [0, 0, 0], rot = [0, 0, 0], Solid = false) {
     translate(pos) rotate(rot) difference () {
         union () {
             cylinder(r = R(7.8), h = 15, center = true, $fn = 60);
             translate([0, 0, 4.5]) cylinder(r = R(11), h = 1, center = true, $fn = 80);
         }
-        cylinder(r = R(5.25), h = 20 + 1, center = true, $fn = 60);
+        if (!Solid) {
+            cylinder(r = R(5.25), h = 20 + 1, center = true, $fn = 60);
+        }
     }
 }
 
@@ -904,7 +906,7 @@ module rail_sizing (L = 1000) {
 }
 
 
-PART = "camera_sled_bolexx";
+PART = "bearing_roller_inner_solid";
 
 if (PART == "rail_end") {
     rail_end(Projector = true);
@@ -920,6 +922,8 @@ if (PART == "rail_end") {
     bearing_roller();
 } else if (PART == "bearing_roller_inner") {
     rotate([180, 0, 0]) bearing_roller_inner();
+} else if (PART == "bearing_roller_inner_solid") {
+    rotate([180, 0, 0]) bearing_roller_inner(Solid = true);
 } else if (PART == "side_lens_sled_bearing_plate") {
     rotate([0, 90, 0]) side_lens_sled_bearing_plate();
 } else if (PART == "corner_bracket") {
