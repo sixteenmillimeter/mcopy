@@ -4,21 +4,21 @@
 
 include <./common/common.scad>;
 
-PART="9pin_socket";
+PART="9pin_plugx";
 
 FN = 120;
 
-PlugD = 15.75;
+PlugD = 16.15 - 0.6;
 PlugH = 11.65;
-PlugGuideD = 17;
+PlugGuideD = 17 - 0.6;
 PlugPinD = 3.1;
 
 PlugGuideRetraction = 1.25;
 
 PinSpacing = 3.85;
 
-SocketD = PlugD + 0.4;
-SocketGuideD = PlugGuideD + 0.5;
+SocketD = 16.15;
+SocketGuideD = 17.5;
 
 SocketOuterD = 20;
 SocketH = 10.5;
