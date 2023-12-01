@@ -15,6 +15,10 @@
  *  - controls the directional relays of the primary projector.
  * 07 - CH8 - 4 pronged trigger cable
  *  - triggers the primary projectory
+ * 
+ * Pins - 4CH Sainsmart Solid State Relay Board
+ * 06 - CH1 - FWD PROJ2
+ * 05 - CH2 - FWD PROJ2
  */
 
 boolean debug_state = false;
@@ -30,7 +34,7 @@ const int proj_second_fwd_pin = 6;
 const int proj_second_bwd_pin = 5;
 const int proj_second_pin = 4;
 
-const int proj_momentary = 60;
+const int proj_momentary = 90;
 const int proj_time = 950; //secondary projector speed
 const int proj_delay = 42;
 
@@ -58,7 +62,8 @@ const char cmd_debug = 'd';
 const char cmd_connect = 'i';
 volatile char cmd_char = 'z';
 const char cmd_mcopy_identifier = 'm';
-const char cmd_proj_identifier = 'd'; //dual projector identifier
+const char cmd_proj_identifier = 'x'; //dual projector identifier
+//const char cmd_proj_identifier = 'j'; //single projector identifier
 
 const int serialDelay = 5;
 
