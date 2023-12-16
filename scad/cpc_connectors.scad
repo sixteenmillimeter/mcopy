@@ -4,8 +4,6 @@
 
 include <./common/common.scad>;
 
-PART="9pin_plugx";
-
 FN = 120;
 
 PlugD = 16.15 - 0.6;
@@ -114,27 +112,38 @@ module cpc_9pin_plug () {
 module cpc_9pin_plug_insert () {
 	$fn = FN;
 	BaseH = 3;
+    PinH = PlugH + 10;
 	translate([0, 0, -5.75]) difference () {
 		union () {
-			cylinder(r = R(PlugD - 1.2), h = 6, center = true);
+			cylinder(r = R(PlugD - 1.4), h = 6, center = true);
 			translate([0, 0, -1]) cylinder(r = R(PlugD + 2.5), h = 2, center = true);
 			color("green") translate([0, 0, -7]) cylinder(r = R(PlugD + 1.2), h = 10, center = true);
 		}
-		cylinder(r = R(PlugD - 2.2), h = 30, center = true);
+		cylinder(r = R(PlugD - 2.6), h = 30, center = true);
+        translate([0, 0, -6]) plug_pin_voids(PinH);
 	}
 }
 
 module cpc_9pin_plug_collar () {
 	$fn = FN;
 	H = 10;
-
+    OuterD = 23;
+    CenterD = 17;
+    InnerD = 21;
+    LipD = 19;
 	difference () {
 		union () {
-			cylinder(r = R(23), h = H, center = true);
+			cylinder(r = R(OuterD), h = H, center = true);
 		}
-		cylinder(r = R(17), h = H + 1, center = true);
-		cylinder(r = R(21), h = H - 4, center = true);
-		translate([0, 0, H / 2]) cylinder(r = R(19), h = H, center = true);
+		cylinder(r = R(CenterD), h = H + 1, center = true);
+		cylinder(r = R(InnerD), h = H - 4, center = true);
+		translate([0, 0, H / 2]) cylinder(r = R(LipD), h = H, center = true);
+        //bevel
+        translate([0, 0, 3.49]) cylinder(r1 = R(InnerD), r2 = R(LipD), h = 1, center = true);
+        difference () {
+            translate([0, 0, 3.49]) cylinder(r = R(InnerD), h = 4, center = true);
+            translate([0, 0, 4]) cube([OuterD + 1, 3.9, 15], center = true);
+        }
 	}
 }
 
@@ -200,13 +209,15 @@ module debug () {
 	//cpc_9pin_plug();
 	difference () {
 		union () {
-			color("green") translate([0, 0, 2.1]) rotate([180, 0, 0]) cpc_9pin_socket();
+			//color("green") translate([0, 0, 2.1]) rotate([180, 0, 0]) cpc_9pin_socket();
 			cpc_9pin_plug_insert();
 			translate([0, 0, -5]) cpc_9pin_plug_collar();
 		}
 		translate([25, 0, 0]) cube([50, 50, 100], center = true);
 	}
 }
+
+PART="9pin_plug_collar";
 
 if (PART == "9pin_plug") {
 	cpc_9pin_plug();
