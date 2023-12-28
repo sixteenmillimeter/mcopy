@@ -604,9 +604,28 @@ module camera_sled_bolex_plate (pos = [0, 0, 0], rot = [0, 0, 0]) {
             translate([-18, -22, 10]) rotate([0, 90, 0]) m5_nut();
             translate([-18, -22, 20]) cube([5, 7.9, 20], center = true);
             translate([-25, -22, 10]) cy(5.1, 25, 40, Y = 90);
+
+            //lines
+            camera_bolex_plate_lines_y(Z / 2);
+            camera_bolex_plate_lines_y((Z / 2) - CameraSledBolexPlateZ);
+            translate([0, CameraSledBolexPlateY / 2, 0]) rotate([90, 0, 0]) camera_bolex_plate_lines_y(0);
+            translate([0, -CameraSledBolexPlateY / 2, 0]) rotate([90, 0, 0]) camera_bolex_plate_lines_y(0);
         }
         
     }
+}
+
+module camera_bolex_plate_lines_y (Z) {
+    camera_bolex_plate_line_y(Z = Z);
+    for (i = [1 : 4]) {
+        Size = i % 2 == 0 ? 3/4 : 1/2;
+        camera_bolex_plate_line_y(X = i * 5, Z = Z, Size = Size);
+        camera_bolex_plate_line_y(X = -i * 5, Z = Z, Size = Size);
+    }
+}
+
+module camera_bolex_plate_line_y (X = 0, Z = 0, Size = 1) {
+    translate([X, 0, Z]) rotate([0, 45, 0]) cube([Size, CameraSledBolexY + 1, Size], center = true);
 }
 
 module end_2020 (pos = [0, 0, 0], rot = [0, 0, 0], Z = 5) {
@@ -990,7 +1009,7 @@ module debug2 () {
 }
 
 
-PART = "camera_sled_bolexx";
+PART = "camera_sled_bolex_plate";
 
 if (PART == "rail_end") {
     rail_end(Projector = true);
