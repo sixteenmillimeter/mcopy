@@ -115,7 +115,7 @@ module cpc_9pin_plug_insert () {
     PinH = PlugH + 10;
 	translate([0, 0, -5.75]) difference () {
 		union () {
-			cylinder(r = R(PlugD - 1.4), h = 6, center = true);
+			cylinder(r = R(PlugD - 0.3), h = 6, center = true);
 			translate([0, 0, -1]) cylinder(r = R(PlugD + 2.5), h = 2, center = true);
 			color("green") translate([0, 0, -7]) cylinder(r = R(PlugD + 1.2), h = 10, center = true);
 		}
@@ -217,7 +217,7 @@ module debug () {
 	}
 }
 
-PART="9pin_plug_collar";
+PART="9pin_plug_insert";
 
 if (PART == "9pin_plug") {
 	cpc_9pin_plug();
