@@ -155,6 +155,7 @@ module cpc_9pin_plug_back () {
             cylinder(r = R(PlugD - 2.7), h = 15, center = true);
             translate([0, 0, -2.5]) cylinder(r = R(RimD), h = 10, center = true);
             translate([0, 0, -15 / 2]) sphere(r = R(RimD));
+            translate([0, 0, -15]) cylinder(r = R(10), h = 4, center = true);
         }
         //void
         cylinder(r = R(PlugD - 5), h = 15 + 1, center = true);
@@ -230,7 +231,7 @@ module debug () {
 	}
 }
 
-PART = "9pin_plug_back";
+PART = "9pin_plug";
 
 if (PART == "9pin_plug") {
 	rotate([180, 0, 0]) cpc_9pin_plug();
@@ -239,7 +240,7 @@ if (PART == "9pin_plug") {
 } else if (PART == "9pin_plug_collar") {
 	cpc_9pin_plug_collar();
 } else if (PART == "9pin_plug_back") {
-    cpc_9pin_plug_back();
+    rotate([180, 0, 0]) cpc_9pin_plug_back();
 } else if (PART == "9pin_socket") {
 	cpc_9pin_socket();
 } else {
