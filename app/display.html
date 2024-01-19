@@ -59,6 +59,11 @@
 		const { ipcRenderer } = require('electron')
 		const remote = require('@electron/remote')
 		let imgTmp; 
+		function delay (ms) {
+			return new Promise((resolve) => {
+				return setTimeout(resolve, ms)
+			})
+		}
 		async function setImage (src) {
 			return new Promise(async (resolve, reject) => {
 				imgTmp = new Image()
@@ -67,11 +72,18 @@
 				body.className = ''
 				body.classList.add('image')
 				imgTmp.onload = function () {
-					img.style.backgroundImage = `url('${src}')`;
-					return resolve(src);
-				};
-				imgTmp.src = src;
-			});
+					img.style.backgroundImage = `url('${src}')`
+					return resolve(src)
+				}
+				imgTmp.src = src
+			})
+		}
+
+		function setBlank () {
+			let img = document.getElementById('img')
+			img.style.background = ''
+			img.style.backgroundUrl = ''
+			img.style.backgroundColor = 'black'
 		}
 		async function onMeter () {
 			console.log('meter')
@@ -134,7 +146,7 @@
 			const dpr = window.devicePixelRatio || 1
 			const screen = window.outerWidth / window.outerHeight
 			const body = document.querySelector('body')
-			let ctx;
+			let ctx
 			body.className = ''
 			if (!can.classList.contains('show')) {
 				can.classList.add('show')
@@ -144,7 +156,7 @@
 					can.width = (window.innerHeight * arg.ratio) * dpr
 					can.height = window.innerHeight * dpr
 				} else {
-					can.width =window.innerWidth * dpr
+					can.width = window.innerWidth * dpr
 					can.height = (window.innerWidth / arg.ratio) * dpr
 				}
 			} else {
@@ -221,12 +233,20 @@
 		}
 		async function onDigital (event, arg) {
 			if (arg.src) {
+				if (arg.exposure) {
+					setBlank()
+					await delay(10)
+				}
 				try {
 					await setImage(arg.src) 
 				} catch (err) {
 					console.error(err)
 				}
-				ipcRenderer.send('display_load', { src : arg.src });
+				if (arg.exposure) {
+					await delay(arg.exposure)
+					setBlank()
+				}
+				ipcRenderer.send('display_load', { src : arg.src })
 			}
 			return event.returnValue = true
 		}
