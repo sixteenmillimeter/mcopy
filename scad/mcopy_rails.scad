@@ -10,6 +10,7 @@ use <2020_profile.scad>
 include <./common/common.scad>
 include <./common/motors.scad>
 include <./common/rods.scad>
+use <./capper.scad>
 
 IN = 25.4;
 
@@ -152,8 +153,13 @@ module rail_end (pos = [0, 0, 0], rot = [90, 0, 0], Motors = true, Projector = f
             }
             
             //rails
-            translate([-RailSpacing / 2, 0, 5]) cube([RailVoid, RailVoid, 40], center = true);
-            translate([RailSpacing / 2, 0, 5]) cube([RailVoid, RailVoid, 40], center = true);
+            if (Projector) {
+                translate([-RailSpacing / 2, 0, 0]) cube([RailVoid, RailVoid, 80], center = true);
+                translate([RailSpacing / 2, 0, 0]) cube([RailVoid, RailVoid, 80], center = true);
+            } else {
+                translate([-RailSpacing / 2, 0, 5]) cube([RailVoid, RailVoid, 40], center = true);
+                translate([RailSpacing / 2, 0, 5]) cube([RailVoid, RailVoid, 40], center = true);
+            }
             
             //rails bolts
             bolt_voids_2020([-RailSpacing / 2, 0, -15 + 5 + 7 ], Projector = Projector);
@@ -183,8 +189,16 @@ module rail_end (pos = [0, 0, 0], rot = [90, 0, 0], Motors = true, Projector = f
             mounting_bolt_void([BoltSpacingX / 2, -41, 40], [90, 0, 0]);
             mounting_bolt_void([-BoltSpacingX / 2, -41, 40], [90, 0, 0]);
         }
-        end_2020([-RailSpacing / 2, 0, -15 + 2.4]);
-        end_2020([RailSpacing / 2, 0, -15 + 2.4]);
+        if (Projector) {
+            end_2020([-RailSpacing / 2, 0, -15 + 2.4]);
+            end_2020([RailSpacing / 2, 0, -15 + 2.4]);
+            
+            end_2020([-RailSpacing / 2, 0, -17.5]);
+            end_2020([RailSpacing / 2, 0, -17.5]);
+        } else {
+            end_2020([-RailSpacing / 2, 0, -15 + 2.4]);
+            end_2020([RailSpacing / 2, 0, -15 + 2.4]);
+        }
     }
     if (Projector) {
         translate(pos) rotate([rot[0] - 90, rot[1], rot[2]]) {
@@ -898,6 +912,58 @@ module rail_end_idle_motor_plug (pos = [0, 0, 0], rot = [0, 0, 0]) {
     }
 }
 
+module dial () {
+    D = 47.75;
+    H = 10;
+    Mark = 5;
+    Marks = 40;
+    difference () {
+        cy(D, H, 200);
+        for (i = [0 : Marks]) {
+            rotate([0, 0, i * (360 / Marks)]) {
+                Size = i % 10 == 0 ? Mark * 2 : Mark;
+                translate([(D / 2) - (Size / 2), 0, H / 2]) rotate([45, 0, 0]) cube([Size, 1/2, 1/2], center = true);
+                translate([(D / 2), 0, 0]) rotate([0, 0, 45]) cube([1/2, 1/2, H + 1], center = true);
+            }
+        }
+        rotate([0, 0, 45]) translate([0, (D / 2) - 6, -(H / 2) + 1.5]) {
+            m4_nut();
+            translate([0, 0, 10]) cy(4, 20, 40);
+             
+        }
+        rotate([0, 0, 45]) translate([0, (D / 2) - 6, H / 2]) {
+            cy(8, 1, 60);
+        }
+    }
+    
+    translate([0, 0, -8]) difference () {
+        cy(8 + 10, 10, 60);
+        cy(8, 10 + 1, 60);
+        translate([6, 0, -2]) {
+            rotate([0, 90, 0]) m3_nut(2.75);
+            rotate([0, 90, 0]) cy(3, 8, 40);
+            translate([0, 0, -5]) cube([2.75, 5.72, 10], center = true);
+        }
+        rotate([0, 0, 90]) translate([6, 0, -2]) {
+            rotate([0, 90, 0]) m3_nut(2.75);
+            rotate([0, 90, 0]) cy(3, 8, 40);
+            translate([0, 0, -5]) cube([2.75, 5.72, 10], center = true);
+        }
+    }
+}
+
+module dial_handle () {
+    EndD = 13;
+    difference () {
+        union () {
+            sphere(r = R(EndD), $fn = 60);
+            translate([0, 0, -15 / 2]) cylinder(r1 = R(7.75), r2 = R(EndD), h = 15, center = true, $fn = 60);
+        }
+        cy(4.25, 50, 40);
+        translate([0, 0, (15 / 2) - 3.5]) cy(9.5, 5, 40);
+    }
+}
+
 module debug () {
     //translate([50 , -90 - 10, 22]) rotate([0, 90, 0]) bearing_void();
     rail_end([0, 20, 0], Projector = true);
@@ -995,8 +1061,8 @@ module rail_sizing (L = 1000) {
     color("green") cy(ThreadDiameter, L, 60, X = 90);
     
     //lens_sled();
-    camera_sled();
-    camera_sled_bolex([0, 0, 60]);
+    //camera_sled();
+    //camera_sled_bolex([0, 0, 60]);
     
     translate([25, -35+17, 0]) color("green") cy(ThreadDiameter, L, 60, X = 90);
     color("red") camera_sled_side_bearing_plate([120, 0, 0]);
@@ -1004,12 +1070,15 @@ module rail_sizing (L = 1000) {
 }
 
 module debug2 () {
-    camera_sled_bolex();
-    color("red") camera_sled_bolex_plate();
+    //camera_sled_bolex();
+    //color("red") camera_sled_bolex_plate();
+    dial();
+    rotate([0, 0, 45]) translate([0, 17.75, 20]) dial_handle();
+    color("green") rotate([0, 0, 45]) translate([0, 17.75, 11]) cy(4, 25, 40);
 }
 
 
-PART = "camera_sled_bolex_plate";
+PART = "rail_endx";
 
 if (PART == "rail_end") {
     rail_end(Projector = true);
@@ -1049,8 +1118,12 @@ if (PART == "rail_end") {
     rail_end_idle_roller_plug();
 } else if (PART == "rail_end_idle_motor_plug") {
     rail_end_idle_motor_plug();
+} else if (PART == "dial") {
+    dial();
+} else if (PART == "dial_handle") {
+    dial_handle();
 } else {
     //debug();
-    //rail_sizing();
-    debug2();
+    rail_sizing();
+    //debug2();
 }
