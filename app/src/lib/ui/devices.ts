@@ -23,8 +23,7 @@ class Devices {
 	}
 
 	async ready (event : any, arg : any) {
-		console.log("Got to ready");
-		console.dir(arg)
+		log.info("Devices ready");
 		let opt : any;
 		let devs : any[] = [];
 		let notify : string = 'Connected to ';
@@ -39,9 +38,9 @@ class Devices {
 			devs.push(arg[i].arduino);
 			if (arg[i].arduino && arg[i].arduino !== '/dev/fake') {
 				if (notify === 'Connected to ') {
-					notify += arg[i].arduino + ' '
+					notify += arg[i].arduino + ' ';
 				} else {
-					notify += `& ${arg[i].arduino}`
+					notify += `& ${arg[i].arduino}`;
 				}
 			}
 			opt = $('<option>');
@@ -103,7 +102,7 @@ class Devices {
 		} catch (err) {
 			log.error(err);
 		}
-
+		log.info("Got here");
 		return event.returnValue = true;
 	}
 
@@ -131,7 +130,7 @@ class Devices {
 		for (let key of keys) {
 			cfg[key] = keys[key];
 		}
-		$('#profile').val(profile)
+		$('#profile').val(profile);
 		timing.reset(p);
 		if (typeof p.light !== 'undefined' && p.light === false) {
 			light.disable();

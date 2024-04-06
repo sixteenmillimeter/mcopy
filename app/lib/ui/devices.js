@@ -28,8 +28,7 @@ class Devices {
     }
     ready(event, arg) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("Got to ready");
-            console.dir(arg);
+            log.info("Devices ready");
             let opt;
             let devs = [];
             let notify = 'Connected to ';
@@ -101,6 +100,7 @@ class Devices {
             catch (err) {
                 log.error(err);
             }
+            log.info("Got here");
             return event.returnValue = true;
         });
     }
