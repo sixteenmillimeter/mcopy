@@ -62,7 +62,7 @@ class Devices {
         }
         catch (err) {
             this.log.warn(err, 'SERIAL', false, true);
-            await delay_1.delay(1000);
+            await (0, delay_1.delay)(1000);
             return this.all([]);
         }
         this.log.info(`Found ${serials.length} USB devices`, 'SERIAL', true, true);
@@ -109,7 +109,7 @@ class Devices {
             this.log.error('Error connecting', err);
             return null;
         }
-        await delay_1.delay(2000);
+        await (0, delay_1.delay)(2000);
         try {
             verifySuccess = await this.arduino.verify();
         }
@@ -118,7 +118,7 @@ class Devices {
             return null;
         }
         this.log.info(`Verified ${serial} as mcopy device`, 'SERIAL', true, true);
-        await delay_1.delay(1000);
+        await (0, delay_1.delay)(1000);
         try {
             device = await this.arduino.distinguish();
         }
@@ -128,7 +128,7 @@ class Devices {
         }
         this.remember('arduino', device, serial);
         this.log.info(`Determined ${device} to be ${device}`, 'SERIAL', true, true);
-        await delay_1.delay(100);
+        await (0, delay_1.delay)(100);
         try {
             await this.arduino.state(device, true);
         }

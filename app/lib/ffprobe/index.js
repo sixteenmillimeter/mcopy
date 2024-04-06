@@ -39,7 +39,7 @@ class FFPROBE {
         let json;
         let vid; //whether video has stream with video data
         try {
-            fileExists = await fs_extra_1.exists(video);
+            fileExists = await (0, fs_extra_1.exists)(video);
         }
         catch (err) {
             return exit(err, 5);
@@ -51,7 +51,7 @@ class FFPROBE {
         }
         try {
             console.log(cmd);
-            raw = await exec_1.exec(cmd);
+            raw = await (0, exec_1.exec)(cmd);
         }
         catch (err) {
             //return exit(err, 7);
@@ -90,7 +90,7 @@ class FFPROBE {
      * @returns {integer} Number of frames in video
      **/
     async frames(video) {
-        const ext = path_1.extname(video.toLowerCase());
+        const ext = (0, path_1.extname)(video.toLowerCase());
         let cmd = `${this.bin} -v error -select_streams v:0 -show_entries stream=nb_frames -of default=nokey=1:noprint_wrappers=1 "${video}"`;
         let backup_cmd = `${this.bin} -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 "${video}"`;
         let gif_cmd = `identify -format "%n\n" "${video}" | head -1`;
@@ -98,7 +98,7 @@ class FFPROBE {
         let raw;
         let frames;
         try {
-            fileExists = await fs_extra_1.exists(video);
+            fileExists = await (0, fs_extra_1.exists)(video);
         }
         catch (err) {
             //return exit(err, 5);
@@ -118,7 +118,7 @@ class FFPROBE {
         }
         try {
             console.log(cmd);
-            raw = await exec_1.exec(cmd);
+            raw = await (0, exec_1.exec)(cmd);
         }
         catch (err) {
             console.error(err);

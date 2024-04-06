@@ -194,8 +194,8 @@ button:focus {
   width: 66px;
   height: 66px;
   position: absolute;
-  top: 7px;
-  left: 7px;
+  top: 14px / 2;
+  left: 14px / 2;
 }
 .dial-wrapper input {
   margin-top: 94px;
@@ -210,10 +210,10 @@ button:focus {
   top: 0;
   bottom: 0;
   overflow: hidden;
-  width: 40px;
+  width: 80px / 2;
 }
 .dial-container.dial-container1 {
-  left: 40px;
+  left: 80px / 2;
 }
 .dial-container.dial-container1 .dial-wedge {
   transform: rotateZ(0deg);
@@ -227,16 +227,16 @@ button:focus {
 .dial-container.dial-container2 .dial-wedge {
   transform: rotateZ(0deg);
   border-radius: 80px 0 0 80px;
-  transform-origin: 40px 40px;
+  transform-origin: 80px/2 80px/2;
 }
 .dial-wedge {
   height: 80px;
-  width: 40px;
+  width: 80px / 2;
 }
 .dial-marker {
   border-radius: 50%;
-  height: 7px;
-  width: 7px;
+  height: 14px / 2;
+  width: 14px / 2;
   position: absolute;
   top: 0;
   left: calc(50% - (14px * 2));

@@ -62,14 +62,14 @@ class Light {
         catch (err) {
             this.log.error('Error sending light command', err);
         }
-        await delay_1.delay(1);
+        await (0, delay_1.delay)(1);
         try {
             this.arduino.sendString(this.id, str);
         }
         catch (err) {
             this.log.error('Error sending light string', err);
         }
-        await delay_1.delay(1);
+        await (0, delay_1.delay)(1);
         await ms;
         return await this.end(rgb, id, ms);
     }

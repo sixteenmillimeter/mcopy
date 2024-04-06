@@ -14,7 +14,7 @@ class Processing {
             let ms;
             //console.log(url)
             try {
-                res = await exec_1.exec(cmd);
+                res = await (0, exec_1.exec)(cmd);
             }
             catch (err) {
                 return reject(err);

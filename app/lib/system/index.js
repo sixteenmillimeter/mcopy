@@ -42,7 +42,7 @@ async function dependencies(platform) {
     //if linux
     if (platform === 'nix') {
         try {
-            eogoutput = await exec_1.exec('which eog');
+            eogoutput = await (0, exec_1.exec)('which eog');
         }
         catch (err) {
             console.error('eog is not installed', err);
@@ -96,12 +96,12 @@ async function system(ui) {
     const obj = {};
     let platform;
     try {
-        obj.tmp = os_1.tmpdir();
+        obj.tmp = (0, os_1.tmpdir)();
     }
     catch (err) {
         obj.tmp = '/tmp';
     }
-    platform = os_1.type();
+    platform = (0, os_1.type)();
     if (platform === 'Darwin') {
         obj.platform = 'osx';
     }

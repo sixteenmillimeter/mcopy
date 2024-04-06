@@ -179,7 +179,7 @@ class Camera {
             catch (err) {
                 this.log.error('Error sending camera exposure command', err);
             }
-            await delay_1.delay(1);
+            await (0, delay_1.delay)(1);
             try {
                 ms = await this.arduino.sendString(this.id, str);
             }
@@ -187,7 +187,7 @@ class Camera {
                 this.log.error('Error sending camera exposure string', err);
             }
             await ms;
-            await delay_1.delay(1);
+            await (0, delay_1.delay)(1);
             try {
                 confirmState = await this.arduino.state(this.id, false);
             }

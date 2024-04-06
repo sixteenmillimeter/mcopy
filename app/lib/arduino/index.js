@@ -143,7 +143,7 @@ class Arduino {
         }
         this.timer = new Date().getTime();
         this.lock(serial);
-        await delay_1.delay(cfg.arduino.serialDelay);
+        await (0, delay_1.delay)(cfg.arduino.serialDelay);
         try {
             ms = await this.sendAsync(device, cmd);
         }
@@ -167,7 +167,7 @@ class Arduino {
      **/
     async sendString(device, str) {
         let writeSuccess;
-        await delay_1.delay(cfg.arduino.serialDelay);
+        await (0, delay_1.delay)(cfg.arduino.serialDelay);
         if (typeof this.serial[this.alias[device]].fake !== 'undefined'
             && this.serial[this.alias[device]].fake) {
             return this.serial[this.alias[device]].string(str);
@@ -230,7 +230,7 @@ class Arduino {
         }
         this.timer = new Date().getTime();
         this.lock(serial);
-        await delay_1.delay(cfg.arduino.serialDelay);
+        await (0, delay_1.delay)(cfg.arduino.serialDelay);
         try {
             results = await this.stateAsync(device, confirm);
         }
@@ -403,7 +403,7 @@ class Arduino {
                     return reject('Wrong data returned');
                 }
             };
-            await delay_1.delay(cfg.arduino.serialDelay);
+            await (0, delay_1.delay)(cfg.arduino.serialDelay);
             try {
                 writeSuccess = await this.sendAsync(device, cfg.arduino.cmd.connect);
             }
@@ -480,7 +480,7 @@ class Arduino {
                 }
                 return resolve(type);
             };
-            await delay_1.delay(cfg.arduino.serialDelay);
+            await (0, delay_1.delay)(cfg.arduino.serialDelay);
             try {
                 writeSuccess = await this.sendAsync(device, cfg.arduino.cmd.mcopy_identifier);
                 this.log.info(writeSuccess);
@@ -531,7 +531,7 @@ class Arduino {
                 if (typeof timeout === 'undefined')
                     timeout = 10;
                 arduino.timer = +new Date();
-                await delay_1.delay(timeout);
+                await (0, delay_1.delay)(timeout);
                 arduino.end(serial, cmd);
                 return cb();
             },

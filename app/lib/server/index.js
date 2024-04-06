@@ -37,9 +37,9 @@ class Server {
         await this.start();
     }
     async load() {
-        this.http = express_1.default();
+        this.http = (0, express_1.default)();
         for (let tmpl of this.templates) {
-            tmpl.data = await promises_1.readFile(tmpl.path, 'utf8');
+            tmpl.data = await (0, promises_1.readFile)(tmpl.path, 'utf8');
         }
         this.http.get('/', this.index.bind(this));
         this.http.get('/image/:key', this.image.bind(this));
@@ -165,7 +165,7 @@ class Server {
     async displayImage(src) {
         let key;
         if (this.useServer()) {
-            key = path_1.basename(src);
+            key = (0, path_1.basename)(src);
             this.addProxy(key, src);
             await this.cmdAll('image', { image: `/image/${key}` });
             return true;
@@ -179,7 +179,7 @@ class Server {
      * WSS
      **/
     async cmd(ws, action, options = {}) {
-        const id = uuid_1.v4();
+        const id = (0, uuid_1.v4)();
         let obj = {
             id, action
         };
