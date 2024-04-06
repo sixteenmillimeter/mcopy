@@ -23,7 +23,8 @@ class Devices {
 	}
 
 	async ready (event : any, arg : any) {
-		//console.dir(arg)
+		console.log("Got to ready");
+		console.dir(arg)
 		let opt : any;
 		let devs : any[] = [];
 		let notify : string = 'Connected to ';

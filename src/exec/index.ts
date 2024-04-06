@@ -1,6 +1,6 @@
 'use strict'
 
-const execRaw = require('child_process').exec
+export const execRaw = require('child_process').exec
 
 /**
  * Promisified child_process.exec

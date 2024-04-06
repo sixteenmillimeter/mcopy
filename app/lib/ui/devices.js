@@ -28,7 +28,8 @@ class Devices {
     }
     ready(event, arg) {
         return __awaiter(this, void 0, void 0, function* () {
-            //console.dir(arg)
+            console.log("Got to ready");
+            console.dir(arg);
             let opt;
             let devs = [];
             let notify = 'Connected to ';
