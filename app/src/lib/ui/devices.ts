@@ -30,7 +30,7 @@ class Devices {
 		let notify : string = 'Connected to ';
 		let p : any;
 
-		if (arg.camera && arg.camera.exposure) {
+		if (typeof arg.camera !== 'undefined' && typeof arg.camera.exposure !== undefined) {
 			$('#submit_cam_time').removeClass('hide');
 			$('#cam_time').removeAttr('readonly');
 		}
@@ -67,19 +67,11 @@ class Devices {
 			}
 		}
 
-		if (arg && arg.profile) {
-			$('#profile').val(arg.profile)
-			log.info(`Using configuration profile "${arg.profile}"`, 'DEVICES', true, true);
-			p = cfg.profiles[arg.profile];
-			if (typeof p.light !== 'undefined' && p.light === false) {
-				light.disable();
-			} else {
-				light.enable();
-			}
-			timing.reset(p);
-			//devices.profile(arg.profile)
+		if (typeof arg !== 'undefined' && typeof arg.profile !== 'undefined') {
+			devices.profile(arg.profile);
 		}
-		if (arg && arg.timing) {
+
+		if (typeof arg !== 'undefined' && typeof arg.timing !== 'undefined') {
 			timing.restore(arg.timing);
 		}
 		
@@ -139,13 +131,14 @@ class Devices {
 		for (let key of keys) {
 			cfg[key] = keys[key];
 		}
+		$('#profile').val(profile)
 		timing.reset(p);
 		if (typeof p.light !== 'undefined' && p.light === false) {
 			light.disable();
 		} else {
 			light.enable();
 		}
-		ipcRenderer.send('profile', { profile })
+		ipcRenderer.send('profile', { profile });
 		timing.store();
 
 	}

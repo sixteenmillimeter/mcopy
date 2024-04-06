@@ -94,7 +94,7 @@ class Timing {
 				this.updateUI('#proj_time', proj);
 			}
 		}
-		log.info('reset')
+		log.info('Timing reset');
 	}
 
 	public restore (timing : TimingData) {

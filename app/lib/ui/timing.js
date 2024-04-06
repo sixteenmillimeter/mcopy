@@ -80,7 +80,7 @@ class Timing {
                 this.updateUI('#proj_time', proj);
             }
         }
-        log.info('reset');
+        log.info('Timing reset');
     }
     restore(timing) {
         this.data = timing;
