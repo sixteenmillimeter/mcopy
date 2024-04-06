@@ -51,6 +51,7 @@ const int PROJECTOR_FRAME = 600;
 const int PROJECTOR_MICROSWITCH_CLOSED = 0;
 const int PROJECTOR_MICROSWITCH_OPENED = 1;
 const int PROJECTOR_HALF_TIME = 450;
+const int PROJECTOR_STOP_DELAY = 3;
 
 //PROJECTOR VARIABLES
 boolean proj_dir = true; 
@@ -126,17 +127,34 @@ void proj_start () {
 
 void proj_stop () {
   //stop both directions
-  delay(10);
+  delay(2);
   digitalWrite(PROJECTOR_FWD, LOW);
   digitalWrite(PROJECTOR_BWD, LOW);
   digitalWrite(LED_FWD, LOW);
   digitalWrite(LED_BWD, LOW);
+  if (digitalRead(PROJECTOR_MICROSWITCH) == PROJECTOR_MICROSWITCH_CLOSED) {
+    if (proj_dir) {
+      while (digitalRead(PROJECTOR_MICROSWITCH) == PROJECTOR_MICROSWITCH_CLOSED) {
+        digitalWrite(PROJECTOR_BWD, HIGH);
+        delay(PROJECTOR_STOP_DELAY);
+      }
+      digitalWrite(PROJECTOR_BWD, LOW);
+    } else {
+      while (digitalRead(PROJECTOR_MICROSWITCH) == PROJECTOR_MICROSWITCH_CLOSED) {
+        digitalWrite(PROJECTOR_FWD, HIGH);
+        delay(PROJECTOR_STOP_DELAY);
+      }
+      digitalWrite(PROJECTOR_FWD, LOW);
+    }
+  }
 
   mc.confirm(mc.PROJECTOR);
   mc.log("projector()");
   proj_running = false;
 
+  delay(16);
   update_timing(millis() - proj_time);
+  
 }
 
 void proj_direction (boolean state) {
@@ -171,7 +189,7 @@ void proj_microswitch () {
     proj_micro_state = val; //unneeded?
     proj_stop();
   } else {
-    //delay(2); //some smothing value
+    delay(2); //some smothing value
   }
 }
 
