@@ -83,7 +83,9 @@ class Timing {
         log.info('Timing reset');
     }
     restore(timing) {
-        this.data = timing;
+        for (let key in timing) {
+            this.data[key] = timing[key];
+        }
     }
     //update with rolling average
     update(c, ms, force = false) {

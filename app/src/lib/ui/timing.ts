@@ -98,7 +98,9 @@ class Timing {
 	}
 
 	public restore (timing : TimingData) {
-		this.data = timing;
+		for (let key in timing) {
+			this.data[key] = timing[key];
+		}
 	}
 
 	//update with rolling average
