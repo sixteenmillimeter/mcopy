@@ -35,8 +35,8 @@ class Devices {
 		}
 
 		for (let i in arg) {
-			devs.push(arg[i].arduino);
-			if (arg[i].arduino && arg[i].arduino !== '/dev/fake') {
+			if (typeof arg[i].arduino !== 'undefined' && arg[i].arduino !== '/dev/fake') {
+			    devs.push(arg[i].arduino);
 				if (notify === 'Connected to ') {
 					notify += arg[i].arduino + ' ';
 				} else {
@@ -86,7 +86,7 @@ class Devices {
 			//add capper features to grid
 			capper.enable();
 		}
-
+		log.info("Before stats");
 		seq.set(0, cfg.cmd.camera_forward);
 		seq.set(1, cfg.cmd.projector_forward);
 		grid.state(0);
