@@ -126,7 +126,7 @@ class Devices {
             this.log.error('Error distinguishing device', err);
             return null;
         }
-        this.remember('arduino', device, serial);
+        this.remember(device, serial, 'arduino');
         this.log.info(`Determined ${device} to be ${device}`, 'SERIAL', true, true);
         await (0, delay_1.delay)(100);
         try {
@@ -521,13 +521,15 @@ class Devices {
     remember(device, serial, type) {
         let deviceEntry;
         const match = this.settings.state.devices.filter((dev) => {
-            if (dev[device] && dev[device] === serial) {
+            if (typeof dev.device !== 'undefined' && dev.device === device &&
+                typeof dev.serial !== 'undefined' && dev.serial === serial) {
                 return dev;
             }
         });
         if (match.length === 0) {
             deviceEntry = {
                 device,
+                type,
                 serial
             };
             this.settings.state.devices.push(deviceEntry);
