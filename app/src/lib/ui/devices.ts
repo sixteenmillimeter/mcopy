@@ -74,15 +74,15 @@ class Devices {
 			timing.restore(arg.timing);
 		}
 		
-		if (arg.projector_second) {
+		if (typeof arg !== 'undefined' && typeof arg.projector_second !== 'undefined') {
 			//add second row of projector pads to grid
 			proj.second.enable();
 		}
-		if (arg.camera_second) {
+		if (typeof arg !== 'undefined' && typeof arg.camera_second !== 'undefined') {
 			//add second row of camera pads to grid
 			cam.second.enable();
 		}
-		if (arg.capper) {
+		if (typeof arg !== 'undefined' && typeof arg.capper !== 'undefined') {
 			//add capper features to grid
 			capper.enable();
 		}
@@ -92,7 +92,7 @@ class Devices {
 		grid.state(0);
 		grid.state(1);
 		seq.stats();
-
+		log.info('Got past stats');
 		//@ts-ignore
 		await delay(1000);
 
