@@ -16,7 +16,7 @@ class Devices {
     }
     init() {
         this.listen();
-        this.profiles();
+        this.layoutProfiles();
         gui.overlay(true);
         gui.spinner(true, 'Checking for connected devices...');
     }
@@ -69,7 +69,7 @@ class Devices {
                 }
             }
             if (typeof arg !== 'undefined' && typeof arg.profile !== 'undefined') {
-                devices.profile(arg.profile);
+                yield devices.profile(arg.profile);
             }
             if (typeof arg !== 'undefined' && typeof arg.timing !== 'undefined') {
                 timing.restore(arg.timing);
@@ -86,15 +86,11 @@ class Devices {
                 //add capper features to grid
                 capper.enable();
             }
-            log.info("Before stats");
             seq.set(0, cfg.cmd.camera_forward);
             seq.set(1, cfg.cmd.projector_forward);
             grid.state(0);
             grid.state(1);
             seq.stats();
-            log.info('Got past stats');
-            //@ts-ignore
-            yield delay(1000);
             try {
                 gui.spinner(false);
                 gui.overlay(false);
@@ -102,11 +98,30 @@ class Devices {
             catch (err) {
                 log.error(err);
             }
-            log.info("Got here");
             return event.returnValue = true;
         });
     }
-    profiles() {
+    profile(profile) {
+        return __awaiter(this, void 0, void 0, function* () {
+            log.info(`Changed configuration profile to "${profile}"`, 'DEVICES', true, true);
+            const p = cfg.profiles[profile];
+            const keys = Object.keys(p);
+            for (let key of keys) {
+                cfg[key] = keys[key];
+            }
+            $('#profile').val(profile);
+            timing.reset(p);
+            if (typeof p.light !== 'undefined' && p.light === false) {
+                yield light.disable();
+            }
+            else {
+                yield light.enable();
+            }
+            yield ipcRenderer.invoke('profile', { profile });
+            yield timing.store();
+        });
+    }
+    layoutProfiles() {
         const keys = Object.keys(cfg.profiles);
         const elem = $('#profile');
         let opt;
@@ -121,24 +136,6 @@ class Devices {
             const val = $('#profile').val();
             this.profile(val);
         });
-    }
-    profile(profile) {
-        log.info(`Changed configuration profile to "${profile}"`, 'DEVICES', true, true);
-        const p = cfg.profiles[profile];
-        const keys = Object.keys(p);
-        for (let key of keys) {
-            cfg[key] = keys[key];
-        }
-        $('#profile').val(profile);
-        timing.reset(p);
-        if (typeof p.light !== 'undefined' && p.light === false) {
-            light.disable();
-        }
-        else {
-            light.enable();
-        }
-        ipcRenderer.send('profile', { profile });
-        timing.store();
     }
     intval() {
         const url = $('#intval').val();

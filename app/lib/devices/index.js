@@ -34,23 +34,24 @@ class Devices {
      * Listen to the "profile" channel for messages from the UI.
      **/
     listen() {
-        this.ipc.on('profile', this.listener.bind(this));
+        this.ipc.handle('profile', this.listener.bind(this));
     }
     /**
      * The "profile" channel callback. If a profile is changed, set it in the
      * local settings object.
      **/
-    listener(event, arg) {
+    async listener(event, arg) {
         if (typeof arg.profile !== 'undefined') {
             this.log.info(`Saving profile ${arg.profile}`, 'SETTINGS', false, false);
             this.settings.update('profile', arg.profile);
-            this.settings.save();
+            await this.settings.save();
         }
         if (typeof arg.timing !== 'undefined') {
             this.log.info(`Saving timing info`, 'SETTINGS', false, false);
             this.settings.update('timing', arg.timing);
-            this.settings.save();
+            await this.settings.save();
         }
+        return true;
     }
     /**
      *

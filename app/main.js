@@ -106,9 +106,12 @@ var init = async function () {
 	arduino = require('arduino')(cfg, ee, errorState)
 
 	dev = require('devices')(arduino, settings, mainWindow)
-
-	//why is delay happening still?
-	await delay(2000)
+	server = require('server')(mainWindow.webContents)
+	light = require('light')(arduino, cfg, mainWindow.webContents)
+	filmout = require('filmout')(display, server, ffmpeg, ffprobe, mainWindow.webContents, light)
+	cam = require('cam')(arduino, cfg, mainWindow.webContents, filmout)
+	proj = require('proj')(arduino, cfg, mainWindow.webContents, filmout)
+	alert = require('alert')(mainWindow.webContents)
 
 	try {
 		await dev.enumerate()
@@ -116,13 +119,6 @@ var init = async function () {
 		console.error(err)
 		log.error('Error enumerating connected devices', err)
 	}
-
-	server = require('server')(mainWindow.webContents)
-	light = require('light')(arduino, cfg, mainWindow.webContents)
-	filmout = require('filmout')(display, server, ffmpeg, ffprobe, mainWindow.webContents, light)
-	cam = require('cam')(arduino, cfg, mainWindow.webContents, filmout)
-	proj = require('proj')(arduino, cfg, mainWindow.webContents, filmout)
-	alert = require('alert')(mainWindow.webContents)
 
 	if (dev && dev.connected && dev.connected.camera_second) {
 		cam2 = require('cam')(arduino, cfg, mainWindow.webContents, filmout, true)

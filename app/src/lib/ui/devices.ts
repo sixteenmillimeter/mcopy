@@ -11,7 +11,7 @@ class Devices {
 	}
 	init () {
 		this.listen();
-		this.profiles();
+		this.layoutProfiles();
 		gui.overlay(true);
 		gui.spinner(true, 'Checking for connected devices...');
 	}
@@ -67,34 +67,33 @@ class Devices {
 		}
 
 		if (typeof arg !== 'undefined' && typeof arg.profile !== 'undefined') {
-			devices.profile(arg.profile);
+			await devices.profile(arg.profile);
 		}
 
 		if (typeof arg !== 'undefined' && typeof arg.timing !== 'undefined') {
 			timing.restore(arg.timing);
 		}
-		
+
 		if (typeof arg !== 'undefined' && typeof arg.projector_second !== 'undefined') {
 			//add second row of projector pads to grid
 			proj.second.enable();
 		}
+
 		if (typeof arg !== 'undefined' && typeof arg.camera_second !== 'undefined') {
 			//add second row of camera pads to grid
 			cam.second.enable();
 		}
+
 		if (typeof arg !== 'undefined' && typeof arg.capper !== 'undefined') {
 			//add capper features to grid
 			capper.enable();
 		}
-		log.info("Before stats");
+
 		seq.set(0, cfg.cmd.camera_forward);
 		seq.set(1, cfg.cmd.projector_forward);
 		grid.state(0);
 		grid.state(1);
 		seq.stats();
-		log.info('Got past stats');
-		//@ts-ignore
-		await delay(1000);
 
 		try {
 			gui.spinner(false);
@@ -102,11 +101,32 @@ class Devices {
 		} catch (err) {
 			log.error(err);
 		}
-		log.info("Got here");
+
 		return event.returnValue = true;
 	}
 
-	profiles () {
+	async profile (profile : string) {
+		log.info(`Changed configuration profile to "${profile}"`, 'DEVICES', true, true);
+		const p : any = cfg.profiles[profile];
+		const keys : any[] = Object.keys(p);
+		for (let key of keys) {
+			cfg[key] = keys[key];
+		}
+		$('#profile').val(profile);
+
+		timing.reset(p);
+
+		if (typeof p.light !== 'undefined' && p.light === false) {
+			await light.disable();
+		} else {
+			await light.enable();
+		}
+
+		await ipcRenderer.invoke('profile', { profile });
+		await timing.store();
+	}
+
+	layoutProfiles () {
 		const keys : string[] = Object.keys(cfg.profiles);
 		const elem : any = $('#profile');
 		let opt;
@@ -121,25 +141,6 @@ class Devices {
 			const val : string = $('#profile').val() as string;
 			this.profile(val);
 		});
-	}
-
-	profile (profile : string) {
-		log.info(`Changed configuration profile to "${profile}"`, 'DEVICES', true, true);
-		const p : any = cfg.profiles[profile];
-		const keys : any[] = Object.keys(p);
-		for (let key of keys) {
-			cfg[key] = keys[key];
-		}
-		$('#profile').val(profile);
-		timing.reset(p);
-		if (typeof p.light !== 'undefined' && p.light === false) {
-			light.disable();
-		} else {
-			light.enable();
-		}
-		ipcRenderer.send('profile', { profile });
-		timing.store();
-
 	}
 
 	intval () {

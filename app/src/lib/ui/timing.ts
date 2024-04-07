@@ -100,6 +100,7 @@ class Timing {
 	public restore (timing : TimingData) {
 		for (let key in timing) {
 			this.data[key] = timing[key];
+			//log.info(`Timing [${key}] restored to ${timing[key]}`);
 		}
 	}
 
@@ -107,8 +108,8 @@ class Timing {
 	public update (c : string, ms : number, force : boolean = false) {
 		let cmd : string = this.fromArduino[c];
 		let id : string;
-		log.info(c)
-		log.info(cmd)
+		//log.info(c)
+		//log.info(cmd)
 		if (typeof cmd !== 'undefined' && typeof this.data[cmd] !== 'undefined') {
 			if (force) {
 				log.info(`Forcing update of timing, ${ms}`);
@@ -144,8 +145,12 @@ class Timing {
 		return 0;
 	}
 
-	public store () {
-		ipcRenderer.send('profile', { timing : this.data })
+	public async store () {
+		try {
+			await ipcRenderer.invoke('profile', { timing : this.data });
+		} catch (err) {
+			log.error(err);
+		}
 	}
 }
 
