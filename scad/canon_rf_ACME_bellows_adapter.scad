@@ -1,4 +1,4 @@
-include <../common/common.scad>;
+include <./common/common.scad>;
 
 PlateHeight = 101;
 PlateWidth = 65.5;
