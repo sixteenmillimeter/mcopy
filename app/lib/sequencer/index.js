@@ -164,7 +164,7 @@ class Sequencer {
                 }
                 //UI initiates pause, not planned
                 while (this.paused) {
-                    await delay_1.default(42);
+                    await (0, delay_1.default)(42);
                 }
                 if (typeof this.arr[y] === 'undefined') {
                     continue;

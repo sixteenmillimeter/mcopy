@@ -1,6 +1,6 @@
 'use strict'
 
-class Intval {
+export class Intval {
 	private _baseUrl : string
 	private req : any
 	constructor (url : string) {

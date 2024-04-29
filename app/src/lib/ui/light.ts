@@ -121,7 +121,7 @@ class Light {
 		}
 	}
 
-	public disable () {
+	public async disable () {
 		const obj : LightEvent = {
 			disable : true,
 			id : uuid()
@@ -131,20 +131,20 @@ class Light {
 		$('#seq_labels .spacer').eq(1).hide();
 		$('#light_set').hide();
 
-		ipcRenderer.sendSync(this.id, obj);
+		return ipcRenderer.invoke(this.id, obj);
 	}
 
-	public enable () {
+	public async enable () {
 		const obj = {
 			enable : true,
 			id : uuid()
 		};
-		light.disabled = false;
+		this.disabled = false;
 		$('#tb_toolbar_item_light').show();
 		$('#seq_labels .spacer').eq(1).show();
 		$('#light_set').show();
 
-		ipcRenderer.sendSync(light.id, obj);
+		return ipcRenderer.invoke(this.id, obj);
 	}
 
 	public colorPickers () {

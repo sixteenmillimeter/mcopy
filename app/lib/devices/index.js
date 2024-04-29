@@ -34,23 +34,24 @@ class Devices {
      * Listen to the "profile" channel for messages from the UI.
      **/
     listen() {
-        this.ipc.on('profile', this.listener.bind(this));
+        this.ipc.handle('profile', this.listener.bind(this));
     }
     /**
      * The "profile" channel callback. If a profile is changed, set it in the
      * local settings object.
      **/
-    listener(event, arg) {
+    async listener(event, arg) {
         if (typeof arg.profile !== 'undefined') {
             this.log.info(`Saving profile ${arg.profile}`, 'SETTINGS', false, false);
             this.settings.update('profile', arg.profile);
-            this.settings.save();
+            await this.settings.save();
         }
         if (typeof arg.timing !== 'undefined') {
             this.log.info(`Saving timing info`, 'SETTINGS', false, false);
             this.settings.update('timing', arg.timing);
-            this.settings.save();
+            await this.settings.save();
         }
+        return true;
     }
     /**
      *
@@ -62,7 +63,7 @@ class Devices {
         }
         catch (err) {
             this.log.warn(err, 'SERIAL', false, true);
-            await delay_1.delay(1000);
+            await (0, delay_1.delay)(1000);
             return this.all([]);
         }
         this.log.info(`Found ${serials.length} USB devices`, 'SERIAL', true, true);
@@ -109,7 +110,7 @@ class Devices {
             this.log.error('Error connecting', err);
             return null;
         }
-        await delay_1.delay(2000);
+        await (0, delay_1.delay)(2000);
         try {
             verifySuccess = await this.arduino.verify();
         }
@@ -118,7 +119,7 @@ class Devices {
             return null;
         }
         this.log.info(`Verified ${serial} as mcopy device`, 'SERIAL', true, true);
-        await delay_1.delay(1000);
+        await (0, delay_1.delay)(1000);
         try {
             device = await this.arduino.distinguish();
         }
@@ -126,9 +127,9 @@ class Devices {
             this.log.error('Error distinguishing device', err);
             return null;
         }
-        this.remember('arduino', device, serial);
+        this.remember(device, serial, 'arduino');
         this.log.info(`Determined ${device} to be ${device}`, 'SERIAL', true, true);
-        await delay_1.delay(100);
+        await (0, delay_1.delay)(100);
         try {
             await this.arduino.state(device, true);
         }
@@ -521,13 +522,15 @@ class Devices {
     remember(device, serial, type) {
         let deviceEntry;
         const match = this.settings.state.devices.filter((dev) => {
-            if (dev[device] && dev[device] === serial) {
+            if (typeof dev.device !== 'undefined' && dev.device === device &&
+                typeof dev.serial !== 'undefined' && dev.serial === serial) {
                 return dev;
             }
         });
         if (match.length === 0) {
             deviceEntry = {
                 device,
+                type,
                 serial
             };
             this.settings.state.devices.push(deviceEntry);

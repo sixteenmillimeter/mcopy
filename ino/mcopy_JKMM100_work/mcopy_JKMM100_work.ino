@@ -51,7 +51,7 @@ const int PROJECTOR_FRAME = 600;
 const int PROJECTOR_MICROSWITCH_CLOSED = 0;
 const int PROJECTOR_MICROSWITCH_OPENED = 1;
 const int PROJECTOR_HALF_TIME = 450;
-const int PROJECTOR_STOP_DELAY = 1;
+const int PROJECTOR_STOP_DELAY = 3;
 
 //PROJECTOR VARIABLES
 boolean proj_dir = true; 
@@ -127,7 +127,7 @@ void proj_start () {
 
 void proj_stop () {
   //stop both directions
-  //delay(10);
+  delay(2);
   digitalWrite(PROJECTOR_FWD, LOW);
   digitalWrite(PROJECTOR_BWD, LOW);
   digitalWrite(LED_FWD, LOW);
@@ -194,7 +194,7 @@ void proj_microswitch () {
     proj_micro_state = val; //unneeded?
     proj_stop();
   } else {
-    //delay(1); //some smothing value
+    delay(2); //some smothing value
   }
 }
 

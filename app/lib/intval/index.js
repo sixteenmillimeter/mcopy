@@ -1,4 +1,6 @@
 'use strict';
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Intval = void 0;
 class Intval {
     constructor(url) {
         this._baseUrl = `http://${url}`;
@@ -64,5 +66,6 @@ class Intval {
         });
     }
 }
+exports.Intval = Intval;
 module.exports.Intval = Intval;
 //# sourceMappingURL=index.js.map

@@ -1,4 +1,13 @@
 'use strict';
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 let timing;
 class Timing {
     constructor() {
@@ -80,17 +89,20 @@ class Timing {
                 this.updateUI('#proj_time', proj);
             }
         }
-        log.info('reset');
+        log.info('Timing reset');
     }
     restore(timing) {
-        this.data = timing;
+        for (let key in timing) {
+            this.data[key] = timing[key];
+            //log.info(`Timing [${key}] restored to ${timing[key]}`);
+        }
     }
     //update with rolling average
     update(c, ms, force = false) {
         let cmd = this.fromArduino[c];
         let id;
-        log.info(c);
-        log.info(cmd);
+        //log.info(c)
+        //log.info(cmd)
         if (typeof cmd !== 'undefined' && typeof this.data[cmd] !== 'undefined') {
             if (force) {
                 log.info(`Forcing update of timing, ${ms}`);
@@ -126,7 +138,14 @@ class Timing {
         return 0;
     }
     store() {
-        ipcRenderer.send('profile', { timing: this.data });
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield ipcRenderer.invoke('profile', { timing: this.data });
+            }
+            catch (err) {
+                log.error(err);
+            }
+        });
     }
 }
 timing = new Timing();

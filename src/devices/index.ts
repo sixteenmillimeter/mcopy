@@ -46,23 +46,24 @@ class Devices {
 	 * Listen to the "profile" channel for messages from the UI.
 	 **/
 	private listen () {
-		this.ipc.on('profile', this.listener.bind(this));
+		this.ipc.handle('profile', this.listener.bind(this));
 	}
 	/**
 	 * The "profile" channel callback. If a profile is changed, set it in the
 	 * local settings object.
 	 **/
-	private listener (event : any, arg : any){
+	private async listener (event : any, arg : any){
 		if (typeof arg.profile !== 'undefined') {
 			this.log.info(`Saving profile ${arg.profile}`, 'SETTINGS', false, false);
 			this.settings.update('profile', arg.profile);
-			this.settings.save();
+			await this.settings.save();
 		}
 		if (typeof arg.timing !== 'undefined') {
 			this.log.info(`Saving timing info`, 'SETTINGS', false, false);
 			this.settings.update('timing', arg.timing);
-			this.settings.save();
+			await this.settings.save();
 		}
+		return true;
 	}
 	/**
 	 * 
@@ -140,7 +141,7 @@ class Devices {
 			return null
 		}
 
-		this.remember('arduino', device, serial)
+		this.remember(device, serial, 'arduino')
 		this.log.info(`Determined ${device} to be ${device}`, 'SERIAL', true, true)
 
 
@@ -504,7 +505,6 @@ class Devices {
 
 		if (this.settings.state.camera && this.settings.state.camera.intval) {
 			c.intval = this.settings.state.camera.intval
-
 		}
 
 		return this.ready(p, c, l, cs, ps, capper)
@@ -515,13 +515,15 @@ class Devices {
 	private remember (device: string, serial : string, type : string) {
 		let deviceEntry : any;
 		const match = this.settings.state.devices.filter((dev : any) => {
-			if (dev[device] && dev[device] === serial) {
+			if (typeof dev.device !== 'undefined' && dev.device === device && 
+				typeof dev.serial !== 'undefined' && dev.serial === serial) {
 				return dev
 			}
 		})
 		if (match.length === 0) {
 			deviceEntry = {
 				device,
+				type,
 				serial
 			}
 			this.settings.state.devices.push(deviceEntry)

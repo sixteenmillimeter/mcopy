@@ -38,7 +38,7 @@ class Light {
 	 *
 	 **/
 	private listen () {
-		this.ipc.on(this.id, this.listener.bind(this));
+		this.ipc.handle(this.id, this.listener.bind(this));
 	}
 
 	/**
@@ -57,7 +57,7 @@ class Light {
 		} else if (typeof arg.disable !== 'undefined') {
 			this.enabled = false;
 		}
-		event.returnValue = true
+		return true;
 	}
 
 	/**

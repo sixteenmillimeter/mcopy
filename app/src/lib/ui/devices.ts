@@ -11,7 +11,7 @@ class Devices {
 	}
 	init () {
 		this.listen();
-		this.profiles();
+		this.layoutProfiles();
 		gui.overlay(true);
 		gui.spinner(true, 'Checking for connected devices...');
 	}
@@ -23,24 +23,24 @@ class Devices {
 	}
 
 	async ready (event : any, arg : any) {
-		//console.dir(arg)
+		log.info("Devices ready");
 		let opt : any;
 		let devs : any[] = [];
 		let notify : string = 'Connected to ';
 		let p : any;
 
-		if (arg.camera && arg.camera.exposure) {
+		if (typeof arg.camera !== 'undefined' && typeof arg.camera.exposure !== undefined) {
 			$('#submit_cam_time').removeClass('hide');
 			$('#cam_time').removeAttr('readonly');
 		}
 
 		for (let i in arg) {
-			devs.push(arg[i].arduino);
-			if (arg[i].arduino && arg[i].arduino !== '/dev/fake') {
+			if (typeof arg[i].arduino !== 'undefined' && arg[i].arduino !== '/dev/fake') {
+			    devs.push(arg[i].arduino);
 				if (notify === 'Connected to ') {
-					notify += arg[i].arduino + ' '
+					notify += arg[i].arduino + ' ';
 				} else {
-					notify += `& ${arg[i].arduino}`
+					notify += `& ${arg[i].arduino}`;
 				}
 			}
 			opt = $('<option>');
@@ -66,31 +66,25 @@ class Devices {
 			}
 		}
 
-		if (arg && arg.profile) {
-			$('#profile').val(arg.profile)
-			log.info(`Using configuration profile "${arg.profile}"`, 'DEVICES', true, true);
-			p = cfg.profiles[arg.profile];
-			if (typeof p.light !== 'undefined' && p.light === false) {
-				light.disable();
-			} else {
-				light.enable();
-			}
-			timing.reset(p);
-			//devices.profile(arg.profile)
+		if (typeof arg !== 'undefined' && typeof arg.profile !== 'undefined') {
+			await devices.profile(arg.profile);
 		}
-		if (arg && arg.timing) {
+
+		if (typeof arg !== 'undefined' && typeof arg.timing !== 'undefined') {
 			timing.restore(arg.timing);
 		}
-		
-		if (arg.projector_second) {
+
+		if (typeof arg !== 'undefined' && typeof arg.projector_second !== 'undefined') {
 			//add second row of projector pads to grid
 			proj.second.enable();
 		}
-		if (arg.camera_second) {
+
+		if (typeof arg !== 'undefined' && typeof arg.camera_second !== 'undefined') {
 			//add second row of camera pads to grid
 			cam.second.enable();
 		}
-		if (arg.capper) {
+
+		if (typeof arg !== 'undefined' && typeof arg.capper !== 'undefined') {
 			//add capper features to grid
 			capper.enable();
 		}
@@ -100,9 +94,6 @@ class Devices {
 		grid.state(0);
 		grid.state(1);
 		seq.stats();
-
-		//@ts-ignore
-		await delay(1000);
 
 		try {
 			gui.spinner(false);
@@ -114,7 +105,28 @@ class Devices {
 		return event.returnValue = true;
 	}
 
-	profiles () {
+	async profile (profile : string) {
+		log.info(`Changed configuration profile to "${profile}"`, 'DEVICES', true, true);
+		const p : any = cfg.profiles[profile];
+		const keys : any[] = Object.keys(p);
+		for (let key of keys) {
+			cfg[key] = keys[key];
+		}
+		$('#profile').val(profile);
+
+		timing.reset(p);
+
+		if (typeof p.light !== 'undefined' && p.light === false) {
+			await light.disable();
+		} else {
+			await light.enable();
+		}
+
+		await ipcRenderer.invoke('profile', { profile });
+		await timing.store();
+	}
+
+	layoutProfiles () {
 		const keys : string[] = Object.keys(cfg.profiles);
 		const elem : any = $('#profile');
 		let opt;
@@ -129,24 +141,6 @@ class Devices {
 			const val : string = $('#profile').val() as string;
 			this.profile(val);
 		});
-	}
-
-	profile (profile : string) {
-		log.info(`Changed configuration profile to "${profile}"`, 'DEVICES', true, true);
-		const p : any = cfg.profiles[profile];
-		const keys : any[] = Object.keys(p);
-		for (let key of keys) {
-			cfg[key] = keys[key];
-		}
-		timing.reset(p);
-		if (typeof p.light !== 'undefined' && p.light === false) {
-			light.disable();
-		} else {
-			light.enable();
-		}
-		ipcRenderer.send('profile', { profile })
-		timing.store();
-
 	}
 
 	intval () {

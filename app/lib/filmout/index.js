@@ -81,7 +81,7 @@ class FilmOut {
      * @param {string} data Data to produce hash of
      */
     hash(data) {
-        return crypto_1.createHash('sha1').update(data).digest('hex');
+        return (0, crypto_1.createHash)('sha1').update(data).digest('hex');
     }
     /**
      * Sets filmout direction.
@@ -125,17 +125,17 @@ class FilmOut {
             throw err;
         }
         if (this.server.displayImage(path)) {
-            await delay_1.delay(20);
+            await (0, delay_1.delay)(20);
             return;
         }
         await this.display.show(path);
-        await delay_1.delay(20);
+        await (0, delay_1.delay)(20);
     }
     /**
      * Ends the filmout process and closes the display.
      **/
     async end() {
-        await delay_1.delay(20);
+        await (0, delay_1.delay)(20);
         this.display.hide();
     }
     /**
@@ -154,13 +154,13 @@ class FilmOut {
         let stats;
         let frameList;
         try {
-            stats = await fs_extra_1.lstat(arg.path);
+            stats = await (0, fs_extra_1.lstat)(arg.path);
         }
         catch (err) {
             this.log.error(err, 'FILMOUT', true, true);
             return false;
         }
-        ext = path_1.extname(arg.fileName.toLowerCase());
+        ext = (0, path_1.extname)(arg.fileName.toLowerCase());
         if (stats.isDirectory()) {
             this.state.directory = true;
             this.state.still = false;
@@ -306,13 +306,13 @@ class FilmOut {
     async isGifAnimated(pathStr) {
         let gifBuffer;
         try {
-            gifBuffer = await fs_extra_1.readFile(pathStr);
+            gifBuffer = await (0, fs_extra_1.readFile)(pathStr);
         }
         catch (err) {
             this.log.error(err, 'FILMOUT', true, true);
             return false;
         }
-        return animated_gif_detector_1.default(gifBuffer);
+        return (0, animated_gif_detector_1.default)(gifBuffer);
     }
     /**
      * Return information on a still image using the Jimp module
@@ -360,13 +360,13 @@ class FilmOut {
     async dirList(pathStr) {
         let frameList = [];
         try {
-            frameList = await fs_extra_1.readdir(pathStr);
+            frameList = await (0, fs_extra_1.readdir)(pathStr);
         }
         catch (err) {
             this.log.error(err, 'FILMOUT', true, true);
         }
         frameList = frameList.filter((fileName) => {
-            let ext = path_1.extname(fileName);
+            let ext = (0, path_1.extname)(fileName);
             if (this.sequenceExtensions.indexOf(ext) !== -1) {
                 return true;
             }
@@ -374,7 +374,7 @@ class FilmOut {
         });
         frameList.sort();
         frameList = frameList.map((fileName) => {
-            return path_1.join(pathStr, fileName);
+            return (0, path_1.join)(pathStr, fileName);
         });
         return frameList;
     }

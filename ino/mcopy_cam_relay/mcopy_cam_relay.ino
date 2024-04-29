@@ -28,12 +28,12 @@ const int LED = 8;
 const int CAMERA_MOMENT = 240;
 
 //VARIABLES
-volatile int cameraFrame = 2000;
+volatile int cameraFrame = 1000;
 volatile char cmdChar = 'z';
 volatile long now;
 
 volatile String exposureString;
-volatile long exposureTarget = 2000;
+volatile long exposureTarget = 1000;
 
 McopySerial mc;
 

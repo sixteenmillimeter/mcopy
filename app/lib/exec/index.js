@@ -1,5 +1,7 @@
 'use strict';
-const execRaw = require('child_process').exec;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.execRaw = void 0;
+exports.execRaw = require('child_process').exec;
 /**
  * Promisified child_process.exec
  *
@@ -28,7 +30,7 @@ async function exec(...args) {
         opts = { maxBuffer: 1024 * 1024 };
     }
     return new Promise((resolve, reject) => {
-        const child = execRaw(cmd, opts, (err, stdout, stderr) => err ? reject(err) : resolve({
+        const child = (0, exports.execRaw)(cmd, opts, (err, stdout, stderr) => err ? reject(err) : resolve({
             stdout,
             stderr
         }));

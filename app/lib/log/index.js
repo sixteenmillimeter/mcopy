@@ -13,34 +13,34 @@ let transport;
  * @returns {string} Path to log file
  **/
 async function logFile() {
-    const homeDir = os_1.homedir();
+    const homeDir = (0, os_1.homedir)();
     const linuxDir = `/.mcopy/`;
     const macDir = `/Library/Logs/mcopy/`;
     const winDir = `/AppData/Roaming/mcopy/`;
-    let logPath = path_1.normalize(path_1.join(homeDir, linuxDir));
+    let logPath = (0, path_1.normalize)((0, path_1.join)(homeDir, linuxDir));
     let dirExists;
     if (process.platform === 'darwin') {
-        logPath = path_1.normalize(path_1.join(homeDir, macDir));
+        logPath = (0, path_1.normalize)((0, path_1.join)(homeDir, macDir));
     }
     else if (process.platform === 'win32') {
-        logPath = path_1.normalize(path_1.join(homeDir, winDir));
+        logPath = (0, path_1.normalize)((0, path_1.join)(homeDir, winDir));
     }
     try {
-        dirExists = await fs_extra_1.exists(logPath);
+        dirExists = await (0, fs_extra_1.exists)(logPath);
     }
     catch (err) {
         console.error(err);
     }
     if (!dirExists) {
         try {
-            await fs_extra_1.mkdir(logPath);
+            await (0, fs_extra_1.mkdir)(logPath);
         }
         catch (err) {
             console.error(`Error creating directory for mcopy log file, ${logPath}`);
             console.error(err);
         }
     }
-    return path_1.join(logPath, 'mcopy.log');
+    return (0, path_1.join)(logPath, 'mcopy.log');
 }
 /**
  * Create and return the logger transport based on settings determined in
@@ -70,7 +70,7 @@ module.exports = async function Log(arg) {
             consoleFormat.label = arg.label;
             fileFormat.label = arg.label;
         }
-        transport = winston_1.createLogger({
+        transport = (0, winston_1.createLogger)({
             format: winston_1.format.combine(winston_1.format.label({ label: arg.label || 'mcopy' }), winston_1.format.timestamp({
                 format: 'YYYY-MM-DD HH:mm:ss'
             }), winston_1.format.printf((info) => `${info.timestamp} [${info.label}] ${info.level}: ${info.message}` + (info.splat !== undefined ? `${info.splat}` : " "))),

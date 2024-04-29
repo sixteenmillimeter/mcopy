@@ -24,6 +24,7 @@ SKETCHES=(
 	mcopy_JKMM100_work
 	components/mcopy_light
 	mcopy_projector_firmware
+	mcopy_ACME_Trebes_Nanolab
 )
 
 for sketch in "${SKETCHES[@]}"; do

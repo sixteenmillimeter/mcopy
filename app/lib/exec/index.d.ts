@@ -1,1 +1,1 @@
-declare const execRaw: any;
+export declare const execRaw: any;

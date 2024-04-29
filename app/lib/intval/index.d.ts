@@ -1,4 +1,4 @@
-declare class Intval {
+export declare class Intval {
     private _baseUrl;
     private req;
     constructor(url: string);

@@ -1,4 +1,13 @@
 'use strict';
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 let light;
 class Light {
     constructor() {
@@ -91,26 +100,30 @@ class Light {
         }
     }
     disable() {
-        const obj = {
-            disable: true,
-            id: uuid()
-        };
-        this.disabled = true;
-        $('#tb_toolbar_item_light').hide();
-        $('#seq_labels .spacer').eq(1).hide();
-        $('#light_set').hide();
-        ipcRenderer.sendSync(this.id, obj);
+        return __awaiter(this, void 0, void 0, function* () {
+            const obj = {
+                disable: true,
+                id: uuid()
+            };
+            this.disabled = true;
+            $('#tb_toolbar_item_light').hide();
+            $('#seq_labels .spacer').eq(1).hide();
+            $('#light_set').hide();
+            return ipcRenderer.invoke(this.id, obj);
+        });
     }
     enable() {
-        const obj = {
-            enable: true,
-            id: uuid()
-        };
-        light.disabled = false;
-        $('#tb_toolbar_item_light').show();
-        $('#seq_labels .spacer').eq(1).show();
-        $('#light_set').show();
-        ipcRenderer.sendSync(light.id, obj);
+        return __awaiter(this, void 0, void 0, function* () {
+            const obj = {
+                enable: true,
+                id: uuid()
+            };
+            this.disabled = false;
+            $('#tb_toolbar_item_light').show();
+            $('#seq_labels .spacer').eq(1).show();
+            $('#light_set').show();
+            return ipcRenderer.invoke(this.id, obj);
+        });
     }
     colorPickers() {
         //@ts-ignore

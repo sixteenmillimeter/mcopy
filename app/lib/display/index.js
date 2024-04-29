@@ -27,8 +27,8 @@ class WebView {
             minHeight: 600 //,
             //icon: path.join(__dirname, '../../assets/icons/icon.png')
         };
-        const pagePath = path_1.normalize(path_1.join(__dirname, '../../display.html'));
-        const pageUrl = url_1.format({
+        const pagePath = (0, path_1.normalize)((0, path_1.join)(__dirname, '../../display.html'));
+        const pageUrl = (0, url_1.format)({
             pathname: pagePath,
             protocol: 'file:'
         });
@@ -61,13 +61,13 @@ class WebView {
         this.showing = true;
         this.opened = true;
         await this.digitalWindow.setFullScreen(true);
-        await delay_1.delay(300);
+        await (0, delay_1.delay)(300);
         if (this.platform === 'osx') {
-            await delay_1.delay(300); //give macs an extra 300ms to open fullscreen
+            await (0, delay_1.delay)(300); //give macs an extra 300ms to open fullscreen
         }
     }
     async show(src) {
-        const normalSrc = path_1.normalize(path_1.join(src));
+        const normalSrc = (0, path_1.normalize)((0, path_1.join)(src));
         if (!this.digitalWindow) {
             this.log.warn(`Cannot show "${src}" because window does not exist`);
             return false;
@@ -94,7 +94,7 @@ class WebView {
             this.log.warn(`Cannot show focus screen because window does not exist`);
             return false;
         }
-        await delay_1.delay(500);
+        await (0, delay_1.delay)(500);
         try {
             this.digitalWindow.webContents.send('focus', { focus: true });
         }
@@ -107,7 +107,7 @@ class WebView {
             this.log.warn(`Cannot show field guide because window does not exist`);
             return false;
         }
-        await delay_1.delay(500);
+        await (0, delay_1.delay)(500);
         try {
             this.digitalWindow.webContents.send('field', { field: true, ratio });
         }
@@ -120,7 +120,7 @@ class WebView {
             this.log.warn(`Cannot show meter screen because window does not exist`);
             return false;
         }
-        await delay_1.delay(500);
+        await (0, delay_1.delay)(500);
         try {
             this.digitalWindow.webContents.send('meter', { meter: true });
         }
@@ -150,7 +150,7 @@ class Display {
     constructor(sys) {
         this.platform = sys.platform;
         this.displays = sys.displays;
-        this.tmpdir = path_1.join(sys.tmp, 'mcopy_digital');
+        this.tmpdir = (0, path_1.join)(sys.tmp, 'mcopy_digital');
         this.display = this.displays.find((display) => {
             if (display.primary)
                 return true;

@@ -7,7 +7,7 @@ const exec_1 = require("exec");
 const child_process_1 = require("child_process");
 async function spawnAsync(bin, args) {
     return new Promise((resolve, reject) => {
-        const child = child_process_1.spawn(bin, args);
+        const child = (0, child_process_1.spawn)(bin, args);
         let stdout = '';
         let stderr = '';
         child.on('exit', (code) => {
@@ -41,7 +41,7 @@ class FFMPEG {
         this.id = 'ffmpeg';
         this.onProgress = () => { };
         this.bin = sys.deps.ffmpeg;
-        this.TMPDIR = path_1.join(sys.tmp, 'mcopy_digital');
+        this.TMPDIR = (0, path_1.join)(sys.tmp, 'mcopy_digital');
         this.init();
     }
     /**
@@ -124,9 +124,9 @@ class FFMPEG {
         if (w && h) {
             scale = `,scale=trunc(ih*dar):${h}`; //:force_original_aspect_ratio=decrease,pad=${w}:${h}:(ow-iw)/2:(oh-ih)/2
         }
-        tmpoutput = path_1.join(this.TMPDIR, `${state.hash}-export-${padded}.${ext}`);
+        tmpoutput = (0, path_1.join)(this.TMPDIR, `${state.hash}-export-${padded}.${ext}`);
         try {
-            fileExists = await fs_extra_1.exists(tmpoutput);
+            fileExists = await (0, fs_extra_1.exists)(tmpoutput);
         }
         catch (err) {
             //
@@ -143,7 +143,7 @@ class FFMPEG {
         //-vf "select=gte(n\,${frame})" -compression_algo raw -pix_fmt rgb24 "export-${padded}.png"
         try {
             this.log.info(cmd);
-            output = await exec_1.exec(cmd);
+            output = await (0, exec_1.exec)(cmd);
         }
         catch (err) {
             this.log.error(err);
@@ -179,7 +179,7 @@ class FFMPEG {
         const h = state.info.height;
         const tmppath = this.TMPDIR;
         let ext = 'png';
-        let tmpoutput = path_1.join(tmppath, `${state.hash}-export-%08d.${ext}`);
+        let tmpoutput = (0, path_1.join)(tmppath, `${state.hash}-export-%08d.${ext}`);
         let args;
         let output;
         let estimated = -1;
@@ -201,7 +201,7 @@ class FFMPEG {
         //console.dir(args)
         //console.dir(state)
         try {
-            await fs_extra_1.mkdir(tmppath);
+            await (0, fs_extra_1.mkdir)(tmppath);
         }
         catch (err) {
             if (err.code && err.code === 'EEXIST') {
@@ -216,7 +216,7 @@ class FFMPEG {
             let stdout = '';
             let stderr = '';
             this.log.info(`${this.bin} ${args.join(' ')}`);
-            this.child = child_process_1.spawn(this.bin, args);
+            this.child = (0, child_process_1.spawn)(this.bin, args);
             this.child.on('exit', (code) => {
                 //console.log('GOT TO EXIT');
                 if (code === 0) {
@@ -273,9 +273,9 @@ class FFMPEG {
         let ext = 'png';
         let tmppath;
         let fileExists;
-        tmppath = path_1.join(this.TMPDIR, `${state.hash}-export-${padded}.${ext}`);
+        tmppath = (0, path_1.join)(this.TMPDIR, `${state.hash}-export-${padded}.${ext}`);
         try {
-            fileExists = await fs_extra_1.exists(tmppath);
+            fileExists = await (0, fs_extra_1.exists)(tmppath);
         }
         catch (err) {
             this.log.error(err);
@@ -283,7 +283,7 @@ class FFMPEG {
         if (!fileExists)
             return false;
         try {
-            await fs_extra_1.unlink(tmppath);
+            await (0, fs_extra_1.unlink)(tmppath);
             this.log.info(`Cleared frame ${tmppath}`);
         }
         catch (err) {
@@ -299,7 +299,7 @@ class FFMPEG {
         const tmppath = this.TMPDIR;
         let files;
         try {
-            files = await fs_extra_1.readdir(tmppath);
+            files = await (0, fs_extra_1.readdir)(tmppath);
         }
         catch (err) {
             this.log.error(err);
@@ -313,7 +313,7 @@ class FFMPEG {
         if (files) {
             files.forEach(async (file, index) => {
                 try {
-                    await fs_extra_1.unlink(path_1.join(tmppath, file));
+                    await (0, fs_extra_1.unlink)((0, path_1.join)(tmppath, file));
                 }
                 catch (err) {
                     this.log.error(err);
@@ -328,14 +328,14 @@ class FFMPEG {
     async checkDir() {
         let fileExists;
         try {
-            fileExists = await fs_extra_1.exists(this.TMPDIR);
+            fileExists = await (0, fs_extra_1.exists)(this.TMPDIR);
         }
         catch (err) {
             this.log.error('Error checking for tmp dir', err);
         }
         if (!fileExists) {
             try {
-                await fs_extra_1.mkdir(this.TMPDIR);
+                await (0, fs_extra_1.mkdir)(this.TMPDIR);
                 this.log.info(`Created tmpdir ${this.TMPDIR}`);
             }
             catch (err) {
