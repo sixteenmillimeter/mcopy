@@ -5,7 +5,8 @@
  * 
  * Uses an Arduino Uno compatible board and a
  * custom PCB. 
- * Rrelay module for proj : 
+ * Relay module for proj : 
+ * Sainsmart 2 solid state relay board
 
   Wiring
 
@@ -17,17 +18,17 @@
 
   For controling JK Projectors 106 models
   Solid state relays connect to:
-  2uf run capacitory
-  400 Ohm Resistor (50W)
-
+  2uf run capacitor
+  400 Ohm resistor (50W)
 
   PINS FOR PROJ WIRE
 
   #
-  1 -
-  2 -
-  3 -
-  4 -
+  1 - Red (top left from back of socket) => Wire from resistor
+  2 - White (top center) => Wire from power cable (bridged by a fuse) 
+  3 - Black (top right) => Wire from capacitor
+  8 - Orange (bottom center) => Pin 11 (microswitch digital read)
+  9 - Brown (bottom right) => GND
 
   Relay 1 corresponds to FWD
   Relay 2 corresponse to BWD
