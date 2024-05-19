@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const intval_1 = require("intval");
 const processing_1 = require("processing");
 const delay_1 = require("delay");
+const log_1 = require("log");
 /** class representing camera functions **/
 class Camera {
     /**
@@ -30,8 +31,7 @@ class Camera {
      *
      **/
     async init() {
-        const Log = require('log');
-        this.log = await Log({ label: this.id });
+        this.log = await (0, log_1.Log)({ label: this.id });
         this.ipc = require('electron').ipcMain;
         this.listen();
     }

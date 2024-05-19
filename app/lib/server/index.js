@@ -8,7 +8,7 @@ const express_1 = __importDefault(require("express"));
 const promises_1 = require("fs/promises");
 const path_1 = require("path");
 const uuid_1 = require("uuid");
-const Log = require("log");
+const log_1 = require("log");
 class Server {
     constructor(uiInput) {
         this.id = 'server';
@@ -32,7 +32,7 @@ class Server {
         this.ui = uiInput;
     }
     async init() {
-        this.log = await Log({ label: this.id });
+        this.log = await (0, log_1.Log)({ label: this.id });
         await this.load();
         await this.start();
     }

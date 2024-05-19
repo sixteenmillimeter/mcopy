@@ -9,6 +9,7 @@ const fs_extra_1 = require("fs-extra");
 const delay_1 = require("delay");
 const crypto_1 = require("crypto");
 const frame_1 = __importDefault(require("frame"));
+const log_1 = require("log");
 /**
  * @module FilmOut
  **/
@@ -53,8 +54,7 @@ class FilmOut {
      * Async function for requiring log, ipcMain and bind events.
      **/
     async init() {
-        const Log = require('log');
-        this.log = await Log({ label: this.id });
+        this.log = await (0, log_1.Log)({ label: this.id });
         this.ipc = require('electron').ipcMain;
         this.listen();
     }

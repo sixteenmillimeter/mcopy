@@ -1,12 +1,12 @@
 'use strict'
 
 import { createLogger, transports, format } from 'winston';
+import type { Logger } from 'winston';
 import { join, normalize } from 'path';
 import { mkdir, exists } from 'fs-extra';
 import { homedir } from 'os';
 
 const logTime = 'MM/DD/YY-HH:mm:ss'
-let transport : any
 
 /**
  * Determine the location of the log file based on the operating system
@@ -53,7 +53,8 @@ async function logFile () {
  *
  * @returns {object} Logger transport
  **/
-module.exports = async function Log (arg : any) {
+export async function Log (arg : any) : Promise<Logger> {
+	let transport : Logger;
 	let consoleFormat : any = {
 		colorize : true
 	}
@@ -61,30 +62,24 @@ module.exports = async function Log (arg : any) {
 		filename : await logFile(),
 		json : true
 	}
-	if (arg && arg.quiet) {
-		transport = {
-			info : function () { return false },
-			warn : function () { return false },
-			error : function () { return false }
-		}
-	} else {
-		if (arg && arg.label) {
-			consoleFormat.label = arg.label;
-			fileFormat.label = arg.label;
-		}
-		transport = createLogger({
-			format : format.combine(
-	    		format.label({ label : arg.label || 'mcopy' }),
-				format.timestamp({
-					format: 'YYYY-MM-DD HH:mm:ss'
-				}),
-				format.printf((info : any ) => `${info.timestamp} [${info.label}] ${info.level}: ${info.message}`+(info.splat!==undefined?`${info.splat}`:" "))
-	  		),
-			transports: [
-				new (transports.Console)(consoleFormat),
-				new (transports.File)(fileFormat)
-			]
-		})
+	if (arg && arg.label) {
+		consoleFormat.label = arg.label;
+		fileFormat.label = arg.label;
 	}
+	transport = createLogger({
+		format : format.combine(
+    		format.label({ label : arg.label || 'mcopy' }),
+			format.timestamp({
+				format: 'YYYY-MM-DD HH:mm:ss'
+			}),
+			format.printf((info : any ) => `${info.timestamp} [${info.label}] ${info.level}: ${info.message}`+(info.splat!==undefined?`${info.splat}`:" "))
+  		),
+		transports: [
+			new (transports.Console)(consoleFormat),
+			new (transports.File)(fileFormat)
+		]
+	})
 	return transport
 }
+
+module.exports = { Log };

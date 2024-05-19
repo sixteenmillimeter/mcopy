@@ -7,6 +7,8 @@ import { delay } from 'delay';
 import { createHash } from 'crypto';
 import Jimp from 'jimp';
 import Frame from 'frame';
+import { Log } from 'log';
+import type { Logger } from 'winston';
 
 /**
  * @module FilmOut
@@ -36,7 +38,7 @@ class FilmOut {
 	private light : any;
 	private ipc : any;
 	private ui : any;
-	private log : any;
+	private log : Logger;
 	private server : any;
 	/**
 	 * @constructor
@@ -61,7 +63,6 @@ class FilmOut {
 	 * Async function for requiring log, ipcMain and bind events.
 	 **/
 	private async init () {
-		const Log = require('log');
 		this.log = await Log({ label : this.id });
 		this.ipc = require('electron').ipcMain;
 		this.listen();

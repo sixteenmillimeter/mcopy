@@ -1,11 +1,11 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Log = void 0;
 const winston_1 = require("winston");
 const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
 const os_1 = require("os");
 const logTime = 'MM/DD/YY-HH:mm:ss';
-let transport;
 /**
  * Determine the location of the log file based on the operating system
  * and return as an absolute string from os.homedir()
@@ -50,7 +50,8 @@ async function logFile() {
  *
  * @returns {object} Logger transport
  **/
-module.exports = async function Log(arg) {
+async function Log(arg) {
+    let transport;
     let consoleFormat = {
         colorize: true
     };
@@ -58,28 +59,21 @@ module.exports = async function Log(arg) {
         filename: await logFile(),
         json: true
     };
-    if (arg && arg.quiet) {
-        transport = {
-            info: function () { return false; },
-            warn: function () { return false; },
-            error: function () { return false; }
-        };
+    if (arg && arg.label) {
+        consoleFormat.label = arg.label;
+        fileFormat.label = arg.label;
     }
-    else {
-        if (arg && arg.label) {
-            consoleFormat.label = arg.label;
-            fileFormat.label = arg.label;
-        }
-        transport = (0, winston_1.createLogger)({
-            format: winston_1.format.combine(winston_1.format.label({ label: arg.label || 'mcopy' }), winston_1.format.timestamp({
-                format: 'YYYY-MM-DD HH:mm:ss'
-            }), winston_1.format.printf((info) => `${info.timestamp} [${info.label}] ${info.level}: ${info.message}` + (info.splat !== undefined ? `${info.splat}` : " "))),
-            transports: [
-                new (winston_1.transports.Console)(consoleFormat),
-                new (winston_1.transports.File)(fileFormat)
-            ]
-        });
-    }
+    transport = (0, winston_1.createLogger)({
+        format: winston_1.format.combine(winston_1.format.label({ label: arg.label || 'mcopy' }), winston_1.format.timestamp({
+            format: 'YYYY-MM-DD HH:mm:ss'
+        }), winston_1.format.printf((info) => `${info.timestamp} [${info.label}] ${info.level}: ${info.message}` + (info.splat !== undefined ? `${info.splat}` : " "))),
+        transports: [
+            new (winston_1.transports.Console)(consoleFormat),
+            new (winston_1.transports.File)(fileFormat)
+        ]
+    });
     return transport;
-};
+}
+exports.Log = Log;
+module.exports = { Log };
 //# sourceMappingURL=index.js.map

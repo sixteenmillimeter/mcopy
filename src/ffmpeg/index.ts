@@ -6,6 +6,8 @@ import { join } from 'path';
 import { exists, mkdir, readdir, unlink } from 'fs-extra';
 import { exec } from 'exec';
 import { spawn } from 'child_process';
+import { Log } from 'log';
+import type { Logger } from 'winston';
 
 import Frame from 'frame';
 
@@ -58,7 +60,7 @@ async function spawnAsync (bin : string, args : string[]) {
 
 class FFMPEG {
 	private bin : string;
-	private log : any;
+	private log : Logger;
 	private id : string = 'ffmpeg';
 	private TMPDIR : string;
 	private child : any;
@@ -79,7 +81,6 @@ class FFMPEG {
 	 * Async method to call async functions from constructor
 	 **/
 	async init () {
-		const Log = require('log');
 		this.log = await Log({ label : this.id });
 		await this.checkDir();
 	}

@@ -1,6 +1,7 @@
 /** class representing the Projector features **/
 
-import Log = require('log');
+import { Log } from 'log';
+import type { Logger } from 'winston';
 
 class Projector {
 	private state : any = { 
@@ -8,7 +9,7 @@ class Projector {
 		dir : true
 	};
 	private arduino : Arduino = null;
-	private log : any;
+	private log : Logger;
 	private cfg : any;
 	private ui : any;
 	private ipc : any;

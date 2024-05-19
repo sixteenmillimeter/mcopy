@@ -5,6 +5,7 @@ const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
 const exec_1 = require("exec");
 const child_process_1 = require("child_process");
+const log_1 = require("log");
 async function spawnAsync(bin, args) {
     return new Promise((resolve, reject) => {
         const child = (0, child_process_1.spawn)(bin, args);
@@ -48,8 +49,7 @@ class FFMPEG {
      * Async method to call async functions from constructor
      **/
     async init() {
-        const Log = require('log');
-        this.log = await Log({ label: this.id });
+        this.log = await (0, log_1.Log)({ label: this.id });
         await this.checkDir();
     }
     /**

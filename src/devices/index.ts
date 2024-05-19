@@ -1,7 +1,8 @@
 'use strict';
 
 import { delay } from 'delay';
-import Log = require('log');
+import { Log } from 'log';
+import type { Logger } from 'winston';
 
 /**
  * class representing the device discovery features
@@ -15,7 +16,7 @@ class Devices {
 	public connected : any = {}
 
 	private arduino : Arduino;
-	private log : any;
+	private log : Logger;
 	private ui : any;
 	private ipc : any;
 	private mainWindow : any;

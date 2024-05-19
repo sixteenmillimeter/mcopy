@@ -1,7 +1,8 @@
 'use strict';
 
 import { delay } from 'delay';
-import Log = require('log');
+import { Log } from 'log';
+import type { Logger } from 'winston';
 
 class Light {
 	public state : any = { color : [0, 0, 0] }
@@ -9,7 +10,7 @@ class Light {
 	private arduino : Arduino;
 	private cfg : any;
 	private ui : any;
-	private log : any;
+	private log : Logger;
 	private ipc : any;
 	private enabled : boolean = true;
 

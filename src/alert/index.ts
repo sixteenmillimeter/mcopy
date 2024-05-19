@@ -1,12 +1,14 @@
 'use strict';
 
 import { delay } from 'delay'
+import { Log } from 'log';
+import type { Logger } from 'winston';
 
 /* class representing alert functionality */
 
 class Alert {
 	private ipc : any
-	private log : any
+	private log : Logger
 	private id : string = 'alert'
 	private cb : Function = null
 	private ui : any
@@ -20,7 +22,6 @@ class Alert {
 	 *
 	 **/
 	private async init () {
-		const Log = require('log')
 		this.log = await Log({ label : this.id })
 		this.ipc = require('electron').ipcMain
 		this.listen()

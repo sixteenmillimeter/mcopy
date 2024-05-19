@@ -2501,6 +2501,7 @@ const timing    = require('./lib/ui/timing.js');
 const Mscript 	= require('./lib/mscript');
 const { delay }	= require('./lib/delay');
 const alertObj  = require('./lib/ui/alert.js');
+const { Log }   = require('./lib/log');
 
 let log;
 
@@ -2515,7 +2516,7 @@ mcopy.state = {
 async function init () {
 	'use strict';
 
-	log = await require('log')({})
+	log = await Log({ label : 'ui' })
 
 	nav.init();
 	gui.init();

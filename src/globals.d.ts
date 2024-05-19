@@ -1,5 +1,4 @@
 declare module 'delay';
-declare module 'log';
 declare module 'intval';
 declare module 'processing';
 declare module 'electron';
@@ -11,7 +10,6 @@ declare module 'systeminformation';
 declare module 'exit';
 declare module 'request';
 declare module 'animated-gif-detector';
-declare module 'winston';
 declare module 'frame';
 
 interface Device {

@@ -1,7 +1,7 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const delay_1 = require("delay");
-const Log = require("log");
+const log_1 = require("log");
 /**
  * class representing the device discovery features
  *
@@ -26,7 +26,7 @@ class Devices {
      * Start listening on that ipc connection.
      **/
     async init() {
-        this.log = await Log({ label: 'devices' });
+        this.log = await (0, log_1.Log)({ label: 'devices' });
         this.ipc = require('electron').ipcMain;
         this.listen();
     }

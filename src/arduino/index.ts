@@ -14,7 +14,9 @@
  **/
 
 //import Log = require('log');
-import { delay }  from 'delay';
+import { delay } from 'delay';
+import { Log } from 'log';
+import type { Logger } from 'winston';
 
 const { SerialPort } = require('serialport')
 const { ReadlineParser } = require('@serialport/parser-readline')
@@ -45,7 +47,7 @@ const KNOWN : string[] = [
 
 class Arduino {
 
-	private log : any;
+	private log : Logger;
 	private path : any = {};
 	private known : string[] = KNOWN;
 	private alias : any = {};
@@ -68,7 +70,6 @@ class Arduino {
 	}
 
 	async init () {
-		const Log = require('log');
 		this.log = await Log({ label : 'arduino' });
 		this.keys = Object.keys(cfg.arduino.cmd);
 		this.values = this.keys.map(key => cfg.arduino.cmd[key]);
@@ -160,7 +161,8 @@ class Arduino {
 		try {
 			ms = await this.sendAsync(device, cmd)
 		} catch (e) {
-			return this.log.error(e)
+			this.log.error(`Failed to send to ${device} @ ${serial}`, e)
+			return null
 		}
 		this.unlock(serial)
 		
@@ -190,7 +192,8 @@ class Arduino {
 			try {
 				writeSuccess = await this.writeAsync(device, str)
 			} catch (e) {
-				return this.log.error(e)
+				this.log.error(`Error sending string to ${device}`, e)
+				return null
 			}
 			this.unlock(this.alias[device])
 			return writeSuccess
@@ -251,7 +254,8 @@ class Arduino {
 		try {
 			results = await this.stateAsync(device, confirm)
 		} catch (e) {
-			return this.log.error(e)
+			this.log.error(`Error getting state from ${device}`, e)
+			return null
 		}
 		this.unlock(serial)
 		

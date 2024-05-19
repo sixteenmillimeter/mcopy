@@ -4,11 +4,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_extra_1 = require("fs-extra");
 const path_1 = require("path");
 const exec_1 = require("exec");
+const log_1 = require("log");
 //const spawn = require('spawn');
 //const exit = require('exit');
 class FFPROBE {
     constructor(sys) {
         this.bin = sys.deps.ffprobe;
+        this.init();
+    }
+    async init() {
+        this.log = await (0, log_1.Log)({ label: 'ffprobe' });
     }
     /**
      * Parse the fps entry into a float representing the fps of a video
@@ -46,22 +51,24 @@ class FFPROBE {
         }
         if (!fileExists) {
             //return exit(`File ${video} does not exist`, 6);
-            console.error(new Error(`File ${video} does not exist`));
+            this.log.error(new Error(`File ${video} does not exist`));
             return false;
         }
         try {
-            console.log(cmd);
+            this.log.info(cmd);
             raw = await (0, exec_1.exec)(cmd);
         }
         catch (err) {
             //return exit(err, 7);
-            console.error(err);
+            this.log.error(err);
             return false;
         }
         try {
             json = JSON.parse(raw.stdout);
         }
         catch (err) {
+            this.log.error('Error parsing stdout', err);
+            this.log.error(raw.stdout);
             return raw.stdout;
         }
         if (json.format && json.format.duration) {
@@ -102,7 +109,7 @@ class FFPROBE {
         }
         catch (err) {
             //return exit(err, 5);
-            console.error(err);
+            this.log.error(err);
             return false;
         }
         if (!fileExists) {
@@ -117,11 +124,11 @@ class FFPROBE {
             cmd = gif_cmd;
         }
         try {
-            console.log(cmd);
+            this.log.info(cmd);
             raw = await (0, exec_1.exec)(cmd);
         }
         catch (err) {
-            console.error(err);
+            this.log.error(err);
             return false;
         }
         try {

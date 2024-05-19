@@ -39,7 +39,6 @@ export class Intval {
 		return new Promise ((resolve : any, reject : any) => {
 			const timeStart : number = +new Date()
 			const url : string = `${this._baseUrl}/exposure?exposure=${exposure}`
-			//console.log(url)
 			return this.req(url, (err : Error, res : any, body : string) => {
 				let ms : number = (+new Date()) - timeStart
 				if (err) {
@@ -61,7 +60,6 @@ export class Intval {
 		this.req(opts, (err : Error, res : any, body : string) => {
 			let ms : number = (+new Date()) - timeStart
 			if (err) {
-				//console.error(err)
 				return cb(err, ms)
 			}
 			cb(null, ms, body)

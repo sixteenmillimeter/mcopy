@@ -3,6 +3,9 @@
 import { Intval } from 'intval';
 import { Processing } from 'processing';
 import { delay } from 'delay';
+import { Log } from 'log';
+import type { Logger } from 'winston';
+
 
 /** class representing capper functions **/
 
@@ -11,7 +14,7 @@ class Capper {
 		capper : false
 	};
 	private arduino : Arduino = null;
-	private log : any;
+	private log : Logger;
 	private cfg : any;
 	private filmout : any;
 	private ui : any;
@@ -32,7 +35,6 @@ class Capper {
 	 *
 	 **/
 	private async init () {
-		const Log = require('log');
 		this.log = await Log({ label : this.id });
 		this.ipc = require('electron').ipcMain;
 		this.listen();

@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+const log_1 = require("log");
 /** class representing capper functions **/
 class Capper {
     /**
@@ -21,8 +22,7 @@ class Capper {
      *
      **/
     async init() {
-        const Log = require('log');
-        this.log = await Log({ label: this.id });
+        this.log = await (0, log_1.Log)({ label: this.id });
         this.ipc = require('electron').ipcMain;
         this.listen();
     }

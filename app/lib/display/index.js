@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = require("path");
 const url_1 = require("url");
 const delay_1 = require("delay");
-const Log = require("log");
+const log_1 = require("log");
 const { BrowserWindow } = require('electron');
 class WebView {
     constructor(platform, display) {
@@ -54,7 +54,7 @@ class WebView {
         this.ipc.on('display_load', this.onLoad.bind(this));
     }
     async init() {
-        this.log = await Log({ label: 'devices' });
+        this.log = await (0, log_1.Log)({ label: 'devices' });
     }
     async open() {
         this.digitalWindow.show();

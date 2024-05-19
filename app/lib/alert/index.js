@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+const log_1 = require("log");
 /* class representing alert functionality */
 class Alert {
     constructor(ui) {
@@ -12,8 +13,7 @@ class Alert {
      *
      **/
     async init() {
-        const Log = require('log');
-        this.log = await Log({ label: this.id });
+        this.log = await (0, log_1.Log)({ label: this.id });
         this.ipc = require('electron').ipcMain;
         this.listen();
     }

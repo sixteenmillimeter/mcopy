@@ -1,7 +1,8 @@
 'use strict';
 
 import { v4 as uuid } from 'uuid';
-import Log = require('log');
+import { Log } from 'log';
+import type { Logger } from 'winston';
 import { powerSaveBlocker } from 'electron'
 import delay from 'delay';
 
@@ -25,7 +26,7 @@ class Sequencer {
 	private CMDS : any = {};
 	private ipc : any;
 	private ui : any;
-	private log : any;
+	private log : Logger;
 	private id : string = 'sequence';
 	private alerted : boolean = false;
 	private psbId : any;

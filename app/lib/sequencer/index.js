@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Log = require("log");
+const log_1 = require("log");
 const electron_1 = require("electron");
 const delay_1 = __importDefault(require("delay"));
 /** @module lib/sequencer **/
@@ -53,7 +53,7 @@ class Sequencer {
      *
      **/
     async init() {
-        this.log = await Log({ label: this.id });
+        this.log = await (0, log_1.Log)({ label: this.id });
         this.ipc = require('electron').ipcMain;
         this.listen();
     }

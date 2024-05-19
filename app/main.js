@@ -16,6 +16,7 @@ const ee = new EventEmitter()
 const settings = require('settings')
 const system = require('system')
 const { delay } = require('delay')
+const { Log } =  require('log')
 
 //Objects
 const mcopy = {}
@@ -87,7 +88,7 @@ var errorState = function () {
 }
 
 var init = async function () {
-	log = await require('log')({})
+	log = await Log({ label : 'mcopy' })
 
 	createWindow()
 	createMenu()
@@ -116,7 +117,6 @@ var init = async function () {
 	try {
 		await dev.enumerate()
 	} catch (err) {
-		console.error(err)
 		log.error('Error enumerating connected devices', err)
 	}
 

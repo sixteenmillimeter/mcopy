@@ -5,7 +5,8 @@ import express, { Express, Request, Response, Application } from 'express'
 import { readFile } from 'fs/promises'
 import { basename } from 'path'
 import { v4 as uuidv4 } from 'uuid'
-import Log = require('log')
+import { Log } from 'log';
+import type { Logger } from 'winston';
 import { delay }  from 'delay'
 
 interface ServerData {
@@ -35,7 +36,7 @@ interface ServerQueue {
 class Server {
 	private id : string = 'server'
 	public isActive : boolean = false
-	private log : any
+	private log : Logger
 	private templates : ServerTemplate[] = [
 		{
 			name :'index',

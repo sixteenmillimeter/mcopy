@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  **/
 //import Log = require('log');
 const delay_1 = require("delay");
+const log_1 = require("log");
 const { SerialPort } = require('serialport');
 const { ReadlineParser } = require('@serialport/parser-readline');
 const exec = require('child_process').exec;
@@ -52,8 +53,7 @@ class Arduino {
         this.init();
     }
     async init() {
-        const Log = require('log');
-        this.log = await Log({ label: 'arduino' });
+        this.log = await (0, log_1.Log)({ label: 'arduino' });
         this.keys = Object.keys(cfg.arduino.cmd);
         this.values = this.keys.map(key => cfg.arduino.cmd[key]);
     }
@@ -148,7 +148,8 @@ class Arduino {
             ms = await this.sendAsync(device, cmd);
         }
         catch (e) {
-            return this.log.error(e);
+            this.log.error(`Failed to send to ${device} @ ${serial}`, e);
+            return null;
         }
         this.unlock(serial);
         await eventEmitter.emit('arduino_send', cmd);
@@ -178,7 +179,8 @@ class Arduino {
                 writeSuccess = await this.writeAsync(device, str);
             }
             catch (e) {
-                return this.log.error(e);
+                this.log.error(`Error sending string to ${device}`, e);
+                return null;
             }
             this.unlock(this.alias[device]);
             return writeSuccess;
@@ -235,7 +237,8 @@ class Arduino {
             results = await this.stateAsync(device, confirm);
         }
         catch (e) {
-            return this.log.error(e);
+            this.log.error(`Error getting state from ${device}`, e);
+            return null;
         }
         this.unlock(serial);
         await eventEmitter.emit('arduino_state', cfg.arduino.cmd.state);

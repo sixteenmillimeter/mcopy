@@ -5,14 +5,21 @@
 import { exists } from 'fs-extra';
 import { extname } from 'path';
 import { exec } from 'exec';
+import { Log } from 'log';
+import type { Logger } from 'winston';
 //const spawn = require('spawn');
 //const exit = require('exit');
 
 class FFPROBE {
 	private bin : string;
-	private log : any;
+	private log : Logger;
 	constructor (sys : any) {
 		this.bin = sys.deps.ffprobe;
+		this.init();
+	}
+
+	private async init () {
+		this.log = await Log({ label : 'ffprobe' });
 	}
 
 	/**
@@ -50,22 +57,24 @@ class FFPROBE {
 		}
 		if (!fileExists) {
 			//return exit(`File ${video} does not exist`, 6);
-			console.error(new Error(`File ${video} does not exist`));
+			this.log.error(new Error(`File ${video} does not exist`));
 			return false
 		}
 		
 		try {
-			console.log(cmd);
+			this.log.info(cmd);
 			raw = await exec(cmd);
 		} catch (err) {
 			//return exit(err, 7);
-			console.error(err);
+			this.log.error(err);
 			return false
 		}
 
 		try {
 			json = JSON.parse(raw.stdout);
 		} catch (err) {
+			this.log.error('Error parsing stdout', err);
+			this.log.error(raw.stdout);
 			return raw.stdout;
 		}
 
@@ -109,7 +118,7 @@ class FFPROBE {
 			fileExists = await exists(video);
 		} catch (err) {
 			//return exit(err, 5);
-			console.error(err);
+			this.log.error(err);
 			return false
 		}
 		if (!fileExists) {
@@ -124,10 +133,10 @@ class FFPROBE {
 			cmd = gif_cmd;
 		}
 		try {
-			console.log(cmd);
+			this.log.info(cmd);
 			raw = await exec(cmd);
 		} catch (err) {
-			console.error(err);
+			this.log.error(err);
 			return false;
 		}
 

@@ -8,7 +8,8 @@
 import { join as pathJoin, normalize as pathNormalize } from 'path';
 import { format as urlFormat } from 'url';
 import { delay } from 'delay';
-import Log = require('log');
+import { Log } from 'log';
+import type { Logger } from 'winston';
 
 const { BrowserWindow } = require('electron');
 
@@ -20,7 +21,7 @@ class WebView {
 	public display : any;
 	private loadWait : any = {};
 	private ipc : any;
-	private log : any;
+	private log : Logger;
 
 	constructor (platform : string, display : any) {
 		const prefs : any = {

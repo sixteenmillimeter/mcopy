@@ -3,6 +3,8 @@
 import { Intval } from 'intval';
 import { Processing } from 'processing';
 import { delay } from 'delay';
+import { Log } from 'log';
+import type { Logger } from 'winston';
 
 /** class representing camera functions **/
 
@@ -15,7 +17,7 @@ class Camera {
 	private arduino : Arduino = null;
 	private intval : any = null;
 	private processing : any = null;
-	private log : any;
+	private log : Logger;
 	private cfg : any;
 	private filmout : any;
 	private ui : any;
@@ -37,7 +39,6 @@ class Camera {
 	 *
 	 **/
 	private async init () {
-		const Log = require('log');
 		this.log = await Log({ label : this.id });
 		this.ipc = require('electron').ipcMain;
 		this.listen();
