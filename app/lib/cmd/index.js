@@ -281,9 +281,7 @@ class Commands {
                 ms = await this.cam.both();
             }
             else {
-                this.cam.move();
-                this.cam2.move();
-                both = [await this.cam.move, await this.cam2.move];
+                both = await Promise.all([this.cam.move(), this.cam2.move()]);
                 ms = Math.max(...both);
             }
             await (0, delay_1.delay)(this.cfg.arduino.serialDelay);
@@ -323,9 +321,7 @@ class Commands {
                 ms = await this.cam.both();
             }
             else {
-                this.cam.move();
-                this.cam2.move();
-                both = [await this.cam.move, await this.cam2.move];
+                both = await Promise.all([this.cam.move(), this.cam2.move()]);
                 ms = Math.max(...both);
             }
             await (0, delay_1.delay)(this.cfg.arduino.serialDelay);
@@ -365,9 +361,7 @@ class Commands {
                 ms = await this.cam.both();
             }
             else {
-                this.cam.move();
-                this.cam2.move();
-                both = [await this.cam.move, await this.cam2.move];
+                both = await Promise.all([this.cam.move(), this.cam2.move()]);
                 ms = Math.max(...both);
             }
             await (0, delay_1.delay)(this.cfg.arduino.serialDelay);
@@ -407,9 +401,7 @@ class Commands {
                 ms = await this.cam.both();
             }
             else {
-                this.cam.move();
-                this.cam.move();
-                both = [await this.cam.move, await this.proj2.move];
+                both = await Promise.all([this.cam.move(), this.cam2.move()]);
                 ms = Math.max(...both);
             }
             await (0, delay_1.delay)(this.cfg.arduino.serialDelay);
@@ -482,9 +474,7 @@ class Commands {
                 ms = await this.proj.both();
             }
             else {
-                this.proj.move();
-                this.proj2.move();
-                both = [await this.proj.move, await this.proj2.move];
+                both = await Promise.all([this.proj.move(), this.proj2.move()]);
                 ms = Math.max(...both);
             }
         }
@@ -511,14 +501,11 @@ class Commands {
                 await this.proj2.set(false);
             }
             await (0, delay_1.delay)(this.cfg.arduino.serialDelay);
-            //run one projector without await?
             if (this.proj && this.proj2 && this.proj.arduino.alias.projector === this.proj.arduino.alias.projector_second) {
                 ms = await this.proj.both();
             }
             else {
-                this.proj.move();
-                this.proj2.move();
-                both = [await this.proj.move, await this.proj2.move];
+                both = await Promise.all([this.proj.move(), this.proj2.move()]);
                 ms = Math.max(...both);
             }
         }
@@ -546,14 +533,11 @@ class Commands {
                 await this.proj2.set(false);
             }
             await (0, delay_1.delay)(this.cfg.arduino.serialDelay);
-            //run one projector without await?
             if (this.proj && this.proj2 && this.proj.arduino.alias.projector === this.proj.arduino.alias.projector_second) {
                 ms = await this.proj.both();
             }
             else {
-                this.proj.move();
-                this.proj2.move();
-                both = [await this.proj.move, await this.proj2.move];
+                both = await Promise.all([this.proj.move(), this.proj2.move()]);
                 ms = Math.max(...both);
             }
         }
@@ -581,14 +565,11 @@ class Commands {
                 await this.proj2.set(true);
             }
             await (0, delay_1.delay)(this.cfg.arduino.serialDelay);
-            //run one projector without await?
             if (this.proj && this.proj2 && this.proj.arduino.alias.projector === this.proj.arduino.alias.projector_second) {
                 ms = await this.proj.both();
             }
             else {
-                this.proj.move();
-                this.proj2.move();
-                both = [await this.proj.move, await this.proj2.move];
+                both = await Promise.all([this.proj.move(), this.proj2.move()]);
                 ms = Math.max(...both);
             }
         }
