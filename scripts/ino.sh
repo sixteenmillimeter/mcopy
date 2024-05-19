@@ -22,6 +22,7 @@ SKETCHES=(
 	mcopy_cam_relay
 	mcopy_JKMM100
 	mcopy_JKMM100_work
+	mcopy_JKMM100_second_projector
 	components/mcopy_light
 	mcopy_projector_firmware
 	mcopy_ACME_Trebes_Nanolab

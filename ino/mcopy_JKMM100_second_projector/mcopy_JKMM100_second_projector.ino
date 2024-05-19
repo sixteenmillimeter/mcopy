@@ -1,4 +1,5 @@
 /*
+ * MOD for controlling second projector only
  * Sketch containing firmware for the JKMM100
  * A collaboration between MONO NO AWARE and mcopy.
  * Compatible with JK105 hardware.
@@ -70,7 +71,7 @@ void setup () {
   pins();
   digitalWrite(LED_FWD, HIGH);
   digitalWrite(LED_BWD, HIGH);
-  mc.begin(mc.PROJECTOR_IDENTIFIER);
+  mc.begin(mc.PROJECTOR_SECOND_IDENTIFIER);
   delay(42);
   digitalWrite(LED_FWD, LOW);
   digitalWrite(LED_BWD, LOW);
@@ -79,7 +80,7 @@ void setup () {
 void loop () {
   now = millis();
   if (proj_running) {
-    proj_microswitch();
+    proj2_microswitch();
   } else {
     cmdChar = mc.loop();
     cmd(cmdChar);
@@ -101,18 +102,18 @@ void pins () {
 }
 
 void cmd (char val) {
-  if (val == mc.PROJECTOR_FORWARD) {
-    proj_direction(true);
-  } else if (val == mc.PROJECTOR_BACKWARD) {
-    proj_direction(false);
-  } else if (val == mc.PROJECTOR) {
-    proj_start();
+  if (val == mc.PROJECTOR_SECOND_FORWARD) {
+    proj2_direction(true);
+  } else if (val == mc.PROJECTOR_SECOND_BACKWARD) {
+    proj2_direction(false);
+  } else if (val == mc.PROJECTOR_SECOND) {
+    proj2_start();
   } else if (val == mc.STATE) {
     state();
   }
 }
 
-void proj_start () {
+void proj2_start () {
   proj_time = millis();
 
   if (proj_dir) {
@@ -126,7 +127,7 @@ void proj_start () {
   proj_running = true;
 }
 
-void proj_stop () {
+void proj2_stop () {
   //stop both directions
   delay(2);
   digitalWrite(PROJECTOR_FWD, LOW);
@@ -151,28 +152,27 @@ void proj_stop () {
 
   delay(100);
 
-  mc.confirm(mc.PROJECTOR);
-  mc.log("projector()");
+  mc.confirm(mc.PROJECTOR_SECOND);
+  mc.log("projector_second()");
   proj_running = false;
-
   update_timing(millis() - proj_time);
   
 }
 
-void proj_direction (boolean state) {
+void proj2_direction (boolean state) {
   proj_dir = state;
   if (state) {
-    mc.confirm(mc.PROJECTOR_FORWARD);
-    mc.log("proj_direction -> true");
+    mc.confirm(mc.PROJECTOR_SECOND_FORWARD);
+    mc.log("proj2_direction -> true");
   } else {
-    mc.confirm(mc.PROJECTOR_BACKWARD);
-    mc.log("proj_direction -> false");
+    mc.confirm(mc.PROJECTOR_SECOND_BACKWARD);
+    mc.log("proj2_direction -> false");
   }
 }
 
 //LOW=0=CLOSED
 //HIGH=1=OPEN
-void proj_microswitch () {
+void proj2_microswitch () {
   int val = digitalRead(PROJECTOR_MICROSWITCH);
   if (!proj_primed                                  // if not primed
     && val != proj_micro_state                      // AND if state changes
@@ -189,7 +189,7 @@ void proj_microswitch () {
     //stop
     proj_primed = false;
     proj_micro_state = val; //unneeded?
-    proj_stop();
+    proj2_stop();
   } else {
     delay(2); //some smothing value
   }
