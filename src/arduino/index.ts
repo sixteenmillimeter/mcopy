@@ -121,11 +121,11 @@ class Arduino {
 	 **/
 	private async sendAsync (device : string, cmd : string) : Promise<number> {
 		return new Promise ((resolve, reject) => {
-			this.log.info(`sendAsync ${cmd} -> ${device}`)
+			//this.log.info(`sendAsync ${cmd} -> ${device}`)
 			this.queue[cmd] = (ms : number) => {
 				return resolve(ms)
 			}
-			this.log.info(`Device: ${device}`)
+			//this.log.info(`Device: ${device}`)
 			return this.serial[this.alias[device]].write(cmd, (err : any, results : any) => {
 				if (err) {
 					//this.log.error(err)
