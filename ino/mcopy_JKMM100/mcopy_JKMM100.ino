@@ -127,6 +127,7 @@ void proj_start () {
 }
 
 void proj_stop () {
+  int ms;
   //stop both directions
   delay(2);
   digitalWrite(PROJECTOR_FWD, LOW);
@@ -151,11 +152,13 @@ void proj_stop () {
 
   delay(100);
 
+  ms = millis() - proj_time;
   mc.confirm(mc.PROJECTOR);
+  mc.log(String(ms) + "ms");
   mc.log("projector()");
   proj_running = false;
 
-  update_timing(millis() - proj_time);
+  update_timing(ms);
   
 }
 
