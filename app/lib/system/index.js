@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const os_1 = require("os");
 const electron_1 = require("electron");
-//private
 const exec_1 = require("exec");
 /**
  * Evaluates system dependencies for digital
@@ -58,6 +57,7 @@ async function dependencies(platform) {
 }
 function displayMap(obj) {
     const sm = {
+        name: null,
         id: obj.id,
         width: obj.size.width,
         height: obj.size.height,
@@ -80,8 +80,8 @@ function displaySort(a, b) {
     return 0;
 }
 async function displays() {
-    let displays = electron_1.screen.getAllDisplays();
-    displays = displays.map(displayMap);
+    const electronDisplays = electron_1.screen.getAllDisplays();
+    const displays = electronDisplays.map(displayMap);
     displays.sort(displaySort);
     return displays;
 }
@@ -93,7 +93,12 @@ async function displays() {
  * @returns {object} Object containing system information
  */
 async function system(ui) {
-    const obj = {};
+    const obj = {
+        deps: null,
+        displays: null,
+        platform: null,
+        tmp: null
+    };
     let platform;
     try {
         obj.tmp = (0, os_1.tmpdir)();

@@ -1,4 +1,5 @@
 import type { Arduino } from 'arduino';
+import type { WebContents } from 'electron';
 export declare class Light {
     state: any;
     private arduino;
@@ -11,7 +12,7 @@ export declare class Light {
     /**
      *
      **/
-    constructor(arduino: Arduino, cfg: any, ui: any);
+    constructor(arduino: Arduino, cfg: any, ui: WebContents);
     /**
      *
      **/
@@ -27,7 +28,7 @@ export declare class Light {
     /**
      *
      **/
-    set(rgb: number[], id: string, on?: boolean): Promise<any>;
+    set(rgb: number[], id: string, on?: boolean): Promise<void>;
     /**
      *
      **/

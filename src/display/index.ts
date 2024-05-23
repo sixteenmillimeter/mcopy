@@ -11,6 +11,7 @@ import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
 import { BrowserWindow } from 'electron';
+import type { System, Display as SystemDisplay } from 'system';
 
 class WebView {
 	private digitalWindow : any;
@@ -159,12 +160,12 @@ class WebView {
 
 export class Display {
 	private platform : string;
-	private displays : any[];
+	private displays : SystemDisplay[];
 	private display : any;
 	private tmpdir : string;
 	private wv : WebView;
 
-	constructor (sys : any) {
+	constructor (sys : System) {
 		this.platform = sys.platform;
 		this.displays = sys.displays;
 		this.tmpdir = pathJoin(sys.tmp, 'mcopy_digital');
@@ -202,7 +203,7 @@ export class Display {
 	public async meter () {
 		return await this.wv.meter();
 	}
-	public change (id : any) {
+	public change (id : string) {
 		this.display = this.displays.find((display : any) => {
 			if (display.id == id) return true;
 		});

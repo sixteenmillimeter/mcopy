@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { Log } from 'log';
 import type { Logger } from 'winston';
 import { delay }  from 'delay'
+import type { WebContents } from 'electron';
 
 interface ServerData {
 	[key: string]: string;
@@ -56,11 +57,11 @@ export class Server {
 	private queue : ServerQueue = {}
 	private interval : ReturnType<typeof setInterval>
 	private intervalPeriod : number = 10000 //10 sec
-	private ui : any;
+	private ui : WebContents
 
-	constructor (uiInput : any) {
+	constructor (ui : WebContents) {
 		this.init()
-		this.ui = uiInput;
+		this.ui = ui
 	}
 
 	private async init () {
@@ -229,7 +230,7 @@ export class Server {
 
 	public async cmd (ws : WebSocket, action : string, options : any = {}) {
 		const id : string = uuidv4()
-		let obj = {
+		let obj  : any = {
 			id, action
 		}
 		let str : string
@@ -251,7 +252,7 @@ export class Server {
 	}
 }
 
-module.exports = function (ui : any) {
+module.exports = function (ui : WebContents) {
 	return new Server(ui)
 }
 

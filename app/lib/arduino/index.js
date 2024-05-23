@@ -56,7 +56,7 @@ class Arduino {
     async init() {
         this.log = await (0, log_1.Log)({ label: 'arduino' });
         this.keys = Object.keys(cfg.arduino.cmd);
-        this.values = this.keys.map(key => cfg.arduino.cmd[key]);
+        this.values = this.keys.map((key) => cfg.arduino.cmd[key]);
     }
     /**
      * Enumerate all connected devices that might be Arduinos
@@ -378,7 +378,7 @@ class Arduino {
     confirmEnd(data) {
         if (this.values.indexOf(data) !== -1 && typeof this.confirmExec === 'function') {
             this.confirmExec(null, data);
-            this.confirmExec = {};
+            this.confirmExec = null;
             this.unlock(this.alias['connect']);
         }
         else if (data[0] === cfg.arduino.cmd.state) {

@@ -5,6 +5,12 @@ import { Log } from 'log';
 import type { Logger } from 'winston';
 import type { Settings } from 'settings';
 import type { Arduino } from 'arduino';
+import type { BrowserWindow, WebContents } from 'electron';
+
+interface Device {
+	serial : string;
+	device : string;
+}
 
 /**
  * class representing the device discovery features
@@ -19,21 +25,18 @@ export class Devices {
 
 	private arduino : Arduino;
 	private log : Logger;
-	private ui : any;
+	private ui : WebContents;
 	private ipc : any;
-	private mainWindow : any;
-	private cam : any;
-
+	private mainWindow : any
 	/**
 	 * Constructor assigns arduino, settings, UI browser window and cam objects
 	 * locally to this class for reference.
 	 **/
-	constructor (arduino : Arduino, settings : Settings, mainWindow : any, cam : any) {
+	constructor (arduino : Arduino, settings : Settings, mainWindow : BrowserWindow) {
 		this.arduino = arduino;
 		this.settings = settings;
 		this.mainWindow = mainWindow;
 		this.ui = this.mainWindow.webContents
-		this.cam = cam;
 		this.init();
 	}
 	/**
@@ -588,6 +591,8 @@ export class Devices {
 
 }
 
-module.exports = function (arduino : Arduino, settings : any, mainWindow : any, cam : any) {
-	return new Devices(arduino, settings, mainWindow, cam)
+module.exports = function (arduino : Arduino, settings : any, mainWindow : BrowserWindow) {
+	return new Devices(arduino, settings, mainWindow)
 }
+
+export type { Device }

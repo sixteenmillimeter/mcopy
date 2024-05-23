@@ -1,4 +1,5 @@
 import type { FilmOutState } from 'filmout';
+import type { System } from 'system';
 interface StdErr {
     frame: number;
     fps: number;
@@ -23,7 +24,7 @@ export declare class FFMPEG {
      *
      * @param {object} sys System object to be used to get temp directory
      **/
-    constructor(sys: any);
+    constructor(sys: System);
     /**
      * Async method to call async functions from constructor
      **/

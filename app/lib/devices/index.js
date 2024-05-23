@@ -13,13 +13,12 @@ class Devices {
      * Constructor assigns arduino, settings, UI browser window and cam objects
      * locally to this class for reference.
      **/
-    constructor(arduino, settings, mainWindow, cam) {
+    constructor(arduino, settings, mainWindow) {
         this.connected = {};
         this.arduino = arduino;
         this.settings = settings;
         this.mainWindow = mainWindow;
         this.ui = this.mainWindow.webContents;
-        this.cam = cam;
         this.init();
     }
     /**
@@ -581,7 +580,7 @@ class Devices {
     }
 }
 exports.Devices = Devices;
-module.exports = function (arduino, settings, mainWindow, cam) {
-    return new Devices(arduino, settings, mainWindow, cam);
+module.exports = function (arduino, settings, mainWindow) {
+    return new Devices(arduino, settings, mainWindow);
 };
 //# sourceMappingURL=index.js.map

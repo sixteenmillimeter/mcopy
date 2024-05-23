@@ -17,18 +17,19 @@
 import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
+import type { Device } from 'devices';
 
-const { SerialPort } = require('serialport')
-const { ReadlineParser } = require('@serialport/parser-readline')
-const exec = require('child_process').exec
+const { SerialPort } = require('serialport');
+const { ReadlineParser } = require('@serialport/parser-readline');
+const exec = require('child_process').exec;
 
-const parser : any = new ReadlineParser({ delimiter: '\r\n' })
-const newlineRe : RegExp = new RegExp('\n', 'g')
-const returnRe : RegExp = new RegExp('\r', 'g')
+const parser : any = new ReadlineParser({ delimiter: '\r\n' });
+const newlineRe : RegExp = new RegExp('\n', 'g');
+const returnRe : RegExp = new RegExp('\r', 'g');
 
-let eventEmitter : any
-let cfg : any
-let arduino : any
+let eventEmitter : any;
+let cfg : any;
+let arduino : Arduino;
 
 const KNOWN : string[] = [
 	'/dev/tty.usbmodem1a161', 
@@ -55,7 +56,7 @@ export class Arduino {
 	private queue : any = {};
 	private timer : number = 0;
 	private locks : any = {};
-	private confirmExec : any;
+	private confirmExec : Function;
 	private errorState : Function;
 	private keys : string[];
 	private values : string[];
@@ -72,7 +73,7 @@ export class Arduino {
 	async init () {
 		this.log = await Log({ label : 'arduino' });
 		this.keys = Object.keys(cfg.arduino.cmd);
-		this.values = this.keys.map(key => cfg.arduino.cmd[key]);
+		this.values = this.keys.map((key : string) => cfg.arduino.cmd[key]);
 	}
 
 	/**
@@ -394,7 +395,7 @@ export class Arduino {
 	private confirmEnd (data : string) {
 		if (this.values.indexOf(data) !== -1 && typeof this.confirmExec === 'function') {
 			this.confirmExec(null, data)
-			this.confirmExec = {}
+			this.confirmExec = null
 			this.unlock(this.alias['connect'])
 		} else if (data[0] === cfg.arduino.cmd.state) {
 			this.queue[cfg.arduino.cmd.state](data)
@@ -414,7 +415,7 @@ export class Arduino {
 		return new Promise(async (resolve, reject) => {
 			const device : string = 'connect'
 			let writeSuccess : any
-			this.confirmExec = function (err : any, data : string) {
+			this.confirmExec = function (err : Error, data : string) {
 				if (data === cfg.arduino.cmd.connect) {
 					return resolve(true)
 				} else {
@@ -445,7 +446,7 @@ export class Arduino {
 			const device : string = 'connect'
 			let writeSuccess : any
 			let type : string
-			this.confirmExec = function (err : any, data : string) {
+			this.confirmExec = function (err : Error, data : string) {
 				if (data === cfg.arduino.cmd.projector_identifier) {
 					type = 'projector'
 				} else if (data === cfg.arduino.cmd.camera_identifier) {

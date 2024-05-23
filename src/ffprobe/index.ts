@@ -7,11 +7,13 @@ import { extname } from 'path';
 import { exec } from 'exec';
 import { Log } from 'log';
 import type { Logger } from 'winston';
+import type { System } from 'system';
 
 export class FFPROBE {
 	private bin : string;
 	private log : Logger;
-	constructor (sys : any) {
+
+	constructor (sys : System) {
 		this.bin = sys.deps.ffprobe;
 		this.init();
 	}
@@ -154,6 +156,6 @@ function map (obj : any) {
 }
 */
 
-module.exports = (sys : any) => {
+module.exports = (sys : System) => {
 	return new FFPROBE(sys);
 }

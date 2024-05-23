@@ -1,6 +1,7 @@
 /** class representing the Projector features **/
 import type { Arduino } from 'arduino';
 import type { FilmOut } from 'filmout';
+import type { WebContents } from 'electron';
 interface ProjectorState {
     pos: number;
     dir: boolean;
@@ -17,7 +18,7 @@ export declare class Projector {
     /**
      *
      **/
-    constructor(arduino: Arduino, cfg: any, ui: any, filmout: any, second?: boolean);
+    constructor(arduino: Arduino, cfg: any, ui: WebContents, filmout: any, second?: boolean);
     /**
      *
      **/
@@ -29,12 +30,12 @@ export declare class Projector {
     /**
      *
      **/
-    set(dir: boolean, id: string): Promise<any>;
+    set(dir: boolean, id: string): Promise<number>;
     /**
      *
      **/
-    move(id: string): Promise<any>;
-    both(id: string): Promise<any>;
+    move(id: string): Promise<number>;
+    both(id: string): Promise<number>;
     /**
      *
      **/
@@ -42,6 +43,6 @@ export declare class Projector {
     /**
      *
      **/
-    end(cmd: string, id: string, ms: number): Promise<any>;
+    end(cmd: string, id: string, ms: number): Promise<number>;
 }
 export type { ProjectorState };

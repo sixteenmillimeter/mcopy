@@ -4,6 +4,7 @@ import { Log } from 'log';
 import type { Logger } from 'winston';
 import type { Arduino } from 'arduino';
 import type { FilmOut } from 'filmout';
+import type { WebContents } from 'electron';
 
 interface ProjectorState {
 	pos : number,
@@ -18,7 +19,7 @@ export class Projector {
 	public arduino : Arduino = null;
 	private log : Logger;
 	private cfg : any;
-	private ui : any;
+	private ui : WebContents;
 	private ipc : any;
 	public filmout : FilmOut;
 	private id : string = 'projector';
@@ -26,7 +27,7 @@ export class Projector {
 	/**
 	 *
 	 **/
-	constructor (arduino : Arduino, cfg : any, ui : any, filmout : any, second : boolean = false) {
+	constructor (arduino : Arduino, cfg : any, ui : WebContents, filmout : any, second : boolean = false) {
 		this.arduino = arduino;
 		this.cfg = cfg;
 		this.ui = ui;
@@ -54,7 +55,7 @@ export class Projector {
 	/**
 	 *
 	 **/
-	public async set (dir : boolean, id : string) {
+	public async set (dir : boolean, id : string) : Promise<number> {
 		let cmd : string;
 		let ms : number;
 		if (dir) {
@@ -78,7 +79,7 @@ export class Projector {
 	/**
 	 *
 	 **/
-	public async move (id : string) {
+	public async move (id : string) : Promise<number> {
 		const cmd : string = this.cfg.arduino.cmd[this.id];
 		let ms : number;
 		if (this.filmout.state.enabled) {
@@ -98,7 +99,7 @@ export class Projector {
 		return await this.end(cmd, id, ms)
 	}
 
-	public async both (id : string) {
+	public async both (id : string) : Promise<number> {
 		const cmd : string = this.cfg.arduino.cmd[this.id + 's'];
 		let ms : number;
 		try {
@@ -113,7 +114,7 @@ export class Projector {
 	/**
 	 *
 	 **/
-	private async listener  (event : any, arg : any){
+	private async listener  (event : any, arg : any) {
 		if (typeof arg.dir !== 'undefined') {
 			try {
 				await this.set(arg.dir, arg.id)
@@ -136,7 +137,7 @@ export class Projector {
 	/**
 	 *
 	 **/
-	async end (cmd : string, id : string, ms : number) {
+	async end (cmd : string, id : string, ms : number) : Promise<number> {
 		let message : string = ''
 		if (cmd === this.cfg.arduino.cmd.projector_forward) {
 			message = 'Projector set to FORWARD'
@@ -167,11 +168,12 @@ export class Projector {
 		}
 		message += ` ${ms}ms`
 		this.log.info(message, 'PROJECTOR')
-		return await this.ui.send(this.id, { cmd, id, ms })
+		await this.ui.send(this.id, { cmd, id, ms })
+		return ms
 	}
 }
 
-module.exports = function (arduino : Arduino, cfg : any, ui : any, filmout : any, second : boolean) {
+module.exports = function (arduino : Arduino, cfg : any, ui : WebContents, filmout : FilmOut, second : boolean) {
 	return new Projector(arduino, cfg, ui, filmout, second)
 }
 

@@ -14,6 +14,7 @@ import type { Display } from 'display';
 import type { Light } from 'light';
 import type { FFMPEG } from 'ffmpeg';
 import type { FFPROBE } from 'ffprobe';
+import type { WebContents } from 'electron';
 
 interface FilmOutState {
 	hash : string,
@@ -59,7 +60,7 @@ export class FilmOut {
 	private ffprobe : FFPROBE;
 	private light : Light;
 	private ipc : any;
-	private ui : any;
+	private ui : WebContents;
 	private log : Logger;
 
 	public display : Display;
@@ -74,7 +75,7 @@ export class FilmOut {
 	 * @param {object} ui      Electron ui object
 	 * @param {object} light   Light device object
 	 **/
-	constructor (display : Display, server : Server, ffmpeg : FFMPEG, ffprobe : FFPROBE, ui : any, light : Light) {
+	constructor (display : Display, server : Server, ffmpeg : FFMPEG, ffprobe : FFPROBE, ui : WebContents, light : Light) {
 		this.display = display;
 		this.server = server;
 		this.ffmpeg = ffmpeg;
@@ -542,7 +543,7 @@ export class FilmOut {
 	}
 }
 
-module.exports = (display : any, server : any, ffmpeg : any, ffprobe : any, ui : any, light : any) => {
+module.exports = (display : Display, server : Server, ffmpeg : FFMPEG, ffprobe : FFPROBE, ui : WebContents, light : Light) => {
 	return new FilmOut(display, server, ffmpeg, ffprobe, ui, light);
 }
 

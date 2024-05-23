@@ -1,7 +1,8 @@
+import type { System } from 'system';
 export declare class FFPROBE {
     private bin;
     private log;
-    constructor(sys: any);
+    constructor(sys: System);
     private init;
     /**
      * Parse the fps entry into a float representing the fps of a video

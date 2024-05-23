@@ -1,10 +1,11 @@
+import type { System } from 'system';
 export declare class Display {
     private platform;
     private displays;
     private display;
     private tmpdir;
     private wv;
-    constructor(sys: any);
+    constructor(sys: System);
     open(): Promise<void>;
     show(src: string): Promise<void>;
     showPath(pathStr: string): Promise<unknown>;
@@ -13,5 +14,5 @@ export declare class Display {
     focus(): Promise<boolean>;
     field(ratio: number): Promise<boolean>;
     meter(): Promise<boolean>;
-    change(id: any): void;
+    change(id: string): void;
 }

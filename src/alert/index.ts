@@ -3,6 +3,7 @@
 import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
+import type { WebContents } from 'electron';
 
 /* class representing alert functionality */
 
@@ -11,9 +12,9 @@ export class Alert {
 	private log : Logger
 	private id : string = 'alert'
 	private cb : Function = null
-	private ui : any
+	private ui : WebContents
 
-	constructor ( ui : any) {
+	constructor ( ui : WebContents) {
 		this.ui = ui
 		this.init()
 	}
@@ -64,6 +65,6 @@ export class Alert {
 	}
 }
 
-module.exports = function (ui : any) {
+module.exports = function (ui : WebContents) {
 	return new Alert(ui);
 }

@@ -1,7 +1,5 @@
-declare module 'electron';
 declare module 'fs-extra';
 declare module 'uuid';
-declare module 'exec';
 declare module 'spawn';
 declare module 'systeminformation';
 declare module 'request';

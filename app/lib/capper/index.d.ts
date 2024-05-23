@@ -1,5 +1,6 @@
 import type { FilmOut } from 'filmout';
 import type { Arduino } from 'arduino';
+import type { WebContents } from 'electron';
 /** class representing capper functions **/
 export declare class Capper {
     private state;
@@ -13,7 +14,7 @@ export declare class Capper {
     /**
      *
      **/
-    constructor(arduino: Arduino, cfg: any, ui: any, filmout: FilmOut);
+    constructor(arduino: Arduino, cfg: any, ui: WebContents, filmout: FilmOut);
     /**
      *
      **/

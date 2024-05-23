@@ -1,6 +1,7 @@
 'use strict'
 
 import { exec } from 'exec';
+import type { ExecOutput } from 'exec';
 
 export class Processing {
 	private _baseUrl : string
@@ -13,7 +14,7 @@ export class Processing {
 			const timeStart : number = +new Date()
 			const url : string = `${this._baseUrl}`
 			const cmd : string = `curl --http0.9 ${url}`
-			let res : string
+			let res : ExecOutput
 			let ms : number
 			//console.log(url)
 			try {

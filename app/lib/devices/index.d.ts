@@ -1,5 +1,10 @@
 import type { Settings } from 'settings';
 import type { Arduino } from 'arduino';
+import type { BrowserWindow } from 'electron';
+interface Device {
+    serial: string;
+    device: string;
+}
 /**
  * class representing the device discovery features
  *
@@ -13,12 +18,11 @@ export declare class Devices {
     private ui;
     private ipc;
     private mainWindow;
-    private cam;
     /**
      * Constructor assigns arduino, settings, UI browser window and cam objects
      * locally to this class for reference.
      **/
-    constructor(arduino: Arduino, settings: Settings, mainWindow: any, cam: any);
+    constructor(arduino: Arduino, settings: Settings, mainWindow: BrowserWindow);
     /**
      * Initialize the log for "devices". Establish an ipc connection to the UI.
      * Start listening on that ipc connection.
@@ -78,3 +82,4 @@ export declare class Devices {
      **/
     private ready;
 }
+export type { Device };

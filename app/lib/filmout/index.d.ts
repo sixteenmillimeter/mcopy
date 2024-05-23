@@ -3,6 +3,7 @@ import type { Display } from 'display';
 import type { Light } from 'light';
 import type { FFMPEG } from 'ffmpeg';
 import type { FFPROBE } from 'ffprobe';
+import type { WebContents } from 'electron';
 interface FilmOutState {
     hash: string;
     frame: number;
@@ -46,7 +47,7 @@ export declare class FilmOut {
      * @param {object} ui      Electron ui object
      * @param {object} light   Light device object
      **/
-    constructor(display: Display, server: Server, ffmpeg: FFMPEG, ffprobe: FFPROBE, ui: any, light: Light);
+    constructor(display: Display, server: Server, ffmpeg: FFMPEG, ffprobe: FFPROBE, ui: WebContents, light: Light);
     /**
      * Async function for requiring log, ipcMain and bind events.
      **/

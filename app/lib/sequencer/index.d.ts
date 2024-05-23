@@ -1,4 +1,5 @@
 import { Commands } from 'cmd';
+import type { WebContents } from 'electron';
 export declare class Sequencer {
     private running;
     private paused;
@@ -23,7 +24,7 @@ export declare class Sequencer {
      * @param {object} cmd Shared command class
      * @param {object} ui Electron UI, browser window
      **/
-    constructor(cfg: any, cmd: Commands, ui: any);
+    constructor(cfg: any, cmd: Commands, ui: WebContents);
     /**
      * Take configuration object and assign all commands as keys
      * in the internal CMDS object.

@@ -1,14 +1,35 @@
 'use strict';
 
-interface ExecOutput {
-	stdout : string;
-	stderr : string;
-}
-
 import { tmpdir, type } from 'os';
 import { screen } from 'electron';
-//private
+import type { Display as ElectronDisplay, WebContents } from 'electron';
 import { exec } from 'exec';
+import type { ExecOutput } from 'exec';
+
+interface Dependencies {
+	ffmpeg? : string,
+	ffprobe? : string,
+	eog? : string
+}
+
+interface Display {
+	name : string,
+	id : number,
+	width : number,
+	height : number,
+	x : number,
+	y : number,
+	scale : number,
+	primary : boolean
+}
+
+interface System {
+	deps : Dependencies,
+	displays : Display[],
+	tmp : string,
+	platform : string
+}
+
 /**
  * Evaluates system dependencies for digital
  * projector features by executing `which` on binary.
@@ -18,11 +39,9 @@ import { exec } from 'exec';
  * 
  * @returns {object} Object containing path to dependency from `which`, if they exist
  **/
-
-
-async function dependencies (platform : string )  {
-	let obj : any = {};
-	let ffmpeg : any = require('ffmpeg-static');
+async function dependencies (platform : string ) : Promise<Dependencies>  {
+	let obj : Dependencies = {};
+	let ffmpeg : string = require('ffmpeg-static');
 	let ffprobe : any = require('ffprobe-static');
 	let ffoutput : ExecOutput;
 	//let imoutput : ExecOutput;
@@ -66,8 +85,9 @@ async function dependencies (platform : string )  {
 	return obj;
 }
 
-function displayMap (obj : any) {
-	const sm : any = {
+function displayMap (obj : ElectronDisplay) : Display{
+	const sm : Display = {
+		name : null,
 		id : obj.id,
 		width : obj.size.width,
 		height : obj.size.height,
@@ -81,7 +101,7 @@ function displayMap (obj : any) {
 	return sm;
 }
 
-function displaySort (a : any, b : any){
+function displaySort (a : any, b : any) : number{
 	if (a.primary) {
 		return -1
 	} else if (b.primary) {
@@ -90,9 +110,9 @@ function displaySort (a : any, b : any){
 	return 0
 }
 
-async function displays () {
-	let displays : any[] = screen.getAllDisplays();
-	displays = displays.map(displayMap);
+async function displays () : Promise<Display[]> {
+	const electronDisplays : ElectronDisplay[] = screen.getAllDisplays();
+	const displays : Display[] = electronDisplays.map(displayMap);
 	displays.sort(displaySort);
 	return displays;
 }
@@ -104,8 +124,13 @@ async function displays () {
  *
  * @returns {object} Object containing system information
  */ 
-async function system (ui : any) {
-	const obj : any = {};
+async function system (ui : any) : Promise<System> {
+	const obj : System = {
+		deps : null,
+		displays : null,
+		platform : null,
+		tmp : null
+	};
 	let platform : string;
 
 	try {
@@ -135,3 +160,5 @@ async function system (ui : any) {
 }
 
 module.exports = system;
+
+export type { System, Display, Dependencies };

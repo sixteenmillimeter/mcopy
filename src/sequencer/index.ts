@@ -6,7 +6,7 @@ import type { Logger } from 'winston';
 import { powerSaveBlocker } from 'electron'
 import { delay } from 'delay';
 import { Commands } from 'cmd';
-
+import type { WebContents } from 'electron';
 
 /** @module lib/sequencer **/
 
@@ -26,7 +26,7 @@ export class Sequencer {
 	private cmd : Commands;
 	private CMDS : any = {};
 	private ipc : any;
-	private ui : any;
+	private ui : WebContents;
 	private log : Logger;
 	private id : string = 'sequence';
 	private alerted : boolean = false;
@@ -41,7 +41,7 @@ export class Sequencer {
 	 * @param {object} ui Electron UI, browser window
 	 **/
 
-	constructor (cfg : any, cmd : Commands, ui : any) {
+	constructor (cfg : any, cmd : Commands, ui : WebContents) {
 		this.cfg = cfg;
 		this.cmd = cmd;
 		this.ui = ui;
@@ -60,8 +60,6 @@ export class Sequencer {
 		for (let key of keys) {
 			this.CMDS[obj[key]] = key;
 		}
-		//
-		//
 	}
 
 	/**
@@ -274,6 +272,6 @@ export class Sequencer {
 	}
 }
 
-module.exports = function (cfg : any, cmd : any, ui : any) {
+module.exports = function (cfg : any, cmd : Commands, ui : WebContents) {
 	return new Sequencer(cfg, cmd, ui);
 }

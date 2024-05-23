@@ -1,5 +1,6 @@
 import type { Arduino } from 'arduino';
 import type { FilmOut } from 'filmout';
+import type { WebContents } from 'electron';
 interface CameraState {
     pos: number;
     dir: boolean;
@@ -20,7 +21,7 @@ export declare class Camera {
     /**
      *
      **/
-    constructor(arduino: Arduino, cfg: any, ui: any, filmout: FilmOut, second?: boolean);
+    constructor(arduino: Arduino, cfg: any, ui: WebContents, filmout: FilmOut, second?: boolean);
     /**
      *
      **/

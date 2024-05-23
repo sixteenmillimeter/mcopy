@@ -1,7 +1,7 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.execRaw = void 0;
-exports.execRaw = require('child_process').exec;
+exports.exec = void 0;
+const child_process_1 = require("child_process");
 /**
  * Promisified child_process.exec
  *
@@ -30,7 +30,7 @@ async function exec(...args) {
         opts = { maxBuffer: 1024 * 1024 };
     }
     return new Promise((resolve, reject) => {
-        const child = (0, exports.execRaw)(cmd, opts, (err, stdout, stderr) => err ? reject(err) : resolve({
+        const child = (0, child_process_1.exec)(cmd, opts, (err, stdout, stderr) => err ? reject(err) : resolve({
             stdout,
             stderr
         }));
@@ -42,5 +42,6 @@ async function exec(...args) {
         }
     });
 }
-module.exports.exec = exec;
+exports.exec = exec;
+module.exports = { exec };
 //# sourceMappingURL=index.js.map

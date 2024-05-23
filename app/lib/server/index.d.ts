@@ -1,5 +1,6 @@
 import WebSocket from 'ws';
 import express, { Request, Response } from 'express';
+import type { WebContents } from 'electron';
 interface ServerData {
     [key: string]: string;
     PORT?: string;
@@ -34,7 +35,7 @@ export declare class Server {
     private interval;
     private intervalPeriod;
     private ui;
-    constructor(uiInput: any);
+    constructor(ui: WebContents);
     private init;
     private load;
     template(name: string, data: ServerData): string;

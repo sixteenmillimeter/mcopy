@@ -167,7 +167,8 @@ class Projector {
         }
         message += ` ${ms}ms`;
         this.log.info(message, 'PROJECTOR');
-        return await this.ui.send(this.id, { cmd, id, ms });
+        await this.ui.send(this.id, { cmd, id, ms });
+        return ms;
     }
 }
 exports.Projector = Projector;

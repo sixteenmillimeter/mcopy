@@ -42,8 +42,6 @@ class Sequencer {
         for (let key of keys) {
             this.CMDS[obj[key]] = key;
         }
-        //
-        //
     }
     /**
      * Initialize the class by requiring ipcMain from electron

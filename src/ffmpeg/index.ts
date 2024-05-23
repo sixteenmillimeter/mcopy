@@ -11,6 +11,8 @@ import type { Logger } from 'winston';
 
 import Frame from 'frame';
 import type { FilmOutState } from 'filmout';
+import type { System } from 'system';
+
 
 interface StdErr {
     frame : number;
@@ -63,7 +65,7 @@ export class FFMPEG {
 	 *
 	 * @param {object} sys System object to be used to get temp directory
 	 **/
-	constructor (sys : any) {
+	constructor (sys : System) {
 		this.bin = sys.deps.ffmpeg;
 		this.TMPDIR = join(sys.tmp, 'mcopy_digital');
 		this.init();
@@ -404,7 +406,7 @@ export class FFMPEG {
 }
 
 
-module.exports = (sys : any) => {
+module.exports = (sys : System) => {
 	return new FFMPEG(sys);
 }
 

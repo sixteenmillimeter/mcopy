@@ -1,6 +1,11 @@
 'use strict'
 
-export const execRaw = require('child_process').exec
+import { exec as execRaw } from 'child_process'
+
+interface ExecOutput {
+	stdout : string,
+	stderr : string
+}
 
 /**
  * Promisified child_process.exec
@@ -13,7 +18,7 @@ export const execRaw = require('child_process').exec
  *
  * @returns {Promise<{ stdout: string, stderr: stderr }>}
  */
-async function exec(...args : string[]) {
+export async function exec(...args : string[]) : Promise<ExecOutput> {
 	let cmd : string = args[0]
 	let argz : string = null
 	let opts : any = null
@@ -44,4 +49,5 @@ async function exec(...args : string[]) {
     });
 }
 
-module.exports.exec = exec
+module.exports = { exec }
+export type { ExecOutput }

@@ -7,6 +7,7 @@ import { Log } from 'log';
 import type { Logger } from 'winston';
 import type { Arduino } from 'arduino';
 import type { FilmOut } from 'filmout';
+import type { WebContents } from 'electron';
 
 interface CameraState{
 	pos : number,
@@ -27,13 +28,13 @@ export class Camera {
 	private log : Logger;
 	private cfg : any;
 	private filmout : FilmOut;
-	private ui : any;
+	private ui : WebContents;
 	private ipc : any;
 	private id : string = 'camera';
 	/**
 	 *
 	 **/
-	constructor (arduino : Arduino, cfg : any, ui : any, filmout : FilmOut, second : boolean = false) {
+	constructor (arduino : Arduino, cfg : any, ui : WebContents, filmout : FilmOut, second : boolean = false) {
 		this.arduino = arduino;
 		this.cfg = cfg;	
 		this.ui = ui;
@@ -330,11 +331,11 @@ export class Camera {
 		}
 		message += ` ${ms}ms`
 		this.log.info(message);
-		this.ui.send(this.id, {cmd: cmd, id : id, ms: ms});
+		await this.ui.send(this.id, {cmd: cmd, id : id, ms: ms});
 		return ms;
 	}
 }
 
-module.exports = function (arduino : Arduino, cfg : any, ui : any, filmout : any, second : boolean) {
+module.exports = function (arduino : Arduino, cfg : any, ui : WebContents, filmout : FilmOut, second : boolean) {
 	return new Camera(arduino, cfg, ui, filmout, second);
 }

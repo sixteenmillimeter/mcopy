@@ -11,7 +11,7 @@ const path_1 = require("path");
 const uuid_1 = require("uuid");
 const log_1 = require("log");
 class Server {
-    constructor(uiInput) {
+    constructor(ui) {
         this.id = 'server';
         this.isActive = false;
         this.templates = [
@@ -30,7 +30,7 @@ class Server {
         this.queue = {};
         this.intervalPeriod = 10000; //10 sec
         this.init();
-        this.ui = uiInput;
+        this.ui = ui;
     }
     async init() {
         this.log = await (0, log_1.Log)({ label: this.id });

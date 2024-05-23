@@ -4,13 +4,14 @@ import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
 import type { Arduino } from 'arduino';
+import type { WebContents } from 'electron';
 
 export class Light {
 	public state : any = { color : [0, 0, 0] }
 
 	private arduino : Arduino;
 	private cfg : any;
-	private ui : any;
+	private ui : WebContents;
 	private log : Logger;
 	private ipc : any;
 	private enabled : boolean = true;
@@ -20,7 +21,7 @@ export class Light {
 	/**
 	 *
 	 **/
-	constructor (arduino : Arduino, cfg : any, ui : any) {
+	constructor (arduino : Arduino, cfg : any, ui : WebContents) {
 		this.arduino = arduino;
 		this.cfg = cfg;
 		this.ui = ui;
@@ -104,6 +105,6 @@ export class Light {
 	}
 }
 
-module.exports = function (arduino : Arduino, cfg : any, ui : any) {
+module.exports = function (arduino : Arduino, cfg : any, ui : WebContents) {
 	return new Light(arduino, cfg, ui);
 }

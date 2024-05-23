@@ -7,6 +7,7 @@ import { Log } from 'log';
 import type { Logger } from 'winston';
 import type { FilmOut } from 'filmout';
 import type { Arduino } from 'arduino';
+import type { WebContents } from 'electron';
 
 /** class representing capper functions **/
 
@@ -18,13 +19,13 @@ export class Capper {
 	private log : Logger;
 	private cfg : any;
 	private filmout : FilmOut;
-	private ui : any;
+	private ui : WebContents;
 	private ipc : any;
 	private id : string = 'capper';
 	/**
 	 *
 	 **/
-	constructor (arduino : Arduino, cfg : any, ui : any, filmout : FilmOut) {
+	constructor (arduino : Arduino, cfg : any, ui : WebContents, filmout : FilmOut) {
 		this.arduino = arduino;
 		this.cfg = cfg;	
 		this.ui = ui;
@@ -106,6 +107,6 @@ export class Capper {
 	}
 }
 
-module.exports = function (arduino : Arduino, cfg : any, ui : any, filmout: any) {
+module.exports = function (arduino : Arduino, cfg : any, ui : WebContents, filmout: FilmOut) {
 	return new Capper(arduino, cfg, ui, filmout);
 }
