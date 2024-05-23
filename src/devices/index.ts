@@ -3,6 +3,7 @@
 import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
+import type { Settings } from '../settings';
 
 /**
  * class representing the device discovery features
@@ -12,7 +13,7 @@ import type { Logger } from 'winston';
 
 class Devices {
 
-	public settings : any;
+	public settings : Settings;
 	public connected : any = {}
 
 	private arduino : Arduino;
@@ -26,7 +27,7 @@ class Devices {
 	 * Constructor assigns arduino, settings, UI browser window and cam objects
 	 * locally to this class for reference.
 	 **/
-	constructor (arduino : Arduino, settings : any, mainWindow : any, cam : any) {
+	constructor (arduino : Arduino, settings : Settings, mainWindow : any, cam : any) {
 		this.arduino = arduino;
 		this.settings = settings;
 		this.mainWindow = mainWindow;

@@ -1,11 +1,12 @@
 'use strict'
 
-import os = require('os');
-import path = require('path');
-import fs = require('fs-extra');
+import { homedir } from 'os';
+import { join } from 'path';
+import { mkdir, writeFile, readFile, unlink, access } from 'fs/promises';
+import type { Stats } from 'fs';
 
-class Settings {
-	private file : string= path.join(os.homedir(), `/.mcopy/settings.json`);
+export class Settings {
+	private file : string = join(homedir(), `/.mcopy/settings.json`);
 	private defaultState : any = {
 		server : {
 			port : 1111,
@@ -27,6 +28,15 @@ class Settings {
 		this.state = this.freshState();
 	}
 
+	private async exists (path : string) : Promise<boolean> {  
+		try {
+			await access(path);
+			return true;
+		} catch {
+			return false;
+		}
+	}
+
 	private freshState () {
 		return JSON.parse(JSON.stringify(this.defaultState));
 	}
@@ -34,11 +44,11 @@ class Settings {
 	 *
 	 **/
 	private async checkDir () {
-		const dir : string = path.join(os.homedir(), '.mcopy/');
-		const exists : boolean = await fs.exists(dir)
+		const dir : string = join(homedir(), '.mcopy/');
+		const exists : boolean = await this.exists(dir)
 		if (!exists) {
 			try {
-				await fs.mkdir(dir);
+				await mkdir(dir);
 			} catch (err) {
 				if (err.code === 'EEXIST') return true
 				console.error(err);
@@ -50,10 +60,10 @@ class Settings {
 	 *
 	 **/
 	public async save  () {
-		const str = JSON.stringify(this.state, null, '\t');
+		const str  : string = JSON.stringify(this.state, null, '\t');
 		this.checkDir();
 		try {
-			await fs.writeFile(this.file, str, 'utf8');
+			await writeFile(this.file, str, 'utf8');
 		} catch (err) {
 			console.error(err);
 		}
@@ -80,14 +90,14 @@ class Settings {
 	 *
 	 **/
 	public async restore () {
-		let exists;
-		let str;
+		let exists : boolean = false;
+		let str : string;
 
 		this.checkDir();
-		exists = await fs.exists(this.file);
+		exists = await this.exists(this.file);
 		
 		if (exists) {
-			str = await fs.readFile(this.file, 'utf8');
+			str = await readFile(this.file, 'utf8');
 			this.state = JSON.parse(str);
 			//console.dir(this.state)
 		} else {
@@ -98,10 +108,10 @@ class Settings {
 	 *
 	 **/
 	public async reset () {
-		const exists = await fs.exists(this.file);
+		const exists : boolean = await this.exists(this.file);
 		if (exists) {
 			try {
-				await fs.unlink(this.file);
+				await unlink(this.file);
 			} catch (err) {
 				console.error(err);
 			}
@@ -111,4 +121,4 @@ class Settings {
 	};
 }
 
-module.exports = new Settings()
+module.exports = new Settings();
