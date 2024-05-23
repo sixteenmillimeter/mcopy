@@ -5,25 +5,26 @@ import { Processing } from 'processing';
 import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
-
+import type { FilmOut } from 'filmout';
+import type { Arduino } from 'arduino';
 
 /** class representing capper functions **/
 
-class Capper {
+export class Capper {
 	private state : any = { 
 		capper : false
 	};
 	private arduino : Arduino = null;
 	private log : Logger;
 	private cfg : any;
-	private filmout : any;
+	private filmout : FilmOut;
 	private ui : any;
 	private ipc : any;
 	private id : string = 'capper';
 	/**
 	 *
 	 **/
-	constructor (arduino : Arduino, cfg : any, ui : any, filmout : any) {
+	constructor (arduino : Arduino, cfg : any, ui : any, filmout : FilmOut) {
 		this.arduino = arduino;
 		this.cfg = cfg;	
 		this.ui = ui;
@@ -50,7 +51,7 @@ class Capper {
 	/**
 	 *
 	 **/
-	 public async capper (state : boolean, id : string) {
+	 public async capper (state : boolean, id : string) : Promise<number> {
 		let cmd : string;
 		let ms : number;
 
@@ -77,9 +78,9 @@ class Capper {
 	private async listener (event : any, arg : any) {
 		if (typeof arg.state !== 'undefined') {
 			try {
-				await this.capper(arg.state, arg.id)
+				await this.capper(arg.state, arg.id);
 			} catch (err) {
-				this.log.error(err)
+				this.log.error(err);
 			}
 		}
 		event.returnValue = true
@@ -88,8 +89,8 @@ class Capper {
 	/**
 	 *
 	 **/
-	private async end (cmd : string, id : string, ms : number) {
-		let message = '';
+	private async end (cmd : string, id : string, ms : number) : Promise<number> {
+		let message : string = '';
 
 		if (cmd === this.cfg.arduino.cmd.capper_on) {
 			message = 'Capper set to ON';
@@ -97,10 +98,11 @@ class Capper {
 			message = 'Capper set to OFF';
 		}
 
-		message += ` ${ms}ms`
+		message += ` ${ms}ms`;
 
 		this.log.info(message);
 		this.ui.send(this.id, {cmd: cmd, id : id, ms: ms});
+		return ms;
 	}
 }
 

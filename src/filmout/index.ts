@@ -9,20 +9,43 @@ import Jimp from 'jimp';
 import Frame from 'frame';
 import { Log } from 'log';
 import type { Logger } from 'winston';
+import type { Server } from 'server';
+import type { Display } from 'display';
+import type { Light } from 'light';
+import type { FFMPEG } from 'ffmpeg';
+import type { FFPROBE } from 'ffprobe';
+
+interface FilmOutState {
+	hash : string,
+	frame : number,
+	frames : number,
+	fps : number,
+	seconds : number,
+	still : boolean,
+	path : string,
+	fileName : string,
+	directory : boolean,
+	info : any,
+	dir : boolean,
+	enabled : boolean,
+	files : string[]
+}
 
 /**
  * @module FilmOut
  **/
-
-class FilmOut {
+export class FilmOut {
 	private id : string = 'filmout';
 	private videoExtensions : string[] =  ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4']; 
 	private stillExtensions : string[] = ['.tif', '.tiff', '.png', '.jpg', '.jpeg', '.bmp'];
 	private sequenceExtensions : string[] = ['.png', '.jpg', '.jpeg'];
 	private gifExtension : string = '.gif';
-	public state : any = {
+	public state : FilmOutState = {
+		hash : null,
 		frame : 0,
 		frames : 0,
+		fps : 24,
+		seconds : 0,
 		still : false,
 		path : null,
 		fileName : null,
@@ -32,14 +55,15 @@ class FilmOut {
 		enabled : false,
 		files : []
 	};
-	private display : any;
-	private ffmpeg : any;
-	private ffprobe : any;
-	private light : any;
+	private ffmpeg : FFMPEG;
+	private ffprobe : FFPROBE;
+	private light : Light;
 	private ipc : any;
 	private ui : any;
 	private log : Logger;
-	private server : any;
+
+	public display : Display;
+	public server : Server;
 	/**
 	 * @constructor
 	 * Builds FilmOut class with display, ffmpeg, ffprobe, ui and light as internal properties.
@@ -50,7 +74,7 @@ class FilmOut {
 	 * @param {object} ui      Electron ui object
 	 * @param {object} light   Light device object
 	 **/
-	constructor (display : any, server : any, ffmpeg : any, ffprobe : any, ui : any, light : any) {
+	constructor (display : Display, server : Server, ffmpeg : FFMPEG, ffprobe : FFPROBE, ui : any, light : Light) {
 		this.display = display;
 		this.server = server;
 		this.ffmpeg = ffmpeg;
@@ -92,7 +116,7 @@ class FilmOut {
 	  * 
 	  * @param {string} data Data to produce hash of
 	  */
-	 private hash (data : string) {
+	 private hash (data : string) : string {
 		return createHash('sha1').update(data).digest('hex');
 	 }
 	/**
@@ -126,7 +150,7 @@ class FilmOut {
 	 /**
 	 * Begin the process of exporting single frames from the video for display.
 	 **/
-	async start () {	
+	public async start () {	
 		let path;	
 
 		try {
@@ -147,7 +171,7 @@ class FilmOut {
 	/**
 	 * Ends the filmout process and closes the display.
 	 **/
-	private async end () {
+	public async end () {
 		await delay(20);
 		this.display.hide();
 	}
@@ -521,3 +545,5 @@ class FilmOut {
 module.exports = (display : any, server : any, ffmpeg : any, ffprobe : any, ui : any, light : any) => {
 	return new FilmOut(display, server, ffmpeg, ffprobe, ui, light);
 }
+
+export type { FilmOutState };

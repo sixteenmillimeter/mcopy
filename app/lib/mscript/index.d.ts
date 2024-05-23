@@ -246,4 +246,4 @@ export default class Mscript {
      **/
     contains(arr: string[], arr2: string[]): boolean;
 }
-export {};
+export type { RGB };

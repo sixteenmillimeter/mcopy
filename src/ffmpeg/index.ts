@@ -10,16 +10,7 @@ import { Log } from 'log';
 import type { Logger } from 'winston';
 
 import Frame from 'frame';
-
-interface FilmoutState {
-	frame : number;
-	path : string;
-	hash : string;
-	info : any;
-	frames?: number;
-	directory?: boolean;
-	files?: string[];
-}
+import type { FilmOutState } from 'filmout';
 
 interface StdErr {
     frame : number;
@@ -58,7 +49,7 @@ async function spawnAsync (bin : string, args : string[]) {
 
 /** @class FFMPEG **/
 
-class FFMPEG {
+export class FFMPEG {
 	private bin : string;
 	private log : Logger;
 	private id : string = 'ffmpeg';
@@ -140,7 +131,7 @@ class FFMPEG {
 	 *
 	 * @returns {string} Path of frame
 	 **/
-	public async frame (state : FilmoutState, light : any) {
+	public async frame (state : FilmOutState, light : any) {
 		const frameNum : number = state.frame;
 		const video : string = state.directory ? state.files[frameNum] : state.path;
 		const w : number = state.info.width;
@@ -220,7 +211,7 @@ class FFMPEG {
 	 * @returns {?}
 	 **/
 
-	public async frames (state : FilmoutState) {
+	public async frames (state : FilmOutState) {
 		const video : string = state.path;
 		const w : number = state.info.width;
 		const h : number = state.info.height;
@@ -416,3 +407,5 @@ class FFMPEG {
 module.exports = (sys : any) => {
 	return new FFMPEG(sys);
 }
+
+export type { StdErr };

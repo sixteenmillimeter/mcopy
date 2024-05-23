@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Devices = void 0;
 const delay_1 = require("delay");
 const log_1 = require("log");
 /**
@@ -579,6 +580,7 @@ class Devices {
         return true;
     }
 }
+exports.Devices = Devices;
 module.exports = function (arduino, settings, mainWindow, cam) {
     return new Devices(arduino, settings, mainWindow, cam);
 };

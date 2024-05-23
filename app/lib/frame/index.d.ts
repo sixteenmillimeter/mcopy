@@ -12,4 +12,4 @@ export default class Frame {
     static solidColor(width: number, height: number, color: RGBA): Promise<unknown>;
     static blend(inPath: any, color: RGBA, imagePath: string): Promise<string>;
 }
-export {};
+export type { RGBA };

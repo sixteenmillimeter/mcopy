@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Camera = void 0;
 const intval_1 = require("intval");
 const processing_1 = require("processing");
 const delay_1 = require("delay");
@@ -13,7 +14,7 @@ class Camera {
         this.state = {
             pos: 0,
             dir: true,
-            capepr: false
+            capper: false
         };
         this.arduino = null;
         this.intval = null;
@@ -106,7 +107,7 @@ class Camera {
     /**
      *
      **/
-    async move(frame, id) {
+    async move(id) {
         const cmd = this.cfg.arduino.cmd[this.id];
         let ms;
         if (this.filmout.state.enabled) {
@@ -125,7 +126,7 @@ class Camera {
                 ms = await this.intval.move();
             }
             catch (err) {
-                this.log.error(err);
+                this.log.error(`Error moving intval ${this.id}: ${id}`, err);
             }
         }
         else {
@@ -143,14 +144,14 @@ class Camera {
         //this.log.info('Camera move time', { ms });
         return this.end(cmd, id, ms);
     }
-    async both(frame, id) {
+    async both(id) {
         const cmd = this.cfg.arduino.cmd[id];
         let ms;
         try {
             ms = await this.arduino.send(this.id, cmd);
         }
         catch (err) {
-            this.log.error(`Error moving ${this.id}`, err);
+            this.log.error(`Error moving both ${this.id}: ${id}`, err);
         }
         //this.log.info('Cameras move time', { ms });
         return await this.end(cmd, id, ms);
@@ -167,7 +168,7 @@ class Camera {
         let parts;
         let confirmExposure;
         if (this.intval) {
-            return this.intval.setExposure(this.id, exposure, (ms) => {
+            return this.intval.setExposure(exposure, (ms) => {
                 this.ui.send('timing', { c: 'c', ms: exposure });
                 return this.end(cmd, id, ms);
             });
@@ -258,9 +259,9 @@ class Camera {
                 this.log.error(err);
             }
         }
-        else if (typeof arg.frame !== 'undefined') {
+        else if (typeof arg.move !== 'undefined') {
             try {
-                await this.move(arg.frame, arg.id);
+                await this.move(arg.id);
             }
             catch (err) {
                 this.log.error(err);
@@ -336,6 +337,7 @@ class Camera {
         return ms;
     }
 }
+exports.Camera = Camera;
 module.exports = function (arduino, cfg, ui, filmout, second) {
     return new Camera(arduino, cfg, ui, filmout, second);
 };

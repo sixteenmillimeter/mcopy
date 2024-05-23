@@ -16,5 +16,5 @@ function exit(msg, code = 0) {
         process.exit(code);
     }
 }
-module.exports.exit = exit;
+module.exports = { exit };
 //# sourceMappingURL=index.js.map

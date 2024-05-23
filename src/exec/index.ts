@@ -29,7 +29,7 @@ async function exec(...args : string[]) {
 	if (opts === null) {
 		opts = { maxBuffer : 1024 * 1024 }
 	}
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve : Function, reject : Function) => {
     	const child = execRaw(cmd, opts,
 			(err : Error, stdout : string, stderr: string) => err ? reject(err) : resolve({
 				stdout,

@@ -1,6 +1,7 @@
 "use strict";
 /** class representing the Projector features **/
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Projector = void 0;
 const log_1 = require("log");
 class Projector {
     /**
@@ -56,16 +57,15 @@ class Projector {
                 ms = await this.arduino.send(this.id, cmd);
             }
             catch (err) {
-                this.log.error(`Error setting ${this.id} direction`, err);
+                this.log.error(`Error setting ${this.id} direction: ${id}`, err);
             }
         }
-        console.dir(ms);
         return await this.end(cmd, id, ms);
     }
     /**
      *
      **/
-    async move(frame, id) {
+    async move(id) {
         const cmd = this.cfg.arduino.cmd[this.id];
         let ms;
         if (this.filmout.state.enabled) {
@@ -81,20 +81,20 @@ class Projector {
                 ms = await this.arduino.send(this.id, cmd);
             }
             catch (err) {
-                this.log.error(`Error moving ${this.id}`, err);
+                this.log.error(`Error moving ${this.id}: ${id}`, err);
             }
         }
         //this.log.info('Projector move time', { ms });
         return await this.end(cmd, id, ms);
     }
-    async both(frame, id) {
+    async both(id) {
         const cmd = this.cfg.arduino.cmd[this.id + 's'];
         let ms;
         try {
             ms = await this.arduino.send(this.id, cmd);
         }
         catch (err) {
-            this.log.error(`Error moving ${this.id}`, err);
+            this.log.error(`Error moving ${this.id}: ${id}`, err);
         }
         //this.log.info('Projectors move time', { ms });
         return await this.end(cmd, id, ms);
@@ -111,12 +111,12 @@ class Projector {
                 this.log.error(err);
             }
         }
-        else if (typeof arg.frame !== 'undefined') {
+        else if (typeof arg.move !== 'undefined') {
             try {
-                await this.move(arg.frame, arg.id);
+                await this.move(arg.id);
             }
             catch (err) {
-                this.log.error(err);
+                this.log.error(`Error moving ${this.id}: ${arg.id}`, err);
             }
         }
         else if (typeof arg.val !== 'undefined') {
@@ -170,6 +170,7 @@ class Projector {
         return await this.ui.send(this.id, { cmd, id, ms });
     }
 }
+exports.Projector = Projector;
 module.exports = function (arduino, cfg, ui, filmout, second) {
     return new Projector(arduino, cfg, ui, filmout, second);
 };

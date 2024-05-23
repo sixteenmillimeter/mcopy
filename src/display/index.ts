@@ -10,15 +10,14 @@ import { format as urlFormat } from 'url';
 import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
-
-const { BrowserWindow } = require('electron');
+import { BrowserWindow } from 'electron';
 
 class WebView {
 	private digitalWindow : any;
 	public opened : boolean = false;
 	public showing : boolean = false;
 	private platform : string;
-	public display : any;
+	public display : any; //needs type
 	private loadWait : any = {};
 	private ipc : any;
 	private log : Logger;
@@ -158,7 +157,7 @@ class WebView {
 	}
 }
 
-class Display {
+export class Display {
 	private platform : string;
 	private displays : any[];
 	private display : any;

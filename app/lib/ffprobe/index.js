@@ -1,12 +1,11 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.FFPROBE = void 0;
 /** @module FFPROBE **/
 const fs_extra_1 = require("fs-extra");
 const path_1 = require("path");
 const exec_1 = require("exec");
 const log_1 = require("log");
-//const spawn = require('spawn');
-//const exit = require('exit');
 class FFPROBE {
     constructor(sys) {
         this.bin = sys.deps.ffprobe;
@@ -140,6 +139,7 @@ class FFPROBE {
         return frames;
     }
 }
+exports.FFPROBE = FFPROBE;
 /*
 function map (obj : any) {
     console.dir(obj);

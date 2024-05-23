@@ -1,18 +1,19 @@
 'use strict'
 
+import * as request from 'request'
+
 export class Intval {
 	private _baseUrl : string
-	private req : any
+
 	constructor (url : string) {
 		this._baseUrl = `http://${url}`
-		this.req = require('request')
 	}
-	public async move () {
-		return new Promise ((resolve : any, reject : any) => {
+	public async move () : Promise<number> {
+		return new Promise ((resolve : Function, reject : Function) => {
 			const timeStart : number = +new Date()
 			const url : string = `${this._baseUrl}/frame`
 			//console.log(url)
-			return this.req(url, (err : Error, res : any, body : string) => {
+			return request(url, (err : Error, res : any, body : string) => {
 				let ms : number = (+new Date()) - timeStart
 				if (err) {
 					return reject(err)
@@ -21,12 +22,12 @@ export class Intval {
 			})
 		})
 	}
-	public async setDir (dir : boolean) {
-		return new Promise ((resolve : any, reject : any) => {
+	public async setDir (dir : boolean) : Promise<number>  {
+		return new Promise ((resolve : Function, reject : Function) => {
 			const timeStart : number = +new Date()
 			const url : string = `${this._baseUrl}/dir?dir=${dir}`
 			//console.log(url)
-			return this.req(url, (err : Error, res : any, body : string) => {
+			return request(url, (err : Error, res : any, body : string) => {
 				let ms : number = (+new Date()) - timeStart
 				if (err) {
 					return reject(err)
@@ -35,11 +36,11 @@ export class Intval {
 			})
 		})
 	}
-	public async setExposure (exposure : number, cb : Function) {
-		return new Promise ((resolve : any, reject : any) => {
+	public async setExposure (exposure : number, cb : Function) : Promise<number> {
+		return new Promise ((resolve : Function, reject : Function) => {
 			const timeStart : number = +new Date()
 			const url : string = `${this._baseUrl}/exposure?exposure=${exposure}`
-			return this.req(url, (err : Error, res : any, body : string) => {
+			return request(url, (err : Error, res : any, body : string) => {
 				let ms : number = (+new Date()) - timeStart
 				if (err) {
 					return reject(err)
@@ -57,7 +58,7 @@ export class Intval {
 			timeout: 5000
 		}
 
-		this.req(opts, (err : Error, res : any, body : string) => {
+		request(opts, (err : Error, res : any, body : string) => {
 			let ms : number = (+new Date()) - timeStart
 			if (err) {
 				return cb(err, ms)
@@ -67,4 +68,4 @@ export class Intval {
 	}
 }
 
-module.exports.Intval = Intval
+module.exports = { Intval }

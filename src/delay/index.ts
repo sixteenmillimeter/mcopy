@@ -8,9 +8,9 @@
  * @returns {Promise} Promise to resolve after timeout
  **/
 
-export function delay (ms : number) {
+export function delay (ms : number) : Promise<number> {
 	return new Promise((resolve : any) => {
-		return setTimeout(resolve, ms);
+		return setTimeout(() => { resolve(ms) }, ms);
 	});
 }
 

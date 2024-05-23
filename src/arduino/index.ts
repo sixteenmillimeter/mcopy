@@ -45,14 +45,12 @@ const KNOWN : string[] = [
  * Class representing the arduino communication features
  **/ 
 
-class Arduino {
+export class Arduino {
 
 	private log : Logger;
 	private path : any = {};
 	private known : string[] = KNOWN;
-	private alias : any = {};
 	private serial : any = {};
-	private hasState : any = {};
 	private baud : number = 57600;
 	private queue : any = {};
 	private timer : number = 0;
@@ -62,7 +60,9 @@ class Arduino {
 	private keys : string[];
 	private values : string[];
 
+	public alias : any = {};
 	public stateStr : any = {};
+	public hasState : any = {};
 
 	constructor (errorState : Function) {
 		this.errorState = errorState;

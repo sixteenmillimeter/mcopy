@@ -3,8 +3,9 @@
 import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
+import type { Arduino } from 'arduino';
 
-class Light {
+export class Light {
 	public state : any = { color : [0, 0, 0] }
 
 	private arduino : Arduino;

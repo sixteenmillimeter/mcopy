@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Processing = void 0;
 const exec_1 = require("exec");
 class Processing {
     constructor(url) {
@@ -29,5 +30,6 @@ class Processing {
         });
     }
 }
-module.exports.Processing = Processing;
+exports.Processing = Processing;
+module.exports = { Processing };
 //# sourceMappingURL=index.js.map

@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Arduino = void 0;
 /**
  * 2023-07-16 Clarification
  *
@@ -41,14 +42,14 @@ class Arduino {
     constructor(errorState) {
         this.path = {};
         this.known = KNOWN;
-        this.alias = {};
         this.serial = {};
-        this.hasState = {};
         this.baud = 57600;
         this.queue = {};
         this.timer = 0;
         this.locks = {};
+        this.alias = {};
         this.stateStr = {};
+        this.hasState = {};
         this.errorState = errorState;
         this.init();
     }
@@ -593,6 +594,7 @@ class Arduino {
         return typeof this.locks[serial] !== 'undefined' && this.locks[serial] === true;
     }
 }
+exports.Arduino = Arduino;
 if (typeof module !== 'undefined' && module.parent) {
     module.exports = function (c, ee, errorState) {
         eventEmitter = ee;

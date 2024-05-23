@@ -5,4 +5,4 @@
  *
  * @returns {Promise} Promise to resolve after timeout
  **/
-export declare function delay(ms: number): Promise<unknown>;
+export declare function delay(ms: number): Promise<number>;

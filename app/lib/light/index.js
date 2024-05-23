@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Light = void 0;
 const delay_1 = require("delay");
 const log_1 = require("log");
 class Light {
@@ -91,6 +92,7 @@ class Light {
         return res;
     }
 }
+exports.Light = Light;
 module.exports = function (arduino, cfg, ui) {
     return new Light(arduino, cfg, ui);
 };

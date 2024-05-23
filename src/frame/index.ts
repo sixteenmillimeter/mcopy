@@ -75,3 +75,5 @@ export default class Frame {
 }
 
 module.exports = Frame
+
+export type { RGBA }

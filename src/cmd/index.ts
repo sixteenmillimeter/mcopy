@@ -2,18 +2,23 @@
 
 import { v4 as uuid } from 'uuid';
 import { delay } from 'delay';
+import type { Projector } from 'proj';
+import type { Camera } from 'cam';
+import type { Light } from 'light';
+import type { Capper } from 'capper';
+import type { Alert } from 'alert';
 
-class Commands {
-	private proj : any;
-	private cam : any;
-	private light : any;
+export class Commands {
+	public proj : Projector;
+	public cam : Camera;
+	public light : Light;
 
-	private cam2 : any;
-	private proj2 : any;
+	public cam2 : Camera;
+	public proj2 : Projector;
 
-	private capper : any;
+	public capper : Capper;
 
-	private alertObj : any;
+	public alertObj : Alert;
 
 	private cfg : any;
 	private ipc : any;
@@ -33,7 +38,7 @@ class Commands {
 	 * 
 	 **/
 
-	constructor (cfg : any, proj : any, cam : any, light : any, alert : any, cam2 : any = null, proj2 : any = null, capper : any = null) {
+	constructor (cfg : any, proj : Projector, cam : any, light : Light, alert : Alert, cam2 : any = null, proj2 : Projector = null, capper : any = null) {
 		this.cfg = cfg;
 		this.proj = proj;
 		this.cam = cam;
@@ -52,15 +57,16 @@ class Commands {
 	 * 
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async projector_forward () {
+	public async projector_forward () : Promise<number> {
+		const id : string = uuid();
 		let ms : number;
 		try {
 			if (!this.proj.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.proj.set(true);
+				await this.proj.set(true, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
-			ms = await this.proj.move();
+			ms = await this.proj.move(id);
 		} catch (err) {
 			throw err;
 		}
@@ -71,15 +77,16 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async projector_backward () {
+	public async projector_backward () : Promise<number> {
+		const id : string = uuid();
 		let ms : number;
 		try {
 			if (this.proj.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.proj.set(false);
+				await this.proj.set(false, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
-			ms = await this.proj.move();
+			ms = await this.proj.move(id);
 		} catch (err) {
 			throw err;
 		}
@@ -92,7 +99,7 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async camera_forward () {
+	public async camera_forward () : Promise<number> {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
 		let rgb : number[] = [255, 255, 255];
@@ -100,12 +107,12 @@ class Commands {
 		try {
 			if (!this.cam.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.cam.set(true);
+				await this.cam.set(true, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
 			await this.light.set(rgb, id);
 			await delay(this.cfg.arduino.serialDelay);
-			ms = await this.cam.move();
+			ms = await this.cam.move(id);
 			await delay(this.cfg.arduino.serialDelay);
 			await this.light.set(off, id);
 		} catch (err) {
@@ -118,14 +125,14 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async black_forward () {
+	public async black_forward () : Promise<number> {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
 		let ms : number = 0;
 		try {
 			if (!this.cam.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.cam.set(true);
+				await this.cam.set(true, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
 			if (this.capper) {
@@ -134,7 +141,7 @@ class Commands {
 			await delay(this.cfg.arduino.serialDelay);
 			await this.light.set(off, id); //make sure set to off
 			await delay(this.cfg.arduino.serialDelay);
-			ms += await this.cam.move();
+			ms += await this.cam.move(id);
 			await delay(this.cfg.arduino.serialDelay);
 			await this.light.set(off, id);
 			if (this.capper) {
@@ -152,7 +159,7 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async camera_backward () {
+	public async camera_backward () : Promise<number> {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
 		let rgb : number[] = [255, 255, 255];
@@ -160,12 +167,12 @@ class Commands {
 		try {
 			if (this.cam.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.cam.set(false);
+				await this.cam.set(false, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
 			await this.light.set(rgb, id);
 			await delay(this.cfg.arduino.serialDelay);
-			ms = await this.cam.move();
+			ms = await this.cam.move(id);
 			await delay(this.cfg.arduino.serialDelay);
 			await this.light.set(off, id);
 		} catch (err) {
@@ -178,14 +185,14 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async black_backward  () {
+	public async black_backward  () : Promise<number> {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
 		let ms : number = 0;
 		try {
 			if (this.cam.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.cam.set(false);
+				await this.cam.set(false, id);
 			}
 			if (this.capper) {
 				ms += await this.capper.capper(true, id);
@@ -193,7 +200,7 @@ class Commands {
 			await delay(this.cfg.arduino.serialDelay);
 			await this.light.set(off, id); //make sure set to off
 			await delay(this.cfg.arduino.serialDelay);
-			ms += await this.cam.move();
+			ms += await this.cam.move(id);
 			await delay(this.cfg.arduino.serialDelay);
 			await this.light.set(off, id);
 			if (this.capper) {
@@ -212,7 +219,7 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async camera_second_forward () {
+	public async camera_second_forward () : Promise<number> {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
 		let rgb : number[] = [255, 255, 255];
@@ -220,12 +227,12 @@ class Commands {
 		try {
 			if (!this.cam2.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.cam2.set(true);
+				await this.cam2.set(true, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
 			await this.light.set(rgb, id);
 			await delay(this.cfg.arduino.serialDelay);
-			ms = await this.cam2.move();
+			ms = await this.cam2.move(id);
 			await delay(this.cfg.arduino.serialDelay);
 			await this.light.set(off, id);
 		} catch (err) {
@@ -241,7 +248,7 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async camera_second_backward () {
+	public async camera_second_backward () : Promise<number> {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
 		let rgb : number[] = [255, 255, 255];
@@ -249,12 +256,12 @@ class Commands {
 		try {
 			if (this.cam2.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.cam2.set(false);
+				await this.cam2.set(false, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
 			await this.light.set(rgb, id);
 			await delay(this.cfg.arduino.serialDelay);
-			ms = await this.cam2.move();
+			ms = await this.cam2.move(id);
 			await delay(this.cfg.arduino.serialDelay);
 			await this.light.set(off, id);
 		} catch (err) {
@@ -271,7 +278,7 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async cameras_forward () {
+	public async cameras_forward () : Promise<number> {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
 		let rgb : number[] = [255, 255, 255];
@@ -280,20 +287,20 @@ class Commands {
 		try {
 			if (!this.cam.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.cam.set(true);
+				await this.cam.set(true, id);
 			}
 			if (!this.cam2.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.cam2.set(true);
+				await this.cam2.set(true, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
 			await this.light.set(rgb, id);
 			await delay(this.cfg.arduino.serialDelay);
 
 			if (this.cam && this.cam2 && this.cam.arduino.alias.camera === this.cam.arduino.alias.camera_second) {
-				ms = await this.cam.both();
+				ms = await this.cam.both(id);
 			} else {
-				both = await Promise.all( [this.cam.move(), this.cam2.move()] );
+				both = await Promise.all( [this.cam.move(id), this.cam2.move(id)] );
 				ms = Math.max(...both);
 			}
 
@@ -311,7 +318,7 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async cameras_backward () {
+	public async cameras_backward () : Promise<number> {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
 		let rgb : number[] = [255, 255, 255];
@@ -320,20 +327,20 @@ class Commands {
 		try {
 			if (this.cam.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.cam.set(false);
+				await this.cam.set(false, id);
 			}
 			if (this.cam2.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.cam2.set(false);
+				await this.cam2.set(false, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
 			await this.light.set(rgb, id);
 			await delay(this.cfg.arduino.serialDelay);
 
 			if (this.cam && this.cam2 && this.cam.arduino.alias.camera === this.cam.arduino.alias.camera_second) {
-				ms = await this.cam.both();
+				ms = await this.cam.both(id);
 			} else {
-				both = await Promise.all( [this.cam.move(), this.cam2.move()] );
+				both = await Promise.all( [this.cam.move(id), this.cam2.move(id)] );
 				ms = Math.max(...both);
 			}
 
@@ -352,7 +359,7 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async camera_forward_camera_second_backward () {
+	public async camera_forward_camera_second_backward () : Promise<number> {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
 		let rgb : number[] = [255, 255, 255];
@@ -361,20 +368,20 @@ class Commands {
 		try {
 			if (!this.cam.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.cam.set(true);
+				await this.cam.set(true, id);
 			}
 			if (this.cam2.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.cam2.set(false);
+				await this.cam2.set(false, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
 			await this.light.set(rgb, id);
 			await delay(this.cfg.arduino.serialDelay);
 
 			if (this.cam && this.cam2 && this.cam.arduino.alias.camera === this.cam.arduino.alias.camera_second) {
-				ms = await this.cam.both();
+				ms = await this.cam.both(id);
 			} else {
-				both = await Promise.all( [this.cam.move(), this.cam2.move()] );
+				both = await Promise.all( [this.cam.move(id), this.cam2.move(id)] );
 				ms = Math.max(...both);
 			}
 
@@ -392,7 +399,7 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async camera_backward_camera_second_forward () {
+	public async camera_backward_camera_second_forward () : Promise<number> {
 		const id : string = uuid();
 		const off : number[] = [0, 0, 0];
 		let rgb : number[] = [255, 255, 255];
@@ -401,20 +408,20 @@ class Commands {
 		try {
 			if (this.cam.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.cam.set(false);
+				await this.cam.set(false, id);
 			}
 			if (!this.cam2.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.cam2.set(true);
+				await this.cam2.set(true, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
 			await this.light.set(rgb, id);
 			await delay(this.cfg.arduino.serialDelay);
 
 			if (this.cam && this.cam2 && this.cam.arduino.alias.camera === this.cam.arduino.alias.camera_second) {
-				ms = await this.cam.both();
+				ms = await this.cam.both(id);
 			} else {
-				both = await Promise.all( [this.cam.move(), this.cam2.move()] );
+				both = await Promise.all( [this.cam.move(id), this.cam2.move(id)] );
 				ms = Math.max(...both);
 			}
 
@@ -431,15 +438,16 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async projector_second_forward () {
+	public async projector_second_forward () : Promise<number> {
+		const id : string = uuid();
 		let ms : number;
 		try {
 			if (!this.proj2.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.proj2.set(true);
+				await this.proj2.set(true, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
-			ms = await this.proj2.move();
+			ms = await this.proj2.move(id);
 		} catch (err) {
 			throw err;
 		}
@@ -450,15 +458,16 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async projector_second_backward () {
+	public async projector_second_backward () : Promise<number> {
+		const id : string = uuid();
 		let ms : number;
 		try {
 			if (this.proj2.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.proj2.set(false);
+				await this.proj2.set(false, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
-			ms = await this.proj2.move();
+			ms = await this.proj2.move(id);
 		} catch (err) {
 			throw err;
 		}
@@ -470,23 +479,24 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async projectors_forward () {
+	public async projectors_forward () : Promise<number> {
+		const id : string = uuid();
 		let both : number[];
 		let ms : number;
 		try {
 			if (!this.proj.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.proj.set(true);
+				await this.proj.set(true, id);
 			}
 			if (!this.proj2.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.proj2.set(true);
+				await this.proj2.set(true, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
 			if (this.proj && this.proj2 && this.proj.arduino.alias.projector === this.proj.arduino.alias.projector_second) {
-				ms = await this.proj.both();
+				ms = await this.proj.both(id);
 			} else {
-				both = await Promise.all([ this.proj.move(), this.proj2.move() ]);
+				both = await Promise.all([ this.proj.move(id), this.proj2.move(id) ]);
 				ms = Math.max(...both);
 			}
 		} catch (err) {
@@ -499,23 +509,24 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async projectors_backward () {
+	public async projectors_backward () : Promise<number> {
+		const id : string = uuid();
 		let both : number[];
 		let ms : number;
 		try {
 			if (this.proj.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.proj.set(false);
+				await this.proj.set(false, id);
 			}
 			if (this.proj2.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.proj2.set(false);
+				await this.proj2.set(false, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
 			if (this.proj && this.proj2 && this.proj.arduino.alias.projector === this.proj.arduino.alias.projector_second) {
-				ms = await this.proj.both();
+				ms = await this.proj.both(id);
 			} else {
-				both = await Promise.all([ this.proj.move(), this.proj2.move() ]);
+				both = await Promise.all([ this.proj.move(id), this.proj2.move(id) ]);
 				ms = Math.max(...both);
 			}
 		} catch (err) {
@@ -530,23 +541,24 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async projector_forward_projector_second_backward () {
+	public async projector_forward_projector_second_backward () : Promise<number> {
+		const id : string = uuid();
 		let both : number[];
 		let ms : number;
 		try {
 			if (!this.proj.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.proj.set(true);
+				await this.proj.set(true, id);
 			}
 			if (this.proj2.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.proj2.set(false);
+				await this.proj2.set(false, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
 			if (this.proj && this.proj2 && this.proj.arduino.alias.projector === this.proj.arduino.alias.projector_second) {
-				ms = await this.proj.both();
+				ms = await this.proj.both(id);
 			} else {
-				both = await Promise.all([ this.proj.move(), this.proj2.move() ]);
+				both = await Promise.all([ this.proj.move(id), this.proj2.move(id) ]);
 				ms = Math.max(...both);
 			}
 		} catch (err) {
@@ -560,23 +572,24 @@ class Commands {
 	 *
 	 * @returns {integer} Length of action in ms
 	 **/
-	public async projector_backward_projector_second_forward () {
+	public async projector_backward_projector_second_forward () : Promise<number> {
+		const id : string = uuid();
 		let both : number[];
 		let ms : number;
 		try {
 			if (this.proj.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.proj.set(false);
+				await this.proj.set(false, id);
 			}
 			if (!this.proj2.state.dir) {
 				await delay(this.cfg.arduino.serialDelay);
-				await this.proj2.set(true);
+				await this.proj2.set(true, id);
 			}
 			await delay(this.cfg.arduino.serialDelay);
 			if (this.proj && this.proj2 && this.proj.arduino.alias.projector === this.proj.arduino.alias.projector_second) {
-				ms = await this.proj.both();
+				ms = await this.proj.both(id);
 			} else {
-				both = await Promise.all([ this.proj.move(), this.proj2.move() ]);
+				both = await Promise.all([ this.proj.move(id), this.proj2.move(id) ]);
 				ms = Math.max(...both);
 			}
 		} catch (err) {
@@ -591,7 +604,8 @@ class Commands {
 	 * @returns {integer} Length of action in ms 
 	 **/
 
-	public async alert (cmd : any) {
+	public async alert (cmd : any) : Promise<number> {
+		const id : string = uuid();
 		let ms : number;
 		try {
 			ms = await this.alertObj.start(cmd.light); //change this meta
@@ -608,7 +622,8 @@ class Commands {
 	 * @returns {integer} Length of action in ms 
 	 **/
 
-	public async pause (cmd : any) {
+	public async pause (cmd : any) : Promise<number>{
+		const id : string = uuid();
 		let ms : number;
 		try {
 			ms = await delay(cmd.light * 1000); //delay is in seconds
@@ -618,10 +633,15 @@ class Commands {
 		return ms;
 	}
 
-	public async camera_exposure (cmd : any) {
+	/**
+	 * Sets the camera exposure (if supported).
+	 * 
+	 **/
+	public async camera_exposure (cmd : any) : Promise<number>{
+		const id : string = uuid();
 		let ms : number;
 		try {
-			ms = await this.cam.exposure(cmd.light);
+			ms = await this.cam.exposure(cmd.light, id);
 		} catch (err) {
 			throw err;
 		}

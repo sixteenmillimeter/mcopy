@@ -33,7 +33,7 @@ interface ServerQueue {
 	[key: string]: Function;
 }
 
-class Server {
+export class Server {
 	private id : string = 'server'
 	public isActive : boolean = false
 	private log : Logger
@@ -63,13 +63,13 @@ class Server {
 		this.ui = uiInput;
 	}
 
-	async init () {
+	private async init () {
 		this.log = await Log({ label : this.id });
 		await this.load()
 		await this.start()
 	}
 
-	async load () {
+	private async load () {
 		this.http = express()
 		for (let tmpl of this.templates) {
 			tmpl.data = await readFile(tmpl.path, 'utf8')
@@ -254,3 +254,5 @@ class Server {
 module.exports = function (ui : any) {
 	return new Server(ui)
 }
+
+export type { ServerData, ServerTemplate, ServerProxy, ServerProxyList, ServerQueue };

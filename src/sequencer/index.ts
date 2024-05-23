@@ -4,14 +4,15 @@ import { v4 as uuid } from 'uuid';
 import { Log } from 'log';
 import type { Logger } from 'winston';
 import { powerSaveBlocker } from 'electron'
-import delay from 'delay';
+import { delay } from 'delay';
+import { Commands } from 'cmd';
 
 
 /** @module lib/sequencer **/
 
 let seq : Sequencer;
 
-class Sequencer {
+export class Sequencer {
 	private running : boolean = false;
 	private paused : boolean = false;
 
@@ -22,7 +23,7 @@ class Sequencer {
 	private loops : number = 1;
 
 	private cfg : any;
-	private cmd : any;
+	private cmd : Commands;
 	private CMDS : any = {};
 	private ipc : any;
 	private ui : any;
@@ -40,7 +41,7 @@ class Sequencer {
 	 * @param {object} ui Electron UI, browser window
 	 **/
 
-	constructor (cfg : any, cmd : any, ui : any) {
+	constructor (cfg : any, cmd : Commands, ui : any) {
 		this.cfg = cfg;
 		this.cmd = cmd;
 		this.ui = ui;
@@ -268,6 +269,7 @@ class Sequencer {
 		const cmdOriginal : string = this.arr[x].cmd;
 		const cmd : string = this.CMDS[cmdOriginal];
 		this.log.info(`CMD: '${cmdOriginal}' -> ${cmd}`);
+		//@ts-ignore
 		return await this.cmd[cmd](this.arr[x]);
 	}
 }

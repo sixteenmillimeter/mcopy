@@ -35,7 +35,7 @@ proj.move = function (callback) {
 		return false;
 	}
 	obj = {
-		frame : true,
+		move : true,
 		id : uuid()
 	};
 	ipcRenderer.sendSync(proj.id, obj);
@@ -149,7 +149,7 @@ proj.second.move = function (callback) {
 		return false;
 	}
 	obj = {
-		frame : true,
+		move : true,
 		id : uuid()
 	};
 	ipcRenderer.sendSync(proj.second.id, obj);

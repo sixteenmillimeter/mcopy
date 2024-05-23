@@ -2,18 +2,25 @@
 
 import { Log } from 'log';
 import type { Logger } from 'winston';
+import type { Arduino } from 'arduino';
+import type { FilmOut } from 'filmout';
 
-class Projector {
-	private state : any = { 
+interface ProjectorState {
+	pos : number,
+	dir : boolean
+}
+
+export class Projector {
+	public state : ProjectorState = { 
 		pos : 0,
 		dir : true
 	};
-	private arduino : Arduino = null;
+	public arduino : Arduino = null;
 	private log : Logger;
 	private cfg : any;
 	private ui : any;
 	private ipc : any;
-	private filmout : any;
+	public filmout : FilmOut;
 	private id : string = 'projector';
 
 	/**
@@ -62,17 +69,16 @@ class Projector {
 			try {
 				ms = await this.arduino.send(this.id, cmd)
 			} catch (err) {
-				this.log.error(`Error setting ${this.id} direction`, err)
+				this.log.error(`Error setting ${this.id} direction: ${id}`, err)
 			}
 		}
-		console.dir(ms)
 		return await this.end(cmd, id, ms)
 	}
 
 	/**
 	 *
 	 **/
-	public async move (frame : any, id : string) {
+	public async move (id : string) {
 		const cmd : string = this.cfg.arduino.cmd[this.id];
 		let ms : number;
 		if (this.filmout.state.enabled) {
@@ -85,20 +91,20 @@ class Projector {
 			try {
 				ms = await this.arduino.send(this.id, cmd)
 			} catch (err) {
-				this.log.error(`Error moving ${this.id}`, err)
+				this.log.error(`Error moving ${this.id}: ${id}`, err)
 			}
 		}
 		//this.log.info('Projector move time', { ms });
 		return await this.end(cmd, id, ms)
 	}
 
-	public async both (frame : any, id : string) {
+	public async both (id : string) {
 		const cmd : string = this.cfg.arduino.cmd[this.id + 's'];
 		let ms : number;
 		try {
 			ms = await this.arduino.send(this.id, cmd)
 		} catch (err) {
-			this.log.error(`Error moving ${this.id}`, err)
+			this.log.error(`Error moving ${this.id}: ${id}`, err)
 		}
 		//this.log.info('Projectors move time', { ms });
 		return await this.end(cmd, id, ms)
@@ -114,11 +120,11 @@ class Projector {
 			} catch (err) {
 				this.log.error(err)
 			}
-		} else if (typeof arg.frame !== 'undefined') {
+		} else if (typeof arg.move !== 'undefined') {
 			try {
-				await this.move(arg.frame, arg.id)
+				await this.move(arg.id)
 			} catch (err) {
-				this.log.error(err)
+				this.log.error(`Error moving ${this.id}: ${arg.id}`, err)
 			}
 		} else if (typeof arg.val !== 'undefined') {
 			this.state.pos = arg.val;
@@ -168,3 +174,5 @@ class Projector {
 module.exports = function (arduino : Arduino, cfg : any, ui : any, filmout : any, second : boolean) {
 	return new Projector(arduino, cfg, ui, filmout, second)
 }
+
+export type { ProjectorState }

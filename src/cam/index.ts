@@ -5,28 +5,35 @@ import { Processing } from 'processing';
 import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
+import type { Arduino } from 'arduino';
+import type { FilmOut } from 'filmout';
+
+interface CameraState{
+	pos : number,
+	dir : boolean,
+	capper : boolean
+}
 
 /** class representing camera functions **/
-
-class Camera {
-	private state : any = { 
+export class Camera {
+	public state : CameraState = { 
 		pos : 0,
 		dir : true,
-		capepr: false
+		capper: false
 	};
-	private arduino : Arduino = null;
-	private intval : any = null;
-	private processing : any = null;
+	public arduino : Arduino = null;
+	private intval : Intval = null;
+	private processing : Processing = null;
 	private log : Logger;
 	private cfg : any;
-	private filmout : any;
+	private filmout : FilmOut;
 	private ui : any;
 	private ipc : any;
 	private id : string = 'camera';
 	/**
 	 *
 	 **/
-	constructor (arduino : Arduino, cfg : any, ui : any, filmout : any, second : boolean = false) {
+	constructor (arduino : Arduino, cfg : any, ui : any, filmout : FilmOut, second : boolean = false) {
 		this.arduino = arduino;
 		this.cfg = cfg;	
 		this.ui = ui;
@@ -114,7 +121,7 @@ class Camera {
 	/**
 	 *
 	 **/
-	public async move (frame : number, id : string) {
+	public async move (id : string) {
 		const cmd : string = this.cfg.arduino.cmd[this.id];
 		let ms : number;
 		if (this.filmout.state.enabled) {
@@ -130,7 +137,7 @@ class Camera {
 			try {
 				ms = await this.intval.move();
 			} catch (err) {
-				this.log.error(err);
+				this.log.error(`Error moving intval ${this.id}: ${id}`, err);
 			}
 		} else { 
 			try {
@@ -147,13 +154,13 @@ class Camera {
 		return this.end(cmd, id, ms);
 	}
 
-	public async both (frame : any, id : string) {
+	public async both (id : string) {
 		const cmd : string = this.cfg.arduino.cmd[id];
 		let ms : number;
 		try {
 			ms = await this.arduino.send(this.id, cmd)
 		} catch (err) {
-			this.log.error(`Error moving ${this.id}`, err)
+			this.log.error(`Error moving both ${this.id}: ${id}`, err)
 		}
 		//this.log.info('Cameras move time', { ms });
 		return await this.end(cmd, id, ms)
@@ -172,7 +179,7 @@ class Camera {
 		let confirmExposure : number;
 
 		if (this.intval) {
-			return this.intval.setExposure(this.id, exposure, (ms : number) => {
+			return this.intval.setExposure(exposure, (ms : number) => {
 				this.ui.send('timing', { c : 'c', ms : exposure });
 				return this.end(cmd, id, ms);
 			});
@@ -263,9 +270,9 @@ class Camera {
 			} catch (err) {
 				this.log.error(err)
 			}
-		} else if (typeof arg.frame !== 'undefined') {
+		} else if (typeof arg.move !== 'undefined') {
 			try {
-				await this.move(arg.frame, arg.id)
+				await this.move(arg.id)
 			} catch (err) {
 				this.log.error(err)
 			}

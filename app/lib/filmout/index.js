@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.FilmOut = void 0;
 const animated_gif_detector_1 = __importDefault(require("animated-gif-detector"));
 const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
@@ -31,8 +32,11 @@ class FilmOut {
         this.sequenceExtensions = ['.png', '.jpg', '.jpeg'];
         this.gifExtension = '.gif';
         this.state = {
+            hash: null,
             frame: 0,
             frames: 0,
+            fps: 24,
+            seconds: 0,
             still: false,
             path: null,
             fileName: null,
@@ -498,6 +502,7 @@ class FilmOut {
         this.log.info(`Changing the display to ${arg.display}`);
     }
 }
+exports.FilmOut = FilmOut;
 module.exports = (display, server, ffmpeg, ffprobe, ui, light) => {
     return new FilmOut(display, server, ffmpeg, ffprobe, ui, light);
 };

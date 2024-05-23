@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Capper = void 0;
 const log_1 = require("log");
 /** class representing capper functions **/
 class Capper {
@@ -81,8 +82,10 @@ class Capper {
         message += ` ${ms}ms`;
         this.log.info(message);
         this.ui.send(this.id, { cmd: cmd, id: id, ms: ms });
+        return ms;
     }
 }
+exports.Capper = Capper;
 module.exports = function (arduino, cfg, ui, filmout) {
     return new Capper(arduino, cfg, ui, filmout);
 };

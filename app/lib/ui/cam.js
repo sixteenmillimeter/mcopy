@@ -44,7 +44,7 @@ cam.move = function (callback) {
 		return false;
 	}
 	obj = {
-		frame : true,
+		move : true,
 		id : uuid()
 	};
 	ipcRenderer.sendSync(cam.id, obj);

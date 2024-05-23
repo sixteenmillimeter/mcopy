@@ -7,10 +7,8 @@ import { extname } from 'path';
 import { exec } from 'exec';
 import { Log } from 'log';
 import type { Logger } from 'winston';
-//const spawn = require('spawn');
-//const exit = require('exit');
 
-class FFPROBE {
+export class FFPROBE {
 	private bin : string;
 	private log : Logger;
 	constructor (sys : any) {

@@ -1,11 +1,9 @@
 'use strict';
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Sequencer = void 0;
 const log_1 = require("log");
 const electron_1 = require("electron");
-const delay_1 = __importDefault(require("delay"));
+const delay_1 = require("delay");
 /** @module lib/sequencer **/
 let seq;
 class Sequencer {
@@ -164,7 +162,7 @@ class Sequencer {
                 }
                 //UI initiates pause, not planned
                 while (this.paused) {
-                    await (0, delay_1.default)(42);
+                    await (0, delay_1.delay)(42);
                 }
                 if (typeof this.arr[y] === 'undefined') {
                     continue;
@@ -234,9 +232,11 @@ class Sequencer {
         const cmdOriginal = this.arr[x].cmd;
         const cmd = this.CMDS[cmdOriginal];
         this.log.info(`CMD: '${cmdOriginal}' -> ${cmd}`);
+        //@ts-ignore
         return await this.cmd[cmd](this.arr[x]);
     }
 }
+exports.Sequencer = Sequencer;
 module.exports = function (cfg, cmd, ui) {
     return new Sequencer(cfg, cmd, ui);
 };

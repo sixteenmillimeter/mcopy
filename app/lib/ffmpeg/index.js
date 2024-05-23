@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.FFMPEG = void 0;
 /** @module ffmpeg **/
 const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
@@ -350,6 +351,7 @@ class FFMPEG {
         }
     }
 }
+exports.FFMPEG = FFMPEG;
 module.exports = (sys) => {
     return new FFMPEG(sys);
 };

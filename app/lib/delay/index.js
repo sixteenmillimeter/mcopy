@@ -10,7 +10,7 @@ exports.delay = void 0;
  **/
 function delay(ms) {
     return new Promise((resolve) => {
-        return setTimeout(resolve, ms);
+        return setTimeout(() => { resolve(ms); }, ms);
     });
 }
 exports.delay = delay;

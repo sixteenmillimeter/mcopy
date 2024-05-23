@@ -985,7 +985,7 @@ export default class Mscript {
 }
 
 module.exports = Mscript;
-
+export type { RGB };
 
 /*
 

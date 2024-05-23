@@ -2,14 +2,14 @@
 
 import { exec } from 'exec';
 
-class Processing {
+export class Processing {
 	private _baseUrl : string
 	constructor (url : string) {
 		this._baseUrl = (url.indexOf('http') === -1 && url.indexOf('://') === -1) ? `http://${url}` : url
 	}
 
-	public async move () {
-		return new Promise (async (resolve : any, reject : any) => {
+	public async move () : Promise<number> {
+		return new Promise (async (resolve : Function, reject : Function) => {
 			const timeStart : number = +new Date()
 			const url : string = `${this._baseUrl}`
 			const cmd : string = `curl --http0.9 ${url}`
@@ -25,11 +25,11 @@ class Processing {
 			return resolve(ms)
 		})
 	}
-	public async setDir (dir : boolean) {
-		return new Promise ((resolve : any, reject : any) => {
+	public async setDir (dir : boolean) : Promise<number> {
+		return new Promise ((resolve : Function, reject : Function) => {
 			return resolve(0)
 		})
 	}
 }
 
-module.exports.Processing = Processing
+module.exports = { Processing }

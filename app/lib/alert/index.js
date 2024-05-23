@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Alert = void 0;
 const log_1 = require("log");
 /* class representing alert functionality */
 class Alert {
@@ -52,6 +53,7 @@ class Alert {
         }.bind(this));
     }
 }
+exports.Alert = Alert;
 module.exports = function (ui) {
     return new Alert(ui);
 };

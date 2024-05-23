@@ -1,12 +1,12 @@
 'use strict';
 
-import { delay } from 'delay'
+import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
 
 /* class representing alert functionality */
 
-class Alert {
+export class Alert {
 	private ipc : any
 	private log : Logger
 	private id : string = 'alert'
@@ -51,7 +51,7 @@ class Alert {
 	/**
 	 *
 	 **/
-	public async start (cmd : string) {
+	public async start (cmd : string) : Promise<number> {
 		const start = +new Date();
 		const msg : string = (cmd + '').replace('ALERT', '').replace('Alert', '').replace('alert', '').trim()
 		this.ui.send(this.id, { msg })

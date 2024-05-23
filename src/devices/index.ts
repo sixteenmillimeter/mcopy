@@ -3,7 +3,8 @@
 import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
-import type { Settings } from '../settings';
+import type { Settings } from 'settings';
+import type { Arduino } from 'arduino';
 
 /**
  * class representing the device discovery features
@@ -11,7 +12,7 @@ import type { Settings } from '../settings';
  *
  **/
 
-class Devices {
+export class Devices {
 
 	public settings : Settings;
 	public connected : any = {}

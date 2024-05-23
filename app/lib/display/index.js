@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Display = void 0;
 /**
  * @module display
  * Provides features for displaying a full screen display of images for the digital module.
@@ -8,7 +9,7 @@ const path_1 = require("path");
 const url_1 = require("url");
 const delay_1 = require("delay");
 const log_1 = require("log");
-const { BrowserWindow } = require('electron');
+const electron_1 = require("electron");
 class WebView {
     constructor(platform, display) {
         this.opened = false;
@@ -37,7 +38,7 @@ class WebView {
             prefs.x = display.x + 50;
             prefs.y = display.y + 50;
         }
-        this.digitalWindow = new BrowserWindow(prefs);
+        this.digitalWindow = new electron_1.BrowserWindow(prefs);
         require('@electron/remote/main').enable(this.digitalWindow.webContents);
         this.digitalWindow.loadURL(pageUrl);
         if (process.argv.indexOf('-d') !== -1 || process.argv.indexOf('--dev') !== -1) {
@@ -192,6 +193,7 @@ class Display {
         });
     }
 }
+exports.Display = Display;
 module.exports = function (sys) {
     return new Display(sys);
 };
