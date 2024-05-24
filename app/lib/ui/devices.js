@@ -98,6 +98,7 @@ class Devices {
             catch (err) {
                 log.error(err);
             }
+            $('#screens').removeClass('hide');
             return event.returnValue = true;
         });
     }

@@ -102,6 +102,8 @@ class Devices {
 			log.error(err);
 		}
 
+		$('#screens').removeClass('hide');
+
 		return event.returnValue = true;
 	}
 
