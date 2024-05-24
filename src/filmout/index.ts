@@ -7,7 +7,7 @@ import { readFile, lstat, readdir } from 'fs-extra';
 import { delay } from 'delay';
 import { createHash } from 'crypto';
 import Jimp from 'jimp';
-import Frame from 'frame';
+import { Frame } from 'frame';
 import { Log } from 'log';
 import type { Logger } from 'winston';
 import type { Server } from 'server';
@@ -15,7 +15,7 @@ import type { Display } from 'display';
 import type { Light } from 'light';
 import type { FFMPEG } from 'ffmpeg';
 import type { FFPROBE } from 'ffprobe';
-import type { WebContents } from 'electron';
+import type { WebContents, IpcMainEvent } from 'electron';
 
 interface FilmOutState {
 	hash : string,
@@ -184,7 +184,7 @@ export class FilmOut {
 	 *
 	 * @returns {boolean} Success state
 	 **/
-	async onConnect (evt : any, arg : any) : Promise<boolean> {
+	async onConnect (evt : IpcMainEvent, arg : any) : Promise<boolean> {
 		let frames : number = 0;
 		let isAnimated : boolean = false;
 		let info : any;
@@ -317,7 +317,7 @@ export class FilmOut {
 	 *
 	 * @returns {any} UI send call
 	 */
-	async onPreExport (evt : Event, arg : any) : Promise<any> {
+	async onPreExport (evt : IpcMainEvent, arg : any) : Promise<any> {
 		if (!this.state.path) {
 			return await this.ui.send('pre_export', { complete : false, err : 'No file to pre export.' });
 		}
@@ -426,7 +426,7 @@ export class FilmOut {
 	 * @param {object} evt Original event
 	 * @param {object} arg Arguments from message
 	 **/
-	async previewFrame (evt : any, arg : any) {
+	async previewFrame (evt : IpcMainEvent, arg : any) {
 		const state : any = JSON.parse(JSON.stringify(this.state));
 		let path : string;
 
@@ -447,7 +447,7 @@ export class FilmOut {
 	 * @param {object} evt Original event
 	 * @param {object} arg Arguments from message
 	 **/
-	async preview (evt : any, arg : any) {
+	async preview (evt : IpcMainEvent, arg : any) {
 		const state : any = JSON.parse(JSON.stringify(this.state));
 		let path : string;
 
@@ -475,7 +475,7 @@ export class FilmOut {
 	/**
 	 *
 	 **/
-	async focus (evt : any, arg : any) {
+	async focus (evt : IpcMainEvent, arg : any) {
 		this.log.info(`Showing focus screen`);
 		try {
 			if (await this.server.cmdAll('focus')) {
@@ -490,7 +490,7 @@ export class FilmOut {
 	/**
 	 *
 	 **/
-	async field (evt : any, arg : any) {
+	async field (evt : IpcMainEvent, arg : any) {
 		const ratio : number = arg.ratio;
 		this.log.info(`Showing field guide screen`);
 		try {
@@ -507,7 +507,7 @@ export class FilmOut {
 	/**
 	 *
 	 **/
-	async meter (evt : any, arg : any) {
+	async meter (evt : IpcMainEvent, arg : any) {
 		this.log.info(`Showing meter screen`);
 		try {
 			if (await this.server.cmdAll('meter')) {
@@ -522,7 +522,7 @@ export class FilmOut {
 	/**
 	 *
 	 **/
-	async close (evt : any, arg : any) {
+	async close (evt : IpcMainEvent, arg : any) {
 		try {
 			if (await this.server.cmdAll('blank')) {
 				return
@@ -537,7 +537,7 @@ export class FilmOut {
 	/**
 	 *
 	 **/
-	onDisplay (evt : any, arg : any) {
+	onDisplay (evt : IpcMainEvent, arg : any) {
 		this.display.change(arg.display);
 		this.log.info(`Changing the display to ${arg.display}`);
 	}

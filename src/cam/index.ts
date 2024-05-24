@@ -8,7 +8,8 @@ import { Log } from 'log';
 import type { Logger } from 'winston';
 import type { Arduino } from 'arduino';
 import type { FilmOut } from 'filmout';
-import type { WebContents } from 'electron';
+import type { Config } from 'cfg';
+import type { WebContents, IpcMainEvent } from 'electron';
 
 interface CameraState{
 	pos : number,
@@ -27,7 +28,7 @@ export class Camera {
 	private intval : Intval = null;
 	private processing : Processing = null;
 	private log : Logger;
-	private cfg : any;
+	private cfg : Config;
 	private filmout : FilmOut;
 	private ui : WebContents;
 	private ipc : typeof ipcMain = ipcMain;
@@ -35,7 +36,7 @@ export class Camera {
 	/**
 	 *
 	 **/
-	constructor (arduino : Arduino, cfg : any, ui : WebContents, filmout : FilmOut, second : boolean = false) {
+	constructor (arduino : Arduino, cfg : Config, ui : WebContents, filmout : FilmOut, second : boolean = false) {
 		this.arduino = arduino;
 		this.cfg = cfg;	
 		this.ui = ui;
@@ -226,12 +227,12 @@ export class Camera {
 	/**
 	 *
 	 **/
-	private async connectIntval (event : any, arg : any) {
-		return new Promise((resolve, reject) => {
+	private async connectIntval (event : IpcMainEvent, arg : any) {
+		return new Promise((resolve : Function, reject : Function) => {
 			if (arg.connect) {
 				this.intval = new Intval(arg.url)
 				this.processing = null
-				this.intval.connect((err : any, ms : number, state : boolean) => {
+				this.intval.connect((err : Error, ms : number, state : boolean) => {
 					if (err) {
 						this.ui.send('intval', { connected : false })
 						this.log.info(`Cannot connect to ${arg.url}`, 'INTVAL')
@@ -252,7 +253,7 @@ export class Camera {
 	/**
 	 *
 	 **/
-	private async connectProcessing (event : any, arg : any) {
+	private async connectProcessing (event : IpcMainEvent, arg : any) {
 		return new Promise((resolve, reject) => {
 			this.processing = new Processing(arg.url)
 			this.intval = null
@@ -264,7 +265,7 @@ export class Camera {
 	/**
 	 *
 	 **/
-	private async listener (event : any, arg : any) {
+	private async listener (event : IpcMainEvent, arg : any) {
 		if (typeof arg.dir !== 'undefined') {
 			try {
 				await this.set(arg.dir, arg.id)
@@ -299,7 +300,7 @@ export class Camera {
 	 *
 	 **/
 	private async end (cmd : string, id : string, ms : number) {
-		let message = '';
+		let message : string = '';
 		if (cmd === this.cfg.arduino.cmd.camera_forward) {
 			message = 'Camera set to FORWARD';
 		} else if (cmd === this.cfg.arduino.cmd.camera_backward) {

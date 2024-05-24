@@ -6,7 +6,8 @@ import { Log } from 'log';
 import type { Logger } from 'winston';
 import { delay } from 'delay';
 import { Commands } from 'cmd';
-import type { WebContents } from 'electron';
+import type { Config } from 'cfg';
+import type { WebContents, IpcMainEvent } from 'electron';
 
 /** @module lib/sequencer **/
 
@@ -22,7 +23,7 @@ export class Sequencer {
 	private arr : any[] = []; //store sequence from gui
 	private loops : number = 1;
 
-	private cfg : any;
+	private cfg : Config;
 	private cmd : Commands;
 	private CMDS : any = {};
 	private ipc : typeof ipcMain = ipcMain;
@@ -41,7 +42,7 @@ export class Sequencer {
 	 * @param {object} ui Electron UI, browser window
 	 **/
 
-	constructor (cfg : any, cmd : Commands, ui : WebContents) {
+	constructor (cfg : Config, cmd : Commands, ui : WebContents) {
 		this.cfg = cfg;
 		this.cmd = cmd;
 		this.ui = ui;
@@ -87,7 +88,7 @@ export class Sequencer {
 	 * @param {object} event IPC message event
 	 * @param {object} arg Arguments provided in message
 	 **/
-	private async listener (event : any, arg : any) {
+	private async listener (event : IpcMainEvent, arg : any) {
 		if (arg && arg.start) {
 			this.start(arg);
 		} else if (arg && arg.stop) {
@@ -249,7 +250,7 @@ export class Sequencer {
 	 *
 	 * @param {integer} x Step to execute command at
 	 **/
-	private async step ( x: number) {
+	private async step (x: number) {
 		try {
 			await this.cmdExec(x)
 		} catch (err) {

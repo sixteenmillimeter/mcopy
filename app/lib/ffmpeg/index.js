@@ -7,30 +7,6 @@ const fs_extra_1 = require("fs-extra");
 const exec_1 = require("exec");
 const child_process_1 = require("child_process");
 const log_1 = require("log");
-async function spawnAsync(bin, args) {
-    return new Promise((resolve, reject) => {
-        const child = (0, child_process_1.spawn)(bin, args);
-        let stdout = '';
-        let stderr = '';
-        child.on('exit', (code) => {
-            if (code === 0) {
-                return resolve({ stdout, stderr });
-            }
-            else {
-                console.error(`Process exited with code: ${code}`);
-                console.error(stderr);
-                return reject(stderr);
-            }
-        });
-        child.stdout.on('data', (data) => {
-            stdout += data;
-        });
-        child.stderr.on('data', (data) => {
-            stderr += data;
-        });
-        return child;
-    });
-}
 /** @class FFMPEG **/
 class FFMPEG {
     /**
@@ -75,21 +51,30 @@ class FFMPEG {
      **/
     parseStderr(line) {
         //frame= 6416 fps= 30 q=31.0 size=   10251kB time=00:03:34.32 bitrate= 391.8kbits/s speed=   1x
-        let obj = {};
+        const obj = {
+            frame: 0,
+            fps: 0,
+            time: '',
+            speed: 0,
+            size: ''
+        };
+        let frameStr;
+        let fpsStr;
+        let speedStr;
         if (line.substring(0, 'frame='.length) === 'frame=') {
             try {
-                obj.frame = line.split('frame=')[1].split('fps=')[0];
-                obj.frame = parseInt(obj.frame);
-                obj.fps = line.split('fps=')[1].split('q=')[0];
-                obj.fps = parseFloat(obj.fps);
+                frameStr = line.split('frame=')[1].split('fps=')[0];
+                obj.frame = parseInt(frameStr);
+                fpsStr = line.split('fps=')[1].split('q=')[0];
+                obj.fps = parseFloat(fpsStr);
                 obj.time = line.split('time=')[1].split('bitrate=')[0];
-                obj.speed = line.split('speed=')[1].trim().replace('x', '');
-                obj.speed = parseFloat(obj.speed);
+                speedStr = line.split('speed=')[1].trim().replace('x', '');
+                obj.speed = parseFloat(speedStr);
                 obj.size = line.split('size=')[1].split('time=')[0].trim();
             }
             catch (err) {
-                console.error(err);
-                console.log(line);
+                this.log.error('Error parsing stderr line', err);
+                this.log.info(line);
                 process.exit();
             }
         }
@@ -113,7 +98,7 @@ class FFMPEG {
         const padded = this.padded_frame(frameNum);
         let ext = 'png';
         let rgb = light.color;
-        let rgba = {};
+        let rgba;
         let tmpoutput;
         let cmd;
         let output;
@@ -153,7 +138,7 @@ class FFMPEG {
             this.log.info(`"${output.stdout.trim()}"`);
         if (rgb[0] !== 255 || rgb[1] !== 255 || rgb[2] !== 255) {
             rgb = rgb.map((e) => {
-                return parseInt(e);
+                return typeof e === 'string' ? parseInt(e) : e;
             });
             rgba = { r: rgb[0], g: rgb[1], b: rgb[2], a: 255 };
             try {
@@ -218,19 +203,19 @@ class FFMPEG {
             let stderr = '';
             this.log.info(`${this.bin} ${args.join(' ')}`);
             this.child = (0, child_process_1.spawn)(this.bin, args);
-            this.child.on('exit', (code) => {
+            this.child.on('exit', function (code) {
                 //console.log('GOT TO EXIT');
                 if (code === 0) {
-                    console.log(stderr);
-                    console.log(stdout);
+                    this.log.info(stderr);
+                    this.log.info(stdout);
                     return resolve(true);
                 }
                 else {
-                    console.error(`Process exited with code: ${code}`);
-                    console.error(stderr);
+                    this.log.error(`Process exited with code: ${code}`);
+                    this.log.error(stderr);
                     return reject(stderr + stdout);
                 }
-            });
+            }.bind(this));
             this.child.stdout.on('data', (data) => {
                 const line = data.toString();
                 stdout += line;

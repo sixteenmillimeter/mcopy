@@ -9,9 +9,11 @@ class representing camera functions
     * [.init()](#Camera+init)
     * [.listen()](#Camera+listen)
     * [.set()](#Camera+set)
+    * [.cap()](#Camera+cap)
     * [.move()](#Camera+move)
     * [.exposure()](#Camera+exposure)
     * [.connectIntval()](#Camera+connectIntval)
+    * [.connectProcessing()](#Camera+connectProcessing)
     * [.listener()](#Camera+listener)
     * [.end()](#Camera+end)
 
@@ -27,6 +29,10 @@ class representing camera functions
 
 ### camera.set()
 **Kind**: instance method of [<code>Camera</code>](#Camera)  
+<a name="Camera+cap"></a>
+
+### camera.cap()
+**Kind**: instance method of [<code>Camera</code>](#Camera)  
 <a name="Camera+move"></a>
 
 ### camera.move()
@@ -38,6 +44,10 @@ class representing camera functions
 <a name="Camera+connectIntval"></a>
 
 ### camera.connectIntval()
+**Kind**: instance method of [<code>Camera</code>](#Camera)  
+<a name="Camera+connectProcessing"></a>
+
+### camera.connectProcessing()
 **Kind**: instance method of [<code>Camera</code>](#Camera)  
 <a name="Camera+listener"></a>
 

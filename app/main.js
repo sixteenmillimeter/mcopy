@@ -46,12 +46,12 @@ let capper;
 let alert;
 let server;
 const cfg = require('./data/cfg.json');
-var createMenu = function () {
+function createMenu() {
     const template = require('./data/menu.json');
     menu = electron_1.Menu.buildFromTemplate(template);
     electron_1.Menu.setApplicationMenu(menu);
-};
-var createWindow = function () {
+}
+function createWindow() {
     const windowOptions = {
         width: 800,
         height: 600,
@@ -79,7 +79,7 @@ var createWindow = function () {
         mainWindow = null;
     });
     require('@electron/remote/main').enable(mainWindow.webContents);
-};
+}
 var errorState = function () {
     if (seq && seq.isRunning()) {
         //pause sequence if running

@@ -3,6 +3,7 @@ import type { Camera } from 'cam';
 import type { Light } from 'light';
 import type { Capper } from 'capper';
 import type { Alert } from 'alert';
+import type { Config } from 'cfg';
 export declare class Commands {
     proj: Projector;
     cam: Camera;
@@ -27,7 +28,7 @@ export declare class Commands {
      * @param {object} capper Capper object
      *
      **/
-    constructor(cfg: any, proj: Projector, cam: any, light: Light, alert: Alert, cam2?: any, proj2?: Projector, capper?: any);
+    constructor(cfg: Config, proj: Projector, cam: Camera, light: Light, alert: Alert, cam2?: Camera, proj2?: Projector, capper?: Capper);
     /**
      * Move the projector one frame forward
      *

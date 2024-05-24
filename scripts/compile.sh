@@ -4,6 +4,8 @@ mkdir -p lib
 
 ./node_modules/.bin/tsc -p tsconfig.json --extendedDiagnostics
 
+npm run docs
+
 #electron-build fails when local modules are in parent directory
 #copy them into lib directory
 cp -r ./lib/* ./app/lib/

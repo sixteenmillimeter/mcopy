@@ -1,7 +1,11 @@
 import type { Arduino } from 'arduino';
+import type { Config } from 'cfg';
 import type { WebContents } from 'electron';
+interface LightState {
+    color: number[];
+}
 export declare class Light {
-    state: any;
+    state: LightState;
     private arduino;
     private cfg;
     private ui;
@@ -12,7 +16,7 @@ export declare class Light {
     /**
      *
      **/
-    constructor(arduino: Arduino, cfg: any, ui: WebContents);
+    constructor(arduino: Arduino, cfg: Config, ui: WebContents);
     /**
      *
      **/
@@ -28,9 +32,10 @@ export declare class Light {
     /**
      *
      **/
-    set(rgb: number[], id: string, on?: boolean): Promise<void>;
+    set(rgb: number[], id: string, on?: boolean): Promise<number>;
     /**
      *
      **/
     private end;
 }
+export type { LightState };

@@ -8,17 +8,21 @@ import { Log } from 'log';
 import type { Logger } from 'winston';
 import type { FilmOut } from 'filmout';
 import type { Arduino } from 'arduino';
-import type { WebContents } from 'electron';
+import type { Config } from 'cfg';
+import type { WebContents, IpcMainEvent } from 'electron';
+
+interface CapperState {
+	capper : boolean
+}
 
 /** class representing capper functions **/
-
 export class Capper {
-	private state : any = { 
+	private state : CapperState = { 
 		capper : false
 	};
 	private arduino : Arduino = null;
 	private log : Logger;
-	private cfg : any;
+	private cfg : Config;
 	private filmout : FilmOut;
 	private ui : WebContents;
 	private ipc : typeof ipcMain = ipcMain;
@@ -76,7 +80,7 @@ export class Capper {
 	/**
 	 *
 	 **/
-	private async listener (event : any, arg : any) {
+	private async listener (event : IpcMainEvent, arg : any) {
 		if (typeof arg.state !== 'undefined') {
 			try {
 				await this.capper(arg.state, arg.id);
@@ -102,9 +106,10 @@ export class Capper {
 		message += ` ${ms}ms`;
 
 		this.log.info(message);
-		this.ui.send(this.id, {cmd: cmd, id : id, ms: ms});
+		await this.ui.send(this.id, {cmd: cmd, id : id, ms: ms});
 		return ms;
 	}
 }
 
 module.exports = { Capper }
+export type { CapperState }

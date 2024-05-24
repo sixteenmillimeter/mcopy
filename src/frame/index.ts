@@ -9,7 +9,7 @@ interface RGBA {
 	a : number;
 }
 
-export default class Frame {
+export class Frame {
 	static async info (imagePath : string) {
 		let image : any;
 		try { 
@@ -74,6 +74,6 @@ export default class Frame {
 	}
 }
 
-module.exports = Frame
+module.exports = { Frame }
 
 export type { RGBA }

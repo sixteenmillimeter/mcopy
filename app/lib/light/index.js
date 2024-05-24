@@ -49,7 +49,6 @@ class Light {
         else if (typeof arg.disable !== 'undefined') {
             this.enabled = false;
         }
-        return true;
     }
     /**
      *
@@ -66,28 +65,27 @@ class Light {
         }
         await (0, delay_1.delay)(1);
         try {
-            this.arduino.sendString(this.id, str);
+            ms += await this.arduino.sendString(this.id, str);
         }
         catch (err) {
             this.log.error('Error sending light string', err);
         }
         await (0, delay_1.delay)(1);
-        await ms;
-        return await this.end(rgb, id, ms);
+        ms += 2;
+        await this.end(rgb, id, ms);
+        return ms;
     }
     /**
      *
      **/
     async end(rgb, id, ms) {
         let res;
-        //console.trace()
         this.log.info(`Light set to ${rgb.join(',')}`, 'LIGHT', true, true);
         try {
-            //console.dir({ rgb, id, ms })
             res = await this.ui.send(this.id, { rgb, id, ms });
         }
         catch (err) {
-            console.error(err);
+            this.log.error(`Error ending light`, err);
             throw err;
         }
         return res;

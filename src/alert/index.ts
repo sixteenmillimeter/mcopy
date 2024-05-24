@@ -4,7 +4,7 @@ import { ipcMain } from 'electron';
 import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
-import type { WebContents } from 'electron';
+import type { WebContents, IpcMainEvent } from 'electron';
 
 /* class representing alert functionality */
 
@@ -38,7 +38,7 @@ export class Alert {
 	/**
 	 *
 	 **/
-	private async listener (event : any, arg : any) {
+	private async listener (event : IpcMainEvent, arg : any) {
 		if (this.cb !== null) { 
 			try {
 				await this.cb(arg.state, arg.id)
@@ -53,12 +53,12 @@ export class Alert {
 	 *
 	 **/
 	public async start (cmd : string) : Promise<number> {
-		const start = +new Date();
+		const start : number = +new Date();
 		const msg : string = (cmd + '').replace('ALERT', '').replace('Alert', '').replace('alert', '').trim()
 		this.ui.send(this.id, { msg })
 		return new Promise(function (resolve : Function, reject : Function) {
 			this.cb = function () {
-				const ms = (+new Date()) - start;
+				const ms : number = (+new Date()) - start;
 				return resolve(ms);
 			}
 		}.bind(this));

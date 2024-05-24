@@ -1,7 +1,8 @@
 const assert = require('assert')
 
-const settings = require('settings')
+const { Settings }  = require('settings')
 
+const settings = new Settings()
 describe('settings module', async () => {
 	it('should be an object', () =>{
 		assert.equal(typeof settings, 'object')

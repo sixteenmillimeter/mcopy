@@ -4,7 +4,7 @@ interface RGBA {
     b: number;
     a: number;
 }
-export default class Frame {
+export declare class Frame {
     static info(imagePath: string): Promise<{
         width: any;
         height: any;

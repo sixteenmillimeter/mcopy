@@ -13,16 +13,15 @@
  * 
  **/
 
-//import Log = require('log');
 import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
 import type { Device } from 'devices';
 import type { EventEmitter } from 'events'
+import type { Config } from 'cfg';
 
 const { SerialPort } = require('serialport');
 const { ReadlineParser } = require('@serialport/parser-readline');
-const exec = require('child_process').exec;
 
 const parser : any = new ReadlineParser({ delimiter: '\r\n' });
 const newlineRe : RegExp = new RegExp('\n', 'g');
@@ -47,7 +46,7 @@ export class Arduino {
 
 	private log : Logger;
 	private eventEmitter : EventEmitter;
-	private cfg : any = {};
+	private cfg : Config;
 	private path : any = {};
 	private known : string[] = KNOWN;
 	private serial : any = {};
@@ -64,7 +63,7 @@ export class Arduino {
 	public stateStr : any = {};
 	public hasState : any = {};
 
-	constructor ( cfg : any, ee : EventEmitter, errorState : Function) {
+	constructor ( cfg : Config, ee : EventEmitter, errorState : Function) {
 		this.cfg = cfg;
 		this.eventEmitter = ee;
 		this.errorState = errorState;
@@ -149,13 +148,13 @@ export class Arduino {
 	 * @returns {Promise<boolean|string>} Returns 'false' if the communication is locked, otherwise returns the response from the device.
 	 * @throws {Error} Throws an error if the sendAsync method encounters an error.
 	 **/
-	public async send (device : string, cmd : string) : Promise<any> {
+	public async send (device : string, cmd : string) : Promise<number> {
 		const serial : any = this.alias[device]
 		let ms : number
 		this.log.info(`send ${cmd} -> ${device}`)
 		if (this.isLocked(serial)) {
-			this.log.warn(`send Serial ${serial} is locked`)
-			return null
+			this.log.error(`send Serial ${serial} is locked`)
+			return 0
 		}
 		this.timer = new Date().getTime()
 		this.lock(serial)
@@ -164,7 +163,7 @@ export class Arduino {
 			ms = await this.sendAsync(device, cmd)
 		} catch (e) {
 			this.log.error(`Failed to send to ${device} @ ${serial}`, e)
-			return null
+			return 0
 		}
 		this.unlock(serial)
 		
@@ -183,8 +182,8 @@ export class Arduino {
 	 * @returns {Promise<boolean|string>} Returns 'true' if the string is sent successfully, otherwise returns an error message.
 	 * @throws {Error} Throws an error if the writeAsync method encounters an error.
 	 **/
-	public async sendString (device : string, str : string) : Promise<any> {
-		let writeSuccess : any
+	public async sendString (device : string, str : string) : Promise<number> {
+		let ms : number
 		await delay(this.cfg.arduino.serialDelay)
 		if (typeof this.serial[this.alias[device]].fake !== 'undefined'
 			&& this.serial[this.alias[device]].fake) {
@@ -192,13 +191,13 @@ export class Arduino {
 		} else {
 			this.log.info(`sendString ${str} -> ${device}`)
 			try {
-				writeSuccess = await this.writeAsync(device, str)
+				ms = await this.writeAsync(device, str)
 			} catch (e) {
 				this.log.error(`Error sending string to ${device}`, e)
-				return null
+				return 0
 			}
 			this.unlock(this.alias[device])
-			return writeSuccess
+			return ms
 		}
 	}
 

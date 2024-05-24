@@ -1,6 +1,9 @@
 import type { FilmOut } from 'filmout';
 import type { Arduino } from 'arduino';
 import type { WebContents } from 'electron';
+interface CapperState {
+    capper: boolean;
+}
 /** class representing capper functions **/
 export declare class Capper {
     private state;
@@ -36,3 +39,4 @@ export declare class Capper {
      **/
     private end;
 }
+export type { CapperState };

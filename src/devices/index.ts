@@ -6,7 +6,7 @@ import { Log } from 'log';
 import type { Logger } from 'winston';
 import type { Settings } from 'settings';
 import type { Arduino } from 'arduino';
-import type { BrowserWindow, WebContents } from 'electron';
+import type { BrowserWindow, WebContents, IpcMainEvent } from 'electron';
 
 interface Device {
 	serial : string;
@@ -22,13 +22,13 @@ interface Device {
 export class Devices {
 
 	public settings : Settings;
-	public connected : any = {}
+	public connected : any = {};
 
 	private arduino : Arduino;
 	private log : Logger;
 	private ui : WebContents;
 	private ipc : typeof ipcMain = ipcMain;
-	private mainWindow : any
+	private mainWindow : BrowserWindow;
 	/**
 	 * Constructor assigns arduino, settings, UI browser window and cam objects
 	 * locally to this class for reference.
@@ -58,7 +58,7 @@ export class Devices {
 	 * The "profile" channel callback. If a profile is changed, set it in the
 	 * local settings object.
 	 **/
-	private async listener (event : any, arg : any){
+	private async listener (event : IpcMainEvent, arg : any){
 		if (typeof arg.profile !== 'undefined') {
 			this.log.info(`Saving profile ${arg.profile}`, 'SETTINGS', false, false);
 			this.settings.update('profile', arg.profile);

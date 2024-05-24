@@ -1,5 +1,6 @@
 import type { FilmOutState } from 'filmout';
 import type { System } from 'system';
+import type { LightState } from 'light';
 interface StdErr {
     frame: number;
     fps: number;
@@ -51,7 +52,7 @@ export declare class FFMPEG {
      *
      * @returns {string} Path of frame
      **/
-    frame(state: FilmOutState, light: any): Promise<string>;
+    frame(state: FilmOutState, light: LightState): Promise<string>;
     /**
      * Render all frames in a video to the temp directory.
      * Not in use.

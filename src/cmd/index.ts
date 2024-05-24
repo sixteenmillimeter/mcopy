@@ -8,6 +8,7 @@ import type { Camera } from 'cam';
 import type { Light } from 'light';
 import type { Capper } from 'capper';
 import type { Alert } from 'alert';
+import type { Config } from 'cfg';
 
 export class Commands {
 	public proj : Projector;
@@ -21,7 +22,7 @@ export class Commands {
 
 	public alertObj : Alert;
 
-	private cfg : any;
+	private cfg : Config;
 	private ipc : typeof ipcMain = ipcMain;
 
 	/**
@@ -39,7 +40,7 @@ export class Commands {
 	 * 
 	 **/
 
-	constructor (cfg : any, proj : Projector, cam : any, light : Light, alert : Alert, cam2 : any = null, proj2 : Projector = null, capper : any = null) {
+	constructor (cfg : Config, proj : Projector, cam : Camera, light : Light, alert : Alert, cam2 : Camera = null, proj2 : Projector = null, capper : Capper = null) {
 		this.cfg = cfg;
 		this.proj = proj;
 		this.cam = cam;

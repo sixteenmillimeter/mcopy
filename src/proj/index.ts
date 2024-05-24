@@ -5,7 +5,8 @@ import { Log } from 'log';
 import type { Logger } from 'winston';
 import type { Arduino } from 'arduino';
 import type { FilmOut } from 'filmout';
-import type { WebContents } from 'electron';
+import type { Config } from 'cfg';
+import type { WebContents, IpcMainEvent } from 'electron';
 
 interface ProjectorState {
 	pos : number,
@@ -19,7 +20,7 @@ export class Projector {
 	};
 	public arduino : Arduino = null;
 	private log : Logger;
-	private cfg : any;
+	private cfg : Config;
 	private ui : WebContents;
 	private ipc : typeof ipcMain = ipcMain;
 	public filmout : FilmOut;
@@ -28,7 +29,7 @@ export class Projector {
 	/**
 	 *
 	 **/
-	constructor (arduino : Arduino, cfg : any, ui : WebContents, filmout : any, second : boolean = false) {
+	constructor (arduino : Arduino, cfg : Config, ui : WebContents, filmout : FilmOut, second : boolean = false) {
 		this.arduino = arduino;
 		this.cfg = cfg;
 		this.ui = ui;
@@ -114,7 +115,7 @@ export class Projector {
 	/**
 	 *
 	 **/
-	private async listener  (event : any, arg : any) {
+	private async listener  (event : IpcMainEvent, arg : any) {
 		if (typeof arg.dir !== 'undefined') {
 			try {
 				await this.set(arg.dir, arg.id)

@@ -5,13 +5,18 @@ import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
 import type { Arduino } from 'arduino';
-import type { WebContents } from 'electron';
+import type { Config } from 'cfg';
+import type { WebContents, IpcMainEvent } from 'electron';
+
+interface LightState {
+	color : number[]
+}
 
 export class Light {
-	public state : any = { color : [0, 0, 0] }
+	public state : LightState = { color : [0, 0, 0] }
 
 	private arduino : Arduino;
-	private cfg : any;
+	private cfg : Config;
 	private ui : WebContents;
 	private log : Logger;
 	private ipc : typeof ipcMain = ipcMain;
@@ -22,7 +27,7 @@ export class Light {
 	/**
 	 *
 	 **/
-	constructor (arduino : Arduino, cfg : any, ui : WebContents) {
+	constructor (arduino : Arduino, cfg : Config, ui : WebContents) {
 		this.arduino = arduino;
 		this.cfg = cfg;
 		this.ui = ui;
@@ -47,7 +52,7 @@ export class Light {
 	/**
 	 *
 	 **/
-	private async listener (event : any, arg : any) {
+	private async listener (event : IpcMainEvent, arg : any) {
 		if (typeof arg.rgb !== 'undefined') {
 			try {
 				await this.set(arg.rgb, arg.id, true);
@@ -60,7 +65,6 @@ export class Light {
 		} else if (typeof arg.disable !== 'undefined') {
 			this.enabled = false;
 		}
-		return true;
 	}
 
 	/**
@@ -68,7 +72,7 @@ export class Light {
 	 **/
 	public async set (rgb : number[], id : string, on : boolean = true) {
 		const str : string = rgb.join(',');
-		let ms : any;
+		let ms : number;
 		
 		this.state.color = rgb;
 		try {
@@ -78,13 +82,14 @@ export class Light {
 		}
 		await delay(1);
 		try {
-			this.arduino.sendString(this.id, str);
+			ms += await this.arduino.sendString(this.id, str);
 		} catch (err) {
 			this.log.error('Error sending light string', err);
 		}
 		await delay(1);
-		await ms;
-		return await this.end(rgb, id, ms);
+		ms += 2;
+		await this.end(rgb, id, ms);
+		return ms;
 	}
 
 	/**
@@ -92,13 +97,11 @@ export class Light {
 	 **/
 	private async end (rgb : number[], id : string, ms : number) {
 		let res;
-		//console.trace()
 		this.log.info(`Light set to ${rgb.join(',')}`, 'LIGHT', true, true);
 		try {
-			//console.dir({ rgb, id, ms })
 			res = await this.ui.send(this.id, { rgb, id, ms });
 		} catch (err) {
-			console.error(err);
+			this.log.error(`Error ending light`, err);
 			throw err
 		}
 		return res;
@@ -106,3 +109,5 @@ export class Light {
 }
 
 module.exports = { Light };
+
+export type { LightState };

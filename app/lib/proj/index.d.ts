@@ -1,6 +1,7 @@
 /** class representing the Projector features **/
 import type { Arduino } from 'arduino';
 import type { FilmOut } from 'filmout';
+import type { Config } from 'cfg';
 import type { WebContents } from 'electron';
 interface ProjectorState {
     pos: number;
@@ -18,7 +19,7 @@ export declare class Projector {
     /**
      *
      **/
-    constructor(arduino: Arduino, cfg: any, ui: WebContents, filmout: any, second?: boolean);
+    constructor(arduino: Arduino, cfg: Config, ui: WebContents, filmout: FilmOut, second?: boolean);
     /**
      *
      **/

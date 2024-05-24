@@ -10,7 +10,7 @@ const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
 const delay_1 = require("delay");
 const crypto_1 = require("crypto");
-const frame_1 = __importDefault(require("frame"));
+const frame_1 = require("frame");
 const log_1 = require("log");
 /**
  * @module FilmOut
@@ -329,7 +329,7 @@ class FilmOut {
     async stillInfo(pathStr) {
         let info;
         try {
-            info = await frame_1.default.info(pathStr);
+            info = await frame_1.Frame.info(pathStr);
         }
         catch (err) {
             this.log.error(err, 'FILMOUT', true, true);

@@ -82,7 +82,7 @@ class Capper {
         }
         message += ` ${ms}ms`;
         this.log.info(message);
-        this.ui.send(this.id, { cmd: cmd, id: id, ms: ms });
+        await this.ui.send(this.id, { cmd: cmd, id: id, ms: ms });
         return ms;
     }
 }

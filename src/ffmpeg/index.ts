@@ -8,10 +8,14 @@ import { exec } from 'exec';
 import { spawn } from 'child_process';
 import { Log } from 'log';
 import type { Logger } from 'winston';
+import type { ChildProcessWithoutNullStreams } from 'child_process';
 
-import Frame from 'frame';
+import { Frame } from 'frame';
 import type { FilmOutState } from 'filmout';
 import type { System } from 'system';
+import type { RGBA } from 'frame';
+import type { ExecOutput } from 'exec';
+import type { LightState } from 'light';
 
 
 interface StdErr {
@@ -25,30 +29,6 @@ interface StdErr {
     estimated? : number;
 }
 
-async function spawnAsync (bin : string, args : string[]) {
-	return new Promise((resolve : Function, reject : Function) => {
-        const child = spawn(bin, args);
-        let stdout = '';
-        let stderr = '';
-        child.on('exit', (code : number) => {
-            if (code === 0) {
-                return resolve({ stdout, stderr });
-            } else {
-                console.error(`Process exited with code: ${code}`);
-                console.error(stderr);
-                return reject(stderr);
-            }
-        });
-        child.stdout.on('data', (data : string) => {
-            stdout += data;
-        });
-        child.stderr.on('data', (data : string) => {
-            stderr += data;
-        });
-        return child;
-	});
-}
-
 /** @class FFMPEG **/
 
 export class FFMPEG {
@@ -56,7 +36,7 @@ export class FFMPEG {
 	private log : Logger;
 	private id : string = 'ffmpeg';
 	private TMPDIR : string;
-	private child : any;
+	private child : ChildProcessWithoutNullStreams;
 	public onProgress : Function = () => {};
 
 	/**
@@ -101,21 +81,30 @@ export class FFMPEG {
 	 **/
 	private parseStderr (line : string) : StdErr {
         //frame= 6416 fps= 30 q=31.0 size=   10251kB time=00:03:34.32 bitrate= 391.8kbits/s speed=   1x
-        let obj : any = {};
+        const obj : StdErr = {
+        	frame : 0,
+		    fps : 0,
+		    time : '',
+		    speed : 0,
+		    size : ''
+        };
+        let frameStr : string;
+        let fpsStr : string;
+        let speedStr : string;
 
         if (line.substring(0, 'frame='.length) === 'frame=') {
             try {
-                obj.frame = line.split('frame=')[1].split('fps=')[0];
-                obj.frame = parseInt(obj.frame);
-                obj.fps = line.split('fps=')[1].split('q=')[0];
-                obj.fps = parseFloat(obj.fps);
+                frameStr = line.split('frame=')[1].split('fps=')[0];
+                obj.frame = parseInt(frameStr);
+                fpsStr = line.split('fps=')[1].split('q=')[0];
+                obj.fps = parseFloat(fpsStr);
                 obj.time = line.split('time=')[1].split('bitrate=')[0];
-                obj.speed = line.split('speed=')[1].trim().replace('x', '');
-                obj.speed = parseFloat(obj.speed);
+                speedStr = line.split('speed=')[1].trim().replace('x', '');
+                obj.speed = parseFloat(speedStr);
                 obj.size = line.split('size=')[1].split('time=')[0].trim();
             } catch (err) {
-                console.error(err);
-                console.log(line);
+                this.log.error('Error parsing stderr line', err);
+                this.log.info(line);
                 process.exit();
             }
         } else {
@@ -133,18 +122,18 @@ export class FFMPEG {
 	 *
 	 * @returns {string} Path of frame
 	 **/
-	public async frame (state : FilmOutState, light : any) {
+	public async frame (state : FilmOutState, light : LightState) {
 		const frameNum : number = state.frame;
 		const video : string = state.directory ? state.files[frameNum] : state.path;
 		const w : number = state.info.width;
 		const h : number = state.info.height;
 		const padded : string = this.padded_frame(frameNum);
 		let ext : string = 'png';
-		let rgb : any[] = light.color;
-		let rgba : any = {};
+		let rgb : number[] = light.color;
+		let rgba : RGBA;
 		let tmpoutput : string;
 		let cmd : string;
-		let output : any;
+		let output : ExecOutput;
 		let fileExists : boolean = false;
 		let scale : string = '';
 
@@ -187,8 +176,8 @@ export class FFMPEG {
 		if (output && output.stdout) this.log.info(`"${output.stdout.trim()}"`);
 
 		if ( rgb[0] !== 255 || rgb[1] !== 255 || rgb[2] !== 255 ) {
-			rgb = rgb.map((e : string) => {
-				return parseInt(e);
+			rgb = rgb.map((e : number | string) => {
+				return typeof e === 'string' ? parseInt(e) : e;
 			});
 
 			rgba = { r : rgb[0], g : rgb[1], b : rgb[2], a : 255 };
@@ -221,7 +210,7 @@ export class FFMPEG {
 		let ext : string = 'png';
 		let tmpoutput : string = join(tmppath, `${state.hash}-export-%08d.${ext}`);
 		let args : string[];
-		let output : any;
+		let output : ExecOutput;
 		let estimated : number = -1;
 		
 		//cmd = `${this.bin} -y -i "${video}" -vf "${scale}" -compression_algo raw -pix_fmt rgb24 -crf 0 "${tmpoutput}"`;
@@ -259,24 +248,24 @@ export class FFMPEG {
 		//ffmpeg -i "${video}" -compression_algo raw -pix_fmt rgb24 "${tmpoutput}"
 
 		return new Promise((resolve : Function, reject : Function) => {
-			let stdout = '';
-            let stderr = '';
+			let stdout : string = '';
+            let stderr : string = '';
 
 			this.log.info(`${this.bin} ${args.join(' ')}`);
 			this.child = spawn(this.bin, args);
 
-            this.child.on('exit', (code : number) => {
+            this.child.on('exit', function (code : number) {
             	//console.log('GOT TO EXIT');
                 if (code === 0) {
-                	console.log(stderr);
-                	console.log(stdout);
+                	this.log.info(stderr);
+                	this.log.info(stdout);
                     return resolve(true);
                 } else {
-                    console.error(`Process exited with code: ${code}`);
-                    console.error(stderr);
+                    this.log.error(`Process exited with code: ${code}`);
+                    this.log.error(stderr);
                     return reject(stderr + stdout);
                 }
-            });
+            }.bind(this));
 
             this.child.stdout.on('data', (data : any) => {
             	const line : string = data.toString();

@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import type { EventEmitter } from 'events';
+import type { Config } from 'cfg';
 /**
  * Class representing the arduino communication features
  **/
@@ -21,7 +22,7 @@ export declare class Arduino {
     alias: any;
     stateStr: any;
     hasState: any;
-    constructor(cfg: any, ee: EventEmitter, errorState: Function);
+    constructor(cfg: Config, ee: EventEmitter, errorState: Function);
     init(): Promise<void>;
     /**
      * Enumerate all connected devices that might be Arduinos
@@ -51,7 +52,7 @@ export declare class Arduino {
      * @returns {Promise<boolean|string>} Returns 'false' if the communication is locked, otherwise returns the response from the device.
      * @throws {Error} Throws an error if the sendAsync method encounters an error.
      **/
-    send(device: string, cmd: string): Promise<any>;
+    send(device: string, cmd: string): Promise<number>;
     /**
      * Sends a string to the specified Arduino.
      * Handles different types of devices, including fake devices for testing purposes.
@@ -63,7 +64,7 @@ export declare class Arduino {
      * @returns {Promise<boolean|string>} Returns 'true' if the string is sent successfully, otherwise returns an error message.
      * @throws {Error} Throws an error if the writeAsync method encounters an error.
      **/
-    sendString(device: string, str: string): Promise<any>;
+    sendString(device: string, str: string): Promise<number>;
     /**
      *
      **/

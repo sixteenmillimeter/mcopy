@@ -21,6 +21,7 @@ import { Devices } from 'devices'
 import { Commands } from 'cmd'
 import { Sequencer } from 'sequencer'
 import { Server } from 'server'
+import type { Config } from 'cfg';
 
 require('@electron/remote/main').initialize()
 
@@ -34,7 +35,7 @@ let settings : Settings
 let log : Logger
 let mainWindow : BrowserWindow
 let arduino : Arduino
-let menu
+let menu : Menu
 let display : Display
 let ffmpeg : FFMPEG
 let ffprobe : FFPROBE
@@ -51,15 +52,15 @@ let capper : Capper
 let alert : Alert
 let server : Server
 
-const cfg : any = require('./data/cfg.json')
+const cfg : Config = require('./data/cfg.json')
 
-var createMenu = function () {
+function createMenu () {
 	const template = require('./data/menu.json')
 	menu = Menu.buildFromTemplate(template)
 	Menu.setApplicationMenu(menu)
 }
 
-var createWindow = function () {
+function createWindow () {
 	const windowOptions : BrowserWindowConstructorOptions = {
 		width: 800, 
 		height: 600,

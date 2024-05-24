@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Frame = void 0;
 const jimp_1 = __importDefault(require("jimp"));
 class Frame {
     static async info(imagePath) {
@@ -65,6 +66,6 @@ class Frame {
         return imagePath;
     }
 }
-exports.default = Frame;
-module.exports = Frame;
+exports.Frame = Frame;
+module.exports = { Frame };
 //# sourceMappingURL=index.js.map

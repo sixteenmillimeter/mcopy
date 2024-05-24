@@ -3,7 +3,7 @@ import type { Display } from 'display';
 import type { Light } from 'light';
 import type { FFMPEG } from 'ffmpeg';
 import type { FFPROBE } from 'ffprobe';
-import type { WebContents } from 'electron';
+import type { WebContents, IpcMainEvent } from 'electron';
 interface FilmOutState {
     hash: string;
     frame: number;
@@ -90,7 +90,7 @@ export declare class FilmOut {
      *
      * @returns {boolean} Success state
      **/
-    onConnect(evt: any, arg: any): Promise<boolean>;
+    onConnect(evt: IpcMainEvent, arg: any): Promise<boolean>;
     /**
      * Pre-export all frames from video for display.
      *
@@ -99,7 +99,7 @@ export declare class FilmOut {
      *
      * @returns {any} UI send call
      */
-    onPreExport(evt: Event, arg: any): Promise<any>;
+    onPreExport(evt: IpcMainEvent, arg: any): Promise<any>;
     /**
      * Return true if gif is animated, false if it is a still
      *
@@ -140,33 +140,33 @@ export declare class FilmOut {
      * @param {object} evt Original event
      * @param {object} arg Arguments from message
      **/
-    previewFrame(evt: any, arg: any): Promise<void>;
+    previewFrame(evt: IpcMainEvent, arg: any): Promise<void>;
     /**
      * Open a single frame in a display window to preview filmout.
      *
      * @param {object} evt Original event
      * @param {object} arg Arguments from message
      **/
-    preview(evt: any, arg: any): Promise<void>;
+    preview(evt: IpcMainEvent, arg: any): Promise<void>;
     /**
      *
      **/
-    focus(evt: any, arg: any): Promise<void>;
+    focus(evt: IpcMainEvent, arg: any): Promise<void>;
     /**
      *
      **/
-    field(evt: any, arg: any): Promise<void>;
+    field(evt: IpcMainEvent, arg: any): Promise<void>;
     /**
      *
      **/
-    meter(evt: any, arg: any): Promise<void>;
+    meter(evt: IpcMainEvent, arg: any): Promise<void>;
     /**
      *
      **/
-    close(evt: any, arg: any): Promise<void>;
+    close(evt: IpcMainEvent, arg: any): Promise<void>;
     /**
      *
      **/
-    onDisplay(evt: any, arg: any): void;
+    onDisplay(evt: IpcMainEvent, arg: any): void;
 }
 export type { FilmOutState };

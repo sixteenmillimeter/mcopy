@@ -13,12 +13,10 @@ exports.Arduino = void 0;
  * projector, light) that is aliased to a serial port
  *
  **/
-//import Log = require('log');
 const delay_1 = require("delay");
 const log_1 = require("log");
 const { SerialPort } = require('serialport');
 const { ReadlineParser } = require('@serialport/parser-readline');
-const exec = require('child_process').exec;
 const parser = new ReadlineParser({ delimiter: '\r\n' });
 const newlineRe = new RegExp('\n', 'g');
 const returnRe = new RegExp('\r', 'g');
@@ -37,7 +35,6 @@ const KNOWN = [
  **/
 class Arduino {
     constructor(cfg, ee, errorState) {
-        this.cfg = {};
         this.path = {};
         this.known = KNOWN;
         this.serial = {};
@@ -139,8 +136,8 @@ class Arduino {
         let ms;
         this.log.info(`send ${cmd} -> ${device}`);
         if (this.isLocked(serial)) {
-            this.log.warn(`send Serial ${serial} is locked`);
-            return null;
+            this.log.error(`send Serial ${serial} is locked`);
+            return 0;
         }
         this.timer = new Date().getTime();
         this.lock(serial);
@@ -150,7 +147,7 @@ class Arduino {
         }
         catch (e) {
             this.log.error(`Failed to send to ${device} @ ${serial}`, e);
-            return null;
+            return 0;
         }
         this.unlock(serial);
         await this.eventEmitter.emit('arduino_send', cmd);
@@ -168,7 +165,7 @@ class Arduino {
      * @throws {Error} Throws an error if the writeAsync method encounters an error.
      **/
     async sendString(device, str) {
-        let writeSuccess;
+        let ms;
         await (0, delay_1.delay)(this.cfg.arduino.serialDelay);
         if (typeof this.serial[this.alias[device]].fake !== 'undefined'
             && this.serial[this.alias[device]].fake) {
@@ -177,14 +174,14 @@ class Arduino {
         else {
             this.log.info(`sendString ${str} -> ${device}`);
             try {
-                writeSuccess = await this.writeAsync(device, str);
+                ms = await this.writeAsync(device, str);
             }
             catch (e) {
                 this.log.error(`Error sending string to ${device}`, e);
-                return null;
+                return 0;
             }
             this.unlock(this.alias[device]);
-            return writeSuccess;
+            return ms;
         }
     }
     /**

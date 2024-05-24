@@ -160,7 +160,7 @@ class WebView {
 export class Display {
 	private platform : string;
 	private displays : SystemDisplay[];
-	private display : any;
+	private display : SystemDisplay;
 	private tmpdir : string;
 	private wv : WebView;
 
@@ -168,7 +168,7 @@ export class Display {
 		this.platform = sys.platform;
 		this.displays = sys.displays;
 		this.tmpdir = pathJoin(sys.tmp, 'mcopy_digital');
-		this.display = this.displays.find((display : any) => {
+		this.display = this.displays.find((display : SystemDisplay) => {
 			if (display.primary) return true;
 		})
 	}

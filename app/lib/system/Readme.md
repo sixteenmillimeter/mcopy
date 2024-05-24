@@ -1,10 +1,10 @@
 ## Functions
 
 <dl>
-<dt><a href="#dependencies">dependencies(platform)</a></dt>
+<dt><a href="#dependencies">dependencies(platform)</a> ⇒ <code>object</code></dt>
 <dd><p>Evaluates system dependencies for digital
-projector features by executing processes with
---help flag. If they do not exist, log to console</p>
+projector features by executing <code>which</code> on binary.
+If they do not exist, log to console</p>
 </dd>
 <dt><a href="#system">system()</a> ⇒ <code>object</code></dt>
 <dd><p>Profile the current system and return an object with
@@ -15,12 +15,13 @@ projector feature.</p>
 
 <a name="dependencies"></a>
 
-## dependencies(platform)
+## dependencies(platform) ⇒ <code>object</code>
 Evaluates system dependencies for digital
-projector features by executing processes with
---help flag. If they do not exist, log to console
+projector features by executing `which` on binary.
+If they do not exist, log to console
 
 **Kind**: global function  
+**Returns**: <code>object</code> - Object containing path to dependency from `which`, if they exist  
 
 | Param | Type | Description |
 | --- | --- | --- |

@@ -1,6 +1,6 @@
 {
   "name": "mcopy",
-  "version": "1.8.112",
+  "version": "1.8.113",
   "description": "Small gauge film optical printer platform",
   "main": "build.js",
   "directories": {
@@ -42,6 +42,7 @@
     "arduino": "file:app/lib/arduino",
     "cam": "file:app/lib/cam",
     "capper": "file:app/lib/capper",
+    "cfg": "file:app/lib/cfg",
     "cmd": "file:app/lib/cmd",
     "delay": "file:app/lib/delay",
     "devices": "file:app/lib/devices",
