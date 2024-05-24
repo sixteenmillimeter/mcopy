@@ -1,8 +1,12 @@
+/// <reference types="node" />
+import type { EventEmitter } from 'events';
 /**
  * Class representing the arduino communication features
  **/
 export declare class Arduino {
     private log;
+    private eventEmitter;
+    private cfg;
     private path;
     private known;
     private serial;
@@ -17,7 +21,7 @@ export declare class Arduino {
     alias: any;
     stateStr: any;
     hasState: any;
-    constructor(errorState: Function);
+    constructor(cfg: any, ee: EventEmitter, errorState: Function);
     init(): Promise<void>;
     /**
      * Enumerate all connected devices that might be Arduinos

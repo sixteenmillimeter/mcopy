@@ -1,5 +1,6 @@
 'use strict';
 
+import { ipcMain } from 'electron';
 import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
@@ -26,7 +27,7 @@ export class Devices {
 	private arduino : Arduino;
 	private log : Logger;
 	private ui : WebContents;
-	private ipc : any;
+	private ipc : typeof ipcMain = ipcMain;
 	private mainWindow : any
 	/**
 	 * Constructor assigns arduino, settings, UI browser window and cam objects
@@ -45,7 +46,6 @@ export class Devices {
 	 **/
 	private async init () {
 		this.log = await Log({ label : 'devices' })
-		this.ipc = require('electron').ipcMain;
 		this.listen();
 	}
 	/**
@@ -591,8 +591,5 @@ export class Devices {
 
 }
 
-module.exports = function (arduino : Arduino, settings : any, mainWindow : BrowserWindow) {
-	return new Devices(arduino, settings, mainWindow)
-}
-
+module.exports = { Devices }
 export type { Device }

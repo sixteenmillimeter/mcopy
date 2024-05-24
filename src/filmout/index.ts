@@ -1,5 +1,6 @@
 'use strict';
 
+import { ipcMain } from 'electron';
 import { default as  animated } from 'animated-gif-detector';
 import { extname, join } from 'path';
 import { readFile, lstat, readdir } from 'fs-extra';
@@ -59,7 +60,7 @@ export class FilmOut {
 	private ffmpeg : FFMPEG;
 	private ffprobe : FFPROBE;
 	private light : Light;
-	private ipc : any;
+	private ipc : typeof ipcMain = ipcMain;
 	private ui : WebContents;
 	private log : Logger;
 
@@ -89,7 +90,6 @@ export class FilmOut {
 	 **/
 	private async init () {
 		this.log = await Log({ label : this.id });
-		this.ipc = require('electron').ipcMain;
 		this.listen();
 	}
 	/**
@@ -543,8 +543,6 @@ export class FilmOut {
 	}
 }
 
-module.exports = (display : Display, server : Server, ffmpeg : FFMPEG, ffprobe : FFPROBE, ui : WebContents, light : Light) => {
-	return new FilmOut(display, server, ffmpeg, ffprobe, ui, light);
-}
+module.exports = { FilmOut };
 
 export type { FilmOutState };

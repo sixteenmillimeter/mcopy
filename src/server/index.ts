@@ -252,8 +252,6 @@ export class Server {
 	}
 }
 
-module.exports = function (ui : WebContents) {
-	return new Server(ui)
-}
+module.exports = { Server }
 
 export type { ServerData, ServerTemplate, ServerProxy, ServerProxyList, ServerQueue };

@@ -98,4 +98,5 @@ export declare class Sequencer {
      * @param {integer} x Step to execute command at
      **/
     private cmdExec;
+    isRunning(): boolean;
 }

@@ -1,5 +1,6 @@
 'use strict';
 
+import { ipcMain } from 'electron';
 import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
@@ -8,7 +9,7 @@ import type { WebContents } from 'electron';
 /* class representing alert functionality */
 
 export class Alert {
-	private ipc : any
+	private ipc : typeof ipcMain = ipcMain
 	private log : Logger
 	private id : string = 'alert'
 	private cb : Function = null
@@ -24,7 +25,6 @@ export class Alert {
 	 **/
 	private async init () {
 		this.log = await Log({ label : this.id })
-		this.ipc = require('electron').ipcMain
 		this.listen()
 	}
 
@@ -65,6 +65,4 @@ export class Alert {
 	}
 }
 
-module.exports = function (ui : WebContents) {
-	return new Alert(ui);
-}
+module.exports = { Alert }

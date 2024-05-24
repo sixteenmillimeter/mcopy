@@ -1,8 +1,8 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Sequencer = void 0;
-const log_1 = require("log");
 const electron_1 = require("electron");
+const log_1 = require("log");
 const delay_1 = require("delay");
 /** @module lib/sequencer **/
 let seq;
@@ -23,6 +23,7 @@ class Sequencer {
         this.arr = []; //store sequence from gui
         this.loops = 1;
         this.CMDS = {};
+        this.ipc = electron_1.ipcMain;
         this.id = 'sequence';
         this.alerted = false;
         this.cfg = cfg;
@@ -50,7 +51,6 @@ class Sequencer {
      **/
     async init() {
         this.log = await (0, log_1.Log)({ label: this.id });
-        this.ipc = require('electron').ipcMain;
         this.listen();
     }
     /**
@@ -233,9 +233,10 @@ class Sequencer {
         //@ts-ignore
         return await this.cmd[cmd](this.arr[x]);
     }
+    isRunning() {
+        return this.running;
+    }
 }
 exports.Sequencer = Sequencer;
-module.exports = function (cfg, cmd, ui) {
-    return new Sequencer(cfg, cmd, ui);
-};
+module.exports = { Sequencer };
 //# sourceMappingURL=index.js.map

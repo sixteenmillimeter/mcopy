@@ -406,8 +406,6 @@ export class FFMPEG {
 }
 
 
-module.exports = (sys : System) => {
-	return new FFMPEG(sys);
-}
+module.exports = { FFMPEG };
 
 export type { StdErr };

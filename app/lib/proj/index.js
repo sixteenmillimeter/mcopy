@@ -2,6 +2,7 @@
 /** class representing the Projector features **/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Projector = void 0;
+const electron_1 = require("electron");
 const log_1 = require("log");
 class Projector {
     /**
@@ -13,6 +14,7 @@ class Projector {
             dir: true
         };
         this.arduino = null;
+        this.ipc = electron_1.ipcMain;
         this.id = 'projector';
         this.arduino = arduino;
         this.cfg = cfg;
@@ -27,7 +29,6 @@ class Projector {
      **/
     async init() {
         this.log = await (0, log_1.Log)({ label: this.id });
-        this.ipc = require('electron').ipcMain;
         this.listen();
     }
     /**
@@ -172,7 +173,5 @@ class Projector {
     }
 }
 exports.Projector = Projector;
-module.exports = function (arduino, cfg, ui, filmout, second) {
-    return new Projector(arduino, cfg, ui, filmout, second);
-};
+module.exports = { Projector };
 //# sourceMappingURL=index.js.map

@@ -122,5 +122,5 @@ class Settings {
     ;
 }
 exports.Settings = Settings;
-module.exports = new Settings();
+module.exports = { Settings };
 //# sourceMappingURL=index.js.map

@@ -5,12 +5,13 @@
  * Provides features for displaying a full screen display of images for the digital module.
  **/
 
+import { ipcMain, BrowserWindow } from 'electron';
 import { join as pathJoin, normalize as pathNormalize } from 'path';
 import { format as urlFormat } from 'url';
 import { delay } from 'delay';
 import { Log } from 'log';
+import type { BrowserWindowConstructorOptions } from 'electron';
 import type { Logger } from 'winston';
-import { BrowserWindow } from 'electron';
 import type { System, Display as SystemDisplay } from 'system';
 
 class WebView {
@@ -20,15 +21,15 @@ class WebView {
 	private platform : string;
 	public display : any; //needs type
 	private loadWait : any = {};
-	private ipc : any;
+	private ipc : typeof ipcMain = ipcMain;
 	private log : Logger;
 
 	constructor (platform : string, display : any) {
-		const prefs : any = {
+		const prefs : BrowserWindowConstructorOptions  = {
 			webPreferences: {
       			nodeIntegration: true,
       			allowRunningInsecureContent: false,
-      			enableRemoteModule: true,
+      			//enableRemoteModule: true,
       			contextIsolation: false
     		},
 			width: 800, 
@@ -61,8 +62,6 @@ class WebView {
 		//this.digitalWindow.hide();
 		this.platform = platform;
 		this.display = display;
-
-		this.ipc = require('electron').ipcMain;
 
 		this.ipc.on('display_load', this.onLoad.bind(this));
 	}
@@ -210,6 +209,4 @@ export class Display {
 	}
 }
 
-module.exports = function (sys : any) {
-	return new Display(sys)
-}
+module.exports = { Display }

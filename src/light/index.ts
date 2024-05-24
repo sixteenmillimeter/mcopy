@@ -1,5 +1,6 @@
 'use strict';
 
+import { ipcMain } from 'electron';
 import { delay } from 'delay';
 import { Log } from 'log';
 import type { Logger } from 'winston';
@@ -13,7 +14,7 @@ export class Light {
 	private cfg : any;
 	private ui : WebContents;
 	private log : Logger;
-	private ipc : any;
+	private ipc : typeof ipcMain = ipcMain;
 	private enabled : boolean = true;
 
 	private id : string = 'light';
@@ -33,7 +34,6 @@ export class Light {
 	 **/
 	private async init () {
 		this.log = await Log({ label : this.id });
-		this.ipc = require('electron').ipcMain;
 		this.listen();
 	}
 
@@ -105,6 +105,4 @@ export class Light {
 	}
 }
 
-module.exports = function (arduino : Arduino, cfg : any, ui : WebContents) {
-	return new Light(arduino, cfg, ui);
-}
+module.exports = { Light };

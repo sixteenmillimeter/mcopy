@@ -1,6 +1,7 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Camera = void 0;
+const electron_1 = require("electron");
 const intval_1 = require("intval");
 const processing_1 = require("processing");
 const delay_1 = require("delay");
@@ -19,6 +20,7 @@ class Camera {
         this.arduino = null;
         this.intval = null;
         this.processing = null;
+        this.ipc = electron_1.ipcMain;
         this.id = 'camera';
         this.arduino = arduino;
         this.cfg = cfg;
@@ -33,7 +35,6 @@ class Camera {
      **/
     async init() {
         this.log = await (0, log_1.Log)({ label: this.id });
-        this.ipc = require('electron').ipcMain;
         this.listen();
     }
     /**
@@ -338,7 +339,5 @@ class Camera {
     }
 }
 exports.Camera = Camera;
-module.exports = function (arduino, cfg, ui, filmout, second) {
-    return new Camera(arduino, cfg, ui, filmout, second);
-};
+module.exports = { Camera };
 //# sourceMappingURL=index.js.map

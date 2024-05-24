@@ -1,5 +1,6 @@
 'use strict';
 
+import { ipcMain } from 'electron';
 import { v4 as uuid } from 'uuid';
 import { delay } from 'delay';
 import type { Projector } from 'proj';
@@ -21,7 +22,7 @@ export class Commands {
 	public alertObj : Alert;
 
 	private cfg : any;
-	private ipc : any;
+	private ipc : typeof ipcMain = ipcMain;
 
 	/**
 	 * @constructor
@@ -49,7 +50,6 @@ export class Commands {
 		if (proj2 !== null) this.proj2 = proj2;
 		if (capper !== null) this.capper = capper;
 		
-		this.ipc = require('electron').ipcMain;
 	}
 
 	/**
@@ -649,6 +649,4 @@ export class Commands {
 	}
 }
 
-module.exports = function (cfg : any, proj : any, cam : any, light : any, alert : any, cam2 : any, proj2 : any, capper : any) {
-	return new Commands(cfg, proj, cam, light, alert, cam2, proj2, capper);
-}
+module.exports = { Commands };

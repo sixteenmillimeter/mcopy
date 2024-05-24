@@ -1,9 +1,9 @@
 'use strict';
 
+import { ipcMain, powerSaveBlocker } from 'electron';
 import { v4 as uuid } from 'uuid';
 import { Log } from 'log';
 import type { Logger } from 'winston';
-import { powerSaveBlocker } from 'electron'
 import { delay } from 'delay';
 import { Commands } from 'cmd';
 import type { WebContents } from 'electron';
@@ -25,7 +25,7 @@ export class Sequencer {
 	private cfg : any;
 	private cmd : Commands;
 	private CMDS : any = {};
-	private ipc : any;
+	private ipc : typeof ipcMain = ipcMain;
 	private ui : WebContents;
 	private log : Logger;
 	private id : string = 'sequence';
@@ -69,7 +69,6 @@ export class Sequencer {
 	 **/
 	private async init () {
 		this.log = await Log({ label : this.id })
-		this.ipc = require('electron').ipcMain;
 		this.listen();
 	}
 
@@ -270,8 +269,10 @@ export class Sequencer {
 		//@ts-ignore
 		return await this.cmd[cmd](this.arr[x]);
 	}
+
+	public isRunning () : boolean {
+		return this.running;
+	}
 }
 
-module.exports = function (cfg : any, cmd : Commands, ui : WebContents) {
-	return new Sequencer(cfg, cmd, ui);
-}
+module.exports = { Sequencer };

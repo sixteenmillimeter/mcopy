@@ -1,10 +1,12 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Alert = void 0;
+const electron_1 = require("electron");
 const log_1 = require("log");
 /* class representing alert functionality */
 class Alert {
     constructor(ui) {
+        this.ipc = electron_1.ipcMain;
         this.id = 'alert';
         this.cb = null;
         this.ui = ui;
@@ -15,7 +17,6 @@ class Alert {
      **/
     async init() {
         this.log = await (0, log_1.Log)({ label: this.id });
-        this.ipc = require('electron').ipcMain;
         this.listen();
     }
     /**
@@ -54,7 +55,5 @@ class Alert {
     }
 }
 exports.Alert = Alert;
-module.exports = function (ui) {
-    return new Alert(ui);
-};
+module.exports = { Alert };
 //# sourceMappingURL=index.js.map

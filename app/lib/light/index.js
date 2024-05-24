@@ -1,6 +1,7 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Light = void 0;
+const electron_1 = require("electron");
 const delay_1 = require("delay");
 const log_1 = require("log");
 class Light {
@@ -9,6 +10,7 @@ class Light {
      **/
     constructor(arduino, cfg, ui) {
         this.state = { color: [0, 0, 0] };
+        this.ipc = electron_1.ipcMain;
         this.enabled = true;
         this.id = 'light';
         this.arduino = arduino;
@@ -21,7 +23,6 @@ class Light {
      **/
     async init() {
         this.log = await (0, log_1.Log)({ label: this.id });
-        this.ipc = require('electron').ipcMain;
         this.listen();
     }
     /**
@@ -93,7 +94,5 @@ class Light {
     }
 }
 exports.Light = Light;
-module.exports = function (arduino, cfg, ui) {
-    return new Light(arduino, cfg, ui);
-};
+module.exports = { Light };
 //# sourceMappingURL=index.js.map

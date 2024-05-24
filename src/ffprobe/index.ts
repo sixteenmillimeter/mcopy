@@ -156,6 +156,4 @@ function map (obj : any) {
 }
 */
 
-module.exports = (sys : System) => {
-	return new FFPROBE(sys);
-}
+module.exports = { FFPROBE };

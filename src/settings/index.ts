@@ -121,4 +121,4 @@ export class Settings {
 	};
 }
 
-module.exports = new Settings();
+module.exports = { Settings }

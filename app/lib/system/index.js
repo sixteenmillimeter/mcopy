@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.system = void 0;
 const os_1 = require("os");
 const electron_1 = require("electron");
 const exec_1 = require("exec");
@@ -123,5 +124,6 @@ async function system(ui) {
     }, 3000);
     return obj;
 }
-module.exports = system;
+exports.system = system;
+module.exports = { system };
 //# sourceMappingURL=index.js.map

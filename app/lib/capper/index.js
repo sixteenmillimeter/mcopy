@@ -1,6 +1,7 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Capper = void 0;
+const electron_1 = require("electron");
 const log_1 = require("log");
 /** class representing capper functions **/
 class Capper {
@@ -12,6 +13,7 @@ class Capper {
             capper: false
         };
         this.arduino = null;
+        this.ipc = electron_1.ipcMain;
         this.id = 'capper';
         this.arduino = arduino;
         this.cfg = cfg;
@@ -24,7 +26,6 @@ class Capper {
      **/
     async init() {
         this.log = await (0, log_1.Log)({ label: this.id });
-        this.ipc = require('electron').ipcMain;
         this.listen();
     }
     /**
@@ -86,7 +87,5 @@ class Capper {
     }
 }
 exports.Capper = Capper;
-module.exports = function (arduino, cfg, ui, filmout) {
-    return new Capper(arduino, cfg, ui, filmout);
-};
+module.exports = { Capper };
 //# sourceMappingURL=index.js.map

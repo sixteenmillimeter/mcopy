@@ -22,9 +22,6 @@ const exec = require('child_process').exec;
 const parser = new ReadlineParser({ delimiter: '\r\n' });
 const newlineRe = new RegExp('\n', 'g');
 const returnRe = new RegExp('\r', 'g');
-let eventEmitter;
-let cfg;
-let arduino;
 const KNOWN = [
     '/dev/tty.usbmodem1a161',
     '/dev/tty.usbserial-A800f8dk',
@@ -39,7 +36,8 @@ const KNOWN = [
  * Class representing the arduino communication features
  **/
 class Arduino {
-    constructor(errorState) {
+    constructor(cfg, ee, errorState) {
+        this.cfg = {};
         this.path = {};
         this.known = KNOWN;
         this.serial = {};
@@ -50,13 +48,15 @@ class Arduino {
         this.alias = {};
         this.stateStr = {};
         this.hasState = {};
+        this.cfg = cfg;
+        this.eventEmitter = ee;
         this.errorState = errorState;
         this.init();
     }
     async init() {
         this.log = await (0, log_1.Log)({ label: 'arduino' });
-        this.keys = Object.keys(cfg.arduino.cmd);
-        this.values = this.keys.map((key) => cfg.arduino.cmd[key]);
+        this.keys = Object.keys(this.cfg.arduino.cmd);
+        this.values = this.keys.map((key) => this.cfg.arduino.cmd[key]);
     }
     /**
      * Enumerate all connected devices that might be Arduinos
@@ -144,7 +144,7 @@ class Arduino {
         }
         this.timer = new Date().getTime();
         this.lock(serial);
-        await (0, delay_1.delay)(cfg.arduino.serialDelay);
+        await (0, delay_1.delay)(this.cfg.arduino.serialDelay);
         try {
             ms = await this.sendAsync(device, cmd);
         }
@@ -153,7 +153,7 @@ class Arduino {
             return null;
         }
         this.unlock(serial);
-        await eventEmitter.emit('arduino_send', cmd);
+        await this.eventEmitter.emit('arduino_send', cmd);
         return ms;
     }
     /**
@@ -169,7 +169,7 @@ class Arduino {
      **/
     async sendString(device, str) {
         let writeSuccess;
-        await (0, delay_1.delay)(cfg.arduino.serialDelay);
+        await (0, delay_1.delay)(this.cfg.arduino.serialDelay);
         if (typeof this.serial[this.alias[device]].fake !== 'undefined'
             && this.serial[this.alias[device]].fake) {
             return this.serial[this.alias[device]].string(str);
@@ -191,7 +191,7 @@ class Arduino {
      *
      **/
     async stateAsync(device, confirm = false) {
-        const cmd = cfg.arduino.cmd.state;
+        const cmd = this.cfg.arduino.cmd.state;
         const serial = confirm ? this.alias['connect'] : this.alias[device];
         return new Promise((resolve, reject) => {
             this.queue[cmd] = (state) => {
@@ -233,7 +233,7 @@ class Arduino {
         }
         this.timer = new Date().getTime();
         this.lock(serial);
-        await (0, delay_1.delay)(cfg.arduino.serialDelay);
+        await (0, delay_1.delay)(this.cfg.arduino.serialDelay);
         try {
             results = await this.stateAsync(device, confirm);
         }
@@ -242,7 +242,7 @@ class Arduino {
             return null;
         }
         this.unlock(serial);
-        await eventEmitter.emit('arduino_state', cfg.arduino.cmd.state);
+        await this.eventEmitter.emit('arduino_state', this.cfg.arduino.cmd.state);
         return results;
     }
     /**
@@ -280,18 +280,18 @@ class Arduino {
         if (this.queue[data] !== undefined) {
             this.unlock(serial);
             complete = this.queue[data](ms); //execute callback
-            eventEmitter.emit('arduino_end', data);
+            this.eventEmitter.emit('arduino_end', data);
             delete this.queue[data];
         }
-        else if (data[0] === cfg.arduino.cmd.state) {
+        else if (data[0] === this.cfg.arduino.cmd.state) {
             //this.log.info(`end serial -> ${serial}`)
             this.unlock(serial);
-            complete = this.queue[cfg.arduino.cmd.state](data);
-            eventEmitter.emit('arduino_end', data);
-            delete this.queue[cfg.arduino.cmd.state];
+            complete = this.queue[this.cfg.arduino.cmd.state](data);
+            this.eventEmitter.emit('arduino_end', data);
+            delete this.queue[this.cfg.arduino.cmd.state];
             return data;
         }
-        else if (data[0] === cfg.arduino.cmd.error) {
+        else if (data[0] === this.cfg.arduino.cmd.error) {
             this.log.error(`Received error from device ${serial}`);
             this.unlock(serial);
             this.error(serial, data);
@@ -340,7 +340,7 @@ class Arduino {
             this.serial[serial] = new SerialPort({
                 path: serial,
                 autoOpen: false,
-                baudRate: cfg.arduino.baud,
+                baudRate: this.cfg.arduino.baud,
                 parser
             });
             this.unlock(serial);
@@ -381,9 +381,9 @@ class Arduino {
             this.confirmExec = null;
             this.unlock(this.alias['connect']);
         }
-        else if (data[0] === cfg.arduino.cmd.state) {
-            this.queue[cfg.arduino.cmd.state](data);
-            delete this.queue[cfg.arduino.cmd.state];
+        else if (data[0] === this.cfg.arduino.cmd.state) {
+            this.queue[this.cfg.arduino.cmd.state](data);
+            delete this.queue[this.cfg.arduino.cmd.state];
             this.unlock(this.alias['connect']);
         }
     }
@@ -400,16 +400,16 @@ class Arduino {
             const device = 'connect';
             let writeSuccess;
             this.confirmExec = function (err, data) {
-                if (data === cfg.arduino.cmd.connect) {
+                if (data === this.cfg.arduino.cmd.connect) {
                     return resolve(true);
                 }
                 else {
                     return reject('Wrong data returned');
                 }
             };
-            await (0, delay_1.delay)(cfg.arduino.serialDelay);
+            await (0, delay_1.delay)(this.cfg.arduino.serialDelay);
             try {
-                writeSuccess = await this.sendAsync(device, cfg.arduino.cmd.connect);
+                writeSuccess = await this.sendAsync(device, this.cfg.arduino.cmd.connect);
             }
             catch (e) {
                 return reject(e);
@@ -431,62 +431,62 @@ class Arduino {
             let writeSuccess;
             let type;
             this.confirmExec = function (err, data) {
-                if (data === cfg.arduino.cmd.projector_identifier) {
+                if (data === this.cfg.arduino.cmd.projector_identifier) {
                     type = 'projector';
                 }
-                else if (data === cfg.arduino.cmd.camera_identifier) {
+                else if (data === this.cfg.arduino.cmd.camera_identifier) {
                     type = 'camera';
                 }
-                else if (data === cfg.arduino.cmd.light_identifier) {
+                else if (data === this.cfg.arduino.cmd.light_identifier) {
                     type = 'light';
                 }
-                else if (data === cfg.arduino.cmd.projector_light_identifier) {
+                else if (data === this.cfg.arduino.cmd.projector_light_identifier) {
                     type = 'projector,light';
                 }
-                else if (data === cfg.arduino.cmd.projector_camera_light_identifier) {
+                else if (data === this.cfg.arduino.cmd.projector_camera_light_identifier) {
                     type = 'projector,camera,light';
                 }
-                else if (data === cfg.arduino.cmd.projector_camera_identifier) {
+                else if (data === this.cfg.arduino.cmd.projector_camera_identifier) {
                     type = 'projector,camera';
                 }
-                else if (data === cfg.arduino.cmd.projector_second_identifier) {
+                else if (data === this.cfg.arduino.cmd.projector_second_identifier) {
                     type = 'projector_second';
                 }
-                else if (data === cfg.arduino.cmd.projectors_identifier) {
+                else if (data === this.cfg.arduino.cmd.projectors_identifier) {
                     type = 'projector,projector_second';
                 }
-                else if (data === cfg.arduino.cmd.camera_second_identifier) {
+                else if (data === this.cfg.arduino.cmd.camera_second_identifier) {
                     type = 'camera_second';
                 }
-                else if (data === cfg.arduino.cmd.cameras_identifier) {
+                else if (data === this.cfg.arduino.cmd.cameras_identifier) {
                     type = 'camera,camera_second';
                 }
-                else if (data === cfg.arduino.cmd.camera_projectors_identifier) {
+                else if (data === this.cfg.arduino.cmd.camera_projectors_identifier) {
                     type = 'camera,projector,projector_second';
                 }
-                else if (data === cfg.arduino.cmd.cameras_projector_identifier) {
+                else if (data === this.cfg.arduino.cmd.cameras_projector_identifier) {
                     type = 'camera,camera_second,projector';
                 }
-                else if (data === cfg.arduino.cmd.cameras_projectors_identifier) {
+                else if (data === this.cfg.arduino.cmd.cameras_projectors_identifier) {
                     type = 'camera,camera_second,projector,projector_second';
                 }
-                else if (data === cfg.arduino.cmd.capper_identifier) {
+                else if (data === this.cfg.arduino.cmd.capper_identifier) {
                     type = 'capper';
                 }
-                else if (data === cfg.arduino.cmd.camera_capper_identifier) {
+                else if (data === this.cfg.arduino.cmd.camera_capper_identifier) {
                     type = 'camera,capper';
                 }
-                else if (data === cfg.arduino.cmd.camera_capper_projector_identifier) {
+                else if (data === this.cfg.arduino.cmd.camera_capper_projector_identifier) {
                     type = 'camera,capper,projector';
                 }
-                else if (data === cfg.arduino.cmd.camera_capper_projectors_identifier) {
+                else if (data === this.cfg.arduino.cmd.camera_capper_projectors_identifier) {
                     type = 'camera,capper,projector,projector_second';
                 }
                 return resolve(type);
             };
-            await (0, delay_1.delay)(cfg.arduino.serialDelay);
+            await (0, delay_1.delay)(this.cfg.arduino.serialDelay);
             try {
-                writeSuccess = await this.sendAsync(device, cfg.arduino.cmd.mcopy_identifier);
+                writeSuccess = await this.sendAsync(device, this.cfg.arduino.cmd.mcopy_identifier);
                 this.log.info(writeSuccess);
             }
             catch (e) {
@@ -526,19 +526,19 @@ class Arduino {
         this.serial[serial] = {
             write: async function (cmd, cb) {
                 const t = {
-                    c: cfg.arduino.cam.time + cfg.arduino.cam.delay,
-                    p: cfg.arduino.proj.time + cfg.arduino.proj.delay,
+                    c: this.cfg.arduino.cam.time + this.cfg.arduino.cam.delay,
+                    p: this.cfg.arduino.proj.time + this.cfg.arduino.proj.delay,
                     A: 180,
                     B: 180
                 };
                 let timeout = t[cmd];
                 if (typeof timeout === 'undefined')
                     timeout = 10;
-                arduino.timer = +new Date();
+                this.timer = +new Date();
                 await (0, delay_1.delay)(timeout);
-                arduino.end(serial, cmd);
+                this.end(serial, cmd);
                 return cb();
-            },
+            }.bind(this),
             string: async function (str) {
                 //do nothing
                 return true;
@@ -595,12 +595,5 @@ class Arduino {
     }
 }
 exports.Arduino = Arduino;
-if (typeof module !== 'undefined' && module.parent) {
-    module.exports = function (c, ee, errorState) {
-        eventEmitter = ee;
-        cfg = c;
-        arduino = new Arduino(errorState);
-        return arduino;
-    };
-}
+module.exports = { Arduino };
 //# sourceMappingURL=index.js.map

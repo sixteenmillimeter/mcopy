@@ -145,7 +145,5 @@ function map (obj : any) {
     console.dir(obj);
 }
 */
-module.exports = (sys) => {
-    return new FFPROBE(sys);
-};
+module.exports = { FFPROBE };
 //# sourceMappingURL=index.js.map

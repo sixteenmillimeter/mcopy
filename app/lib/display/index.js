@@ -5,21 +5,22 @@ exports.Display = void 0;
  * @module display
  * Provides features for displaying a full screen display of images for the digital module.
  **/
+const electron_1 = require("electron");
 const path_1 = require("path");
 const url_1 = require("url");
 const delay_1 = require("delay");
 const log_1 = require("log");
-const electron_1 = require("electron");
 class WebView {
     constructor(platform, display) {
         this.opened = false;
         this.showing = false;
         this.loadWait = {};
+        this.ipc = electron_1.ipcMain;
         const prefs = {
             webPreferences: {
                 nodeIntegration: true,
                 allowRunningInsecureContent: false,
-                enableRemoteModule: true,
+                //enableRemoteModule: true,
                 contextIsolation: false
             },
             width: 800,
@@ -51,7 +52,6 @@ class WebView {
         //this.digitalWindow.hide();
         this.platform = platform;
         this.display = display;
-        this.ipc = require('electron').ipcMain;
         this.ipc.on('display_load', this.onLoad.bind(this));
     }
     async init() {
@@ -194,7 +194,5 @@ class Display {
     }
 }
 exports.Display = Display;
-module.exports = function (sys) {
-    return new Display(sys);
-};
+module.exports = { Display };
 //# sourceMappingURL=index.js.map

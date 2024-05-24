@@ -200,7 +200,5 @@ class Server {
     }
 }
 exports.Server = Server;
-module.exports = function (ui) {
-    return new Server(ui);
-};
+module.exports = { Server };
 //# sourceMappingURL=index.js.map

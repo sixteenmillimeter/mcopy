@@ -1,6 +1,7 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Devices = void 0;
+const electron_1 = require("electron");
 const delay_1 = require("delay");
 const log_1 = require("log");
 /**
@@ -15,6 +16,7 @@ class Devices {
      **/
     constructor(arduino, settings, mainWindow) {
         this.connected = {};
+        this.ipc = electron_1.ipcMain;
         this.arduino = arduino;
         this.settings = settings;
         this.mainWindow = mainWindow;
@@ -27,7 +29,6 @@ class Devices {
      **/
     async init() {
         this.log = await (0, log_1.Log)({ label: 'devices' });
-        this.ipc = require('electron').ipcMain;
         this.listen();
     }
     /**
@@ -580,7 +581,5 @@ class Devices {
     }
 }
 exports.Devices = Devices;
-module.exports = function (arduino, settings, mainWindow) {
-    return new Devices(arduino, settings, mainWindow);
-};
+module.exports = { Devices };
 //# sourceMappingURL=index.js.map

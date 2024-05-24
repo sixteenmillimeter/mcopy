@@ -352,7 +352,5 @@ class FFMPEG {
     }
 }
 exports.FFMPEG = FFMPEG;
-module.exports = (sys) => {
-    return new FFMPEG(sys);
-};
+module.exports = { FFMPEG };
 //# sourceMappingURL=index.js.map

@@ -19,4 +19,12 @@ interface System {
     tmp: string;
     platform: string;
 }
+/**
+ * Profile the current system and return an object with
+ * data about the displays and dependencies for the digital
+ * projector feature.
+ *
+ * @returns {object} Object containing system information
+ */
+export declare function system(ui: any): Promise<System>;
 export type { System, Display, Dependencies };

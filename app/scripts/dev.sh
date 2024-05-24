@@ -5,6 +5,7 @@ set -e
 # compile main process code
 cd ..
 npm run compile
+
 cd ./app
 
 # compile renderer process code

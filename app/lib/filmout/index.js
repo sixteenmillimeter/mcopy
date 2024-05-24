@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FilmOut = void 0;
+const electron_1 = require("electron");
 const animated_gif_detector_1 = __importDefault(require("animated-gif-detector"));
 const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
@@ -46,6 +47,7 @@ class FilmOut {
             enabled: false,
             files: []
         };
+        this.ipc = electron_1.ipcMain;
         this.display = display;
         this.server = server;
         this.ffmpeg = ffmpeg;
@@ -59,7 +61,6 @@ class FilmOut {
      **/
     async init() {
         this.log = await (0, log_1.Log)({ label: this.id });
-        this.ipc = require('electron').ipcMain;
         this.listen();
     }
     /**
@@ -503,7 +504,5 @@ class FilmOut {
     }
 }
 exports.FilmOut = FilmOut;
-module.exports = (display, server, ffmpeg, ffprobe, ui, light) => {
-    return new FilmOut(display, server, ffmpeg, ffprobe, ui, light);
-};
+module.exports = { FilmOut };
 //# sourceMappingURL=index.js.map

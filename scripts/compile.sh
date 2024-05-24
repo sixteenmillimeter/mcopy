@@ -12,3 +12,4 @@ rm -r ./lib
 
 cp ./data/cfg.json ./app/data/
 cp ./data/cfg.json ./processing/mcopy/
+mv ./app/lib/main.* ./app/

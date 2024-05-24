@@ -1,5 +1,6 @@
 /** class representing the Projector features **/
 
+import { ipcMain } from 'electron';
 import { Log } from 'log';
 import type { Logger } from 'winston';
 import type { Arduino } from 'arduino';
@@ -20,7 +21,7 @@ export class Projector {
 	private log : Logger;
 	private cfg : any;
 	private ui : WebContents;
-	private ipc : any;
+	private ipc : typeof ipcMain = ipcMain;
 	public filmout : FilmOut;
 	private id : string = 'projector';
 
@@ -41,7 +42,6 @@ export class Projector {
 	 **/
 	private async init () {
 		this.log = await Log({ label : this.id })
-		this.ipc = require('electron').ipcMain;
 		this.listen();
 	}
 
@@ -173,8 +173,6 @@ export class Projector {
 	}
 }
 
-module.exports = function (arduino : Arduino, cfg : any, ui : WebContents, filmout : FilmOut, second : boolean) {
-	return new Projector(arduino, cfg, ui, filmout, second)
-}
+module.exports = { Projector }
 
 export type { ProjectorState }

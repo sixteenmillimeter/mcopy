@@ -124,7 +124,7 @@ async function displays () : Promise<Display[]> {
  *
  * @returns {object} Object containing system information
  */ 
-async function system (ui : any) : Promise<System> {
+export async function system (ui : any) : Promise<System> {
 	const obj : System = {
 		deps : null,
 		displays : null,
@@ -159,6 +159,6 @@ async function system (ui : any) : Promise<System> {
 	return obj;
 }
 
-module.exports = system;
+module.exports = { system };
 
 export type { System, Display, Dependencies };

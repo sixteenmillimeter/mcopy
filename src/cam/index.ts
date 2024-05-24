@@ -1,5 +1,6 @@
 'use strict';
 
+import { ipcMain } from 'electron';
 import { Intval } from 'intval';
 import { Processing } from 'processing';
 import { delay } from 'delay';
@@ -29,7 +30,7 @@ export class Camera {
 	private cfg : any;
 	private filmout : FilmOut;
 	private ui : WebContents;
-	private ipc : any;
+	private ipc : typeof ipcMain = ipcMain;
 	private id : string = 'camera';
 	/**
 	 *
@@ -48,7 +49,6 @@ export class Camera {
 	 **/
 	private async init () {
 		this.log = await Log({ label : this.id });
-		this.ipc = require('electron').ipcMain;
 		this.listen();
 	}
 
@@ -336,6 +336,4 @@ export class Camera {
 	}
 }
 
-module.exports = function (arduino : Arduino, cfg : any, ui : WebContents, filmout : FilmOut, second : boolean) {
-	return new Camera(arduino, cfg, ui, filmout, second);
-}
+module.exports = { Camera };

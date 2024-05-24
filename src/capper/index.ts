@@ -1,5 +1,6 @@
 'use strict';
 
+import { ipcMain } from 'electron';
 import { Intval } from 'intval';
 import { Processing } from 'processing';
 import { delay } from 'delay';
@@ -20,7 +21,7 @@ export class Capper {
 	private cfg : any;
 	private filmout : FilmOut;
 	private ui : WebContents;
-	private ipc : any;
+	private ipc : typeof ipcMain = ipcMain;
 	private id : string = 'capper';
 	/**
 	 *
@@ -38,7 +39,6 @@ export class Capper {
 	 **/
 	private async init () {
 		this.log = await Log({ label : this.id });
-		this.ipc = require('electron').ipcMain;
 		this.listen();
 	}
 
@@ -107,6 +107,4 @@ export class Capper {
 	}
 }
 
-module.exports = function (arduino : Arduino, cfg : any, ui : WebContents, filmout: FilmOut) {
-	return new Capper(arduino, cfg, ui, filmout);
-}
+module.exports = { Capper }

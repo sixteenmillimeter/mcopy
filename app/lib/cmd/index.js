@@ -1,6 +1,7 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Commands = void 0;
+const electron_1 = require("electron");
 const uuid_1 = require("uuid");
 const delay_1 = require("delay");
 class Commands {
@@ -19,6 +20,7 @@ class Commands {
      *
      **/
     constructor(cfg, proj, cam, light, alert, cam2 = null, proj2 = null, capper = null) {
+        this.ipc = electron_1.ipcMain;
         this.cfg = cfg;
         this.proj = proj;
         this.cam = cam;
@@ -30,7 +32,6 @@ class Commands {
             this.proj2 = proj2;
         if (capper !== null)
             this.capper = capper;
-        this.ipc = require('electron').ipcMain;
     }
     /**
      * Move the projector one frame forward
@@ -636,7 +637,5 @@ class Commands {
     }
 }
 exports.Commands = Commands;
-module.exports = function (cfg, proj, cam, light, alert, cam2, proj2, capper) {
-    return new Commands(cfg, proj, cam, light, alert, cam2, proj2, capper);
-};
+module.exports = { Commands };
 //# sourceMappingURL=index.js.map
