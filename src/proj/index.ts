@@ -13,6 +13,11 @@ interface ProjectorState {
 	dir : boolean
 }
 
+/** @module lib/proj */
+
+/**
+ * Class representing all projector features.
+ */
 export class Projector {
 	public state : ProjectorState = { 
 		pos : 0,

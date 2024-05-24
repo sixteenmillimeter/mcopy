@@ -1,37 +1,52 @@
-<a name="Projector"></a>
+<a name="module_lib/proj"></a>
 
-## Projector
-**Kind**: global class  
+## lib/proj
 
-* [Projector](#Projector)
-    * [.init()](#Projector+init)
-    * [.listen()](#Projector+listen)
-    * [.set()](#Projector+set)
-    * [.move()](#Projector+move)
-    * [.listener()](#Projector+listener)
-    * [.end()](#Projector+end)
+* [lib/proj](#module_lib/proj)
+    * [~Projector](#module_lib/proj..Projector)
+        * [.init()](#module_lib/proj..Projector+init)
+        * [.listen()](#module_lib/proj..Projector+listen)
+        * [.set()](#module_lib/proj..Projector+set)
+        * [.move()](#module_lib/proj..Projector+move)
+        * [.listener()](#module_lib/proj..Projector+listener)
+        * [.end()](#module_lib/proj..Projector+end)
 
-<a name="Projector+init"></a>
+<a name="module_lib/proj..Projector"></a>
 
-### projector.init()
-**Kind**: instance method of [<code>Projector</code>](#Projector)  
-<a name="Projector+listen"></a>
+### lib/proj~Projector
+Class representing all projector features.
 
-### projector.listen()
-**Kind**: instance method of [<code>Projector</code>](#Projector)  
-<a name="Projector+set"></a>
+**Kind**: inner class of [<code>lib/proj</code>](#module_lib/proj)  
 
-### projector.set()
-**Kind**: instance method of [<code>Projector</code>](#Projector)  
-<a name="Projector+move"></a>
+* [~Projector](#module_lib/proj..Projector)
+    * [.init()](#module_lib/proj..Projector+init)
+    * [.listen()](#module_lib/proj..Projector+listen)
+    * [.set()](#module_lib/proj..Projector+set)
+    * [.move()](#module_lib/proj..Projector+move)
+    * [.listener()](#module_lib/proj..Projector+listener)
+    * [.end()](#module_lib/proj..Projector+end)
 
-### projector.move()
-**Kind**: instance method of [<code>Projector</code>](#Projector)  
-<a name="Projector+listener"></a>
+<a name="module_lib/proj..Projector+init"></a>
 
-### projector.listener()
-**Kind**: instance method of [<code>Projector</code>](#Projector)  
-<a name="Projector+end"></a>
+#### projector.init()
+**Kind**: instance method of [<code>Projector</code>](#module_lib/proj..Projector)  
+<a name="module_lib/proj..Projector+listen"></a>
 
-### projector.end()
-**Kind**: instance method of [<code>Projector</code>](#Projector)  
+#### projector.listen()
+**Kind**: instance method of [<code>Projector</code>](#module_lib/proj..Projector)  
+<a name="module_lib/proj..Projector+set"></a>
+
+#### projector.set()
+**Kind**: instance method of [<code>Projector</code>](#module_lib/proj..Projector)  
+<a name="module_lib/proj..Projector+move"></a>
+
+#### projector.move()
+**Kind**: instance method of [<code>Projector</code>](#module_lib/proj..Projector)  
+<a name="module_lib/proj..Projector+listener"></a>
+
+#### projector.listener()
+**Kind**: instance method of [<code>Projector</code>](#module_lib/proj..Projector)  
+<a name="module_lib/proj..Projector+end"></a>
+
+#### projector.end()
+**Kind**: instance method of [<code>Projector</code>](#module_lib/proj..Projector)  

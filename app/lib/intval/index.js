@@ -25,6 +25,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Intval = void 0;
 const request = __importStar(require("request"));
+/** @module lib/intval */
+/**
+ * Class representing all intval3 camera features.
+ */
 class Intval {
     constructor(url) {
         this._baseUrl = `http://${url}`;

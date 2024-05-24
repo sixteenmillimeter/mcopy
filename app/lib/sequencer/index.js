@@ -4,8 +4,11 @@ exports.Sequencer = void 0;
 const electron_1 = require("electron");
 const log_1 = require("log");
 const delay_1 = require("delay");
-/** @module lib/sequencer **/
 let seq;
+/** @module lib/sequencer */
+/**
+ * Class representing all sequencer features.
+ */
 class Sequencer {
     /**
      * @constructor

@@ -1,11 +1,14 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FFPROBE = void 0;
-/** @module FFPROBE **/
 const fs_extra_1 = require("fs-extra");
 const path_1 = require("path");
 const exec_1 = require("exec");
 const log_1 = require("log");
+/** @module lib/ffprobe */
+/**
+ * Class representing all ffprobe features.
+ */
 class FFPROBE {
     constructor(sys) {
         this.bin = sys.deps.ffprobe;

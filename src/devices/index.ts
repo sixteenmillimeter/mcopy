@@ -13,11 +13,11 @@ interface Device {
 	device : string;
 }
 
+/** @module lib/devices */
+
 /**
- * class representing the device discovery features
- *
- *
- **/
+ * Class representing the device discovery features.
+ */
 
 export class Devices {
 

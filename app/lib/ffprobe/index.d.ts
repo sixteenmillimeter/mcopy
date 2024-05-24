@@ -1,4 +1,8 @@
 import type { System } from 'system';
+/** @module lib/ffprobe */
+/**
+ * Class representing all ffprobe features.
+ */
 export declare class FFPROBE {
     private bin;
     private log;

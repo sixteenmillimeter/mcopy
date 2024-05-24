@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Projector = void 0;
 const electron_1 = require("electron");
 const log_1 = require("log");
+/** @module lib/proj */
+/**
+ * Class representing all projector features.
+ */
 class Projector {
     /**
      *

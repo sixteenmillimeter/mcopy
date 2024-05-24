@@ -7,7 +7,10 @@ const fs_extra_1 = require("fs-extra");
 const exec_1 = require("exec");
 const child_process_1 = require("child_process");
 const log_1 = require("log");
-/** @class FFMPEG **/
+/** @module lib/ffmpeg */
+/**
+ * Class representing all ffmpeg features.
+ */
 class FFMPEG {
     /**
      * @constructor

@@ -29,7 +29,11 @@ interface StdErr {
     estimated? : number;
 }
 
-/** @class FFMPEG **/
+/** @module lib/ffmpeg */
+
+/**
+ * Class representing all ffmpeg features.
+ */
 
 export class FFMPEG {
 	private bin : string;

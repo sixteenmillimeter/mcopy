@@ -2,6 +2,11 @@
 
 import * as request from 'request'
 
+/** @module lib/intval */
+
+/**
+ * Class representing all intval3 camera features.
+ */
 export class Intval {
 	private _baseUrl : string
 

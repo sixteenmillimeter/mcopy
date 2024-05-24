@@ -1,7 +1,9 @@
 'use strict';
 
 /**
- * @module display
+ * @module lib/display */
+
+/**
  * Provides features for displaying a full screen display of images for the digital module.
  **/
 

@@ -6,7 +6,10 @@ const intval_1 = require("intval");
 const processing_1 = require("processing");
 const delay_1 = require("delay");
 const log_1 = require("log");
-/** class representing camera functions **/
+/** @module lib/cam */
+/**
+ * Class representing camera functions.
+ */
 class Camera {
     /**
      *

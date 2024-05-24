@@ -3,7 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Capper = void 0;
 const electron_1 = require("electron");
 const log_1 = require("log");
-/** class representing capper functions **/
+/** @module lib/capper */
+/**
+ * Class representing capper functions.
+ */
 class Capper {
     /**
      *

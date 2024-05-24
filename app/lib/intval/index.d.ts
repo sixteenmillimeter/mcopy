@@ -1,3 +1,7 @@
+/** @module lib/intval */
+/**
+ * Class representing all intval3 camera features.
+ */
 export declare class Intval {
     private _baseUrl;
     constructor(url: string);

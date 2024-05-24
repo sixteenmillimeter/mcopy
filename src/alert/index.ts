@@ -6,7 +6,11 @@ import { Log } from 'log';
 import type { Logger } from 'winston';
 import type { WebContents, IpcMainEvent } from 'electron';
 
-/* class representing alert functionality */
+/** @module lib/alert */
+
+/**
+ * Class for pushing an alert to the UI from the backend.
+ */
 
 export class Alert {
 	private ipc : typeof ipcMain = ipcMain

@@ -1,13 +1,17 @@
 'use strict';
 
-/** @module FFPROBE **/
-
 import { exists } from 'fs-extra';
 import { extname } from 'path';
 import { exec } from 'exec';
 import { Log } from 'log';
 import type { Logger } from 'winston';
 import type { System } from 'system';
+
+/** @module lib/ffprobe */
+
+/**
+ * Class representing all ffprobe features.
+ */
 
 export class FFPROBE {
 	private bin : string;

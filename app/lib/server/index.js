@@ -10,6 +10,10 @@ const promises_1 = require("fs/promises");
 const path_1 = require("path");
 const uuid_1 = require("uuid");
 const log_1 = require("log");
+/** @module lib/server */
+/**
+ * Class representing all filmout server features.
+ */
 class Server {
     constructor(ui) {
         this.id = 'server';

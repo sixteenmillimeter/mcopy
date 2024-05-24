@@ -10,6 +10,12 @@ import type { Capper } from 'capper';
 import type { Alert } from 'alert';
 import type { Config } from 'cfg';
 
+/** @module lib/cmd */
+
+/**
+ * Class representing all commands bundled into methods. 
+ */
+
 export class Commands {
 	public proj : Projector;
 	public cam : Camera;

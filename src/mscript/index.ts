@@ -1,10 +1,41 @@
 'use strict';
 
-/** @module lib/mscript */
+interface MscriptOutput {
+	success : boolean,
+	arr : string[],
+	meta : string[],
+	cam : number,
+	proj : number,
+	cam2? : number
+	proj2? : number
+}
 
+interface MscriptLoop {
+	arr : string[],
+	meta : string[],
+	cam : number,
+	proj : number,
+	cam2 : number,
+	proj2 : number,
+	cmd : string,
+	start ? : RGB,
+	end ? : RGB,
+	fade? : boolean,
+	fade_len? : number,
+	fade_count? : number,
+	count ? : number
+}
+
+interface MscriptVariables {
+	[key : string] : number
+}
 
 interface RGB extends Array<number>{
 	[index : number] : number;
+}
+
+interface Alts {
+	[key : string] : string[]
 }
 
 const BLACK : string = '0,0,0';
@@ -48,7 +79,7 @@ const PROJECTOR_SECONDARY : string[] = [
     'PBPF'
 ];
 
-const ALTS : any = {
+const ALTS : Alts = {
 	'CF' : ['CAMERA FORWARD', 'CAM FORWARD'],
 	'PF' : ['PROJECTOR FORWARD', 'PROJ FORWARD'],
 	'BF' : ['BLACK FORWARD', 'BLACK', 'BLANK FORWARD', 'BLANK'],
@@ -77,25 +108,29 @@ const PAUSE : string = 'PAUSE';
 const ALERT : string = 'ALERT';
 
 
-/** class Mscript */
+/** @module lib/mscript */
+
+/**
+ * Class representing the mscript language.
+ */
 export default class Mscript {
-	output : any;
-	lines : string[];
-	cam : number;
-	cam2 : number;
-	proj : number;
-	proj2 : number;
-	color : string;
-	loops : any[];
-	rec : number;
-	two : string;
-	three : string;
-	four : string;
-	arr : any[];
-	meta : string[];
-	target : number;
-	dist : number;
-	variables : any;
+	private output : MscriptOutput;
+	private lines : string[];
+	private cam : number;
+	private cam2 : number;
+	private proj : number;
+	private proj2 : number;
+	private color : string;
+	private loops : MscriptLoop[];
+	private rec : number;
+	private two : string;
+	private three : string;
+	private four : string;
+	private arr : string[];
+	private meta : string[];
+	private target : number;
+	private dist : number;
+	private variables : MscriptVariables;
 
 	/**
 	 * @constructor
@@ -103,7 +138,13 @@ export default class Mscript {
 	 **/
 
 	constructor () {
-		this.output = {};
+		this.output = {
+			success : false,
+			arr : [],
+			meta : [],
+			cam : 0,
+			proj : 0
+		};
 	}
 	/**
 	 * Clear the state of the script
@@ -128,7 +169,13 @@ export default class Mscript {
 
 		this.variables = {};
 
-		this.output = {};
+		this.output = {
+			success : false,
+			arr : [],
+			meta : [],
+			cam : 0,
+			proj : 0
+		};
 	}
 	/**
 	 * Main function, accepts multi-line string, parses into lines
@@ -223,8 +270,9 @@ export default class Mscript {
 	private variable (line : string) {
 		let parts : string[] = line.split('=');
 		let key : string = parts[0];
-		let value : any = parts[1];
+		let value : string = parts[1];
 		let update : boolean = false;
+		let num : number;
 
 		if (value && value.indexOf('#') !== -1) {
 			value = value.split('#')[0];
@@ -245,14 +293,14 @@ export default class Mscript {
 
 		if (line.indexOf(',') === -1) { //if not color string
 			try {
-				value = parseInt(value);
+				num = parseInt(value);
 			} catch (err) {
 				//supress parsing error
 			}
 		}
 		//console.dir(parts)
 		if (!this.variables[key] || update) {
-			this.variables[key] = value;
+			this.variables[key] = num;
 		}
 		//console.dir(this.variables)
 	}
@@ -537,7 +585,7 @@ export default class Mscript {
 	 *
 	 * @returns {object}
 	 */
-	private last_loop () : any {
+	private last_loop () : MscriptLoop {
 		return this.loops[this.loops.length - 1];
 	}
 	/**
@@ -545,7 +593,7 @@ export default class Mscript {
 	 * 
 	 * @returns {object} Loop array
 	 */
-	private parent_loop () : any {
+	private parent_loop () : MscriptLoop {
 		return this.loops[this.loops.length - 2];
 	}
 	/**
@@ -663,9 +711,13 @@ export default class Mscript {
 				if (this.rec === 0) {
 					this.cam += this.loops[this.rec].cam;
 					this.proj += this.loops[this.rec].proj;
+					this.cam2 += this.loops[this.rec].cam2;
+					this.proj2 += this.loops[this.rec].proj2;
 				} else if (this.rec >= 1) {
 					this.loops[this.rec - 1].cam += this.loops[this.rec].cam;
 					this.loops[this.rec - 1].proj += this.loops[this.rec].proj;
+					this.loops[this.rec - 1].cam2 += this.loops[this.rec].cam2;
+					this.loops[this.rec - 1].proj2 += this.loops[this.rec].proj2;
 				}
 			}
 		} else if (cmd === 'CF') {
@@ -808,7 +860,7 @@ export default class Mscript {
 	private str_to_arr (str : string, cmd : string) : string[] {
 		const cnt : string[] = str.split(cmd);
 		let c  : number = parseInt(cnt[1]);
-		let arr  : any[] = [];
+		let arr  : string[] = [];
 		if (cnt[1] === '') {
 			c = 1;
 		} else {

@@ -17,7 +17,12 @@ interface CameraState{
 	capper : boolean
 }
 
-/** class representing camera functions **/
+/** @module lib/cam */
+
+/**
+ * Class representing camera functions.
+ */
+
 export class Camera {
 	public state : CameraState = { 
 		pos : 0,

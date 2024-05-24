@@ -1,6 +1,10 @@
 import { Commands } from 'cmd';
 import type { Config } from 'cfg';
 import type { WebContents } from 'electron';
+/** @module lib/sequencer */
+/**
+ * Class representing all sequencer features.
+ */
 export declare class Sequencer {
     private running;
     private paused;

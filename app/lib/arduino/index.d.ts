@@ -1,9 +1,10 @@
 /// <reference types="node" />
 import type { EventEmitter } from 'events';
 import type { Config } from 'cfg';
+/** @module lib/arduino */
 /**
- * Class representing the arduino communication features
- **/
+ * Class representing the arduino communication features.
+ */
 export declare class Arduino {
     private log;
     private eventEmitter;

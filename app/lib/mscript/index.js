@@ -63,14 +63,23 @@ const ALTS = {
 const DELAY = 'DELAY';
 const PAUSE = 'PAUSE';
 const ALERT = 'ALERT';
-/** class Mscript */
+/** @module lib/mscript */
+/**
+ * Class representing the mscript language.
+ */
 class Mscript {
     /**
      * @constructor
      * Create new Mscript interpreter
      **/
     constructor() {
-        this.output = {};
+        this.output = {
+            success: false,
+            arr: [],
+            meta: [],
+            cam: 0,
+            proj: 0
+        };
     }
     /**
      * Clear the state of the script
@@ -92,7 +101,13 @@ class Mscript {
         this.target = 0; //move to target using CAM # or PROJ #
         this.dist = 0;
         this.variables = {};
-        this.output = {};
+        this.output = {
+            success: false,
+            arr: [],
+            meta: [],
+            cam: 0,
+            proj: 0
+        };
     }
     /**
      * Main function, accepts multi-line string, parses into lines
@@ -199,6 +214,7 @@ class Mscript {
         let key = parts[0];
         let value = parts[1];
         let update = false;
+        let num;
         if (value && value.indexOf('#') !== -1) {
             value = value.split('#')[0];
         }
@@ -214,7 +230,7 @@ class Mscript {
         }
         if (line.indexOf(',') === -1) { //if not color string
             try {
-                value = parseInt(value);
+                num = parseInt(value);
             }
             catch (err) {
                 //supress parsing error
@@ -222,7 +238,7 @@ class Mscript {
         }
         //console.dir(parts)
         if (!this.variables[key] || update) {
-            this.variables[key] = value;
+            this.variables[key] = num;
         }
         //console.dir(this.variables)
     }
@@ -638,10 +654,14 @@ class Mscript {
                 if (this.rec === 0) {
                     this.cam += this.loops[this.rec].cam;
                     this.proj += this.loops[this.rec].proj;
+                    this.cam2 += this.loops[this.rec].cam2;
+                    this.proj2 += this.loops[this.rec].proj2;
                 }
                 else if (this.rec >= 1) {
                     this.loops[this.rec - 1].cam += this.loops[this.rec].cam;
                     this.loops[this.rec - 1].proj += this.loops[this.rec].proj;
+                    this.loops[this.rec - 1].cam2 += this.loops[this.rec].cam2;
+                    this.loops[this.rec - 1].proj2 += this.loops[this.rec].proj2;
                 }
             }
         }

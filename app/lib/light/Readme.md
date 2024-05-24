@@ -1,32 +1,46 @@
-<a name="Light"></a>
+<a name="module_lib/light"></a>
 
-## Light
-**Kind**: global class  
+## lib/light
 
-* [Light](#Light)
-    * [.init()](#Light+init)
-    * [.listen()](#Light+listen)
-    * [.listener()](#Light+listener)
-    * [.set()](#Light+set)
-    * [.end()](#Light+end)
+* [lib/light](#module_lib/light)
+    * [~Light](#module_lib/light..Light)
+        * [.init()](#module_lib/light..Light+init)
+        * [.listen()](#module_lib/light..Light+listen)
+        * [.listener()](#module_lib/light..Light+listener)
+        * [.set()](#module_lib/light..Light+set)
+        * [.end()](#module_lib/light..Light+end)
 
-<a name="Light+init"></a>
+<a name="module_lib/light..Light"></a>
 
-### light.init()
-**Kind**: instance method of [<code>Light</code>](#Light)  
-<a name="Light+listen"></a>
+### lib/light~Light
+Class representing the all light features.
 
-### light.listen()
-**Kind**: instance method of [<code>Light</code>](#Light)  
-<a name="Light+listener"></a>
+**Kind**: inner class of [<code>lib/light</code>](#module_lib/light)  
 
-### light.listener()
-**Kind**: instance method of [<code>Light</code>](#Light)  
-<a name="Light+set"></a>
+* [~Light](#module_lib/light..Light)
+    * [.init()](#module_lib/light..Light+init)
+    * [.listen()](#module_lib/light..Light+listen)
+    * [.listener()](#module_lib/light..Light+listener)
+    * [.set()](#module_lib/light..Light+set)
+    * [.end()](#module_lib/light..Light+end)
 
-### light.set()
-**Kind**: instance method of [<code>Light</code>](#Light)  
-<a name="Light+end"></a>
+<a name="module_lib/light..Light+init"></a>
 
-### light.end()
-**Kind**: instance method of [<code>Light</code>](#Light)  
+#### light.init()
+**Kind**: instance method of [<code>Light</code>](#module_lib/light..Light)  
+<a name="module_lib/light..Light+listen"></a>
+
+#### light.listen()
+**Kind**: instance method of [<code>Light</code>](#module_lib/light..Light)  
+<a name="module_lib/light..Light+listener"></a>
+
+#### light.listener()
+**Kind**: instance method of [<code>Light</code>](#module_lib/light..Light)  
+<a name="module_lib/light..Light+set"></a>
+
+#### light.set()
+**Kind**: instance method of [<code>Light</code>](#module_lib/light..Light)  
+<a name="module_lib/light..Light+end"></a>
+
+#### light.end()
+**Kind**: instance method of [<code>Light</code>](#module_lib/light..Light)  

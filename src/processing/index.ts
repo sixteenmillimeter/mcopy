@@ -3,6 +3,11 @@
 import { exec } from 'exec';
 import type { ExecOutput } from 'exec';
 
+/** @module lib/processing */
+
+/**
+ * Class representing all Processing camera features.
+ */
 export class Processing {
 	private _baseUrl : string
 	constructor (url : string) {

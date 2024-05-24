@@ -33,9 +33,11 @@ interface FilmOutState {
 	files : string[]
 }
 
+/** @module lib/filmout */
+
 /**
- * @module FilmOut
- **/
+ * Class representing all filmout features.
+ */
 export class FilmOut {
 	private id : string = 'filmout';
 	private videoExtensions : string[] =  ['.mpg', '.mpeg', '.mov', '.mkv', '.avi', '.mp4']; 

@@ -34,6 +34,11 @@ interface ServerQueue {
 	[key: string]: Function;
 }
 
+/** @module lib/server */
+
+/**
+ * Class representing all filmout server features.
+ */
 export class Server {
 	private id : string = 'server'
 	public isActive : boolean = false

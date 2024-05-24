@@ -6,9 +6,13 @@ const mscript = new Mscript();
 const assert = require('assert')
 
 describe(`mscript module`, () => {
-	const script1 = 'CF\nPF\nCB\nPB\nBF\nBB';
-	const script2 = `CF 3\nPF 3`
-	const script3 = `CF\nPF`
+	const script1 = `
+CF
+PF
+CB
+PB
+BF
+BB`;
 
 	it ('Should compile very short scripts as strings', () => {
 		const obj = mscript.interpret(script1)
@@ -19,6 +23,9 @@ describe(`mscript module`, () => {
 		assert.equal(obj.arr.length, 6, 'Generate sequence of 6 steps');
 	});
 
+	const script2 = `
+CF 3
+PF 3`;
 	it ('Should compile script with count values after command', () => {
 		const obj = mscript.interpret(script2)
 		assert.ok(typeof obj === 'object', 'Mscript produced an object response');
@@ -29,7 +36,9 @@ describe(`mscript module`, () => {
 		assert.equal(obj.arr.length,  6, `Generate sequence of 6 steps`);
 	});
 
-
+const script3 = `
+CF
+PF`
 	it ('Should compile with implied counts of 1', () => {
 		const obj = mscript.interpret(script3);
 		assert.ok(typeof obj === 'object', 'Mscript produced an object response');
@@ -109,6 +118,21 @@ PB 200`;
 		assert.equal(obj.cam, 0, 'Camera state ends at 0');
 		assert.equal(obj.proj, 0, 'Projector state ends at 0');
 	});
+
+	const script2 = `
+LOOP 10
+	CF
+	SET PROJ 10
+	PF
+END`;
+
+	it('Should SET state within LOOP', () => {
+		const obj = mscript.interpret(script2)
+		assert.ok(typeof obj === 'object', 'Mscript produced an object response');
+		assert.ok(obj.success, 'Mscript labeled output success');
+		assert.equal(obj.cam, 10, 'Camera state ends at 10');
+		assert.equal(obj.proj, 11, 'Projector state should be 11');
+	});
 });
 
 describe('mscript - Loop', () => {
@@ -165,7 +189,10 @@ END`;
 
 describe('mscript - Light', () => {
 	//Lighting tests
-	const script1 = 'L 255,255,255\nCF\nPF';
+	const script1 = `
+L 255,255,255
+CF
+PF`;
 	it ( `Should set a light value on camera steps only`, () => {
 		const obj = mscript.interpret(script1)
 		assert.ok(typeof obj === 'object', 'Mscript produced an object response');
@@ -178,7 +205,11 @@ describe('mscript - Light', () => {
 		assert.equal(obj.meta[1], '', 'Second meta step should be ""');
 	});
 	
-	const script2 = 'L 255,255,255\nCF\nPF\nBF';
+	const script2 = `
+L 255,255,255
+CF
+PF
+BF`;
 	it ( `Should set light to black on black_forward`, () => {
 		const obj = mscript.interpret(script2)
 		assert.ok(typeof obj === 'object', 'Mscript produced an object response');
@@ -192,7 +223,13 @@ describe('mscript - Light', () => {
 		assert.equal(obj.meta[2], '0,0,0', 'Third meta step should be ""');
 	});
 
-	const script3 = 'LOOP 2\nL 1,1,1\nCF\nL 2,2,2\nCF\nEND';
+	const script3 = `
+LOOP 2
+	L 1,1,1
+	CF
+	L 2,2,2
+	CF
+END`;
 	it ( `Should set light within a loop`, () => {
 		const obj = mscript.interpret(script3);
 		assert.ok(typeof obj === 'object', 'Mscript produced an object response');
@@ -257,6 +294,8 @@ END
 		assert.ok(typeof obj === 'object', 'Mscript produced an object response');
 		assert.ok(obj.success, 'Mscript labeled output success');
 		assert.equal(obj.arr.length, 20, 'Script should produce 20 steps');
+		assert.equal(obj.arr[0], 'C2F', 'First step should be C2F');
+		assert.equal(obj.arr[19], 'P2F', 'Twentieth step should be P2F');
 	})
 	const script2 = `
 C2F 1000

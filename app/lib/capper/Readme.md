@@ -1,34 +1,46 @@
-<a name="Capper"></a>
+<a name="module_lib/capper"></a>
 
-## Capper
-class representing capper functions
+## lib/capper
 
-**Kind**: global class  
+* [lib/capper](#module_lib/capper)
+    * [~Capper](#module_lib/capper..Capper)
+        * [.init()](#module_lib/capper..Capper+init)
+        * [.listen()](#module_lib/capper..Capper+listen)
+        * [.capper()](#module_lib/capper..Capper+capper)
+        * [.listener()](#module_lib/capper..Capper+listener)
+        * [.end()](#module_lib/capper..Capper+end)
 
-* [Capper](#Capper)
-    * [.init()](#Capper+init)
-    * [.listen()](#Capper+listen)
-    * [.capper()](#Capper+capper)
-    * [.listener()](#Capper+listener)
-    * [.end()](#Capper+end)
+<a name="module_lib/capper..Capper"></a>
 
-<a name="Capper+init"></a>
+### lib/capper~Capper
+Class representing capper functions.
 
-### capper.init()
-**Kind**: instance method of [<code>Capper</code>](#Capper)  
-<a name="Capper+listen"></a>
+**Kind**: inner class of [<code>lib/capper</code>](#module_lib/capper)  
 
-### capper.listen()
-**Kind**: instance method of [<code>Capper</code>](#Capper)  
-<a name="Capper+capper"></a>
+* [~Capper](#module_lib/capper..Capper)
+    * [.init()](#module_lib/capper..Capper+init)
+    * [.listen()](#module_lib/capper..Capper+listen)
+    * [.capper()](#module_lib/capper..Capper+capper)
+    * [.listener()](#module_lib/capper..Capper+listener)
+    * [.end()](#module_lib/capper..Capper+end)
 
-### capper.capper()
-**Kind**: instance method of [<code>Capper</code>](#Capper)  
-<a name="Capper+listener"></a>
+<a name="module_lib/capper..Capper+init"></a>
 
-### capper.listener()
-**Kind**: instance method of [<code>Capper</code>](#Capper)  
-<a name="Capper+end"></a>
+#### capper.init()
+**Kind**: instance method of [<code>Capper</code>](#module_lib/capper..Capper)  
+<a name="module_lib/capper..Capper+listen"></a>
 
-### capper.end()
-**Kind**: instance method of [<code>Capper</code>](#Capper)  
+#### capper.listen()
+**Kind**: instance method of [<code>Capper</code>](#module_lib/capper..Capper)  
+<a name="module_lib/capper..Capper+capper"></a>
+
+#### capper.capper()
+**Kind**: instance method of [<code>Capper</code>](#module_lib/capper..Capper)  
+<a name="module_lib/capper..Capper+listener"></a>
+
+#### capper.listener()
+**Kind**: instance method of [<code>Capper</code>](#module_lib/capper..Capper)  
+<a name="module_lib/capper..Capper+end"></a>
+
+#### capper.end()
+**Kind**: instance method of [<code>Capper</code>](#module_lib/capper..Capper)  

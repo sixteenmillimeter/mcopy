@@ -2,6 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Processing = void 0;
 const exec_1 = require("exec");
+/** @module lib/processing */
+/**
+ * Class representing all Processing camera features.
+ */
 class Processing {
     constructor(url) {
         this._baseUrl = (url.indexOf('http') === -1 && url.indexOf('://') === -1) ? `http://${url}` : url;

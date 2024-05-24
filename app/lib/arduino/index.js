@@ -30,9 +30,10 @@ const KNOWN = [
     '/dev/ttyACM0',
     'COM3'
 ];
+/** @module lib/arduino */
 /**
- * Class representing the arduino communication features
- **/
+ * Class representing the arduino communication features.
+ */
 class Arduino {
     constructor(cfg, ee, errorState) {
         this.path = {};

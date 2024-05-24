@@ -36,11 +36,13 @@ const KNOWN : string[] = [
 	'/dev/tty.usbmodem1a141',
 	'/dev/ttyACM0',
 	'COM3'
-]
+];
+
+/** @module lib/arduino */
 
 /**
- * Class representing the arduino communication features
- **/ 
+ * Class representing the arduino communication features.
+ */
 
 export class Arduino {
 

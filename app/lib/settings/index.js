@@ -4,6 +4,10 @@ exports.Settings = void 0;
 const os_1 = require("os");
 const path_1 = require("path");
 const promises_1 = require("fs/promises");
+/** @module lib/settings */
+/**
+ * Class representing all settings features.
+ */
 class Settings {
     /**
      *

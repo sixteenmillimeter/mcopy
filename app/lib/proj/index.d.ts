@@ -7,6 +7,10 @@ interface ProjectorState {
     pos: number;
     dir: boolean;
 }
+/** @module lib/proj */
+/**
+ * Class representing all projector features.
+ */
 export declare class Projector {
     state: ProjectorState;
     arduino: Arduino;

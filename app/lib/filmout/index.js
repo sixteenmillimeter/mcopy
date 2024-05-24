@@ -12,9 +12,10 @@ const delay_1 = require("delay");
 const crypto_1 = require("crypto");
 const frame_1 = require("frame");
 const log_1 = require("log");
+/** @module lib/filmout */
 /**
- * @module FilmOut
- **/
+ * Class representing all filmout features.
+ */
 class FilmOut {
     /**
      * @constructor

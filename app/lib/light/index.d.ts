@@ -4,6 +4,10 @@ import type { WebContents } from 'electron';
 interface LightState {
     color: number[];
 }
+/** @module lib/light */
+/**
+ * Class representing the all light features.
+ */
 export declare class Light {
     state: LightState;
     private arduino;

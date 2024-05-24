@@ -4,6 +4,10 @@ interface RGBA {
     b: number;
     a: number;
 }
+/** @module lib/frame */
+/**
+ * Class representing the static Frame module.
+ */
 export declare class Frame {
     static info(imagePath: string): Promise<{
         width: any;

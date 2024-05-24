@@ -15,7 +15,12 @@ interface CapperState {
 	capper : boolean
 }
 
-/** class representing capper functions **/
+/** @module lib/capper */
+
+/**
+ * Class representing capper functions.
+ */
+
 export class Capper {
 	private state : CapperState = { 
 		capper : false

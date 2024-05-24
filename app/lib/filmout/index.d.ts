@@ -19,9 +19,10 @@ interface FilmOutState {
     enabled: boolean;
     files: string[];
 }
+/** @module lib/filmout */
 /**
- * @module FilmOut
- **/
+ * Class representing all filmout features.
+ */
 export declare class FilmOut {
     private id;
     private videoExtensions;

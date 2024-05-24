@@ -9,10 +9,13 @@ import { Commands } from 'cmd';
 import type { Config } from 'cfg';
 import type { WebContents, IpcMainEvent } from 'electron';
 
-/** @module lib/sequencer **/
-
 let seq : Sequencer;
 
+/** @module lib/sequencer */
+
+/**
+ * Class representing all sequencer features.
+ */
 export class Sequencer {
 	private running : boolean = false;
 	private paused : boolean = false;

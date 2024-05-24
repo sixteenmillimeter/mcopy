@@ -4,11 +4,10 @@ exports.Devices = void 0;
 const electron_1 = require("electron");
 const delay_1 = require("delay");
 const log_1 = require("log");
+/** @module lib/devices */
 /**
- * class representing the device discovery features
- *
- *
- **/
+ * Class representing the device discovery features.
+ */
 class Devices {
     /**
      * Constructor assigns arduino, settings, UI browser window and cam objects

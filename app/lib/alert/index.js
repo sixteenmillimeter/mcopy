@@ -3,7 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Alert = void 0;
 const electron_1 = require("electron");
 const log_1 = require("log");
-/* class representing alert functionality */
+/** @module lib/alert */
+/**
+ * Class for pushing an alert to the UI from the backend.
+ */
 class Alert {
     constructor(ui) {
         this.ipc = electron_1.ipcMain;

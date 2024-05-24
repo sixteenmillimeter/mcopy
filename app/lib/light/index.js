@@ -4,6 +4,10 @@ exports.Light = void 0;
 const electron_1 = require("electron");
 const delay_1 = require("delay");
 const log_1 = require("log");
+/** @module lib/light */
+/**
+ * Class representing the all light features.
+ */
 class Light {
     /**
      *

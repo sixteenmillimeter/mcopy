@@ -4,6 +4,10 @@ exports.Commands = void 0;
 const electron_1 = require("electron");
 const uuid_1 = require("uuid");
 const delay_1 = require("delay");
+/** @module lib/cmd */
+/**
+ * Class representing all commands bundled into methods.
+ */
 class Commands {
     /**
      * @constructor

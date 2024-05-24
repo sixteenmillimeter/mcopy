@@ -2,7 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Display = void 0;
 /**
- * @module display
+ * @module lib/display */
+/**
  * Provides features for displaying a full screen display of images for the digital module.
  **/
 const electron_1 = require("electron");

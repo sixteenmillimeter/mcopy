@@ -1,26 +1,37 @@
-/** @module lib/mscript */
+interface MscriptOutput {
+    success: boolean;
+    arr: string[];
+    meta: string[];
+    cam: number;
+    proj: number;
+    cam2?: number;
+    proj2?: number;
+}
 interface RGB extends Array<number> {
     [index: number]: number;
 }
-/** class Mscript */
+/** @module lib/mscript */
+/**
+ * Class representing the mscript language.
+ */
 export default class Mscript {
-    output: any;
-    lines: string[];
-    cam: number;
-    cam2: number;
-    proj: number;
-    proj2: number;
-    color: string;
-    loops: any[];
-    rec: number;
-    two: string;
-    three: string;
-    four: string;
-    arr: any[];
-    meta: string[];
-    target: number;
-    dist: number;
-    variables: any;
+    private output;
+    private lines;
+    private cam;
+    private cam2;
+    private proj;
+    private proj2;
+    private color;
+    private loops;
+    private rec;
+    private two;
+    private three;
+    private four;
+    private arr;
+    private meta;
+    private target;
+    private dist;
+    private variables;
     /**
      * @constructor
      * Create new Mscript interpreter
@@ -40,7 +51,7 @@ export default class Mscript {
      *
      * @returns {object} if callback is not provided
      */
-    interpret(text: string): any;
+    interpret(text: string): void | MscriptOutput;
     /**
      * Interprets variables for complex sequence behavior.
      * TODO: Fully implement, add test coverage

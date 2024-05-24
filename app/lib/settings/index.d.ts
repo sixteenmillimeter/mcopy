@@ -1,3 +1,7 @@
+/** @module lib/settings */
+/**
+ * Class representing all settings features.
+ */
 export declare class Settings {
     private file;
     private defaultState;

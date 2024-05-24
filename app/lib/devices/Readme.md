@@ -1,94 +1,116 @@
-<a name="Devices"></a>
+<a name="module_lib/devices"></a>
 
-## Devices
-class representing the device discovery features
+## lib/devices
 
-**Kind**: global class  
+* [lib/devices](#module_lib/devices)
+    * [~Devices](#module_lib/devices..Devices)
+        * [new Devices()](#new_module_lib/devices..Devices_new)
+        * [.init()](#module_lib/devices..Devices+init)
+        * [.listen()](#module_lib/devices..Devices+listen)
+        * [.listener()](#module_lib/devices..Devices+listener)
+        * [.enumerate()](#module_lib/devices..Devices+enumerate)
+        * [.favor()](#module_lib/devices..Devices+favor)
+        * [.distinguish()](#module_lib/devices..Devices+distinguish)
+        * [.fakeProjector()](#module_lib/devices..Devices+fakeProjector)
+        * [.fakeCamera()](#module_lib/devices..Devices+fakeCamera)
+        * [.fakeLight()](#module_lib/devices..Devices+fakeLight)
+        * [.fakeCapper()](#module_lib/devices..Devices+fakeCapper)
+        * [.connectDevice()](#module_lib/devices..Devices+connectDevice)
+        * [.all()](#module_lib/devices..Devices+all)
+        * [.remember()](#module_lib/devices..Devices+remember)
+        * [.ready()](#module_lib/devices..Devices+ready)
 
-* [Devices](#Devices)
-    * [new Devices()](#new_Devices_new)
-    * [.init()](#Devices+init)
-    * [.listen()](#Devices+listen)
-    * [.listener()](#Devices+listener)
-    * [.enumerate()](#Devices+enumerate)
-    * [.favor()](#Devices+favor)
-    * [.distinguish()](#Devices+distinguish)
-    * [.fakeProjector()](#Devices+fakeProjector)
-    * [.fakeCamera()](#Devices+fakeCamera)
-    * [.fakeLight()](#Devices+fakeLight)
-    * [.fakeCapper()](#Devices+fakeCapper)
-    * [.connectDevice()](#Devices+connectDevice)
-    * [.all()](#Devices+all)
-    * [.remember()](#Devices+remember)
-    * [.ready()](#Devices+ready)
+<a name="module_lib/devices..Devices"></a>
 
-<a name="new_Devices_new"></a>
+### lib/devices~Devices
+Class representing the device discovery features.
 
-### new Devices()
+**Kind**: inner class of [<code>lib/devices</code>](#module_lib/devices)  
+
+* [~Devices](#module_lib/devices..Devices)
+    * [new Devices()](#new_module_lib/devices..Devices_new)
+    * [.init()](#module_lib/devices..Devices+init)
+    * [.listen()](#module_lib/devices..Devices+listen)
+    * [.listener()](#module_lib/devices..Devices+listener)
+    * [.enumerate()](#module_lib/devices..Devices+enumerate)
+    * [.favor()](#module_lib/devices..Devices+favor)
+    * [.distinguish()](#module_lib/devices..Devices+distinguish)
+    * [.fakeProjector()](#module_lib/devices..Devices+fakeProjector)
+    * [.fakeCamera()](#module_lib/devices..Devices+fakeCamera)
+    * [.fakeLight()](#module_lib/devices..Devices+fakeLight)
+    * [.fakeCapper()](#module_lib/devices..Devices+fakeCapper)
+    * [.connectDevice()](#module_lib/devices..Devices+connectDevice)
+    * [.all()](#module_lib/devices..Devices+all)
+    * [.remember()](#module_lib/devices..Devices+remember)
+    * [.ready()](#module_lib/devices..Devices+ready)
+
+<a name="new_module_lib/devices..Devices_new"></a>
+
+#### new Devices()
 Constructor assigns arduino, settings, UI browser window and cam objects
 locally to this class for reference.
 
-<a name="Devices+init"></a>
+<a name="module_lib/devices..Devices+init"></a>
 
-### devices.init()
+#### devices.init()
 Initialize the log for "devices". Establish an ipc connection to the UI.
 Start listening on that ipc connection.
 
-**Kind**: instance method of [<code>Devices</code>](#Devices)  
-<a name="Devices+listen"></a>
+**Kind**: instance method of [<code>Devices</code>](#module_lib/devices..Devices)  
+<a name="module_lib/devices..Devices+listen"></a>
 
-### devices.listen()
+#### devices.listen()
 Listen to the "profile" channel for messages from the UI.
 
-**Kind**: instance method of [<code>Devices</code>](#Devices)  
-<a name="Devices+listener"></a>
+**Kind**: instance method of [<code>Devices</code>](#module_lib/devices..Devices)  
+<a name="module_lib/devices..Devices+listener"></a>
 
-### devices.listener()
+#### devices.listener()
 The "profile" channel callback. If a profile is changed, set it in the
 local settings object.
 
-**Kind**: instance method of [<code>Devices</code>](#Devices)  
-<a name="Devices+enumerate"></a>
+**Kind**: instance method of [<code>Devices</code>](#module_lib/devices..Devices)  
+<a name="module_lib/devices..Devices+enumerate"></a>
 
-### devices.enumerate()
-**Kind**: instance method of [<code>Devices</code>](#Devices)  
-<a name="Devices+favor"></a>
+#### devices.enumerate()
+**Kind**: instance method of [<code>Devices</code>](#module_lib/devices..Devices)  
+<a name="module_lib/devices..Devices+favor"></a>
 
-### devices.favor()
-**Kind**: instance method of [<code>Devices</code>](#Devices)  
-<a name="Devices+distinguish"></a>
+#### devices.favor()
+**Kind**: instance method of [<code>Devices</code>](#module_lib/devices..Devices)  
+<a name="module_lib/devices..Devices+distinguish"></a>
 
-### devices.distinguish()
-**Kind**: instance method of [<code>Devices</code>](#Devices)  
-<a name="Devices+fakeProjector"></a>
+#### devices.distinguish()
+**Kind**: instance method of [<code>Devices</code>](#module_lib/devices..Devices)  
+<a name="module_lib/devices..Devices+fakeProjector"></a>
 
-### devices.fakeProjector()
-**Kind**: instance method of [<code>Devices</code>](#Devices)  
-<a name="Devices+fakeCamera"></a>
+#### devices.fakeProjector()
+**Kind**: instance method of [<code>Devices</code>](#module_lib/devices..Devices)  
+<a name="module_lib/devices..Devices+fakeCamera"></a>
 
-### devices.fakeCamera()
-**Kind**: instance method of [<code>Devices</code>](#Devices)  
-<a name="Devices+fakeLight"></a>
+#### devices.fakeCamera()
+**Kind**: instance method of [<code>Devices</code>](#module_lib/devices..Devices)  
+<a name="module_lib/devices..Devices+fakeLight"></a>
 
-### devices.fakeLight()
-**Kind**: instance method of [<code>Devices</code>](#Devices)  
-<a name="Devices+fakeCapper"></a>
+#### devices.fakeLight()
+**Kind**: instance method of [<code>Devices</code>](#module_lib/devices..Devices)  
+<a name="module_lib/devices..Devices+fakeCapper"></a>
 
-### devices.fakeCapper()
-**Kind**: instance method of [<code>Devices</code>](#Devices)  
-<a name="Devices+connectDevice"></a>
+#### devices.fakeCapper()
+**Kind**: instance method of [<code>Devices</code>](#module_lib/devices..Devices)  
+<a name="module_lib/devices..Devices+connectDevice"></a>
 
-### devices.connectDevice()
-**Kind**: instance method of [<code>Devices</code>](#Devices)  
-<a name="Devices+all"></a>
+#### devices.connectDevice()
+**Kind**: instance method of [<code>Devices</code>](#module_lib/devices..Devices)  
+<a name="module_lib/devices..Devices+all"></a>
 
-### devices.all()
-**Kind**: instance method of [<code>Devices</code>](#Devices)  
-<a name="Devices+remember"></a>
+#### devices.all()
+**Kind**: instance method of [<code>Devices</code>](#module_lib/devices..Devices)  
+<a name="module_lib/devices..Devices+remember"></a>
 
-### devices.remember()
-**Kind**: instance method of [<code>Devices</code>](#Devices)  
-<a name="Devices+ready"></a>
+#### devices.remember()
+**Kind**: instance method of [<code>Devices</code>](#module_lib/devices..Devices)  
+<a name="module_lib/devices..Devices+ready"></a>
 
-### devices.ready()
-**Kind**: instance method of [<code>Devices</code>](#Devices)  
+#### devices.ready()
+**Kind**: instance method of [<code>Devices</code>](#module_lib/devices..Devices)  

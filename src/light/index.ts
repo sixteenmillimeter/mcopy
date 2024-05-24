@@ -12,6 +12,11 @@ interface LightState {
 	color : number[]
 }
 
+/** @module lib/light */
+
+/**
+ * Class representing the all light features.
+ */
 export class Light {
 	public state : LightState = { color : [0, 0, 0] }
 

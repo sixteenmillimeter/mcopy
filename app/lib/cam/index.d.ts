@@ -7,7 +7,10 @@ interface CameraState {
     dir: boolean;
     capper: boolean;
 }
-/** class representing camera functions **/
+/** @module lib/cam */
+/**
+ * Class representing camera functions.
+ */
 export declare class Camera {
     state: CameraState;
     arduino: Arduino;

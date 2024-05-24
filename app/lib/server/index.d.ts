@@ -20,6 +20,10 @@ interface ServerProxyList {
 interface ServerQueue {
     [key: string]: Function;
 }
+/** @module lib/server */
+/**
+ * Class representing all filmout server features.
+ */
 export declare class Server {
     private id;
     isActive: boolean;

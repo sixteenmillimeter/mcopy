@@ -4,7 +4,10 @@ import type { WebContents } from 'electron';
 interface CapperState {
     capper: boolean;
 }
-/** class representing capper functions **/
+/** @module lib/capper */
+/**
+ * Class representing capper functions.
+ */
 export declare class Capper {
     private state;
     private arduino;

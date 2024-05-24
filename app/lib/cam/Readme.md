@@ -1,59 +1,76 @@
-<a name="Camera"></a>
+<a name="module_lib/cam"></a>
 
-## Camera
-class representing camera functions
+## lib/cam
 
-**Kind**: global class  
+* [lib/cam](#module_lib/cam)
+    * [~Camera](#module_lib/cam..Camera)
+        * [.init()](#module_lib/cam..Camera+init)
+        * [.listen()](#module_lib/cam..Camera+listen)
+        * [.set()](#module_lib/cam..Camera+set)
+        * [.cap()](#module_lib/cam..Camera+cap)
+        * [.move()](#module_lib/cam..Camera+move)
+        * [.exposure()](#module_lib/cam..Camera+exposure)
+        * [.connectIntval()](#module_lib/cam..Camera+connectIntval)
+        * [.connectProcessing()](#module_lib/cam..Camera+connectProcessing)
+        * [.listener()](#module_lib/cam..Camera+listener)
+        * [.end()](#module_lib/cam..Camera+end)
 
-* [Camera](#Camera)
-    * [.init()](#Camera+init)
-    * [.listen()](#Camera+listen)
-    * [.set()](#Camera+set)
-    * [.cap()](#Camera+cap)
-    * [.move()](#Camera+move)
-    * [.exposure()](#Camera+exposure)
-    * [.connectIntval()](#Camera+connectIntval)
-    * [.connectProcessing()](#Camera+connectProcessing)
-    * [.listener()](#Camera+listener)
-    * [.end()](#Camera+end)
+<a name="module_lib/cam..Camera"></a>
 
-<a name="Camera+init"></a>
+### lib/cam~Camera
+Class representing camera functions.
 
-### camera.init()
-**Kind**: instance method of [<code>Camera</code>](#Camera)  
-<a name="Camera+listen"></a>
+**Kind**: inner class of [<code>lib/cam</code>](#module_lib/cam)  
 
-### camera.listen()
-**Kind**: instance method of [<code>Camera</code>](#Camera)  
-<a name="Camera+set"></a>
+* [~Camera](#module_lib/cam..Camera)
+    * [.init()](#module_lib/cam..Camera+init)
+    * [.listen()](#module_lib/cam..Camera+listen)
+    * [.set()](#module_lib/cam..Camera+set)
+    * [.cap()](#module_lib/cam..Camera+cap)
+    * [.move()](#module_lib/cam..Camera+move)
+    * [.exposure()](#module_lib/cam..Camera+exposure)
+    * [.connectIntval()](#module_lib/cam..Camera+connectIntval)
+    * [.connectProcessing()](#module_lib/cam..Camera+connectProcessing)
+    * [.listener()](#module_lib/cam..Camera+listener)
+    * [.end()](#module_lib/cam..Camera+end)
 
-### camera.set()
-**Kind**: instance method of [<code>Camera</code>](#Camera)  
-<a name="Camera+cap"></a>
+<a name="module_lib/cam..Camera+init"></a>
 
-### camera.cap()
-**Kind**: instance method of [<code>Camera</code>](#Camera)  
-<a name="Camera+move"></a>
+#### camera.init()
+**Kind**: instance method of [<code>Camera</code>](#module_lib/cam..Camera)  
+<a name="module_lib/cam..Camera+listen"></a>
 
-### camera.move()
-**Kind**: instance method of [<code>Camera</code>](#Camera)  
-<a name="Camera+exposure"></a>
+#### camera.listen()
+**Kind**: instance method of [<code>Camera</code>](#module_lib/cam..Camera)  
+<a name="module_lib/cam..Camera+set"></a>
 
-### camera.exposure()
-**Kind**: instance method of [<code>Camera</code>](#Camera)  
-<a name="Camera+connectIntval"></a>
+#### camera.set()
+**Kind**: instance method of [<code>Camera</code>](#module_lib/cam..Camera)  
+<a name="module_lib/cam..Camera+cap"></a>
 
-### camera.connectIntval()
-**Kind**: instance method of [<code>Camera</code>](#Camera)  
-<a name="Camera+connectProcessing"></a>
+#### camera.cap()
+**Kind**: instance method of [<code>Camera</code>](#module_lib/cam..Camera)  
+<a name="module_lib/cam..Camera+move"></a>
 
-### camera.connectProcessing()
-**Kind**: instance method of [<code>Camera</code>](#Camera)  
-<a name="Camera+listener"></a>
+#### camera.move()
+**Kind**: instance method of [<code>Camera</code>](#module_lib/cam..Camera)  
+<a name="module_lib/cam..Camera+exposure"></a>
 
-### camera.listener()
-**Kind**: instance method of [<code>Camera</code>](#Camera)  
-<a name="Camera+end"></a>
+#### camera.exposure()
+**Kind**: instance method of [<code>Camera</code>](#module_lib/cam..Camera)  
+<a name="module_lib/cam..Camera+connectIntval"></a>
 
-### camera.end()
-**Kind**: instance method of [<code>Camera</code>](#Camera)  
+#### camera.connectIntval()
+**Kind**: instance method of [<code>Camera</code>](#module_lib/cam..Camera)  
+<a name="module_lib/cam..Camera+connectProcessing"></a>
+
+#### camera.connectProcessing()
+**Kind**: instance method of [<code>Camera</code>](#module_lib/cam..Camera)  
+<a name="module_lib/cam..Camera+listener"></a>
+
+#### camera.listener()
+**Kind**: instance method of [<code>Camera</code>](#module_lib/cam..Camera)  
+<a name="module_lib/cam..Camera+end"></a>
+
+#### camera.end()
+**Kind**: instance method of [<code>Camera</code>](#module_lib/cam..Camera)  

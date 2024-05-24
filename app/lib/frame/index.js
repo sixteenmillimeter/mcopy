@@ -5,6 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Frame = void 0;
 const jimp_1 = __importDefault(require("jimp"));
+/** @module lib/frame */
+/**
+ * Class representing the static Frame module.
+ */
 class Frame {
     static async info(imagePath) {
         let image;

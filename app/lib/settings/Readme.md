@@ -1,42 +1,58 @@
-<a name="Settings"></a>
+<a name="module_lib/settings"></a>
 
-## Settings
-**Kind**: global class  
+## lib/settings
 
-* [Settings](#Settings)
-    * [.checkDir()](#Settings+checkDir)
-    * [.save()](#Settings+save)
-    * [.update()](#Settings+update)
-    * [.get()](#Settings+get)
-    * [.all()](#Settings+all)
-    * [.restore()](#Settings+restore)
-    * [.reset()](#Settings+reset)
+* [lib/settings](#module_lib/settings)
+    * [~Settings](#module_lib/settings..Settings)
+        * [.checkDir()](#module_lib/settings..Settings+checkDir)
+        * [.save()](#module_lib/settings..Settings+save)
+        * [.update()](#module_lib/settings..Settings+update)
+        * [.get()](#module_lib/settings..Settings+get)
+        * [.all()](#module_lib/settings..Settings+all)
+        * [.restore()](#module_lib/settings..Settings+restore)
+        * [.reset()](#module_lib/settings..Settings+reset)
 
-<a name="Settings+checkDir"></a>
+<a name="module_lib/settings..Settings"></a>
 
-### settings.checkDir()
-**Kind**: instance method of [<code>Settings</code>](#Settings)  
-<a name="Settings+save"></a>
+### lib/settings~Settings
+Class representing all settings features.
 
-### settings.save()
-**Kind**: instance method of [<code>Settings</code>](#Settings)  
-<a name="Settings+update"></a>
+**Kind**: inner class of [<code>lib/settings</code>](#module_lib/settings)  
 
-### settings.update()
-**Kind**: instance method of [<code>Settings</code>](#Settings)  
-<a name="Settings+get"></a>
+* [~Settings](#module_lib/settings..Settings)
+    * [.checkDir()](#module_lib/settings..Settings+checkDir)
+    * [.save()](#module_lib/settings..Settings+save)
+    * [.update()](#module_lib/settings..Settings+update)
+    * [.get()](#module_lib/settings..Settings+get)
+    * [.all()](#module_lib/settings..Settings+all)
+    * [.restore()](#module_lib/settings..Settings+restore)
+    * [.reset()](#module_lib/settings..Settings+reset)
 
-### settings.get()
-**Kind**: instance method of [<code>Settings</code>](#Settings)  
-<a name="Settings+all"></a>
+<a name="module_lib/settings..Settings+checkDir"></a>
 
-### settings.all()
-**Kind**: instance method of [<code>Settings</code>](#Settings)  
-<a name="Settings+restore"></a>
+#### settings.checkDir()
+**Kind**: instance method of [<code>Settings</code>](#module_lib/settings..Settings)  
+<a name="module_lib/settings..Settings+save"></a>
 
-### settings.restore()
-**Kind**: instance method of [<code>Settings</code>](#Settings)  
-<a name="Settings+reset"></a>
+#### settings.save()
+**Kind**: instance method of [<code>Settings</code>](#module_lib/settings..Settings)  
+<a name="module_lib/settings..Settings+update"></a>
 
-### settings.reset()
-**Kind**: instance method of [<code>Settings</code>](#Settings)  
+#### settings.update()
+**Kind**: instance method of [<code>Settings</code>](#module_lib/settings..Settings)  
+<a name="module_lib/settings..Settings+get"></a>
+
+#### settings.get()
+**Kind**: instance method of [<code>Settings</code>](#module_lib/settings..Settings)  
+<a name="module_lib/settings..Settings+all"></a>
+
+#### settings.all()
+**Kind**: instance method of [<code>Settings</code>](#module_lib/settings..Settings)  
+<a name="module_lib/settings..Settings+restore"></a>
+
+#### settings.restore()
+**Kind**: instance method of [<code>Settings</code>](#module_lib/settings..Settings)  
+<a name="module_lib/settings..Settings+reset"></a>
+
+#### settings.reset()
+**Kind**: instance method of [<code>Settings</code>](#module_lib/settings..Settings)  

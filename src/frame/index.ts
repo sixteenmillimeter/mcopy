@@ -9,6 +9,12 @@ interface RGBA {
 	a : number;
 }
 
+/** @module lib/frame */
+
+/**
+ * Class representing the static Frame module.
+ */
+
 export class Frame {
 	static async info (imagePath : string) {
 		let image : any;

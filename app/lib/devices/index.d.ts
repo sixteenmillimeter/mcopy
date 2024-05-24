@@ -5,11 +5,10 @@ interface Device {
     serial: string;
     device: string;
 }
+/** @module lib/devices */
 /**
- * class representing the device discovery features
- *
- *
- **/
+ * Class representing the device discovery features.
+ */
 export declare class Devices {
     settings: Settings;
     connected: any;

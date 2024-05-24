@@ -5,6 +5,11 @@ import { join } from 'path';
 import { mkdir, writeFile, readFile, unlink, access } from 'fs/promises';
 import type { Stats } from 'fs';
 
+/** @module lib/settings */
+
+/**
+ * Class representing all settings features.
+ */
 export class Settings {
 	private file : string = join(homedir(), `/.mcopy/settings.json`);
 	private defaultState : any = {
