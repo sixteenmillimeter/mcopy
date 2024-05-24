@@ -63,26 +63,6 @@ const ALTS = {
 const DELAY = 'DELAY';
 const PAUSE = 'PAUSE';
 const ALERT = 'ALERT';
-/** helper functions */
-/** startswith function from lodash, do not want the entire lib for this
- * @param str 		{string} Text to evaluate
- * @param target 	{string} Text to compare string against
- * @param position  {integer} Position in the string to make comparison at
- *
- * @returns {boolean} True for match, false for no match
- **/
-function startsWith(str, target, position) {
-    const { length } = str;
-    position = position == null ? 0 : position;
-    if (position < 0) {
-        position = 0;
-    }
-    else if (position > length) {
-        position = length;
-    }
-    target = `${target}`;
-    return str.slice(position, position + target.length) == target;
-}
 /** class Mscript */
 class Mscript {
     /**
@@ -124,15 +104,15 @@ class Mscript {
      *
      * @returns {object} if callback is not provided
      */
-    interpret(text, callback = null) {
+    interpret(text) {
         this.clear();
         if (typeof text === 'undefined') {
             return this.fail('No input');
         }
         //split string into lines, each containing a command
         this.lines = text.split('\n');
-        this.lines = this.lines.map(line => {
-            line = line.replace(/\t+/g, ''); //strip tabs
+        this.lines = this.lines.map((line) => {
+            line = line.replace(/\t+/g, ' '); //strip tabs
             line = line.trim(); //remove excess whitespace before and after command
             line = line.toUpperCase();
             return line;
@@ -150,46 +130,46 @@ class Mscript {
             else if (CMD.indexOf(this.two) !== -1) {
                 this.basic_cmd(line, this.two);
             }
-            else if (startsWith(line, DELAY)) {
+            else if (line.startsWith(DELAY)) {
                 this.delay(line);
             }
-            else if (startsWith(line, PAUSE)) {
+            else if (line.startsWith(PAUSE)) {
                 this.pause(line);
             }
-            else if (startsWith(line, ALERT)) {
+            else if (line.startsWith(ALERT)) {
                 this.alert(line);
             }
-            else if (startsWith(line, '@') || line.indexOf('@') !== -1) {
+            else if (line.startsWith('@') || line.indexOf('@') !== -1) {
                 this.variable(line);
             }
-            else if (startsWith(line, 'LOOP')) {
+            else if (line.startsWith('LOOP')) {
                 this.new_loop(line);
             }
-            else if (startsWith(line, 'L ')) {
+            else if (line.startsWith('L ')) {
                 this.light_state(line);
             }
-            else if (startsWith(line, 'F ')) {
+            else if (line.startsWith('F ')) {
                 this.new_loop(line, true);
             }
-            else if (startsWith(line, 'END')) {
+            else if (line.startsWith('END')) {
                 this.end_loop(line);
             }
-            else if (startsWith(line, 'CAM2')) { //directly go to that frame 
+            else if (line.startsWith('CAM2')) { //directly go to that frame 
                 this.move_cam2(line);
             }
-            else if (startsWith(line, 'CAM')) { //directly go to that frame 
+            else if (line.startsWith('CAM')) { //directly go to that frame 
                 this.move_cam(line);
             }
-            else if (startsWith(line, 'PROJ2')) { //directly go to that frame
+            else if (line.startsWith('PROJ2')) { //directly go to that frame
                 this.move_proj2(line);
             }
-            else if (startsWith(line, 'PROJ')) { //directly go to that frame
+            else if (line.startsWith('PROJ')) { //directly go to that frame
                 this.move_proj(line);
             }
-            else if (startsWith(line, 'SET')) { //set that state
+            else if (line.startsWith('SET')) { //set that state
                 this.set_state(line);
             }
-            else if (startsWith(line, '#') || startsWith(line, '//')) {
+            else if (line.startsWith('#') || line.startsWith('//')) {
                 //comments
                 //ignore while parsing
             }
@@ -205,13 +185,7 @@ class Mscript {
         if (this.contains(this.arr, PROJECTOR_SECONDARY)) {
             this.output.proj2 = this.proj2;
         }
-        if (typeof callback !== 'undefined' && callback != null) {
-            //should only be invoked by running mscript.tests()
-            callback(this.output);
-        }
-        else {
-            return this.output;
-        }
+        return this.output;
     }
     /**
      * Interprets variables for complex sequence behavior.
@@ -319,7 +293,7 @@ class Mscript {
                 start = this.loops[this.rec].start;
                 end = this.loops[this.rec].end;
                 len = this.loops[this.rec].fade_len;
-                meta_arr = meta_arr.map(l => {
+                meta_arr = meta_arr.map((l) => {
                     return this.fade_rgb(start, end, len, x);
                 });
             }
@@ -520,16 +494,16 @@ class Mscript {
      * @param line {string} String containing set statement
      */
     set_state(line) {
-        if (startsWith(line, 'SET CAM2')) {
+        if (line.startsWith('SET CAM2')) {
             parseInt(line.split('SET CAM2')[1]);
         }
-        else if (startsWith(line, 'SET PROJ2')) {
+        else if (line.startsWith('SET PROJ2')) {
             this.cam2 = parseInt(line.split('SET PROJ2')[1]);
         }
-        else if (startsWith(line, 'SET CAM')) {
+        else if (line.startsWith('SET CAM')) {
             this.cam = parseInt(line.split('SET CAM')[1]);
         }
-        else if (startsWith(line, 'SET PROJ')) {
+        else if (line.startsWith('SET PROJ')) {
             this.proj = parseInt(line.split('SET PROJ')[1]);
         }
     }
@@ -563,9 +537,9 @@ class Mscript {
      * @param {string} line Line containing a fade initiator
      */
     fade(line) {
-        let len = this.fade_count(line);
-        let start = this.fade_start(line);
-        let end = this.fade_end(line);
+        const len = this.fade_count(line);
+        const start = this.fade_start(line);
+        const end = this.fade_end(line);
         this.loops[this.rec].start = start;
         this.loops[this.rec].end = end;
         this.loops[this.rec].fade = true;
@@ -599,7 +573,7 @@ class Mscript {
      * @returns {array} Array containing RGB color values
      */
     fade_end(str) {
-        let color = str.split(' ')[3];
+        const color = str.split(' ')[3];
         return this.rgb(color.trim());
     }
     /**
@@ -636,7 +610,7 @@ class Mscript {
      * @param {string} str String containing only color values as `#,#,#`
      **/
     rgb(str) {
-        let rgb = str.split(',');
+        const rgb = str.split(',');
         return rgb.map((char) => {
             return parseInt(char);
         });
@@ -988,7 +962,7 @@ class Mscript {
      * @returns {boolean} Whether arr contains elements in arr2
      **/
     contains(arr, arr2) {
-        return arr.some(r => arr2.includes(r));
+        return arr.some((r) => arr2.includes(r));
     }
 }
 exports.default = Mscript;

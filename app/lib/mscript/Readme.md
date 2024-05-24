@@ -8,14 +8,6 @@
 </dd>
 </dl>
 
-## Functions
-
-<dl>
-<dt><a href="#startsWith">startsWith(str, target, position)</a> ⇒ <code>boolean</code></dt>
-<dd><p>startswith function from lodash, do not want the entire lib for this</p>
-</dd>
-</dl>
-
 <a name="Create new Mscript interpreter"></a>
 
 ## Create new Mscript interpreter
@@ -76,10 +68,10 @@ of steps to be fed into the mcopy sequence.
 **Kind**: instance method of [<code>Mscript</code>](#Mscript)  
 **Returns**: <code>object</code> - if callback is not provided  
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| text | <code>string</code> |  | Mscript text to interpret |
-| callback | <code>function</code> | <code></code> | Function to call when string is interpreted |
+| Param | Type | Description |
+| --- | --- | --- |
+| text | <code>string</code> | Mscript text to interpret |
+| callback | <code>function</code> | Function to call when string is interpreted |
 
 <a name="Mscript+variable"></a>
 
@@ -407,18 +399,4 @@ another array
 | --- | --- | --- |
 | arr | <code>Array</code> | Original array to compare |
 | arr2 | <code>Array</code> | Array to compare elements from |
-
-<a name="startsWith"></a>
-
-## startsWith(str, target, position) ⇒ <code>boolean</code>
-startswith function from lodash, do not want the entire lib for this
-
-**Kind**: global function  
-**Returns**: <code>boolean</code> - True for match, false for no match  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| str | <code>string</code> | Text to evaluate |
-| target | <code>string</code> | Text to compare string against |
-| position | <code>integer</code> | Position in the string to make comparison at |
 

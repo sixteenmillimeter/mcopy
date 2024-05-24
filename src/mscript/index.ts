@@ -76,30 +76,6 @@ const DELAY : string = 'DELAY';
 const PAUSE : string = 'PAUSE';
 const ALERT : string = 'ALERT';
 
-/** helper functions */
-
-/** startswith function from lodash, do not want the entire lib for this 
- * @param str 		{string} Text to evaluate
- * @param target 	{string} Text to compare string against
- * @param position  {integer} Position in the string to make comparison at
- *
- * @returns {boolean} True for match, false for no match
- **/
-function startsWith (str : string, target : string, position? : number) : boolean {
-	const { length } = str;
-
-	position = position == null ? 0 : position;
-
-	if (position < 0) {
-		position = 0;
-	} else if (position > length) {
-		position = length;
-	}
-
-	target = `${target}`;
-
-	return str.slice(position, position + target.length) == target;
-}
 
 /** class Mscript */
 export default class Mscript {
@@ -132,7 +108,7 @@ export default class Mscript {
 	/**
 	 * Clear the state of the script
 	 */
-	clear () {
+	private clear () {
 		this.lines = [];
 
 		this.cam = 0;
@@ -164,7 +140,7 @@ export default class Mscript {
 	 *
 	 * @returns {object} if callback is not provided
 	 */
-	interpret (text : string, callback : Function = null) {
+	public interpret (text : string) {
 		this.clear()
 
 		if (typeof text === 'undefined') {
@@ -174,8 +150,8 @@ export default class Mscript {
 		//split string into lines, each containing a command
 		this.lines = text.split('\n');
 
-		this.lines = this.lines.map(line => {
-			line = line.replace(/\t+/g, ''); //strip tabs
+		this.lines = this.lines.map((line : string) => {
+			line = line.replace(/\t+/g, ' '); //strip tabs
 			line = line.trim(); //remove excess whitespace before and after command
 			line = line.toUpperCase();
 			return line;
@@ -191,33 +167,33 @@ export default class Mscript {
 				this.basic_cmd(line, this.three);
 			} else if (CMD.indexOf(this.two) !== -1) {
 				this.basic_cmd(line, this.two);
-			} else if (startsWith(line, DELAY)) {
+			} else if (line.startsWith(DELAY)) {
 				this.delay(line);
-			} else if (startsWith(line, PAUSE)) {
+			} else if (line.startsWith(PAUSE)) {
 				this.pause(line);
-			} else if (startsWith(line, ALERT)) {
+			} else if (line.startsWith(ALERT)) {
 				this.alert(line);
-			} else if (startsWith(line, '@') || line.indexOf('@') !== -1) {
+			} else if (line.startsWith('@') || line.indexOf('@') !== -1) {
 				this.variable(line);
-			} else if (startsWith(line, 'LOOP')) {
+			} else if (line.startsWith('LOOP')) {
 				this.new_loop(line);
-			} else if (startsWith(line, 'L ')) {
+			} else if (line.startsWith('L ')) {
 				this.light_state(line);
-			} else if (startsWith(line, 'F ')) {
+			} else if (line.startsWith('F ')) {
 				this.new_loop(line, true);
-			} else if (startsWith(line, 'END')) {
+			} else if (line.startsWith('END')) {
 				this.end_loop(line);
-			} else if (startsWith(line, 'CAM2')) { //directly go to that frame 
+			} else if (line.startsWith('CAM2')) { //directly go to that frame 
 				this.move_cam2(line);
-			} else if (startsWith(line, 'CAM')) { //directly go to that frame 
+			} else if (line.startsWith('CAM')) { //directly go to that frame 
 				this.move_cam(line);
-			} else if (startsWith(line, 'PROJ2')) { //directly go to that frame
+			} else if (line.startsWith('PROJ2')) { //directly go to that frame
 				this.move_proj2(line);
-			} else if (startsWith(line, 'PROJ')) { //directly go to that frame
+			} else if (line.startsWith('PROJ')) { //directly go to that frame
 				this.move_proj(line);
-			} else if (startsWith(line, 'SET')) { //set that state
+			} else if (line.startsWith('SET')) { //set that state
 				this.set_state(line);
-			} else if (startsWith(line, '#') || startsWith(line, '//')) {
+			} else if (line.startsWith('#') || line.startsWith('//')) {
 				//comments
 				//ignore while parsing
 			}
@@ -235,12 +211,7 @@ export default class Mscript {
 			this.output.proj2 = this.proj2;
 		}
 
-		if (typeof callback !== 'undefined' && callback != null) {
-			//should only be invoked by running mscript.tests()
-			callback(this.output);
-		} else {
-			return this.output;
-		}
+		return this.output;
 	}
 	/**
 	 * Interprets variables for complex sequence behavior.
@@ -249,7 +220,7 @@ export default class Mscript {
 	 * @param {string} line Line containing a variable assignment
 	 *
 	 **/
-	variable (line : string) {
+	private variable (line : string) {
 		let parts : string[] = line.split('=');
 		let key : string = parts[0];
 		let value : any = parts[1];
@@ -294,7 +265,7 @@ export default class Mscript {
 	 *
 	 * @returns {string} New string to be interpreted
 	 **/
-	variable_replace(line : string) : string {
+	private variable_replace(line : string) : string {
 		return line;
 	}
 	/**
@@ -303,7 +274,7 @@ export default class Mscript {
 	 * @param {string} line Line of script to interpret
 	 * @param {string} short The short command to use
 	 */
-	basic_cmd (line : string, short : string) {
+	private basic_cmd (line : string, short : string) {
 		if (this.rec !== -1) {
 			//hold generated arr in state loop array
 			this.loops[this.rec].arr
@@ -325,7 +296,7 @@ export default class Mscript {
 	 * @param {string} line  	Line to evaluate as either loop or fade
 	 * @param {boolean} fade 	Flag as true if fade
 	 */
-	new_loop (line : string, fade? : boolean) {
+	private new_loop (line : string, fade? : boolean) {
 		this.rec++;
 		this.loops[this.rec] = {
 			arr : [],
@@ -345,7 +316,7 @@ export default class Mscript {
 	 * 
 	 * @param {string} line Line to interpret
 	 */
-	end_loop (line : string) {
+	private end_loop (line : string) {
 		let meta_arr : string[];
 		let start : RGB;
 		let end : RGB;
@@ -357,7 +328,7 @@ export default class Mscript {
 				start = this.loops[this.rec].start;
 				end = this.loops[this.rec].end;
 				len = this.loops[this.rec].fade_len;
-				meta_arr = meta_arr.map(l => {
+				meta_arr = meta_arr.map((l : string) => {
 					return this.fade_rgb(start, end, len, x);
 				})
 			}
@@ -383,7 +354,7 @@ export default class Mscript {
 	 * 
 	 * @param {string} line Line to interpret with camera move statement
 	 */
-	move_cam (line : string) {
+	private move_cam (line : string) {
 		this.target = parseInt(line.split('CAM ')[1]);
 		if (this.rec !== -1) {
 			if (this.target > this.cam) {
@@ -425,7 +396,7 @@ export default class Mscript {
 	 * 
 	 * @param {string} line Line to interpret with camera move statement
 	 */
-	move_cam2 (line : string) {
+	private move_cam2 (line : string) {
 		this.target = parseInt(line.split('CAM2 ')[1]);
 		if (this.rec !== -1) {
 			if (this.target > this.cam2) {
@@ -467,7 +438,7 @@ export default class Mscript {
 	 * 
 	 * @param {string} line Line containing `move` statement to interpret
 	 */
-	move_proj (line : string) {
+	private move_proj (line : string) {
 		this.target = parseInt(line.split('PROJ ')[1]);
 		if (this.rec !== -1) {
 			if (this.target > this.proj) {
@@ -509,7 +480,7 @@ export default class Mscript {
 	 * 
 	 * @param {string} line Line containing `move` statement to interpret
 	 */
-	move_proj2 (line : string) {
+	private move_proj2 (line : string) {
 		this.target = parseInt(line.split('PROJ2 ')[1]);
 		if (this.rec !== -1) {
 			if (this.target > this.proj2) {
@@ -550,14 +521,14 @@ export default class Mscript {
 	 *
 	 * @param line {string} String containing set statement
 	 */
-	set_state (line : string) {
-		if (startsWith(line, 'SET CAM2')) {
+	private set_state (line : string) {
+		if (line.startsWith('SET CAM2')) {
 			parseInt(line.split('SET CAM2')[1]);
-		} else if (startsWith(line, 'SET PROJ2')) {
+		} else if (line.startsWith('SET PROJ2')) {
 			this.cam2 = parseInt(line.split('SET PROJ2')[1]);
-		} else if (startsWith(line, 'SET CAM')) {
+		} else if (line.startsWith('SET CAM')) {
 			this.cam = parseInt(line.split('SET CAM')[1]);
-		} else if (startsWith(line, 'SET PROJ')) {
+		} else if (line.startsWith('SET PROJ')) {
 			this.proj = parseInt(line.split('SET PROJ')[1]);
 		}
 	}
@@ -566,7 +537,7 @@ export default class Mscript {
 	 *
 	 * @returns {object}
 	 */
-	last_loop () : any {
+	private last_loop () : any {
 		return this.loops[this.loops.length - 1];
 	}
 	/**
@@ -574,7 +545,7 @@ export default class Mscript {
 	 * 
 	 * @returns {object} Loop array
 	 */
-	parent_loop () : any {
+	private parent_loop () : any {
 		return this.loops[this.loops.length - 2];
 	}
 	/**
@@ -582,7 +553,7 @@ export default class Mscript {
 	 *
 	 * @returns {integer} Loop count in string parsed into integer
 	 */
-	loop_count (str : string) : number {
+	private loop_count (str : string) : number {
 		return parseInt(str.split(' ')[1]);
 	}
 	/**
@@ -590,10 +561,10 @@ export default class Mscript {
 	 * 
 	 * @param {string} line Line containing a fade initiator
 	 */
-	fade (line : string) {
-		let len = this.fade_count(line);
-		let start = this.fade_start(line);
-		let end = this.fade_end(line);
+	private fade (line : string) {
+		const len : number = this.fade_count(line);
+		const start : RGB = this.fade_start(line);
+		const end : RGB = this.fade_end(line);
 
 		this.loops[this.rec].start = start;
 		this.loops[this.rec].end = end;
@@ -606,7 +577,7 @@ export default class Mscript {
 	 *
 	 * @param {string} str Line containing the length of fade in frames
 	 */
-	fade_count (str : string) {
+	private fade_count (str : string) {
 		return parseInt(str.split(' ')[1]);
 	}
 	/**
@@ -616,7 +587,7 @@ export default class Mscript {
 	 *
 	 * @returns {array} Array containing RGB color values
 	 */
-	fade_start (str :  string) : RGB {
+	private fade_start (str :  string) : RGB {
 		let color : string = str.split(' ')[2];
 		return this.rgb(color.trim())
 	}
@@ -627,8 +598,8 @@ export default class Mscript {
 	 *
 	 * @returns {array} Array containing RGB color values
 	 */
-	fade_end (str : string) : RGB {
-		let color : string = str.split(' ')[3];
+	private fade_end (str : string) : RGB {
+		const color : string = str.split(' ')[3];
 		return this.rgb(color.trim())
 	}
     /** 
@@ -641,9 +612,9 @@ export default class Mscript {
 	 *
 	 * @returns {array} Array containing RGB color values
 	 */
-	fade_rgb (start : RGB, end : RGB, len : number, x : number) {
+	private fade_rgb (start : RGB, end : RGB, len : number, x : number) {
 		let cur = [];
-		let diff;
+		let diff : number;
 		for (let i : number = 0; i < 3; i++) {
 			if (x === len - 1) {
 				cur[i] = end[i];
@@ -663,11 +634,11 @@ export default class Mscript {
 	 * 
 	 * @param {string} str String containing only color values as `#,#,#`
 	 **/
-	rgb (str : string) : RGB {
-		let rgb = str.split(',');
+	private rgb (str : string) : RGB {
+		const rgb : string[] = str.split(',');
 		return rgb.map( (char : string) => {
 			return parseInt(char);
-		})
+		});
 	} 
 	/**
 	 *  Cast RGB color values as string
@@ -676,7 +647,7 @@ export default class Mscript {
 	 *
 	 * @returns {string} String of RGB values
 	 **/
-	rgb_str (arr : RGB) : string {
+	private rgb_str (arr : RGB) : string {
 		return arr.join(',');
 	}
 	/**
@@ -685,7 +656,7 @@ export default class Mscript {
 	 *
 	 * @param {string} cmd String representing command to interpret and update state
 	 */
-	update (cmd : string, val : number = 1) {
+	private update (cmd : string, val : number = 1) {
 		if (cmd === 'END') {
 			//I don't understand this loop
 			for (let i = 0; i < val; i++) {
@@ -834,7 +805,7 @@ export default class Mscript {
 	 * 
 	 * @returns {array} Array containing commands
 	 */
-	str_to_arr (str : string, cmd : string) : string[] {
+	private str_to_arr (str : string, cmd : string) : string[] {
 		const cnt : string[] = str.split(cmd);
 		let c  : number = parseInt(cnt[1]);
 		let arr  : any[] = [];
@@ -855,7 +826,7 @@ export default class Mscript {
 	 *
 	 * @returns {array} An RGB array containing the color values
 	 */
-	light_to_arr (str : string, cmd : string) : RGB {
+	private light_to_arr (str : string, cmd : string) : RGB {
 		const cnt : string[] = str.split(cmd);
 		let c : number = parseInt(cnt[1]);
 		let arr : any[] = [];
@@ -882,7 +853,7 @@ export default class Mscript {
 	 *
 	 * @param {string} Color string assign to color property
 	 */
-	light_state (str : string) {
+	private light_state (str : string) {
 		//add parsers for other color spaces
 		const color : string = str.replace('L ', '').trim();
 		this.color = color;
@@ -893,7 +864,7 @@ export default class Mscript {
 	 * 
 	 * @param {string} line String containing delay command
 	 **/
-	 delay (line : string) {
+	private delay (line : string) {
 	 	let lenStr : string = line.split(' ')[1] || ''
 	 	let len : number;
 	 	lenStr = lenStr.trim();
@@ -927,7 +898,7 @@ export default class Mscript {
 	 * 
 	 * @param {string} line String containing alert message
 	 **/
-	 alert (line : string) {
+	private alert (line : string) {
 	 	let msg : string = line.split(' ')[1] || ''
 	 	msg = msg.trim();
 	 	if (this.rec !== -1) {
@@ -947,7 +918,7 @@ export default class Mscript {
 	 * 
 	 * @param {string} line String containing alert message
 	 **/
-	 pause (line : string) {
+	private pause (line : string) {
 	 	const msg : string = "Paused script. Click OK to continue."
 	 	if (this.rec !== -1) {
 			//hold generated arr in state loop array
@@ -966,7 +937,7 @@ export default class Mscript {
 	 *
 	 * @param {string} msg Error message to print
 	 */
-	fail (msg : string) {
+	private fail (msg : string) {
 		throw new Error(msg);
 	}
 
@@ -979,8 +950,8 @@ export default class Mscript {
 	 * 
 	 * @returns {boolean} Whether arr contains elements in arr2
 	 **/
-	contains (arr : string[], arr2 : string[]) {
-		return arr.some(r => arr2.includes(r));
+	private contains (arr : string[], arr2 : string[]) {
+		return arr.some((r : string) => arr2.includes(r));
 	}
 }
 
