@@ -91,7 +91,7 @@
     "system": "file:lib/system",
     "uuid": "^8.3.2",
     "winston": "^3.7.2",
-    "ws": "^8.12.1"
+    "ws": "^8.17.1"
   },
   "optionalDependencies": {
     "electron-installer-debian": "^3.1.0"
