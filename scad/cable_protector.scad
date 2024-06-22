@@ -4,7 +4,7 @@ module m3_bolt(pos = [0, 0, 0], rot = [0, 0, 0], cap = 10, bolt = 20) {
     $fn = 40;
     translate(pos) rotate(rot) {
         translate([0, 0, (cap / 2) - 0.1]) cylinder(r = R(6), h = cap, center = true);
-        translate([0, 0, -bolt / 2]) cylinder(r = R(3), h = bolt, center = true);
+        translate([0, 0, -bolt / 2]) cylinder(r = R(3.15), h = bolt, center = true);
     }
 }
 
