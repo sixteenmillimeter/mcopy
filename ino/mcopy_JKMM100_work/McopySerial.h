@@ -30,9 +30,13 @@ class McopySerial {
 	const char CAMERA_CAPPER_IDENTIFIER = '8';
 	const char CAMERA_CAPPER_PROJECTOR_IDENTIFIER = '9';
 	const char CAMERA_CAPPER_PROJECTORS_IDENTIFIER = '0';
+	const char CAMERA_CLOSE_BACKWARD = 'M';
+	const char CAMERA_CLOSE_FORWARD = 'L';
 	const char CAMERA_EXPOSURE = 'G';
 	const char CAMERA_FORWARD = 'e';
 	const char CAMERA_IDENTIFIER = 'k';
+	const char CAMERA_OPEN_BACKWARD = 'K';
+	const char CAMERA_OPEN_FORWARD = 'J';
 	const char CAMERA_PROJECTORS_IDENTIFIER = '5';
 	const char CAMERA_SECOND = '3';
 	const char CAMERA_SECOND_BACKWARD = '2';
@@ -71,6 +75,27 @@ class McopySerial {
 	const char TAKEUP_BACKWARD = 'F';
 	const char TAKEUP_FORWARD = 'D';
 	/* END CMD FLAGS */
+
+	/* IDENTIFIERS FLAGS */
+	const char MCOPY_IDENTIFIER = 'm';
+	const char CAMERA_IDENTIFIER = 'k';
+	const char PROJECTOR_IDENTIFIER = 'j';
+	const char PROJECTOR_CAMERA_IDENTIFIER = 's';
+	const char CAMERA_PROJECTORS_IDENTIFIER = '5';
+	const char CAMERA_CAPPER_IDENTIFIER = '8';
+	const char CAMERA_CAPPER_PROJECTOR_IDENTIFIER = '9';
+	const char CAMERA_CAPPER_PROJECTORS_IDENTIFIER = '0';
+	const char PROJECTOR_LIGHT_IDENTIFIER = 'q';
+	const char PROJECTORS_IDENTIFIER = 'd';
+	const char PROJECTOR_SECOND_IDENTIFIER = 't';
+	const char PROJECTOR_CAMERA_LIGHT_IDENTIFIER = 'r';
+	const char CAMERA_SECOND_IDENTIFIER = 'y';
+	const char CAMERAS_IDENTIFIER = 'a';
+	const char CAMERAS_PROJECTOR_IDENTIFIER = '6';
+	const char CAMERAS_PROJECTORS_IDENTIFIER = '7';
+	const char CAPPER_IDENTIFIER = 'C';
+	const char LIGHT_IDENTIFIER = 'o';
+	/* END IDENTIFIERS FLAGS */
 
 	McopySerial();
 
