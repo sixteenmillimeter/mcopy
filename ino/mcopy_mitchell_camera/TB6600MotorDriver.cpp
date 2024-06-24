@@ -33,12 +33,12 @@ void TB6600MotorDriver::setDirection(uint8_t direction) {
 	}
 }
 
-void TB6600MotorDriver::_setDirection{
+void TB6600MotorDriver::_setDirection () {
 	digitalWrite(_directionPin, _direction ? LOW : HIGH);
 }
 
 void TB6600MotorDriver::setSpeed(uint16_t rpm) {
-	_usPulse = 60000000 / ((uint32_t) revsteps * (uint32_t) rpm);
+	_usPulse = 60000000 / ((uint32_t) _revsteps * (uint32_t) rpm);
 }
 
 void TB6600MotorDriver::steps(uint64_t stepCount) {

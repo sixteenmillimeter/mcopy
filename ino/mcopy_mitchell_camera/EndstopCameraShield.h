@@ -13,7 +13,10 @@
 
 class EndstopCameraShield {
   private:
-  const 
+  const uint8_t receiverClosePin = 2;
+  const uint8_t receiverOpenPin = 3;
+  const uint8_t emitterOpenPin = 4;
+  const uint8_t emitterClosePin = 5;
 
   public:
 

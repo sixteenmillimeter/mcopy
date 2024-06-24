@@ -16,7 +16,7 @@ if [ -f "$(which jq)" ]; then
 	rm -f "${TMP_FILE}"
 fi
 
-SKETCHES=(
+MCOPYSERIAL=(
 	mcopy_arri_s_firmware
 	mcopy_cam_canon_ble_nano
 	mcopy_cam_relay
@@ -26,11 +26,21 @@ SKETCHES=(
 	components/mcopy_light
 	mcopy_projector_firmware
 	mcopy_ACME_Trebes_Nanolab
-	mcopy_oxberry_mitchell
+	mcopy_oxberry_camera
+	mcopy_mitchell_camera
 )
 
-for sketch in "${SKETCHES[@]}"; do
+ENSTOPCAMERASHIELD=(
+	mcopy_oxberry_camera
+	mcopy_mitchell_camera
+)
+
+for sketch in "${MCOPYSERIAL[@]}"; do
 	cp ino/lib/McopySerial/McopySerial.* ino/${sketch}/
+done
+
+for sketch in "${ENDSTOPCAMERASHIELD[@]}"; do
+	cp ino/lib/EndstopCameraShield/EndstopCameraShield.* ino/${sketch}/
 done
 
 if [ -d ../McopySerial ]; then
