@@ -30,7 +30,7 @@ MCOPYSERIAL=(
 	mcopy_mitchell_camera
 )
 
-ENSTOPCAMERASHIELD=(
+ENDSTOPCAMERASHIELD=(
 	mcopy_oxberry_camera
 	mcopy_mitchell_camera
 )

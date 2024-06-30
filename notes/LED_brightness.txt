@@ -1,0 +1,9 @@
+15,000 mcd minimum brightness
+
+    Pack of 25 clear white LEDs
+    5mm diameter
+    Cool White color
+    3.0V Typical Forward Voltage, at 20mA current
+    15,000 mcd minimum brightness
+    Viewing Angle : ±12 degrees
+    Maximum continuous current: 20 mA
