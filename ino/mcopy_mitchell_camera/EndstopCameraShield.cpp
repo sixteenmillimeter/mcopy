@@ -1,6 +1,6 @@
 #include "EndstopCameraShield.h"
 
-EndstopCameraShield::EndstopCameraShield () :  motor(motorEnablePin, motorDirectionPin, motorPulsePin, motorUsPulse, motorMicrosteps) {
+EndstopCameraShield::EndstopCameraShield (uint32_t usPulse, uint8_t microsteps) : motorUsPulse(usPulse), motorMicrosteps(microsteps),   motor(motorEnablePin, motorDirectionPin, motorPulsePin, motorUsPulse, motorMicrosteps) {
 
 }
 

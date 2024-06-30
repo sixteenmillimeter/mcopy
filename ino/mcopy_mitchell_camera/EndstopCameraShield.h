@@ -23,14 +23,14 @@ class EndstopCameraShield {
   const uint8_t motorDirectionPin = 7;
   const uint8_t motorPulsePin = 8;
   
-  const uint32_t motorUsPulse = 300;
-  const uint8_t motorMicrosteps = 2; //half stepping
+  volatile uint32_t motorUsPulse = 300;
+  volatile uint8_t motorMicrosteps = 2; //half stepping
 
   TB6600MotorDriver motor;
 
   public:
 
-  EndstopCameraShield();
+  EndstopCameraShield(uint32_t usPulse, uint8_t microsteps);
 
   void setup();
   void loop();
