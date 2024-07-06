@@ -35,10 +35,9 @@ class TB6600MotorDriver {
   TB6600MotorDriver();
   TB6600MotorDriver(uint8_t enablePin, uint8_t directionPin, uint8_t pulsePin, uint32_t usPulse, uint8_t microsteps);
 
-
   void setup();
 
-  void setDirection(uint8_t direction);
+  void setDirection(bool direction);
   void setSpeed(uint16_t rpm);
 
   //full

@@ -23,10 +23,10 @@ void TB6600MotorDriver::setup() {
 	pinMode(_pulsePin, OUTPUT);
 
 	digitalWrite(_directionPin, LOW);
-	digitalWrite(_enablePin, HIGH);
+	digitalWrite(_enablePin, _enabled ? HIGH : LOW);
 }
 
-void TB6600MotorDriver::setDirection(uint8_t direction) {
+void TB6600MotorDriver::setDirection(bool direction) {
 	if (direction != _direction) {
 		_direction = direction;
 		_setDirection();
