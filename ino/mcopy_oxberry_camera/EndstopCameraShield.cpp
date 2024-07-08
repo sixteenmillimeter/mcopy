@@ -129,7 +129,7 @@ uint32_t EndstopCameraShield::toOpen() {
 	return i;
 }
 
-uint32_t EndstopCameraShield::toClosed() {
+uint32_t EndstopCameraShield::toClose() {
 	bool primed = false;
 	bool running = true;
 	uint32_t i = 0;

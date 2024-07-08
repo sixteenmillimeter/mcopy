@@ -59,7 +59,7 @@ class EndstopCameraShield {
   void loop();
   uint32_t frame();
   uint32_t toOpen();
-  uint32_t toClosed();
+  uint32_t toClose();
   void setDirection(bool direction);
   bool isOpened();
   bool isClosed();

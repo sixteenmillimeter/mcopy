@@ -2,6 +2,11 @@
 #include "McopySerial.h"
 
 const bool DEBUG = false;
+
+//const uint8_t enableButtonPin = 9; //enable feature 
+const uint8_t directionSwitchPin = 10;
+const uint8_t cameraButtonPin = 11;
+const uint8_t openCloseSwitchPin = 12;
 const uint8_t LEDPin = 13;
 
 const uint32_t usPulse = 300;
@@ -15,21 +20,26 @@ volatile long exposureTarget = -1;
 
 volatile bool direction = true;
 
+volatile bool directionSwitch = true;
+
 EndstopCameraShield cam(usPulse, microsteps);
 McopySerial mc;
 
 void setup () {
+	pinMode(directionSwitchPin, INPUT_PULLUP);
+	pinMode(openCloseSwitchPin, INPUT_PULLUP);
+	pinMode(cameraButtonPin, INPUT_PULLUP);
+
 	mc.begin(mc.CAMERA_IDENTIFIER);
 	mc.debug(DEBUG);
 	cam.setup();
+	
 	if (cam.isOpened()) {
-		mc.log("Camera is OPENED, closing...");
-		cam.toClose();
+		mc.log("Camera is OPENED");
 	} else if (cam.isClosed()) {
 		mc.log("Camera is CLOSED");
 	} else {
-		mc.log("Camera is in UNKNOWN state, closing...");
-		cam.toClose();
+		mc.log("Camera is in UNKNOWN state");
 	}
 }
 
@@ -144,3 +154,6 @@ void state () {
 void updateAvg (long value) {
 	exposureAvg = round((exposureAvg + value) / 2);
 }
+/**
+ * Button logic
+ **/
