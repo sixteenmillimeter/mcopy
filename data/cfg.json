@@ -1,5 +1,5 @@
 {
-  "version": "1.8.121",
+  "version": "1.8.122",
   "ext_port": 1111,
   "profiles": {
     "mcopy": {
@@ -185,10 +185,8 @@
       "camera_capper_projectors_identifier": "0",
       "capper_on": "A",
       "capper_off": "B",
-      "camera_open_forward": "J",
-      "camera_open_backward": "K",
-      "camera_close_forward": "L",
-      "camera_close_backward": "M",
+      "camera_open": "J",
+      "camera_close": "K",
       "takeup_forward": "D",
       "takeup_backward": "F",
       "error": "E",
