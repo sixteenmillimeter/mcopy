@@ -14,7 +14,7 @@ const uint8_t microsteps = 2;
 volatile char cmdChar = 'z';
 volatile long now;
 
-volatile long exposureAvg = -1; //pre-fill
+volatile long exposureAvg = 250;
 volatile String exposureString;
 volatile long exposureTarget = -1;
 
