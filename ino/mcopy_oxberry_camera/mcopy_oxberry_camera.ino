@@ -25,12 +25,15 @@ void setup () {
 	if (cam.isOpened()) {
 		mc.log("Camera is OPENED, closing...");
 		cam.toClose();
+		mc.log("Camera is CLOSED");
 	} else if (cam.isClosed()) {
 		mc.log("Camera is CLOSED");
 	} else {
 		mc.log("Camera is in UNKNOWN state, closing...");
 		cam.toClose();
+		mc.log("Camera is CLOSED");
 	}
+	//cam.test();
 }
 
 void loop () {

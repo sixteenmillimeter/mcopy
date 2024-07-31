@@ -20,6 +20,7 @@ void EndstopCameraShield::setup () {
 
 	_checkState();
 	_enableMotor();
+	Serial.println(_minSteps);
 }
 
 void EndstopCameraShield::_enableCloseInterrupt() {
@@ -75,6 +76,7 @@ void EndstopCameraShield::_handleOpenInterrupt() {
 void EndstopCameraShield::_checkState() {
 	_enableCloseEmitter();
 	_enableOpenEmitter();
+	delay(3);
 	if (digitalRead(_receiverClosePin) == LOW) {
 		_isClosed = true;
 	} else if (digitalRead(_receiverOpenPin) == LOW) {
@@ -82,6 +84,22 @@ void EndstopCameraShield::_checkState() {
 	}
 	_disableCloseEmitter();
 	_disableOpenEmitter();
+}
+
+void EndstopCameraShield::_checkClose() {
+	if (digitalRead(_receiverClosePin) == LOW) {
+		_isClosed = true;
+	} else {
+		_isClosed = false;
+	}
+}
+
+void EndstopCameraShield::_checkOpen() {
+	if (digitalRead(_receiverOpenPin) == LOW) {
+		_isOpened = true;
+	} else {
+		_isOpened = false;
+	}
 }
 
 uint32_t EndstopCameraShield::frame() {
@@ -92,17 +110,21 @@ uint32_t EndstopCameraShield::frame() {
 	_enableMotor();
 
 	while (running) {
-		if (!primed && (double) i * _stepAngle > _ledAngle) {
+		if (!primed && i > _minSteps) {
 			_enableCloseEmitter();
-			_enableCloseInterrupt();
+			_enableOpenEmitter();
+			//_enableCloseInterrupt();
 			primed = true;
 		}
+		_checkClose();
 		if (primed && _isClosed) {
 			running = false;
+			break;
 		}
+		_motor.step();
 		i++;
 	}
-	_disableCloseInterrupt();
+	//_disableCloseInterrupt();
 	_disableCloseEmitter();
 	return i;
 }
@@ -114,17 +136,21 @@ uint32_t EndstopCameraShield::toOpen() {
 	_isOpened = false;
 	_enableMotor();
 	while (running) {
-		if (!primed && (double) i * _stepAngle > _ledAngle) {
+		if (!primed && i > _minSteps) {
 			_enableOpenEmitter();
-			_enableOpenInterrupt();
+			_enableCloseEmitter();
+			//_enableOpenInterrupt();
 			primed = true;
 		}
+		_checkOpen();
 		if (primed && _isOpened) {
 			running = false;
+			break;
 		}
+		_motor.step();
 		i++;
 	}
-	_disableOpenInterrupt();
+	//_disableOpenInterrupt();
 	_disableOpenEmitter();
 	return i;
 }
@@ -136,18 +162,22 @@ uint32_t EndstopCameraShield::toClose() {
 	_isClosed = false;
 	_enableMotor();
 	while (running) {
-		if (!primed && (double) i * _stepAngle > _ledAngle) {
+		if (!primed && i > _minSteps) {
 			_enableCloseEmitter();
-			_enableCloseInterrupt();
+			_enableOpenEmitter();
+			//_enableCloseInterrupt();
 			primed = true;
 		}
+		_checkClose();
 		if (primed && _isClosed) {
 			running = false;
+			break;
 		}
+		_motor.step();
 		i++;
 	}
 	_disableCloseInterrupt();
-	_disableCloseEmitter();
+	//_disableCloseEmitter();
 	return i;
 }
 
@@ -164,4 +194,28 @@ bool EndstopCameraShield::isOpened() {
 
 bool EndstopCameraShield::isClosed() {
 	return _isClosed;
+}
+
+void EndstopCameraShield::test () {
+	_enableCloseEmitter();
+	_enableOpenEmitter();
+	delay(1000);
+	for (uint32_t i = 0; i < _motorMicrosteps * 200; i++) {
+		_motor.step();
+		Serial.print(i);
+		Serial.print(" ");
+		if (digitalRead(_receiverOpenPin) == HIGH) {
+			Serial.print("OPEN _ ");
+		} else {
+			Serial.print("OPEN x ");
+		}
+		if (digitalRead(_receiverClosePin) == HIGH) {
+			Serial.print("CLOSE _");
+		} else {
+			Serial.print("CLOSE x");
+		}
+		Serial.println("");
+	}
+	_enableCloseEmitter();
+	_enableOpenEmitter();
 }

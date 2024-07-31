@@ -24,10 +24,12 @@ class EndstopCameraShield {
   const uint8_t _motorPulsePin = 8;
 
   const double _ledAngle = 7.0;
+  const uint32_t _motorSteps = 200;
   
   volatile uint32_t _motorUsPulse = 300;
   volatile uint8_t _motorMicrosteps = 2; //half stepping
-  volatile double _stepAngle = (double) 360 / ((double) 2 * (double) 200);
+  volatile double _stepAngle = (double) 360 / ((double) _motorMicrosteps * (double) _motorSteps);
+  volatile uint32_t _minSteps = 31;
 
   TB6600MotorDriver _motor;
 
@@ -47,6 +49,8 @@ class EndstopCameraShield {
   void _disableCloseEmitter();
   void _disableOpenEmitter();
   void _disableMotor();
+  void _checkClose();
+  void _checkOpen();
 
   static void _handleCloseInterrupt();
   static void _handleOpenInterrupt();
@@ -63,6 +67,7 @@ class EndstopCameraShield {
   void setDirection(bool direction);
   bool isOpened();
   bool isClosed();
+  void test();
 };
 
 #endif
