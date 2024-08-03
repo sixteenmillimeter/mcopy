@@ -112,7 +112,6 @@ uint32_t EndstopCameraShield::frame() {
 	while (running) {
 		if (!primed && i > _minSteps) {
 			_enableCloseEmitter();
-			_enableOpenEmitter();
 			//_enableCloseInterrupt();
 			primed = true;
 		}
@@ -124,8 +123,8 @@ uint32_t EndstopCameraShield::frame() {
 		_motor.step();
 		i++;
 	}
-	//_disableCloseInterrupt();
 	_disableCloseEmitter();
+	//_disableCloseInterrupt();
 	return i;
 }
 
@@ -138,7 +137,6 @@ uint32_t EndstopCameraShield::toOpen() {
 	while (running) {
 		if (!primed && i > _minSteps) {
 			_enableOpenEmitter();
-			_enableCloseEmitter();
 			//_enableOpenInterrupt();
 			primed = true;
 		}
@@ -150,8 +148,8 @@ uint32_t EndstopCameraShield::toOpen() {
 		_motor.step();
 		i++;
 	}
-	//_disableOpenInterrupt();
 	_disableOpenEmitter();
+	//_disableOpenInterrupt();
 	return i;
 }
 
@@ -164,7 +162,6 @@ uint32_t EndstopCameraShield::toClose() {
 	while (running) {
 		if (!primed && i > _minSteps) {
 			_enableCloseEmitter();
-			_enableOpenEmitter();
 			//_enableCloseInterrupt();
 			primed = true;
 		}
@@ -176,8 +173,8 @@ uint32_t EndstopCameraShield::toClose() {
 		_motor.step();
 		i++;
 	}
-	_disableCloseInterrupt();
-	//_disableCloseEmitter();
+	_disableCloseEmitter();
+	//_disableCloseInterrupt();
 	return i;
 }
 
@@ -186,6 +183,10 @@ void EndstopCameraShield::setDirection(bool direction) {
 		_direction = direction;
 		_motor.setDirection(_direction);
 	}
+}
+
+bool EndstopCameraShield::getDirection() {
+	return _direction;
 }
 
 bool EndstopCameraShield::isOpened() {
