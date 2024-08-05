@@ -18,9 +18,10 @@ volatile long exposureAvg = 250;
 volatile String exposureString;
 volatile long exposureTarget = -1;
 
-volatile bool direction = true;
+volatile bool direction = true; //true forward, false backward
 
-volatile bool directionSwitch = true;
+volatile bool directionSwitch = true; //true forward, false backward
+volatile bool openCloseSwitch = true; //true closed, false opened
 
 EndstopCameraShield cam(usPulse, microsteps);
 McopySerial mc;
@@ -48,6 +49,7 @@ void loop () {
 	cmdChar = mc.loop();
 	cmd(cmdChar);
 	cam.loop();
+	buttons();
 }
 
 void cmd (char val) {
@@ -96,6 +98,11 @@ void camera () {
 	long half;
 	long pause;
 	long ms;
+
+	if (cam.isOpened()) {
+		cam.toClose();
+		start = millis();
+	}
 
 	if (exposureTarget > -1) {
 		half = exposureAvg / 2; //assume a 180 shutter
@@ -154,6 +161,69 @@ void state () {
 void updateAvg (long value) {
 	exposureAvg = round((exposureAvg + value) / 2);
 }
+
 /**
- * Button logic
+ * Button/Switch logic
  **/
+
+void buttons () {
+ 	int cameraButtonState = digitalRead(cameraButtonPin);
+ 	int directionSwitchState = digitalRead(directionSwitchPin);
+ 	int openCloseSwitchState = digitalRead(openCloseSwitchPin);
+ 	
+ 	if (directionSwitchState == LOW && directionSwitch == false) {
+ 		directionSwitch = true;
+ 	} else if (directionSwitchState == HIGH && directionSwitch == true) {
+ 		directionSwitch = false;
+ 	}
+
+ 	if (openCloseSwitchState == LOW && openCloseSwitch == false) {
+ 		openCloseSwitch = true;
+ 		switch_open_close();
+ 	} else if (openCloseSwitchState == HIGH && openCloseSwitch == true) {
+ 		openCloseSwitch = false;
+ 		switch_open_close();
+ 	}
+
+ 	if (cameraButtonState == LOW) {
+ 		button_camera();
+ 	}
+}
+
+void button_camera () {
+ 	long start = millis();
+	long ms;
+
+	if (direction != directionSwitch) {
+		cam.setDirection(directionSwitch);
+	}
+
+	if (cam.isOpened()) {
+		cam.toClose();
+		start = millis();
+	}
+
+	cam.frame();
+	ms = millis() - start;
+	updateAvg(ms);
+
+	mc.log("button_camera()");
+
+	if (direction != directionSwitch) {
+		cam.setDirection(direction);
+	}
+}
+
+void switch_open_close () {
+	if (direction != directionSwitch) {
+		cam.setDirection(directionSwitch);
+	}
+	if (openCloseSwitch && !cam.isClosed()) {
+		cam.toClose();
+	} else if (!openCloseSwitch && !cam.isOpened()) {
+		cam.toOpen();
+	}
+	if (direction != directionSwitch) {
+		cam.setDirection(direction);
+	}
+}
