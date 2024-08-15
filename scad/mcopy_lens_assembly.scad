@@ -5,8 +5,8 @@ include <./common/common.scad>;
 include <./bellows.scad>;
 include <./knurledFinishLib_v2.scad>;
 use <2020_profile.scad>;
+use <./mcopy_rails.scad>;
 
-PART = "";
 
 LinearBearingOuterDiameter = 15;
 LinearBearingHeight = 24;
@@ -37,7 +37,7 @@ LinearMotionZ = 14;
 XPosition = 0;
 ZPosition = 0;
 
-RailSpacingX = 100;
+RailSpacingX = 60;
 RailEndX = RailSpacingX + 72;
 LensFrameSpacingX = (RailEndX / 2) - (40 / 2);
 
@@ -339,20 +339,21 @@ module lensAssemblyThreadedKnob () {
 }
 
 module debug () {
+    XSpacing = 130;
 	translate([0, 0, ZPosition]) {
-	    translate([-ZOffset/2, BackOffset, 0]) lensAssemblyThreadedZ();
-	    translate([ZOffset/2, BackOffset, 0]) lensAssemblyLinearZ();
+	    translate([-XSpacing/2, BackOffset, 0]) lensAssemblyThreadedZ();
+	    translate([XSpacing/2, BackOffset, 0]) lensAssemblyLinearZ();
 
-	    translate([ZOffset/2, BackOffset, (90 / 2) - (LinearBearingHeight / 2) + 2]) color("green") linearBearing();
-	    translate([ZOffset/2, BackOffset, -(90 / 2) + (LinearBearingHeight / 2) - 2]) color("green") linearBearing();
+	    translate([XSpacing/2, BackOffset, (90 / 2) - (LinearBearingHeight / 2) + 2]) color("green") linearBearing();
+	    translate([XSpacing/2, BackOffset, -(90 / 2) + (LinearBearingHeight / 2) - 2]) color("green") linearBearing();
 
-	    translate([-ZOffset/2, BackOffset, 40]) rotate([180, 0, 0]) TNut();
-	    translate([-ZOffset/2, BackOffset, -40]) TNut();
+	    translate([-XSpacing/2, BackOffset, 40]) rotate([180, 0, 0]) TNut();
+	    translate([-XSpacing/2, BackOffset, -40]) TNut();
 
 	    //X axis
 	    translate([0, -FrontOffset, -XOffset]) rotate([0, 90, 0]) threadedRod(RodLength);
         //translate([-(ZOffset/2) - 24, -FrontOffset, -XOffset]) rotate([0, 90, 0]) lensAssemblyThreadedKnob();
-        translate([-(ZOffset/2) + 16, -FrontOffset, -XOffset]) rotate([0, 90, 0]) lensAssemblyThreadedCollar();
+        translate([-(XSpacing/2) + 16, -FrontOffset, -XOffset]) rotate([0, 90, 0]) lensAssemblyThreadedCollar();
 	    translate([0, -FrontOffset, XOffset]) rotate([0, 90, 0])  linearMotionRod(RodLength);
 
 	   	translate([XPosition, 0, 0]) {
@@ -365,10 +366,10 @@ module debug () {
 	}
 	
 	//Z axis
-	translate([-ZOffset/2, BackOffset, 0])  threadedRod(RodLength + 20);
+	translate([-XSpacing/2, BackOffset, 0])  threadedRod(RodLength + 20);
     //translate([-ZOffset/2, BackOffset, -((RodLength + 20)/2)-8])  lensAssemblyThreadedKnob();
-    translate([-ZOffset/2, BackOffset, -((RodLength + 20)/2)+31])  lensAssemblyThreadedCollar();
-	translate([ZOffset/2, BackOffset, 0]) linearMotionRod(RodLength);
+    translate([-XSpacing/2, BackOffset, -((RodLength + 20)/2)+31])  lensAssemblyThreadedCollar();
+	translate([XSpacing/2, BackOffset, 0]) linearMotionRod(RodLength);
     
     //translate([0, BackOffset, -70]) lensAssemblyBaseZ();
     
@@ -380,12 +381,15 @@ module debug () {
         }
     }
     
-    translate([LensFrameSpacingX + 20, 15, -100]) rail_debug(200);
-    translate([-LensFrameSpacingX - 20, 15, -100]) rail_debug(200);
-    translate([-100, 35, 90]) rotate([0, 90, 0]) rail_debug(200);
+    translate([LensFrameSpacingX + 20, 45, -100]) rail_debug(200);
+    translate([-LensFrameSpacingX - 20, 45, -100]) rail_debug(200);
+    translate([-50, 45, 90]) rotate([0, 90, 0]) rail_debug(100);
+    
+    //from mcopy_rails
+    lens_frame_top_gantry([0, 45, 90], [0, 0, 180]);
 }
 
-PART = "lens_assembly_bellows_board_magnetic";
+PART = "lens_assembly_bellows_board_magneticx";
 
 if (PART == "lens_assembly_camera_bellows_board") {
     bellows_camera_board();
