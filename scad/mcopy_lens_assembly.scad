@@ -41,6 +41,8 @@ RailSpacingX = 60;
 RailEndX = RailSpacingX + 72;
 LensFrameSpacingX = (RailEndX / 2) - (40 / 2);
 
+JKBoltSpacing = 78.5;
+
 echo(LensFrameSpacingX, "mm");
 
 module rail_debug (H = 175) {
@@ -335,6 +337,31 @@ module lensAssemblyThreadedKnob () {
             translate([0, 0, H]) lensAssemblyThreadedCollar(H);
         }
         translate([0, 0, H]) threadedRod(H*2, 0.1);
+    }
+}
+
+module jkLensDebug () {
+    PostsSpacingX = 130;
+
+    BoltSpacingX = 78.5;
+    BoltD = 4.25;
+
+    difference () {
+        translate([-45, 0, 0]) cube([22.9, 20.2, 8], center = true);
+        translate([-BoltSpacingX / 2, 0, 0]) cylinder( r = BoltD / 2, h = 20, center = true, $fn = 30);
+    }
+
+    difference () {
+        translate([53, 0, 0]) union () {
+            cube([41.25, 20.2, 8], center = true);
+            translate([(41.25 / 2) - (8 / 2), 0, 12]) cube([8, 20.2, 18], center = true);
+        }
+        translate([BoltSpacingX / 2, 0, 0]) cylinder( r = BoltD / 2, h = 20, center = true, $fn = 30);
+    }
+
+    translate([-14, 0, 0]) { 
+        translate([PostsSpacingX / 2, 0, 20]) cube([20.2, 20.2, 20], center = true);
+        translate([-PostsSpacingX / 2, 0, 20]) cube([20.2, 20.2, 20], center = true);
     }
 }
 
