@@ -71,12 +71,27 @@ module front_plate () {
     }
 }
 
+module text_void (string = "example", pos = [0, 0, 0], rot = [0, 0, 0], letter_size = 5, letter_height = 2) {
+    translate(pos) rotate(rot) linear_extrude(height = letter_height) {
+        text(string, size = letter_size, font = "Liberation Sans", halign = "center", valign = "center", $fn = 16);
+    }    
+}
+
+module gate_mask_text (format = "") {
+    if (format == "standard16") {
+        text_void("16mm", pos= [11.5, 0, -3], rot = [90, 0, 90], letter_size = 4);
+    } else if (format == "super16") {
+        text_void("super16", pos= [11.5, 0, -4], rot = [90, 0, 90], letter_size = 4);
+    }
+}
+
 module gate_mask_slide (pos = [0, 0, 0], pad = 0.0, format = "") {
     Z = -1;
     GuideAdjust = -1.5;
     FormatBevelY = format == "super16" ? 5 : 5.5;
 
     translate(pos) {
+        //gate_mask_text(format);
         difference () {
             union () {
                 translate([0, 0, Z]) cube([20, FrontPlateVoidY + pad, PlateZ + 2], center = true);
@@ -88,15 +103,17 @@ module gate_mask_slide (pos = [0, 0, 0], pad = 0.0, format = "") {
                     }
                 }
                 if (format != "") {
-                    translate([(20 / 2) + .6, 0, -3.5]) cube([2, FrontPlateVoidY + 8, PlateZ + 2 + 5], center = true);
+                    translate([(20 / 2) + .6, 0, -3.5]) rotate([0, 90, 0]) rounded_cube([PlateZ + 2 + 5, FrontPlateVoidY + 8, 2], d = 2, $fn = 20, center = true);
                 }
             }
             
             // difference
             if (format != "") {
+                gate_mask_text(format);
                 difference () {
                     film_clearance_void([0, 0, 1 + 0.2]);
                     if (format == "standard16" || format == "super16") {
+                        
                         difference () {
                             cube([BackPlateVoidX + 10, BackPlateVoidY + 6, 10], center = true);
                             translate([0, BackPlateVoidY / 2 + FormatBevelY, 4.5]) rotate([-20, 0, 0]) cube([FrontPlateClearanceX + 3, 10, 10], center = true);
