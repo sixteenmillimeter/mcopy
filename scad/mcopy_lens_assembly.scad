@@ -343,7 +343,7 @@ module lensAssemblyThreadedKnob () {
 module jkLensDebug () {
     PostsSpacingX = 130;
 
-    BoltSpacingX = 78.5;
+    BoltSpacingX = 78.5 + 5.3;
     BoltD = 4.25;
 
     difference () {
@@ -363,6 +363,70 @@ module jkLensDebug () {
         translate([PostsSpacingX / 2, 0, 20]) cube([20.2, 20.2, 20], center = true);
         translate([-PostsSpacingX / 2, 0, 20]) cube([20.2, 20.2, 20], center = true);
     }
+}
+
+module jkLens2020Brace (pos = [0, 0, 0]) {
+    W = 20.3;
+    translate(pos) {
+        difference () {
+            cube([26.5, 26.5, 20], center = true);
+            translate([0, 0, 4]) cube([W, W, 20], center = true);
+            m3_bolt_void (pos = [12, 0, 4], rot = [0, 90, 0], BoltH = 6, CapH = 3);
+            m3_bolt_void (pos = [-12, 0, 4], rot = [0, -90, 0], BoltH = 6, CapH = 3);
+            m3_bolt_void (pos = [0, 12, 4], rot = [-90, 0, 0], BoltH = 6, CapH = 3);
+            m3_bolt_void (pos = [0, -12, 4], rot = [90, 0, 0], BoltH = 6, CapH = 3);
+        }
+        end_2020([0, 0, -4]);
+
+    }
+}
+
+module jkLensLinearRodTerminalBlock (pos = [0, 0, 0]) {
+    translate(pos) difference() {
+        cube([26.5, 20, 15], center = true);
+        cylinder(r = 8.1 / 2, h = 15 + 1, center = true, $fn = 50);
+        translate([12, 0, 0]) rotate([0, 90, 180]) m4BoltNut(20);
+    }
+
+}
+
+module jkLensMount () {
+    BoltSpacingX = 78.5 + 5.3;
+    BoltD = 4.25;
+    RailsY = -32;
+    difference () {
+        union() {
+            cube([140, 15.5, 3], center = true);
+            translate([0, 0, 3]) cube([140, 20.5, 3], center = true);
+            translate([(140 / 2) - (32 / 2), (20.5 / 2) + (6 / 2) - 0.01, -5.5]) cube([32, 6, 20], center = true);
+            translate([(-140 / 2) + (32 / 2), (20.5 / 2) + (6 / 2) - 0.01, -5.5]) cube([32, 6, 20], center = true);
+            translate([8.25, 0, 0]) {
+                jkLens2020Brace([130 / 2, 3, 11.5]);
+                jkLens2020Brace([-130 / 2, 3, 11.5]);
+
+                //shelves
+                translate([130 / 2, -25, 4]) cube([26.5, 40, 5], center = true);
+                translate([-130 / 2, -25, 4]) cube([26.5, 40, 5], center = true);
+
+                //linear rod terminal block
+                jkLensLinearRodTerminalBlock([130 / 2, -32, 14]);
+
+                //threaded rod bearing block
+                translate([-130 / 2, -32, 12]) cylinder(r = 22.5 / 2, h = 20, center = true, $fn = 90); 
+            }
+        }
+        translate([BoltSpacingX / 2, 0, 0]) cylinder( r = BoltD / 2, h = 20, center = true, $fn = 30);
+        translate([-BoltSpacingX / 2, 0, 0]) cylinder( r = BoltD / 2, h = 20, center = true, $fn = 30);
+
+        translate([-BoltSpacingX / 2, 0, 14.5]) cylinder( r = 8/ 2, h = 20, center = true, $fn = 30);
+    
+        translate([-(130 / 2) + 8.25, -32, 8]) {
+            linear_bearing(padD = 0.2);
+            cylinder(r = 9 / 2, h = 40, center = true, $fn = 40);
+        }
+    }
+    //translate([(130 / 2) + 8.25, RailsY, XOffset]) rotate([0, 0, 0])  linearMotionRod(RodLength);
+    //translate([(-130 / 2) + 8.25, RailsY, XOffset]) rotate([0, 0, 0])  linearMotionRod(RodLength);
 }
 
 module debug () {
@@ -416,7 +480,7 @@ module debug () {
     lens_frame_top_gantry([0, 45, 90], [0, 0, 180]);
 }
 
-PART = "lens_assembly_bellows_board_magneticx";
+PART = "lens_assembly_jk_mount";
 
 if (PART == "lens_assembly_camera_bellows_board") {
     bellows_camera_board();
@@ -438,6 +502,8 @@ if (PART == "lens_assembly_camera_bellows_board") {
     lensAssemblyThreadedKnob();
 } else if (PART == "lens_assembly_threaded_collar") {
     lensAssemblyThreadedCollar(6, 0.2);
+} else if (PART == "lens_assembly_jk_mount") {
+    jkLensMount();
 } else {
     debug();
 }

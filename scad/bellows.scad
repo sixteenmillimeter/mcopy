@@ -122,7 +122,7 @@ module bellows_board_magnetic(H = 3) {
     }
 }
 
-PART = "lens_board";
+PART = "camera_mount";
 
 if (!LIBRARY && PART == "camera_board") {
     bellows_camera_board();
