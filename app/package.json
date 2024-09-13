@@ -64,7 +64,7 @@
     "display": "file:lib/display",
     "exec": "file:lib/exec",
     "exit": "file:lib/exit",
-    "express": "^4.18.2",
+    "express": "^4.21.0",
     "ffmpeg": "file:lib/ffmpeg",
     "ffmpeg-static": "^5.0.0",
     "ffprobe": "file:lib/ffprobe",
