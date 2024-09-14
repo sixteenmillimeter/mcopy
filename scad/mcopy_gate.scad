@@ -63,6 +63,7 @@ module front_plate () {
         front_plate_void([(PlateX / 2) - (FrontPlateVoidX / 2) - 2.41, 0, -0.2]);
         film_entry_bevel([0, (PlateY / 2) + 0.25, -1.5]);
         film_entry_bevel([0, (-PlateY / 2) - 0.25, -1.5]);
+        film_entry_side_bevel([(PlateX / 2) + 0.75, 0, -1.4]);
         //corners
         translate([(-PlateX / 2), (PlateY / 2) - 0.8, 0]) rotate([0, 0, 35]) cube([7.1 * 2, 7.1, PlateZ + 2], center = true);
         translate([(-PlateX / 2), (-PlateY / 2) + 0.8, 0]) rotate([0, 0, -35]) cube([7.1 * 2, 7.1, PlateZ + 2], center = true);
@@ -108,9 +109,13 @@ module gate_mask_slide (pos = [0, 0, 0], pad = 0.0, format = "") {
                         translate([0, FrontPlateVoidY / 2 + GuideAdjust, Z]) rotate([45, 0, 0]) cube([20, PlateZ + 2 + pad, PlateZ + 2 + pad], center = true);
                         translate([0, -FrontPlateVoidY / 2 - GuideAdjust, Z]) rotate([45, 0, 0]) cube([20, PlateZ + 2 + pad, PlateZ + 2 + pad], center = true);
                     }
+                    
                 }
                 if (format != "") {
-                    translate([(20 / 2) + 0.1, 0, -3.5]) rotate([0, 90, 0]) rounded_cube([PlateZ + 2 + 5, FrontPlateVoidY + 8, 2], d = 2, $fn = 20, center = true);
+                    translate([(20 / 2) + 0.1, 0, -3.5]) difference () {
+                        rotate([0, 90, 0]) rounded_cube([PlateZ + 2 + 5, FrontPlateVoidY + 8, 2], d = 2, $fn = 20, center = true);
+                        film_entry_side_bevel([1.5, 0, 5]);
+                    }
                 }
             }
             // difference
@@ -201,6 +206,18 @@ module film_entry_bevel (pos = [0, 0, 0]) {
     }
 }
 
+module film_entry_side_bevel (pos = [0, 0, 0]) {
+    $fn = 50;
+    D = 4;
+    Offset = 2.2;
+    translate(pos) difference() {
+        cube([5, 40, 5], center = true);
+        translate([-Offset, 0, Offset]) rotate([90, 0, 0]) cylinder(r = R(D), h = 40 + 1, center = true);
+        translate([-Offset, 0, -Offset]) rotate([90, 0, 0]) cylinder(r = R(D), h = 40 + 1, center = true);
+        
+    }
+}
+
 module back_plate_void (pos = [0, 0, 0]) {
     translate(pos) {
         //large void
@@ -233,6 +250,7 @@ module back_plate () {
         
         film_entry_bevel([0, (PlateY / 2) + 0.25, 1.5]);
         film_entry_bevel([0, (-PlateY / 2) - 0.25, 1.5]);
+        film_entry_side_bevel([(PlateX / 2) + 0.25, 0, 1.4]);
     }
     
     //alignment rods
@@ -243,26 +261,26 @@ module back_plate () {
 module debug () {
     front_plate();
     translate([0, 0, -8]) back_plate();
-    //gate_mask_slide_standard16([(PlateX / 2) - (FrontPlateVoidX / 2) - 1.9 + 20, 0, -8]);
+    gate_mask_slide_standard16([(PlateX / 2) - (FrontPlateVoidX / 2) - 1.9, 0, -8]);
     //gate_mask_slide_super16([(PlateX / 2) - (FrontPlateVoidX / 2) - 2.41, 0, -3]);
     //front_plate_void([(PlateX / 2) - (FrontPlateVoidX / 2) - 2.41, 0, 0]);
-    film_clearance_void([0, 0, 15]);
+    //film_clearance_void([0, 0, 15]);
     translate([8, 0, -1.5]) cube([16, 50, 0.1], center = true);
     
 }
 
-PART="gate_mask_slide_standard16";
+PART="gate_mask_slide_super16";
 
 if (PART == "front_plate") {
     rotate([0, 180, 0]) front_plate();
 } else if (PART == "back_plate") {
     back_plate();
 } else if (PART == "gate_mask_slide") {
-    rotate([0, 90, 0]) gate_mask_slide();
+    gate_mask_slide();
 } else if (PART == "gate_mask_slide_standard16") {
-    rotate([0, 90, 0]) gate_mask_slide_standard16();
+    gate_mask_slide_standard16();
 } else if (PART == "gate_mask_slide_super16") {
-    rotate([0, 90, 0]) gate_mask_slide_super16();
+    gate_mask_slide_super16();
     
 } else {
     debug();
