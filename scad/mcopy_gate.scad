@@ -86,9 +86,9 @@ module text_void (string = "example", pos = [0, 0, 0], rot = [0, 0, 0], letter_s
 
 module gate_mask_text (format = "") {
     if (format == "standard16") {
-        text_void("16mm", pos= [11.5, 0, -3], rot = [90, 0, 90], letter_size = 4);
+        text_void("16mm", pos= [11, 0, -3], rot = [90, 0, 90], letter_size = 4);
     } else if (format == "super16") {
-        text_void("super16", pos= [11.5, 0, -4], rot = [90, 0, 90], letter_size = 4);
+        text_void("super16", pos= [11, 0, -4], rot = [90, 0, 90], letter_size = 4);
     }
 }
 
@@ -251,7 +251,7 @@ module debug () {
     
 }
 
-PART="front_plate";
+PART="gate_mask_slide_standard16";
 
 if (PART == "front_plate") {
     rotate([0, 180, 0]) front_plate();
