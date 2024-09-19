@@ -51,6 +51,14 @@ module bearing_void (pos = [0, 0, 0], width= 8) {
 	}
 }
 
+module bearing_debug (pos = [0, 0, 0]) {
+	$fn = 60;
+	translate(pos) difference() {
+		cylinder(r = R(21.5), h = 7, center = true);
+		cylinder(r = R(8), h = 7, center = true);
+	}
+}
+
 module key_void (pos = [0, 0, 0]) {
 	translate(pos) {
 		cylinder(r = R(KeyVoidD), h = 6 + 1, center = true, $fn = 50);
