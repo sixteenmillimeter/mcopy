@@ -301,8 +301,8 @@ module sprocketed_roller_16mm (pos = [0, 0, 0], rot = [0, 0, 0]) {
         union () {
             sprocketed_roller(bevel = true);
             translate([0, 0, 3.85]) cylinder(r1 = R(TaperD), r2 = R(TaperD - TaperH), h = TaperH, center = true);
-            translate([0, 0, 0]) cylinder(r = R(11), h = 9.5, center = true, $fn = 60);
-            translate([0, 0, -10]) cylinder(r = R(8.3), h = 17, center = true, $fn = 60);
+            translate([0, 0, -0.2]) cylinder(r = R(11), h = 9.5, center = true, $fn = 60);
+            translate([0, 0, -10]) cylinder(r = R(8), h = 17, center = true, $fn = 60);
             translate([0, 0, -21.15]) cylinder(r = R(6), h = 10, center = true);
         }
         //registration mark
@@ -312,7 +312,7 @@ module sprocketed_roller_16mm (pos = [0, 0, 0], rot = [0, 0, 0]) {
         cylinder(r = R(1.5), h = 50, center = true, $fn = 30);
         //void for key
         translate([0, 0, -21.15 - 5]) cube([7.95 + 1, 2.37, 10], center = true);
-        translate([(-15 / 2) - (6 / 2) + 0.2, 0, -30]) cube([15, 15, 40], center = true);
+        translate([(-15 / 2) - (6 / 2) + 0.2, 0, -31]) cube([15, 15, 40], center = true);
         //m2.5 bolt
         translate([0, 0, -15.85]) rotate([0, 90, 0]) cylinder(r = R(2.75), h = 30, center = true, $fn = 30);
     }
@@ -350,55 +350,61 @@ module m3_nut_bolt (pos = [0, 0, 0], rot = [0, 0, 0], nut = 5, bolt = 30) {
 }
 
 module body (pos = [0, 0, 0], gauge = "16mm") {
-    translate(pos) difference() {
-        union () {
-            cube([BodyX, BodyY, BodyZ], center = true);
-        }
+    translate(pos) {
+        difference() {
+            union () {
+                cube([BodyX, BodyY, BodyZ], center = true);
+            }
 
-        //bearings for keys
-        bearing_void([-2, KeySpacingY / 2, (BodyZ / 2) + KeyZ], [0, 90, 0], width = BodyX);
-        bearing_void([-2, -KeySpacingY / 2, (BodyZ / 2) + KeyZ], [0, 90, 0], width = BodyX);
+            //bearings for keys
+            bearing_void([-2, KeySpacingY / 2, (BodyZ / 2) + KeyZ], [0, 90, 0], width = BodyX);
+            bearing_void([-2, -KeySpacingY / 2, (BodyZ / 2) + KeyZ], [0, 90, 0], width = BodyX);
 
-        translate([0, KeySpacingY / 2, (BodyZ / 2) + KeyZ]) rotate([0, 90, 0]) cylinder(r = R(12.5), h = BodyX + 1, center = true, $fn = 60);
-        translate([0, -KeySpacingY / 2, (BodyZ / 2) + KeyZ]) rotate([0, 90, 0]) cylinder(r = R(12.5), h = BodyX + 1, center = true, $fn = 60);
-    
-        //front block
-        translate([0, 0, (BodyZ / 2) - (FrontBodyVoid / 2) + 0.1]) cube([BodyX + 1, PlateY + 2, FrontBodyVoid], center = true);
-    
-        //side light channel
-        //translate([BodyX - 1.25, 0, 0]) cube([BodyX, PlateY + 2, BodyZ + 1], center = true);
-    
-        //slide channel
-        translate([-BodyX + 7.5, 0, 0]) cube([BodyX, PlateY + 2, BodyZ + 1], center = true);
-
-        //add slides
-        m3_nut_bolt([8, 13.2, 8], [0, 90, 0]);
-        m3_nut_bolt([8, -13.2, 8], [0, 90, 0]);
-        m3_nut_bolt([8, 13.2, -18], [0, 90, 0]);
-        m3_nut_bolt([8, -13.2, -18], [0, 90, 0]);
-    
-        //filter holder bolts
-        m3_nut_bolt([0, 13.2, -5], [0, 90, 0]);
-        m3_nut_bolt([0, -13.2, -5], [0, 90, 0]);
-
-        //idle rollers
-        m3_nut_bolt([-2, IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerAZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
-        m3_nut_bolt([-2, -IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerAZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
-        m3_nut_bolt([-2, IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerBZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
-        m3_nut_bolt([-2, -IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerBZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
-        m3_nut_bolt([-2, IdleRollerSpacingBY / 2, (BodyZ / 2) - IdleRollerBZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
-        m3_nut_bolt([-2, -IdleRollerSpacingBY / 2, (BodyZ / 2) - IdleRollerBZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
-    
-        //mounting bolts
-        translate([0, GateBoltSpacingY / 2, (BodyZ / 2) - GateBoltX]) rotate([0, 90, 0]) cylinder(r = R(5.5), h = 40, center = true, $fn = 40);
-        translate([0, -GateBoltSpacingY / 2, (BodyZ / 2) - GateBoltX]) rotate([0, 90, 0]) cylinder(r = R(5.5), h = 40, center = true, $fn = 40);
-    
-        //post voids
-        translate([0, 87.75 / 2, BodyZ / 2]) cylinder(r = R(8), h = 40, center = true, $fn = 80);
-        translate([0, -87.75 / 2, BodyZ / 2]) cylinder(r = R(8), h = 40, center = true, $fn = 80);
+            translate([0, KeySpacingY / 2, (BodyZ / 2) + KeyZ]) rotate([0, 90, 0]) cylinder(r = R(12.5), h = BodyX + 1, center = true, $fn = 60);
+            translate([0, -KeySpacingY / 2, (BodyZ / 2) + KeyZ]) rotate([0, 90, 0]) cylinder(r = R(12.5), h = BodyX + 1, center = true, $fn = 60);
         
-        //spring void
-        translate([3, 0, BodyZ / 2]) cylinder(r = R(5), h = 50, center = true, $fn = 60);
+            //front block
+            translate([0, 0, (BodyZ / 2) - (FrontBodyVoid / 2) + 0.1]) cube([BodyX + 1, PlateY + 2, FrontBodyVoid], center = true);
+        
+            //side light channel
+            //translate([BodyX - 1.25, 0, 0]) cube([BodyX, PlateY + 2, BodyZ + 1], center = true);
+        
+            //slide channel
+            translate([-BodyX + 7.5, 0, 0]) cube([BodyX, PlateY + 2, BodyZ + 1], center = true);
+
+            //add slides
+            m3_nut_bolt([6, 13.2, 8], [0, 90, 0], nut = 8);
+            m3_nut_bolt([6, -13.2, 8], [0, 90, 0], nut = 8);
+            m3_nut_bolt([6, 13.2, -18], [0, 90, 0], nut = 8);
+            m3_nut_bolt([6, -13.2, -18], [0, 90, 0], nut = 8);
+        
+            //filter holder bolts
+            m3_nut_bolt([0, 13.2, -5], [0, 90, 0]);
+            m3_nut_bolt([0, -13.2, -5], [0, 90, 0]);
+
+            //idle rollers
+            m3_nut_bolt([-2, IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerAZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
+            m3_nut_bolt([-2, -IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerAZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
+            m3_nut_bolt([-2, IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerBZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
+            m3_nut_bolt([-2, -IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerBZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
+            m3_nut_bolt([-2, IdleRollerSpacingBY / 2, (BodyZ / 2) - IdleRollerBZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
+            m3_nut_bolt([-2, -IdleRollerSpacingBY / 2, (BodyZ / 2) - IdleRollerBZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
+        
+            //mounting bolts
+            translate([0, GateBoltSpacingY / 2, (BodyZ / 2) - GateBoltX]) rotate([0, 90, 0]) cylinder(r = R(5.5), h = 40, center = true, $fn = 40);
+            translate([0, -GateBoltSpacingY / 2, (BodyZ / 2) - GateBoltX]) rotate([0, 90, 0]) cylinder(r = R(5.5), h = 40, center = true, $fn = 40);
+        
+            //post voids
+            translate([0, 87.75 / 2, BodyZ / 2]) cylinder(r = R(8), h = 40, center = true, $fn = 80);
+            translate([0, -87.75 / 2, BodyZ / 2]) cylinder(r = R(8), h = 40, center = true, $fn = 80);
+            
+            //spring void
+            translate([3, 0, BodyZ / 2]) cylinder(r = R(5), h = 50, center = true, $fn = 60);
+        
+            //void for hex key
+            translate([-4.2, KeySpacingY / 2, BodyZ / 2]) cylinder(r = R(3), h = 20, center = true, $fn = 40);
+            translate([-4.2, -KeySpacingY / 2, BodyZ / 2]) cylinder(r = R(3), h = 20, center = true, $fn = 40);
+        }
     }
 }
 
@@ -491,8 +497,8 @@ module debug () {
             //sprocketed_roller_16mm([1.5, KeySpacingY / 2, KeyZ], [0, 90, 0]);
             sprocketed_roller_16mm([1.5, -KeySpacingY / 2, KeyZ], [0, 90, 0]);
 
-            bearing_debug([-6.8, KeySpacingY / 2, KeyZ], [0, 90, 0]);
-            bearing_debug([-6.8, -KeySpacingY / 2, KeyZ], [0, 90, 0]);
+            //bearing_debug([-6.8, KeySpacingY / 2, KeyZ], [0, 90, 0]);
+            //bearing_debug([-6.8, -KeySpacingY / 2, KeyZ], [0, 90, 0]);
 
             color("blue") sprocketed_roller_nut_16mm([-8.5, -KeySpacingY / 2, KeyZ], [0, 90, 0]);
             translate([(-BodyX / 2) - 1, 0, -BodyZ / 2]) body(gauge = "16mm");
@@ -513,7 +519,7 @@ module debug () {
     }
 }
 
-PART="body_16mm";
+PART="sprocketed_roller_nut_16mm";
 
 if (PART == "front_plate") {
     rotate([0, 180, 0]) front_plate();
