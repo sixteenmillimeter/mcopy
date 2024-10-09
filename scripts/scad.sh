@@ -9,6 +9,7 @@ FILES=(
 	mcopy_rails
 	mcopy_projector
 	mcopy_lens_assembly
+	mcopy_gate
 )
 
 PARALLEL=0

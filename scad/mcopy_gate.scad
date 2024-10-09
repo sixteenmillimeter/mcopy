@@ -592,11 +592,11 @@ if (PART == "front_plate") {
     rotate([0, 180, 0]) front_plate();
 } else if (PART == "back_plate") {
     back_plate();
-} else if (PART == "gate_mask_slide") {
+} else if (PART == "mask_slide") {
     gate_mask_slide();
-} else if (PART == "gate_mask_slide_standard16") {
+} else if (PART == "mask_slide_standard16") {
     rotate([180, 0, 0]) gate_mask_slide_standard16();
-} else if (PART == "gate_mask_slide_super16") {
+} else if (PART == "mask_slide_super16") {
     rotate([180, 0, 0]) gate_mask_slide_super16();
 } else if (PART == "sprocketed_roller_16mm") {
     sprocketed_roller_16mm();
