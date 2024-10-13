@@ -6,8 +6,8 @@ interface MscriptOutput {
 	meta : string[],
 	cam : number,
 	proj : number,
-	cam2? : number
-	proj2? : number
+	cam2 ? : number
+	proj2 ? : number
 }
 
 interface MscriptLoop {
@@ -21,8 +21,8 @@ interface MscriptLoop {
 	start ? : RGB,
 	end ? : RGB,
 	fade? : boolean,
-	fade_len? : number,
-	fade_count? : number,
+	fade_len ? : number,
+	fade_count ? : number,
 	count ? : number
 }
 
@@ -36,6 +36,13 @@ interface RGB extends Array<number>{
 
 interface Alts {
 	[key : string] : string[]
+}
+
+interface MscriptUpdatedState {
+	cam ? : number,
+	proj ? : number,
+	cam2 ? : number,
+	proj2 ? : number,
 }
 
 const BLACK : string = '0,0,0';
@@ -251,10 +258,10 @@ export default class Mscript {
 		this.output.meta = this.meta; //all metadata for instructions
 		this.output.cam = this.cam;
 		this.output.proj = this.proj;
-		if (this.contains(this.arr, CAMERA_SECONDARY)) {
+		if (this.contains(this.arr, CAMERA_SECONDARY) || this.cam2 !== 0) {
 			this.output.cam2 = this.cam2;
 		}
-		if (this.contains(this.arr, PROJECTOR_SECONDARY)) {
+		if (this.contains(this.arr, PROJECTOR_SECONDARY) || this.proj2 !== 0) {
 			this.output.proj2 = this.proj2;
 		}
 
@@ -570,15 +577,32 @@ export default class Mscript {
 	 * @param line {string} String containing set statement
 	 */
 	private set_state (line : string) {
+		//console.log(`set_state called: ${line}`);
+		const update : MscriptUpdatedState = {};
 		if (line.startsWith('SET CAM2')) {
-			parseInt(line.split('SET CAM2')[1]);
+			update.cam2 = parseInt(line.split('SET CAM2')[1]);
+		} else if (line.startsWith('SET CAMERA2')) {
+			update.cam2 = parseInt(line.split('SET CAMERA2')[1]);
 		} else if (line.startsWith('SET PROJ2')) {
-			this.cam2 = parseInt(line.split('SET PROJ2')[1]);
+			update.proj2 = parseInt(line.split('SET PROJ2')[1]);
+		} else if (line.startsWith('SET PROJECTOR2')) {
+			update.proj2 = parseInt(line.split('SET PROJECTOR2')[1]);
 		} else if (line.startsWith('SET CAM')) {
-			this.cam = parseInt(line.split('SET CAM')[1]);
+			update.cam = parseInt(line.split('SET CAM')[1]);
 		} else if (line.startsWith('SET PROJ')) {
-			this.proj = parseInt(line.split('SET PROJ')[1]);
+			update.proj = parseInt(line.split('SET PROJ')[1]);
 		}
+		//console.log(JSON.stringify(update));
+		if (this.rec > -1) {
+			for (let key of Object.keys(update)) {
+				(this.loops[this.rec] as any)[key] = (update as any)[key];
+			}
+		} else {
+			for (let key of Object.keys(update)) {
+				(this as any)[key] = (update as any)[key];
+			}
+		}
+		console.dir(JSON.stringify(this));
 	}
 	/**
 	 * Return the last loop

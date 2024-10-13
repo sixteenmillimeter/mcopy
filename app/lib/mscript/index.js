@@ -194,10 +194,10 @@ class Mscript {
         this.output.meta = this.meta; //all metadata for instructions
         this.output.cam = this.cam;
         this.output.proj = this.proj;
-        if (this.contains(this.arr, CAMERA_SECONDARY)) {
+        if (this.contains(this.arr, CAMERA_SECONDARY) || this.cam2 !== 0) {
             this.output.cam2 = this.cam2;
         }
-        if (this.contains(this.arr, PROJECTOR_SECONDARY)) {
+        if (this.contains(this.arr, PROJECTOR_SECONDARY) || this.proj2 !== 0) {
             this.output.proj2 = this.proj2;
         }
         return this.output;
@@ -510,18 +510,38 @@ class Mscript {
      * @param line {string} String containing set statement
      */
     set_state(line) {
+        //console.log(`set_state called: ${line}`);
+        const update = {};
         if (line.startsWith('SET CAM2')) {
-            parseInt(line.split('SET CAM2')[1]);
+            update.cam2 = parseInt(line.split('SET CAM2')[1]);
+        }
+        else if (line.startsWith('SET CAMERA2')) {
+            update.cam2 = parseInt(line.split('SET CAMERA2')[1]);
         }
         else if (line.startsWith('SET PROJ2')) {
-            this.cam2 = parseInt(line.split('SET PROJ2')[1]);
+            update.proj2 = parseInt(line.split('SET PROJ2')[1]);
+        }
+        else if (line.startsWith('SET PROJECTOR2')) {
+            update.proj2 = parseInt(line.split('SET PROJECTOR2')[1]);
         }
         else if (line.startsWith('SET CAM')) {
-            this.cam = parseInt(line.split('SET CAM')[1]);
+            update.cam = parseInt(line.split('SET CAM')[1]);
         }
         else if (line.startsWith('SET PROJ')) {
-            this.proj = parseInt(line.split('SET PROJ')[1]);
+            update.proj = parseInt(line.split('SET PROJ')[1]);
         }
+        //console.log(JSON.stringify(update));
+        if (this.rec > -1) {
+            for (let key of Object.keys(update)) {
+                this.loops[this.rec][key] = update[key];
+            }
+        }
+        else {
+            for (let key of Object.keys(update)) {
+                this[key] = update[key];
+            }
+        }
+        console.dir(JSON.stringify(this));
     }
     /**
      * Return the last loop
