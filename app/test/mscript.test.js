@@ -126,12 +126,16 @@ LOOP 10
 	PF
 END`;
 
-	it('Should SET state within LOOP', () => {
-		const obj = mscript.interpret(script2)
-		assert.ok(typeof obj === 'object', 'Mscript produced an object response');
-		assert.ok(obj.success, 'Mscript labeled output success');
-		assert.equal(obj.cam, 10, 'Camera state ends at 10');
-		assert.equal(obj.proj, 11, 'Projector state should be 11');
+	it('Should fail when SET state within LOOP', () => {
+		let errorCaught = false;
+		try {
+			const obj = mscript.interpret(script2);
+		} catch (err) {
+			//fail silently
+			errorCaught = true;
+		}
+		assert.ok(typeof obj === 'undefined', 'Mscript fails to produce an output object');
+		assert.ok(errorCaught, 'Error should be thrown by script');
 	});
 });
 

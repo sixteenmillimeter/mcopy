@@ -162,7 +162,14 @@ PF 1`;
 	 compile () {
 		const data : string = this.editor.getValue();
 		const mscript : Mscript = new Mscript();
-		const output : any = mscript.interpret(data);
+		let output : any = null;
+		try {
+			output = mscript.interpret(data);
+			this.raw = '';
+		} catch (err) {
+			mse.console.print(err.toString());
+			return;
+		}
 		const len : number = output.arr.length;
 		const cam2 : string = typeof output.cam2 !== 'undefined' ? `, CAM2 : ${output.cam2}` : '';
 		const proj2 : string = typeof output.proj2 !== 'undefined' ? `, PROJ2 : ${output.proj2}` : '';
