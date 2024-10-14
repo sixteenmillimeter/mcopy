@@ -510,8 +510,8 @@ class Mscript {
      * @param line {string} String containing set statement
      */
     set_state(line) {
-        //console.log(`set_state called: ${line}`);
         const update = {};
+        let dist = 0;
         if (line.startsWith('SET CAM2')) {
             update.cam2 = parseInt(line.split('SET CAM2')[1]);
         }
@@ -530,18 +530,13 @@ class Mscript {
         else if (line.startsWith('SET PROJ')) {
             update.proj = parseInt(line.split('SET PROJ')[1]);
         }
-        //console.log(JSON.stringify(update));
         if (this.rec > -1) {
-            for (let key of Object.keys(update)) {
-                this.loops[this.rec][key] = update[key];
-            }
+            this.fail(`Line "${line}" is invalid inside of a loop`);
+            return;
         }
-        else {
-            for (let key of Object.keys(update)) {
-                this[key] = update[key];
-            }
+        for (let key of Object.keys(update)) {
+            this[key] = update[key];
         }
-        console.dir(JSON.stringify(this));
     }
     /**
      * Return the last loop
@@ -669,7 +664,8 @@ class Mscript {
      */
     update(cmd, val = 1) {
         if (cmd === 'END') {
-            //I don't understand this loop
+            //squashes down loops into the previous one until
+            //the base is reached. val is never not 1, though.
             for (let i = 0; i < val; i++) {
                 if (this.rec === 0) {
                     this.cam += this.loops[this.rec].cam;
