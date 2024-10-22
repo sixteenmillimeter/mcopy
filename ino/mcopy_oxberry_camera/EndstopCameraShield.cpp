@@ -20,7 +20,7 @@ void EndstopCameraShield::setup () {
 
 	_checkState();
 	_enableMotor();
-	Serial.println(_minSteps);
+	//Serial.println(_minSteps);
 }
 
 void EndstopCameraShield::_enableCloseInterrupt() {
