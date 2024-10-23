@@ -143,6 +143,7 @@ PF 1`;
         let output = null;
         try {
             output = mscript.interpret(data);
+            this.raw = '';
         }
         catch (err) {
             mse.console.print(err.toString());
