@@ -58,13 +58,13 @@ FilmZ = -3.5;
 GateBoltX = 21.2;
 GateBoltSpacingY = 105;
 
-module m2_5_nut (H) {
-    scale([2.6/3, 2.6/3, 1]) m3_nut(H);
+module m2_5_nut (H, pad = 0) {
+    scale([(2.6 + pad) / 3, (2.6 + pad) / 3, 1]) m3_nut(H);
 }
 
-module m2_5_nut_bolt (pos = [0, 0, 0], rot = [0, 0, 0], nut = 5, bolt = 30) {
+module m2_5_nut_bolt (pos = [0, 0, 0], rot = [0, 0, 0], nut = 5, bolt = 30, pad = 0) {
     translate(pos) rotate(rot) {
-        m2_5_nut(nut);
+        m2_5_nut(nut, pad);
         cylinder(r = R(2.75), h = bolt, center = true, $fn = 30);
     }
 }
@@ -387,26 +387,26 @@ module body (pos = [0, 0, 0], gauge = "16mm") {
             translate([-BodyX + 7.5, 0, 0]) cube([BodyX, PlateY + 2, BodyZ + 1], center = true);
 
             //add slides
-            m2_5_nut_bolt([6, 13.2, 8], [0, 90, 0], nut = 10);
-            m2_5_nut_bolt([6, -13.2, 8], [0, 90, 0], nut = 10);
-            m2_5_nut_bolt([6, 13.2, -18], [0, 90, 0], nut = 10);
-            m2_5_nut_bolt([6, -13.2, -18], [0, 90, 0], nut = 10);
+            m2_5_nut_bolt([6, 13.2, 8], [0, 90, 0], nut = 10, pad = 0.1);
+            m2_5_nut_bolt([6, -13.2, 8], [0, 90, 0], nut = 10, pad = 0.1);
+            m2_5_nut_bolt([6, 13.2, -18], [0, 90, 0], nut = 10, pad = 0.1);
+            m2_5_nut_bolt([6, -13.2, -18], [0, 90, 0], nut = 10, pad = 0.1);
         
             //filter holder bolts
-            m2_5_nut_bolt([0, 13.2, -5], [0, 90, 0], nut = 12);
-            m2_5_nut_bolt([0, -13.2, -5], [0, 90, 0], nut = 12);
+            m2_5_nut_bolt([0, 13.2, -5], [0, 90, 0], nut = 12, pad = 0.1);
+            m2_5_nut_bolt([0, -13.2, -5], [0, 90, 0], nut = 12, pad = 0.1);
 
             //idle rollers
-            m2_5_nut_bolt([-2, IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerAZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
-            m2_5_nut_bolt([-2, -IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerAZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
-            m2_5_nut_bolt([-2, IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerBZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
-            m2_5_nut_bolt([-2, -IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerBZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
-            m2_5_nut_bolt([-2, IdleRollerSpacingBY / 2, (BodyZ / 2) - IdleRollerBZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
-            m2_5_nut_bolt([-2, -IdleRollerSpacingBY / 2, (BodyZ / 2) - IdleRollerBZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40);
+            m2_5_nut_bolt([-2, IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerAZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40, pad = 0.1);
+            m2_5_nut_bolt([-2, -IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerAZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40, pad = 0.1);
+            m2_5_nut_bolt([-2, IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerBZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40, pad = 0.1);
+            m2_5_nut_bolt([-2, -IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerBZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40, pad = 0.1);
+            m2_5_nut_bolt([-2, IdleRollerSpacingBY / 2, (BodyZ / 2) - IdleRollerBZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40, pad = 0.1);
+            m2_5_nut_bolt([-2, -IdleRollerSpacingBY / 2, (BodyZ / 2) - IdleRollerBZ], [0, 90, 0], nut = BodyX, bolt = BodyX + 40, pad = 0.1);
         
             //mounting bolts
-            translate([0, GateBoltSpacingY / 2, (BodyZ / 2) - GateBoltX]) rotate([0, 90, 0]) cylinder(r = R(5.5), h = 40, center = true, $fn = 40);
-            translate([0, -GateBoltSpacingY / 2, (BodyZ / 2) - GateBoltX]) rotate([0, 90, 0]) cylinder(r = R(5.5), h = 40, center = true, $fn = 40);
+            translate([0, GateBoltSpacingY / 2, (BodyZ / 2) - GateBoltX]) rotate([0, 90, 0]) cylinder(r = R(7), h = 40, center = true, $fn = 40);
+            translate([0, -GateBoltSpacingY / 2, (BodyZ / 2) - GateBoltX]) rotate([0, 90, 0]) cylinder(r = R(7), h = 40, center = true, $fn = 40);
         
             //front plate post voids
             translate([0, FrontPlatePostSpacingX / 2, BodyZ / 2]) cylinder(r = R(8), h = 20, center = true, $fn = 80);
@@ -427,15 +427,15 @@ module idle_roller_16mm (pos = [0, 0, 0], rot = [0, 0, 0]) {
     translate(pos) rotate(rot) {
         difference () {
             union () {
-                cylinder(r = R(10), h = 18, center = true);
+                cylinder(r = R(11), h = 18, center = true);
             }
 
-            translate([0, 0, 18 - 2]) cylinder(r = R(8), h = 18, center = true);
+            translate([0, 0, 18 - 2]) cylinder(r = R(8.25), h = 18, center = true);
             
-            cylinder(r = R(6), h = 40, center = true);
+            cylinder(r = R(6.3), h = 40, center = true);
 
             for (i = [0 : $fn]) {
-                rotate([0, 0, i * (360 / $fn)]) translate([9.5, 0, 0]) rotate([90, 0, 0]) scale([1, 2, 1]) cylinder(r = R(12), h = 10, center = true, $fn = 50);
+                rotate([0, 0, i * (360 / $fn)]) translate([10, 0, 0]) rotate([90, 0, 0]) scale([1, 2, 1]) cylinder(r = R(12), h = 10, center = true, $fn = 50);
             }
         }
     }
@@ -477,12 +477,13 @@ module slide_rail (pos = [0, 0, 0], side = "A") {
     }
 }
 
-module slide (pos = [0, 0, 0]) {
-    translate(pos) {
+module slide (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    Extra = 5;
+    translate(pos) rotate(rot) {
         difference() {
             union () {
-                cube([6.5, 13, BodyZ], center = true);
-                translate([1.25, 0, 0]) cube([1.7, 20, BodyZ], center = true);
+                translate([0, 0, -Extra / 2])cube([6.5, 13, BodyZ + Extra], center = true);
+                translate([1.25, 0, -Extra / 2]) cube([1.7, 20, BodyZ + Extra], center = true);
                 translate([0, 0, (BodyZ / 2) - 3]) cube([6.5, 20.5, 9], center = true);
             }
             translate([1, 0, (BodyZ / 2) - 1.1]) cube([6.5, 20.5 + 1, 8], center = true);
@@ -502,7 +503,16 @@ module slide (pos = [0, 0, 0]) {
                 cylinder(r = R(6), h = 20, center = true, $fn = 80);
                 translate([0, 0, -3]) cylinder(r2 = R(6), r1 = R(8), h = 2, center = true, $fn = 80);
             }
+            //notch
+            translate([0, 10, -21]) rotate([45, 0, 0]) cube([10, 4.9, 4.9], center = true);
         }
+        
+    }
+}
+
+module slide_catch (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    translate(pos) rotate(rot) {
+        
     }
 }
 
@@ -603,7 +613,7 @@ module debug () {
             //gate_mask_slide_super16([(PlateX / 2) - (FrontPlateVoidX / 2) - 2.41, 0, -3]);
             //front_plate_void([(PlateX / 2) - (FrontPlateVoidX / 2) - 2.41, 0, 0]);
             //film_clearance_void([0, 0, 15]);
-            //color("blue") translate([8, 0, FilmZ]) cube([16, 150, 0.1], center = true);
+            color("blue") translate([8, 0, FilmZ]) cube([16, 150, 0.1], center = true);
             sprocketed_roller_16mm([1.5, KeySpacingY / 2, KeyZ], [0, 90, 0]);
             sprocketed_roller_16mm([1.5, -KeySpacingY / 2, KeyZ], [0, 90, 0]);
 
