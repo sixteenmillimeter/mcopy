@@ -363,6 +363,7 @@ module sprocketed_roller_nut_16mm (pos = [0, 0, 0], rot = [0, 0, 0]) {
     }
 }
 
+//BOM: m5 bolt 20mm
 module body (pos = [0, 0, 0], gauge = "16mm") {
     translate(pos) {
         difference() {
@@ -418,6 +419,10 @@ module body (pos = [0, 0, 0], gauge = "16mm") {
             //void for hex key
             translate([-4.2, KeySpacingY / 2, BodyZ / 2]) cylinder(r = R(5), h = 20, center = true, $fn = 40);
             translate([-4.2, -KeySpacingY / 2, BodyZ / 2]) cylinder(r = R(5), h = 20, center = true, $fn = 40);
+            
+            //voids for slide catch
+            slide_catch_nut_void([-3, 24, -(BodyZ / 2) - 5]);
+            slide_catch_nut_void([-3, 42, -(BodyZ / 2) - 5 ]);
         }
     }
 }
@@ -503,16 +508,43 @@ module slide (pos = [0, 0, 0], rot = [0, 0, 0]) {
                 cylinder(r = R(6), h = 20, center = true, $fn = 80);
                 translate([0, 0, -3]) cylinder(r2 = R(6), r1 = R(8), h = 2, center = true, $fn = 80);
             }
-            //notch
+            //notch for catch
             translate([0, 10, -21]) rotate([45, 0, 0]) cube([10, 4.9, 4.9], center = true);
         }
         
     }
 }
 
-module slide_catch (pos = [0, 0, 0], rot = [0, 0, 0]) {
+module slide_catch_nut_void (pos = [0, 0, 0], rot = [0, 0, 0]) {
     translate(pos) rotate(rot) {
-        
+        union () {
+            cylinder(r = R(3.25), h = 30, center = true, $fn = 30);
+            translate([0, 0, 10]) m3_nut(3);
+            translate([-10, 0, 10]) cube([20, 5.7, 3], center = true); 
+        }
+    }
+}
+
+module slide_catch_slot_void (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    D  = 4;
+    Length = 5;
+    translate(pos) rotate(rot) {
+        translate([0, Length / 2, 0]) cylinder(r = R(D), h = 5, center = true, $fn = 40);
+        cube([D, Length, 5], center = true);
+        translate([0, -Length / 2, 0]) cylinder(r = R(D), h = 5, center = true, $fn = 40);
+    }
+}
+
+module slide_catch (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    Length = 51;
+    translate(pos) rotate(rot) {
+        difference () {
+            cube([8, Length, 1.5], center = true);
+            translate([0, -(Length / 2)  - 0.25, -1]) rotate([45, 0, 0]) cube([8 + 1, 3, 3], center = true);
+            slide_catch_slot_void([0, 8, 0]);
+            slide_catch_slot_void([0, -10, 0]);
+        }
+        translate([0, Length / 2, (5 / 2) - (1.5 / 2)]) cube([8, 1.5, 5], center = true);
     }
 }
 
@@ -545,16 +577,17 @@ module front_block_film_path (pos = [0, 0, 0], rot = [0, 0, 0]) {
             translate([0, -6, -12]) rotate([0, 90, 0]) cylinder(r = R(23.5), h = 15, center = true, $fn = 120);
         
             translate([10 / 2, 0, 5]) rotate([90, 0, 0]) {
-                cylinder(r = R(2.5), h = 20, center = true, $fn = 40);
-                translate([0, 0, (-13 / 2) + (Nut / 2) - 0.01]) cylinder(r = R(4.1), h = Nut, center = true, $fn = 30);
+                cylinder(r = R(2.75), h = 20, center = true, $fn = 40);
+                translate([0, 0, (-13 / 2) + (Nut / 2) - 0.01]) cylinder(r = R(4.75), h = Nut, center = true, $fn = 30);
             }
             translate([-10 / 2, 0, 5]) rotate([90, 0, 0]) {
-                cylinder(r = R(2.5), h = 20, center = true, $fn = 40);
-                translate([0, 0, (-13 / 2) + (Nut / 2) - 0.01]) cylinder(r = R(4.1), h = Nut, center = true, $fn = 30);
+                cylinder(r = R(2.75), h = 20, center = true, $fn = 40);
+                translate([0, 0, (-13 / 2) + (Nut / 2) - 0.01]) cylinder(r = R(4.75), h = Nut, center = true, $fn = 30);
             }
         }
     }
 }
+
 
 module front_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
     translate(pos) rotate(rot) {
@@ -567,13 +600,18 @@ module front_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
             }
             translate([(BodyX / 2) + ((48 - BodyX) / 2) - 5.5, 0, 0]) cylinder(r = R(19), h = 6.5 + 1, center = true, $fn = 100);
 
-            front_block_bolt_and_nut_void([12.75, 24, -0.5], [90, 0, 0]);
-            front_block_bolt_and_nut_void([12.75 + 10, 24, -0.5], [90, 0, 0]);
+            front_block_bolt_and_nut_void([12.75, 24.5, -0.5], [-90, 0, 0]);
+            front_block_bolt_and_nut_void([12.75 + 10, 24.5, -0.5], [-90, 0, 0]);
 
-            front_block_bolt_and_nut_void([12.75, -24, -0.5], [90, 0, 0]);
-            front_block_bolt_and_nut_void([12.75 + 10, -24, -0.5], [90, 0, 0]);
+            front_block_bolt_and_nut_void([12.75, -24.5, -0.5], [-90, 0, 0]);
+            front_block_bolt_and_nut_void([12.75 + 10, -24.5, -0.5], [-90, 0, 0]);
+            //m5 notch
+            translate([0, 50, 0]) {
+                cylinder(r = R(5.6), h = 10, center = true, $fn = 50);
+                translate([0, 50 / 2, 0]) cube([5.6, 50, 10], center = true);
+            }
         }
-        
+
     }
 }
 
@@ -606,7 +644,7 @@ module filter_block (pos = [0, 0, 0], rot = [0, 0, 0], side = "A") {
 module debug () {
     difference () {
         union () {
-            FilmZ = -3.5; // - 3.6; //retraction distance
+            FilmZ = -3.5 ; // - 4.2; //retraction distance
             translate([0, 0, FilmZ + 1.4]) front_plate();
             translate([0, 0, FilmZ - 1.4]) back_plate();
             gate_mask_slide_standard16([(PlateX / 2) - (FrontPlateVoidX / 2) - 1.9, 0, FilmZ - 1.4]);
@@ -635,8 +673,10 @@ module debug () {
             //slide_rail([-BodyX + (7 / 2) - 0.6, -11.5, (-BodyZ / 2) - 6], "B");
         
             slide([-BodyX + (7 / 2) - 0.4, 0, FilmZ + (-BodyZ / 2) + 1]);
-
-            //front_block([(-BodyX / 2) - 1, 0, 6.5 / 2]);
+            
+            slide_catch([-13, 34, -51.5]);
+            
+            front_block([(-BodyX / 2) - 1, 0, 6.5 / 2]);
             front_block_film_path([(17 / 2) - 1, (58.5 / 2) + (13 / 2), -2.25]);
             front_block_film_path([(17 / 2) - 1, (-58.5 / 2) - (13 / 2), -2.25], [0, 0, 180]);
             
@@ -647,7 +687,7 @@ module debug () {
     }
 }
 
-PART="body_16mmx";
+PART="front_block_film_path";
 
 if (PART == "front_plate") {
     rotate([0, 180, 0]) front_plate();
@@ -669,6 +709,8 @@ if (PART == "front_plate") {
     idle_roller_post_16mm();
 } else if (PART == "slide") {
     slide();
+} else if (PART == "slide_catch") {
+    slide_catch();
 } else if (PART == "slide_rail_a") {
     slide_rail(side = "A");
 } else if (PART == "slide_rail_b"){
@@ -679,6 +721,8 @@ if (PART == "front_plate") {
     filter_block(side = "B");
 } else if (PART == "body_16mm") {
     rotate([0, 90, 0]) body(gauge = "16mm");
+} else if (PART == "front_block_16mm") {
+    rotate([0, 90, 0]) front_block();
 } else if (PART == "front_block_film_path") {
     front_block_film_path(rot = [0, 90, 0]);
 } else {
