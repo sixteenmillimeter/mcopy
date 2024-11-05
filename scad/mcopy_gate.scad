@@ -1,5 +1,6 @@
 use <./common/common.scad>;
 use <./sprocketed_roller/sprocketed_roller_var.scad>;
+use <./filmless.scad>;
 
 PlateZ = 1.3 + 1;
 PlateX = 35.1;
@@ -115,6 +116,7 @@ module front_plate_void (pos = [0, 0, 0]) {
     }
 }
 
+//BOM: 1, M2.5x10mm
 module front_plate () {
     difference () {
         union () {
@@ -692,7 +694,7 @@ module debug () {
     }
 }
 
-PART="front_block_16mm";
+PART="front_block_16mmx";
 
 if (PART == "front_plate") {
     rotate([0, 180, 0]) front_plate();

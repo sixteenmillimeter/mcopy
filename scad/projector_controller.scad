@@ -1,7 +1,7 @@
 include <arduino.scad>;
 include <common/common.scad>;
 
-PART="usb_protector";
+PART="electronics_mount";
 
 CaseX = 121;
 CaseY = 172;
