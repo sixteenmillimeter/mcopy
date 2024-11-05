@@ -606,10 +606,15 @@ module front_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
             front_block_bolt_and_nut_void([12.75, -24.5, -0.5], [-90, 0, 0]);
             front_block_bolt_and_nut_void([12.75 + 10, -24.5, -0.5], [-90, 0, 0]);
             //m5 notch
-            translate([0, 50, 0]) {
+            translate([0, 52, 0]) {
                 cylinder(r = R(5.6), h = 10, center = true, $fn = 50);
                 translate([0, 50 / 2, 0]) cube([5.6, 50, 10], center = true);
             }
+            //countersink bolts
+            translate([4.25, 0, -10 / 2]) cylinder(r = R(6), h = 10, center = true, $fn = 40);
+            translate([-5, PlateBoltSpacingY / 2, -10 / 2]) cylinder(r = R(6), h = 10, center = true, $fn = 40);
+            translate([-5, 0, -10 / 2]) cube([6, PlateBoltSpacingY, 10], center = true);
+            translate([-5, -PlateBoltSpacingY / 2, -10 / 2]) cylinder(r = R(6), h = 10, center = true, $fn = 40);
         }
 
     }
@@ -676,9 +681,9 @@ module debug () {
             
             slide_catch([-13, 34, -51.5]);
             
-            front_block([(-BodyX / 2) - 1, 0, 6.5 / 2]);
-            front_block_film_path([(17 / 2) - 1, (58.5 / 2) + (13 / 2), -2.25]);
-            front_block_film_path([(17 / 2) - 1, (-58.5 / 2) - (13 / 2), -2.25], [0, 0, 180]);
+            front_block([(-BodyX / 2) - 1, 0, 6.5 / 2 + 10]);
+            front_block_film_path([(17 / 2) - 1, (58.5 / 2) + (13 / 2), -2.25 + 10]);
+            front_block_film_path([(17 / 2) - 1, (-58.5 / 2) - (13 / 2), -2.25 + 10], [0, 0, 180]);
             
             filter_block([11, 0, -28], side = "A");
             filter_block([11, 0, -28], side = "B");
@@ -687,7 +692,7 @@ module debug () {
     }
 }
 
-PART="front_block_film_path";
+PART="front_block_16mm";
 
 if (PART == "front_plate") {
     rotate([0, 180, 0]) front_plate();
@@ -722,7 +727,7 @@ if (PART == "front_plate") {
 } else if (PART == "body_16mm") {
     rotate([0, 90, 0]) body(gauge = "16mm");
 } else if (PART == "front_block_16mm") {
-    rotate([0, 90, 0]) front_block();
+    rotate([180, 0, 0]) front_block();
 } else if (PART == "front_block_film_path") {
     front_block_film_path(rot = [0, 90, 0]);
 } else {
