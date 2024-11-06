@@ -55,4 +55,4 @@ sqlite3 :memory: -cmd '.mode csv' -cmd ".import ${DESTINATION} bom" -cmd ".impor
   'SELECT SUM(quantity),part,part_id, SUM(quantity) * (COALESCE((SELECT prices.price FROM prices WHERE prices.part = bom.part LIMIT 1), 0)) as price FROM bom GROUP BY part ORDER BY part DESC;' >> "${TOTAL}"
 
 sqlite3 :memory: -cmd '.mode csv' -cmd ".import ${TOTAL} bom"\
-  'SELECT SUM(quantity),"N/A","TOTALS", SUM(price) FROM bom;' >> "${TOTAL}"
+  'SELECT SUM(quantity),"N/A","TOTALS", SUM(price) FROM bom;' | tr -d '"' >> "${TOTAL}"

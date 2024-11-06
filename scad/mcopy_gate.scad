@@ -59,6 +59,8 @@ FilmZ = -3.5;
 GateBoltX = 21.2;
 GateBoltSpacingY = 105;
 
+SlideRailBoltSpacingZ = 24;
+
 module m5_nut_bolt (pos = [0, 0, 0], rot = [0, 0, 0], bolt = 20, nut = 4, nutOffset = 0) {
     translate(pos) rotate(rot) {
         cylinder(r = R(5.25), h = bolt, center = true, $fn = 40);
@@ -78,10 +80,10 @@ module m2_5_nut_bolt (pos = [0, 0, 0], rot = [0, 0, 0], nut = 5, bolt = 30, pad 
     }
 }
 
-module m2_5_bolt_void (pos = [0, 0, 0], rot = [0, 0, 0], bolt = 20, cap = 6) {
+module m2_5_bolt_void (pos = [0, 0, 0], rot = [0, 0, 0], bolt = 20, cap = 6, pad = 0) {
     translate(pos) rotate(rot) {
         translate([0, 0, cap / 2]) cylinder(r = R(4.75), h = cap, center = true, $fn = 40);
-        translate([0, 0, -(bolt / 2) + 0.1]) cylinder(r = R(2.75), h = bolt, center = true, $fn = 30);
+        translate([0, 0, -(bolt / 2) + 0.1]) cylinder(r = R(2.75 + pad), h = bolt, center = true, $fn = 30);
     }
 }
 
@@ -145,9 +147,9 @@ module front_plate () {
         //alignment rod voids
         translate([(-PlateX / 2) + AlignmentX, AlignmentSpacingY / 2, 0]) cylinder(r = R(AlignmentD + 0.45), h = 10, center = true , $fn = 30);
         translate([(-PlateX / 2) + AlignmentX, -AlignmentSpacingY / 2, 0]) cylinder(r = R(AlignmentD + 0.45), h = 10, center = true , $fn = 30);
-        //gate bolt void
+        //gate bolt and nut void
         translate([-6, 0, 0]) cylinder(r = R(BoltD), h = 20, center = true, $fn = 40);
-        translate([-6, 0, 10]) cylinder(r = R(4.75), h = 20, center = true, $fn = 40);
+        translate([-6, 0, 10]) m2_5_nut(20);
     }
 }
 
@@ -196,7 +198,7 @@ module gate_mask_slide (pos = [0, 0, 0], pad = 0.0, format = "") {
                 //alignment
                 translate([-14.5, 0, 0]) {
                     cylinder(r = R(BoltD), h = 20, center = true, $fn = 40);
-                    translate([0, 0, -3.5]) m2_5_nut();
+                    translate([0, 0, -4]) cylinder(r = R(4.5), h = 3, center = true, $fn = 40);
                 }
                 gate_mask_text(format);
                 difference () {
@@ -381,6 +383,7 @@ module sprocketed_roller_nut_16mm (pos = [0, 0, 0], rot = [0, 0, 0]) {
 //BOM: 2, M3 hex nut, N/A, Attach slide_catch to gate
 //BOM, 2, Bearing, N/A, Center sprocketed_roller in gate voids and allow for smooth rotation
 module body (pos = [0, 0, 0], gauge = "16mm") {
+    SlideRailsOffsetZ = -5;
     translate(pos) {
         difference() {
             union () {
@@ -403,11 +406,11 @@ module body (pos = [0, 0, 0], gauge = "16mm") {
             //slide channel
             translate([-BodyX + 7.5, 0, 0]) cube([BodyX, PlateY + 2, BodyZ + 1], center = true);
 
-            //add slides
-            m2_5_nut_bolt([6, 13.2, 8], [0, 90, 0], nut = 10, pad = 0.1);
-            m2_5_nut_bolt([6, -13.2, 8], [0, 90, 0], nut = 10, pad = 0.1);
-            m2_5_nut_bolt([6, 13.2, -18], [0, 90, 0], nut = 10, pad = 0.1);
-            m2_5_nut_bolt([6, -13.2, -18], [0, 90, 0], nut = 10, pad = 0.1);
+            //slide rails bolts
+            m2_5_nut_bolt([6, 13.2, (SlideRailBoltSpacingZ / 2) + SlideRailsOffsetZ ], [0, 90, 0], nut = 10, pad = 0.1);
+            m2_5_nut_bolt([6, -13.2, (SlideRailBoltSpacingZ / 2) + SlideRailsOffsetZ], [0, 90, 0], nut = 10, pad = 0.1);
+            m2_5_nut_bolt([6, 13.2, (-SlideRailBoltSpacingZ / 2) + SlideRailsOffsetZ], [0, 90, 0], nut = 10, pad = 0.1);
+            m2_5_nut_bolt([6, -13.2, (-SlideRailBoltSpacingZ / 2) + SlideRailsOffsetZ], [0, 90, 0], nut = 10, pad = 0.1);
         
             //filter holder bolts
             m2_5_nut_bolt([0, 13.2, -5], [0, 90, 0], nut = 12, pad = 0.1);
@@ -439,7 +442,8 @@ module body (pos = [0, 0, 0], gauge = "16mm") {
             //voids for slide catch
             slide_catch_nut_void([-3, 24, -(BodyZ / 2) - 5]);
             slide_catch_nut_void([-3, 42, -(BodyZ / 2) - 5 ]);
-                    //voids for m5 nut
+            
+            //voids for m5 nut
             m5_nut_bolt([0, FrontPlatePostSpacingX / 2, 22], [0, 0, 0], bolt = 30, nutOffset = -6);
             m5_nut_bolt([0, -FrontPlatePostSpacingX / 2, 22], [0, 0, 0], bolt = 30, nutOffset = -6);
 
@@ -482,22 +486,34 @@ module idle_roller_post_16mm (pos = [0, 0, 0], rot = [0, 0, 0]) {
     }
 }
 
+module slide_rail_bolt_slot (pos = [0, 0, 0], rot = [0, 0, 0], BoltSlotY, BoltSlotOffsetY) {
+    translate(pos) rotate(rot) {
+        cylinder(r = R(2.75), h = 10, center = true, $fn = 40);
+        translate([0, BoltSlotOffsetY, 0]) cylinder(r = R(2.75), h = 10, center = true, $fn = 40);
+        translate([0, BoltSlotOffsetY / 2, 0]) cube([2.75, BoltSlotY, 10], center = true);
+
+        translate([0, 0, -5]) cylinder(r = R(5), h = 10, center = true, $fn = 40);
+        translate([0, BoltSlotOffsetY, -5]) cylinder(r = R(5), h = 10, center = true, $fn = 40);
+        translate([0, BoltSlotOffsetY / 2, -5]) cube([5, BoltSlotY, 10], center = true);
+    }
+}
+
 module slide_rail (pos = [0, 0, 0], side = "A") {
-    BoltSpacingZ = 26;
     OffsetY = side == "A" ? 1.5 : -1.5;
-    OffsetZ = 1;
+    OffsetZ = 2;
     SlideY = side == "A" ? -6 : 6;
-    translate(pos) difference() {
-        cube([7, 9, BodyZ - 16], center = true);
-        translate([1.25, SlideY, 0]) cube([2.4, 10, BodyZ - 12 + 1], center = true);
-        translate([0, OffsetY, OffsetZ]) {
-            translate([0, 0, BoltSpacingZ / 2]) rotate([0, 90, 0]) {
-                cylinder(r = R(3.5), h = 10, center = true, $fn = 40);
-                translate([0, 0, -5]) cylinder(r = R(6), h = 10, center = true, $fn = 40);
-            }
-            translate([0, 0, -BoltSpacingZ / 2]) rotate([0, 90, 0]) {
-                cylinder(r = R(3.5), h = 10, center = true, $fn = 40);
-                translate([0, 0, -5]) cylinder(r = R(6), h = 10, center = true, $fn = 40);
+    SlideDiffY = side == "A" ? 8.5 : -8.5;
+    BoltSlotY = 1.5;
+    BoltSlotOffsetY = side == "A" ? BoltSlotY : -BoltSlotY;
+    BoltsOffsetY = side == "A" ? -1 / 2 : 1 / 2;
+    translate(pos) {
+        difference() {
+            cube([7, 9, BodyZ - 16], center = true);
+            translate([0 , SlideDiffY, 0]) cube([7 + 1, 9, BodyZ - 16 + 1], center = true);
+            translate([1.25, SlideY, 0]) cube([2.4, 10, BodyZ - 12 + 1], center = true);
+            translate([0, OffsetY, OffsetZ]) {
+                slide_rail_bolt_slot([0, BoltsOffsetY, SlideRailBoltSpacingZ / 2], [0, 90, 0], BoltSlotY, BoltSlotOffsetY);
+                slide_rail_bolt_slot([0, BoltsOffsetY, -SlideRailBoltSpacingZ / 2], [0, 90, 0], BoltSlotY, BoltSlotOffsetY);
             }
         }
     }
@@ -583,8 +599,8 @@ module front_block_post (pos = [0, 0, 0], rot = [0, 0, 0]) {
 
 module front_block_bolt_and_nut_void (pos = [0, 0, 0], rot = [0, 0, 0]) {
     translate(pos) rotate(rot) {
-        rotate([0, 0, 30]) m2_5_nut(3);
-        translate([0, 15, 0]) cube([4.8, 30, 3], center = true);
+        rotate([0, 0, 30]) m2_5_nut(2.25);
+        translate([0, 15, 0]) cube([4.95, 30, 2.25], center = true);
         cylinder(r = R(2.75), h = 10, center = true, $fn = 40);
     }
 }
@@ -636,12 +652,59 @@ module front_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
             translate([-5, PlateBoltSpacingY / 2, -10 / 2]) cylinder(r = R(6), h = 10, center = true, $fn = 40);
             translate([-5, 0, -10 / 2]) cube([6, PlateBoltSpacingY, 10], center = true);
             translate([-5, -PlateBoltSpacingY / 2, -10 / 2]) cylinder(r = R(6), h = 10, center = true, $fn = 40);
+        
+            //for pegs
+            translate([10.25, 0, -1.75]) {
+                rounded_cube([12.4, 30.4, 4], d = 3, center = true, $fn = 30);
+                translate([-3, 12, -2]) {
+                    cylinder(r = R(2.75), h = 20, center = true, $fn = 40);
+                    translate([0, 0, 7.51]) m2_5_nut(4);
+                }
+                translate([-3, -12, -2]) {
+                    cylinder(r = R(2.75), h = 20, center = true, $fn = 40);
+                    translate([0, 0, 7.51]) m2_5_nut(4);
+                }
+            }
+        }
+    }
+}
+
+module front_block_peg (pos = [0, 0, 0], rot = [0, 0, 0], h = 10) {
+    translate(pos) rotate(rot) {
+        difference () {
+            cube([2, 1.75, h], center = true);
+            translate([1.6, 0, -h / 2]) rotate([0, 30, 0]) cube([2, 1.75 + 1, h], center = true);
+            translate([-1.6, 0, -h / 2]) rotate([0, -30, 0]) cube([2, 1.75 + 1, h], center = true);
+            translate([0, -1.25, -h / 2]) rotate([10, 0, 0]) cube([2 + 1, 1.75, h], center = true);
+            translate([0, 1.25, -h / 2]) rotate([-10, 0, 0]) cube([2 + 1, 1.75, h], center = true);
         }
 
     }
 }
 
+//BOM: 2, M2.5 hex cap bolts 10mm, N/A, Fasctens front_block_pegs to front_block
+module front_block_pegs (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    PegSpacingY = 24.2;
+    BoltSpacingY = 24;
+    translate(pos) rotate(rot) {
+        difference () {
+            rounded_cube([12, 30, 3], d = 3, center = true, $fn = 30);
+            translate([-6, 0, 0]) cylinder(r = R(8), h = 3 + 1, center = true, $fn = 40);
+            translate([6, 0, 0]) rounded_cube([12, 16, 3 + 1], d = 3, center = true, $fn = 30);
+
+            translate([-3, BoltSpacingY / 2, 0]) cylinder(r = R(2.75), h = 10, center = true, $fn = 40);
+            translate([-3, -BoltSpacingY / 2, 0]) cylinder(r = R(2.75), h = 10, center = true, $fn = 40);
+
+            translate([-3, BoltSpacingY / 2, -4.5]) cylinder(r = R(5), h = 10, center = true, $fn = 40);
+            translate([-3, -BoltSpacingY / 2, -4.5]) cylinder(r = R(5), h = 10, center = true, $fn = 40);
+        }
+        front_block_peg([2, PegSpacingY / 2, -6 / 2], h = 7);
+        front_block_peg([2, -PegSpacingY / 2, -6 / 2], h = 7);
+    }
+}
+
 module filter_block (pos = [0, 0, 0], rot = [0, 0, 0], side = "A") {
+    BoltOffsetZ =  -1.25;
     translate(pos) rotate(rot) {
         difference () {
             cube([24, 33, 25.4], center = true);
@@ -652,11 +715,11 @@ module filter_block (pos = [0, 0, 0], rot = [0, 0, 0], side = "A") {
             translate([0, 0, 3.5]) cube([24 + 1, 26, 1.5], center = true);
             translate([0, 0, -6.5]) cube([24 + 1, 26, 1.5], center = true);
             //
-            m2_5_bolt_void([8, 13.1, -2.25], [0, 90, 0], bolt = 24);
-            m2_5_bolt_void([8, -13.1, -2.25], [0, 90, 0], bolt = 24);
+            m2_5_bolt_void([8, 13.1, BoltOffsetZ], [0, 90, 0], bolt = 24);
+            m2_5_bolt_void([8, -13.1, BoltOffsetZ], [0, 90, 0], bolt = 24);
             
-            m2_5_bolt_void([-28, 13.1, 10.95], [0, -90, 0], bolt = 24);
-            m2_5_bolt_void([-28, -13.1, 10.95], [0, -90, 0], bolt = 24);
+            m2_5_bolt_void([-28, 13.1, BoltOffsetZ + (SlideRailBoltSpacingZ / 2)], [0, -90, 0], bolt = 26, pad = 0.2);
+            m2_5_bolt_void([-28, -13.1, BoltOffsetZ + (SlideRailBoltSpacingZ / 2)], [0, -90, 0], bolt = 26, pad = 0.2);
             
             if (side == "A") {
                 translate([0, 50, 0]) cube([100, 100, 100], center = true); 
@@ -677,7 +740,7 @@ module debug () {
             //gate_mask_slide_super16([(PlateX / 2) - (FrontPlateVoidX / 2) - 2.41, 0, -3]);
             //front_plate_void([(PlateX / 2) - (FrontPlateVoidX / 2) - 2.41, 0, 0]);
             //film_clearance_void([0, 0, 15]);
-            color("blue") translate([8, 5, FilmZ]) 16mm_film(18, true, true);
+            color("blue") translate([8, 4.7, FilmZ]) 16mm_film(18, true, true);
             //sprocketed_roller_16mm([1.5, KeySpacingY / 2, KeyZ], [0, 90, 0]);
             //sprocketed_roller_16mm([1.5, -KeySpacingY / 2, KeyZ], [0, 90, 0]);
 
@@ -695,25 +758,26 @@ module debug () {
             idle_roller_16mm([9, IdleRollerSpacingBY / 2, (BodyZ / 2) - IdleRollerBZ - (BodyZ / 2)], [0, 90, 0]);
             idle_roller_16mm([9, -IdleRollerSpacingBY / 2, (BodyZ / 2) - IdleRollerBZ - (BodyZ / 2)], [0, 90, 0]);*/
             
-            slide_rail([-BodyX + (7 / 2) - 0.6, 11.5, (-BodyZ / 2) - 6], "A");
-            slide_rail([-BodyX + (7 / 2) - 0.6, -11.5, (-BodyZ / 2) - 6], "B");
+            slide_rail([-BodyX + (7 / 2) - 0.6, 11.5, (-BodyZ / 2) - 7], "A");
+            //slide_rail([-BodyX + (7 / 2) - 0.6, -11.5, (-BodyZ / 2) - 7], "B");
         
             slide([-BodyX + (7 / 2) - 0.4, 0, FilmZ + (-BodyZ / 2) + 1]);
             
             slide_catch([-13, 34, -51.5]);
             
-            front_block([(-BodyX / 2) - 1, 0, 6.5 / 2]);
-            front_block_film_path([(17 / 2) - 1, (58.5 / 2) + (13 / 2), -2.25]);
-            front_block_film_path([(17 / 2) - 1, (-58.5 / 2) - (13 / 2), -2.25 ], [0, 0, 180]);
+            front_block([(-BodyX / 2) - 1, 0, (6.5 / 2) + 15]);
+            color("yellow") front_block_pegs([0, 0, 16.75]);
+            //front_block_film_path([(17 / 2) - 1, (58.5 / 2) + (13 / 2), -2.25]);
+            //front_block_film_path([(17 / 2) - 1, (-58.5 / 2) - (13 / 2), -2.25 ], [0, 0, 180]);
             
-            filter_block([11, 0, -28], side = "A");
-            filter_block([11, 0, -28], side = "B");
+            filter_block([11+ 10, 0, -29], side = "A");
+            filter_block([11, 0, -29], side = "B");
         }
         //translate([-60, 0, 0]) cube([100, 100, 100], center = true);
     }
 }
 
-PART="body_16mmx";
+PART="front_block_pegsx";
 
 if (PART == "front_plate") {
     rotate([0, 180, 0]) front_plate();
@@ -751,6 +815,8 @@ if (PART == "front_plate") {
     rotate([180, 0, 0]) front_block();
 } else if (PART == "front_block_film_path") {
     front_block_film_path(rot = [0, 90, 0]);
+} else if (PART == "front_block_pegs") {
+    front_block_pegs(rot = [180, 0, 0]);
 } else {
     debug();
 }

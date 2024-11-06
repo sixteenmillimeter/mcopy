@@ -1,4 +1,5 @@
 module,quantity,part,part_id,description
+front_block_pegs,2,M2.5 hex cap bolts 10mm,N/A,Fasctens front_block_pegs to front_block
 front_block,2,M5 hex cap bolt 25mm,N/A,
 body,2,M3 hex nut,N/A,Attach slide_catch to gate
 body,12,M2.5 hex nut,N/A,Attach idle_roller and filter_holder and slide_rail to gate

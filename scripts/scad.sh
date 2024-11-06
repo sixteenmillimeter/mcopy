@@ -21,13 +21,16 @@ fi
 if [[ "${1}" == "all" ]]; then
 	for file in "${FILES[@]}"; do
 		allParts "${file}"
+		bash scripts/bom.sh "./scad/${file}.scad"
 	done
 else
 	if [ -f "scad/${1}.scad" ]; then
 		if [ ${PARALLEL} -eq 1 ]; then
 			parallelParts "${1}"
+			bash scripts/bom.sh "./scad/${1}.scad"
 		else
 			allParts "${1}"
+			bash scripts/bom.sh "./scad/${1}.scad"
 		fi
 	elif [[ "${1}" != "" ]]; then
 		echo "File scad/${1}.scad not found"
