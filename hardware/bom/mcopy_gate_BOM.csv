@@ -8,5 +8,6 @@ body,2,M2.5 hex cap bolt 25mm,N/A,Attach filter_holder to gate
 body,6,M2.5 hex cap bolt 15mm,N/A,Attach idle_roller to gate
 body,2,M5 hex nut,N/A,Attach front_block to gate
 body,2,M5 hex cap bolt 20mm,N/A,Attach gate to projector
-back_plate,1,M2.5 hex nut,N/A,Join the back_plate to the front_plate
-front_plate,1,M2.5 hex cap bolt 10mm,N/A,Join the front_plate to the back_plate
+sprocketed_roller_nut_16mm,s,,,
+back_plate,1,M2.5 hex cap bolt 10mm,N/A,Join the front_plate to the back_plate
+front_plate,1,M2.5 hex nut,N/A,Join the front_plate to the back_plate
