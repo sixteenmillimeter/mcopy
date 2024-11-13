@@ -136,19 +136,19 @@ module arduino_bolts_voids (pos = [0, 0, 0], rot = [0, 0, 0], h = 10, pad = 0) {
 	translate(pos) rotate(rot) {
 		m3_bolt([-2.5, -15.25, 0], h, pad);
 		m3_bolt([-50.75, -14, 0], h, pad);
-		m3_bolt([-45.7, -66, 0], h, pad);
-		m3_bolt([-17.75, -66, 0], h, pad);
+		m3_bolt([-45.7, -66.75, 0], h, pad);
+		m3_bolt([-17.75, -66.75, 0], h, pad);
 	}
 }
 
  module arduino_mount_reinforcement () {
  	X = 57.25;
- 	Y = 71;
+ 	Y = 72;
  	Z = 5;
  	pos = [-(X/2)+1.5, -(Y/2)+1.5, -2];
  	translate(pos) difference () {
  		cube([X, Y, Z], center =  true);
- 		cube([X-10, Y-13, Z+1], center =  true);
+ 		cube([X-13, Y-15, Z+1], center =  true);
  	}
  }
 
@@ -261,7 +261,7 @@ module electronics_attachment_bolt_voids (pos = [0, 0, 0]) {
 		translate([ReinforcementBoltSpacingX / 2, -4, 0]) {
 			cylinder(r = R(3.25), h = 20 + 1, center = true, $fn = 30);
 			translate([0, 0, -4]) m3_nut();
-			translate([6, 0, 0]) cylinder(r = R(3.25), h = 20 + 1, center = true, $fn = 30);
+			translate([5.1, -3.9, 0]) cylinder(r = R(3.25), h = 20 + 1, center = true, $fn = 30);
 			
 		}
 		translate([-ReinforcementBoltSpacingX / 2, -4, 0]) {
@@ -277,7 +277,7 @@ module electronics_mount () {
 		union() {
 			case_mounts([0, 0, 0]);
 			translate(ArduinoPosition) {
-				rotate([0, 0, 180]) bumper();
+				rotate([0, 0, 180]) scale([1, 1.01, 1]) bumper();
 				arduino_mount_reinforcement();
 			}
 			relay_mount(RelayPosition);
