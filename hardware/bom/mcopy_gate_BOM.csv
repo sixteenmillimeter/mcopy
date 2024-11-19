@@ -1,13 +1,16 @@
 module,quantity,part,part_id,description
 front_block_pegs,2,M2.5 hex cap bolts 10mm,N/A,Fasctens front_block_pegs to front_block
-front_block,2,M5 hex cap bolt 25mm,N/A,
+front_block,4,M2.5 hex nut,N/A,Attach the film path blocks
+front_block,2,M5 hex cap bolt 25mm,N/A,Attach the front_block to the body
+body,2,Bearing,N/A,Center sprocketed_roller in gate voids and allow for smooth rotation
 body,2,M3 hex nut,N/A,Attach slide_catch to gate
-body,12,M2.5 hex nut,N/A,Attach idle_roller and filter_holder and slide_rail to gate
+body,12,M2.5 hex nut,ISO 4032,Attach idle_roller and filter_holder and slide_rail to gate
 body,4,M2.5 hex cap bolt 10mm,N/A,Attach slide_rail to gate
 body,2,M2.5 hex cap bolt 25mm,N/A,Attach filter_holder to gate
 body,6,M2.5 hex cap bolt 15mm,N/A,Attach idle_roller to gate
 body,2,M5 hex nut,N/A,Attach front_block to gate
 body,2,M5 hex cap bolt 20mm,N/A,Attach gate to projector
-sprocketed_roller_nut_16mm,s,,,
+sprocketed_roller_nut_16mm,2,M2.5 hex nut,ISO 4032,Attaches the bolt to the nut
+sprocketed_roller_nut_16mm,2,M2.5 hex cap bolt 16mm,ISO 4762,Attaches the nut to the sprocketed roller
 back_plate,1,M2.5 hex cap bolt 10mm,N/A,Join the front_plate to the back_plate
-front_plate,1,M2.5 hex nut,N/A,Join the front_plate to the back_plate
+front_plate,1,M2.5 hex nut,ISO 4032,Join the front_plate to the back_plate

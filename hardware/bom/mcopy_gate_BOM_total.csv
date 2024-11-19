@@ -3,10 +3,11 @@ quantity,part_id,part,price
 2,"M5 hex cap bolt 25mm",N/A,0
 2,"M5 hex cap bolt 20mm",N/A,0
 2,"M3 hex nut",N/A,6
-13,"M2.5 hex nut",N/A,0
+19,"M2.5 hex nut",N/A,171
 2,"M2.5 hex cap bolts 10mm",N/A,0
 2,"M2.5 hex cap bolt 25mm",N/A,0
+2,"M2.5 hex cap bolt 16mm","ISO 4762",0
 6,"M2.5 hex cap bolt 15mm",N/A,0
 5,"M2.5 hex cap bolt 10mm",N/A,0
-0.0,"","",0.0
-36.0,N/A,TOTALS,6.0
+2,Bearing,N/A,0
+46,N/A,TOTALS,177

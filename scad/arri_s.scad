@@ -38,6 +38,12 @@ BearingInnerDiameter = 11.5;
 
 capM3OffsetZ = 11.5;
 
+module debug_arris (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    translate(pos) rotate(rot) {
+        color("green") cube([60, 80, 0.1], center = true);
+        color("red") translate([0, 0, 57]) cube([16, 0.1, 10], center = true);
+    }
+}
 
 module motorBarrel () {
     $fn = 200;

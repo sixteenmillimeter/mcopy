@@ -1,0 +1,4 @@
+module,quantity,part,part_id,description
+sled,8,Radial bearing,N/A,For something
+sled,2,Linear bearing,N/A,For center rails
+sled,2,T8 Nut,N/A,For drive screw

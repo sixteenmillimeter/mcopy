@@ -272,6 +272,7 @@ module electronics_attachment_bolt_voids (pos = [0, 0, 0]) {
 }
 
 //BOM: 4, M3 hex cap bolt 8mm,N/A,Attach Arduino Uno
+//BOM: 2, M3 hex nut, N/A, Attach electronics attachment
 module electronics_mount () {
 	difference () {
 		union() {
@@ -291,24 +292,27 @@ module electronics_mount () {
 	//translate([35.1, 76.8, 4.5]) rotate([0, 0, 180]) arduino();
 }
 
+//BOM: 2, M3 hex cap bolt 12mm, N/A, Attach to electronics mount
 module electronics_attachment () {
 	difference () {
 		cube([70, 16, 19.75], center = true);
 		translate([1/2, 0, -15.5]) cube([58, 20 + 1, 20], center = true);
 		translate([5.5, 0, -11.5]) cube([48, 20 + 1, 20], center = true);
-		translate([11.75, 00, -4.5]) cube([13, 20 + 1, 20], center = true);
+		translate([11.75, 0, -4.5]) cube([13, 20 + 1, 20], center = true);
 		translate([-18, 00, -5]) cube([10, 20 + 1, 20], center = true);
 		translate([ReinforcementBoltSpacingX / 2, 0, 0]) {
 			cylinder(r = R(3.25), h = 20 + 1, center = true, $fn = 30);
 			translate([0, 0, 10]) cylinder(r = R(6.5), h = 20 , center = true, $fn = 30);
 		}
-		translate([-ReinforcementBoltSpacingX / 2, 0, 0]) {
+		translate([-ReinforcementBoltSpacingX / 2, 0, -2]) {
 			cylinder(r = R(3.25), h = 20 + 1, center = true, $fn = 30);
 			translate([0, 0, 10]) cylinder(r = R(6.5), h = 20 , center = true, $fn = 30);
 		}
 		arduino_bolts_voids([28, 6.5, 0], h = 20, pad = 5);
-
+		translate([35, 8, 0]) cylinder(r = R(10), h = 19.75 + 1, center = true, $fn = 40);
+		translate([-37, 0, 8]) rotate([90, 0, 0]) cylinder(r = R(20), h = 19.75 + 1, center = true, $fn = 40);
 	}
+	
 }
 
 module usb_protector () {
@@ -328,7 +332,7 @@ module debug () {
 	translate(ArduinoPosition) translate([-27.5, -8, -10]) electronics_attachment();
 }
 
-PART="electronics_mount";
+PART="electronics_attachment";
 
 if (PART == "electronics_mount") {
 	electronics_mount();

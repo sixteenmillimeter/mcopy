@@ -10,6 +10,7 @@ FILES=(
 	mcopy_projector
 	mcopy_lens_assembly
 	mcopy_gate
+	projector_controller
 )
 
 PARALLEL=0

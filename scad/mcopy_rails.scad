@@ -11,6 +11,8 @@ include <./common/common.scad>
 include <./common/motors.scad>
 include <./common/rods.scad>
 use <./capper.scad>
+use <./bolex.scad>;
+use <./arri_s.scad>;
 
 IN = 25.4;
 
@@ -33,6 +35,14 @@ CameraSledBolexY = 110;
 CameraSledBolexPlateX = 60;
 CameraSledBolexPlateY = 90;
 CameraSledBolexPlateZ = 15;
+
+CameraSledArriSZ = 33 + 52;
+CameraSledArriSX = 100;
+CameraSledArriSY = 110;
+
+CameraSledArriSPlateX = 60;
+CameraSledArriSPlateY = 90;
+CameraSledArriSPlateZ = 15;
 
 LensBearingsSpacing = 28;
 LensBearingM5Spacing = 62;
@@ -215,11 +225,12 @@ module rail_end (pos = [0, 0, 0], rot = [90, 0, 0], Motors = true, Projector = f
     }
 }
 
-echo("sled");
-echo("BOM: ", "(2) T8 Nut");
-echo("BOM: ", "(1 or 2) Linear bearing");
-echo("BOM: ", "(4 or 8) Radial bearings ()");
+
+//BOM: 2,T8 Nut, N/A, For drive screw
+//BOM: 2, Linear bearing, N/A, For center rails
+//BOM: 8, Radial bearing, N/A, For something 
 module sled (pos = [0, 0, 0], rot = [90, 0, 0], Length = 60) {
+
     X = RailEndX;
     Y = 60;
     Z = Length;
@@ -547,9 +558,9 @@ module camera_sled_bolex (pos = [0, 0, 0], rot = [0, 0, 0]) {
     X = CameraSledBolexX;
     Y = CameraSledBolexY;
     PlateY = 20;
+
     translate(pos) rotate(rot) {
         difference () {
-
             rounded_cube([X, Y, Z], d = 10, center = true, $fn = 40);
             translate([0, 0, -20]) rounded_cube([CameraBoltX - 10, CameraBoltY - 10, Z], d = 10, center = true, $fn = 40);
             
@@ -568,13 +579,54 @@ module camera_sled_bolex (pos = [0, 0, 0], rot = [0, 0, 0]) {
             
             //void for plate
             camera_sled_bolex_plate_blank([0, -(PlateY / 2), (CameraSledBolexZ / 2) - (CameraSledBolexPlateZ / 2)], PadX = 0.4, PadY = PlateY, PadZ = 0.1);
-            
-            translate([-33, -22, 10]) rotate([0, 90, 0]) m5_nut();
-            translate([-33, -22, 20]) cube([5, 7.9, 20], center = true);
+            translate([-33, -22, (CameraSledBolexZ / 2) - (CameraSledBolexPlateZ / 2) + 1]) rotate([0, 90, 0]) m5_nut();
+            translate([-33, -22, (CameraSledBolexZ / 2) - (CameraSledBolexPlateZ / 2) + 11]) cube([5, 7.9, 20], center = true);
             
             //m5 bolt
-            translate([-25, -22, 10]) cy(5.1, 25, 40, Y = 90);
-            translate([-25 - 27, -22, 10]) cy(9, 30, 40, Y = 90);
+            translate([-25, -22, (CameraSledBolexZ / 2) - (CameraSledBolexPlateZ / 2) + 1]) cy(5.1, 25, 40, Y = 90);
+            translate([-25 - 27, -22, (CameraSledBolexZ / 2) - (CameraSledBolexPlateZ / 2) + 1]) cy(9, 30, 40, Y = 90);
+        }
+
+    }
+}
+
+module camera_sled_arris (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    Z = CameraSledArriSZ;
+    X = CameraSledArriSX;
+    Y = CameraSledArriSY;
+    PlateY = 20;
+    translate(pos) rotate(rot) {
+
+        difference () {
+
+            rounded_cube([X, Y, Z], d = 10, center = true, $fn = 40);
+
+            //center void
+            translate([0, 0, -20]) rounded_cube([CameraBoltX - 20, CameraBoltY - 20, Z], d = 10, center = true, $fn = 40);
+            translate([0, 0, -20]) rotate([0, 90, 0]) rounded_cube([Z, CameraBoltY - 20, X + 1], d = 10, center = true, $fn = 40);
+            translate([0, 0, -20]) rotate([90, 0, 0]) rounded_cube([CameraBoltX - 20, Z, Y + 1], d = 10, center = true, $fn = 40);
+            
+            m5_bolt_void([CameraBoltX / 2, CameraBoltY / 2, -30], BoltH = Z * 2, CapH = Z);
+            m5_bolt_void([-CameraBoltX / 2, CameraBoltY / 2, -30], BoltH = Z * 2, CapH = Z);
+            m5_bolt_void([CameraBoltX / 2, -CameraBoltY / 2, -30], BoltH = Z * 2, CapH = Z);
+            m5_bolt_void([-CameraBoltX / 2, -CameraBoltY / 2, -30], BoltH = Z * 2, CapH = Z);
+
+            //film plane lines
+            translate([X / 2, CameraBoltY / 2, 0]) rotate([0, 0, 45]) cube([1/2, 1/2, Z + 1], center = true);
+            translate([-X / 2, CameraBoltY / 2, 0]) rotate([0, 0, 45]) cube([1/2, 1/2, Z + 1], center = true);
+
+            //center line
+            translate([0, 0, Z / 2]) rotate([90, 0, 0]) rotate([0, 0, 45]) cube([1/2, 1/2, Y + 1], center = true);
+
+            //void for plate
+            camera_sled_bolex_plate_blank([0, -(PlateY / 2), (CameraSledArriSZ / 2) - (CameraSledArriSPlateZ / 2)], PadX = 0.4, PadY = PlateY, PadZ = 0.1);
+            
+            translate([-33, -22, (CameraSledArriSZ / 2) - (CameraSledArriSPlateZ / 2) + 1]) rotate([0, 90, 0]) m5_nut();
+            translate([-33, -22, (CameraSledArriSZ / 2) - (CameraSledArriSPlateZ / 2) + 11]) cube([5, 7.9, 20], center = true);
+            
+            //m5 bolt
+            translate([-25, -22, (CameraSledArriSZ / 2) - (CameraSledArriSPlateZ / 2) + 1]) cy(5.1, 25, 40, Y = 90);
+            translate([-25 - 27, -22, (CameraSledArriSZ / 2) - (CameraSledArriSPlateZ / 2) + 1]) cy(9, 30, 40, Y = 90);
         }
 
     }
@@ -611,6 +663,40 @@ module camera_sled_bolex_plate (pos = [0, 0, 0], rot = [0, 0, 0]) {
             //camera mounting bolts
             translate([0, (Y / 2) - ((Y - CameraBoltY) / 2) - (9.6 - 5.2), -33 - 10]) {
                 for (i = [0 : 2]) {
+                    camera_sled_bolt_slot([CameraBoltsX[i], CameraBoltsY[i], 50], Bolt = CameraBolts[i], Len = CameraBoltLen);
+                }
+            }
+            //m5 nut drop in
+            translate([-18, -22, 10]) rotate([0, 90, 0]) m5_nut();
+            translate([-18, -22, 20]) cube([5, 7.9, 20], center = true);
+            translate([-25, -22, 10]) cy(5.1, 25, 40, Y = 90);
+
+            //lines
+            camera_bolex_plate_lines_y(Z / 2);
+            camera_bolex_plate_lines_y((Z / 2) - CameraSledBolexPlateZ);
+            translate([0, CameraSledBolexPlateY / 2, 0]) rotate([90, 0, 0]) camera_bolex_plate_lines_y(0);
+            translate([0, -CameraSledBolexPlateY / 2, 0]) rotate([90, 0, 0]) camera_bolex_plate_lines_y(0);
+        }
+        
+    }
+}
+
+module camera_sled_arris_plate (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    Z = CameraSledBolexZ;
+    X = CameraSledBolexX;
+    Y = CameraSledBolexY;
+
+    CameraBoltLen = 20;
+    CameraBolts = ["3/8"];
+    CameraBoltsY = [-27.35];
+    CameraBoltsX = [0];
+    
+    translate(pos) rotate(rot) {
+        difference () {
+            camera_sled_bolex_plate_blank([0, 0, (Z / 2) - (CameraSledBolexPlateZ / 2)]);
+            //camera mounting bolts
+            translate([0, (Y / 2) - ((Y - CameraBoltY) / 2) - (9.6 - 5.2), -33 - 10]) {
+                for (i = [0 : 0]) {
                     camera_sled_bolt_slot([CameraBoltsX[i], CameraBoltsY[i], 50], Bolt = CameraBolts[i], Len = CameraBoltLen);
                 }
             }
@@ -986,12 +1072,19 @@ module debug () {
 
     corner_bracket([-30, 0, 260], [180, 0, 90]);
     corner_outer_bracket([-55, 0, 290], [180, 0, 0]);
-    //camera_sled([0, -90, 0]);
-    //difference () {
+
+    difference () {
         //lens_sled([0, -90, 0]);
+        camera_sled([0, -90, 0]);
         //translate([ 50 + (RailSpacing / 2), -90 - 50, 0]) cube([100, 100, 100], center = true);
         //translate([ -50 - (RailSpacing / 2), -90, 0]) cube([100, 100, 100], center = true);
-    //}
+    }
+
+    camera_sled_bolex([0, -90, 54]);
+    //camera_sled_arris([0, -90, 54 + 26]);
+
+    debug_bolex([0, -90, 70.75]);
+    //debug_arris([0, -91, 70.75 + 51.75]);
     
     //color("green") translate([(LensFrameSpacingX / 2) + 15, -20, 50]) rotate([0, 0, 0]) linear_extrude(height=200) 2020_profile();
     //color("green") translate([-(LensFrameSpacingX / 2) - 15, -20, 50]) rotate([0, 0, 0]) linear_extrude(height=200) 2020_profile();
@@ -1029,8 +1122,8 @@ module debug () {
     //translate([-RailSpacing / 2, 0, 0]) rotate([90, 0, 0]) rail_debug(175);
     //color("green") translate([RailSpacing / 2, 0, 0]) rotate([90, 0, 0]) linear_extrude(height=175) 2020_profile();
 
-    //translate([ThreadedRodSpacing / 2, 40, 0]) rotate([90, 0, 0])  color("blue") NEMA17();
-    //translate([-ThreadedRodSpacing / 2, 40, 0]) rotate([90, 0, 0])  color("blue") NEMA17();
+    //translate([ThreadedRodSpacing / 2, 40, 0]) rotate([90, 0, 0]) color("blue") NEMA17();
+    //translate([-ThreadedRodSpacing / 2, 40, 0]) rotate([90, 0, 0]) color("blue") NEMA17();
 
     //translate([50 - 10, 0, 0]) rail_debug(100);
     //translate([-50 + 10, 0, 0]) rail_debug(100);
@@ -1078,7 +1171,7 @@ module debug2 () {
 }
 
 
-PART = "rail_endx";
+PART = "camera_sled_arris_platex";
 
 if (PART == "rail_end") {
     rail_end(Projector = true);
@@ -1092,6 +1185,10 @@ if (PART == "rail_end") {
     camera_sled_bolex();
 } else if (PART == "camera_sled_bolex_plate") {
     camera_sled_bolex_plate(rot = [180, 0, 0]);
+} else if (PART == "camera_sled_arris_plate") {
+    camera_sled_arris_plate(rot = [180, 0, 0]);
+} else if (PART == "camera_sled_arris") {
+    camera_sled_arris();
 } else if (PART == "bearing_roller") {
     bearing_roller();
 } else if (PART == "bearing_roller_inner") {
@@ -1123,7 +1220,7 @@ if (PART == "rail_end") {
 } else if (PART == "dial_handle") {
     dial_handle();
 } else {
-    //debug();
-    rail_sizing();
+    debug();
+    //rail_sizing();
     //debug2();
 }

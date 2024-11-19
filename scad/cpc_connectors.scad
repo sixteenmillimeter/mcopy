@@ -79,7 +79,7 @@ module plug_pin_voids (PinH) {
 	plug_pin(PinSpacing, -PinSpacing, PinH);  //7
 }
 
-module socket_pin_voids (PinH) {
+module socket_pin_voids (PinH, OnlyPins) {
 	socket_pin(0, 0, PinH);                     //5
 	socket_pin(PinSpacing, 0, PinH);            //4
 	socket_pin(-PinSpacing, 0, PinH);           //6

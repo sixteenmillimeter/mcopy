@@ -1,0 +1,4 @@
+module,quantity,part,part_id,description
+electronics_attachment,2,M3 hex cap bolt 12mm,N/A,Attach to electronics mount
+electronics_mount,2,M3 hex nut,N/A,Attach electronics attachment
+electronics_mount,4,M3 hex cap bolt 8mm,N/A,Attach Arduino Uno
