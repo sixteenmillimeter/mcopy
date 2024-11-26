@@ -28,6 +28,16 @@ proj.set = function (dir, callback) {
 	proj.queue[obj.id] = obj;
 	proj.lock = true;
 };
+
+proj.setAsync = async function (dir) {
+	return new Promise((resolve, reject) => {
+		return proj.set(dir, function (ms) {
+			setTimeout(reject, 10000);
+			return resolve(ms);
+		});
+	});
+}
+
 proj.move = function (callback) {
 	'use strict';
 	var obj;
@@ -46,6 +56,16 @@ proj.move = function (callback) {
 	proj.queue[obj.id] = obj;
 	proj.lock = true;
 };
+
+proj.moveAsync = async function () {
+	return new Promise((resolve, reject) => {
+		return proj.move(function (ms) {
+			setTimeout(reject, 10000);
+			return resolve(ms);
+		});
+	});
+}
+
 proj.end = function (c, id, ms) {
 	'use strict';
 	if (c === cfg.arduino.cmd.projector_forward) {
@@ -75,6 +95,8 @@ proj.end = function (c, id, ms) {
 	if (typeof proj.queue[id] !== 'undefined') {
 		if (typeof proj.queue[id].callback !== 'undefined') {
 			proj.queue[id].callback(ms);
+		} else {
+			log.info('NO PROJ CALLBACK')
 		}
 		delete proj.queue[id];
 		proj.lock = false;

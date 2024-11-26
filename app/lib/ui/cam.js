@@ -29,6 +29,15 @@ cam.set = function (dir, callback) {
 	cam.lock = true;
 };
 
+cam.setAsync = async function (dir) {
+	return new Promise((resolve, reject) => {
+		return cam.set(dir, function (ms) {
+			setTimeout(reject, 10000);
+			return resolve(ms);
+		});
+	});
+}
+
 cam.setValue = function (val) {
 	'use strict';
 	var obj = {
@@ -55,6 +64,16 @@ cam.move = function (callback) {
 	cam.queue[obj.id] = obj;
 	cam.lock = true;
 };
+
+cam.moveAsync = async function () {
+	return new Promise((resolve, reject) => {
+		return cam.move(function (ms) {
+			setTimeout(reject, 10000);
+			return resolve(ms);
+		});
+	});
+}
+
 cam.end = function (c, id, ms) {
 	'use strict';
 	if (c === cfg.arduino.cmd.camera_forward) {
@@ -85,6 +104,8 @@ cam.end = function (c, id, ms) {
 	if (typeof cam.queue[id] !== 'undefined') {
 		if (typeof cam.queue[id].callback !== 'undefined') {
 			cam.queue[id].callback(ms);
+		} else {
+			log.info('NO CAM CALLBACK')
 		}
 		delete cam.queue[id];
 		cam.lock = false;

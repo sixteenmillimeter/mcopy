@@ -231,7 +231,7 @@ module debug () {
 	}
 }
 
-PART = "9pin_plug";
+PART = "9pin_socket";
 
 if (PART == "9pin_plug") {
 	rotate([180, 0, 0]) cpc_9pin_plug();

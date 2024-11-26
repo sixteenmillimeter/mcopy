@@ -27,6 +27,7 @@ const timing    = require('./lib/ui/timing.js');
 const Mscript 	= require('./lib/mscript');
 const { delay }	= require('./lib/delay');
 const alertObj  = require('./lib/ui/alert.js');
+const gamecontroller       = require('./lib/ui/gamecontroller.js');
 const { Log }   = require('./lib/log');
 
 let log;
@@ -59,4 +60,5 @@ async function init () {
 	capper.init();
 	alertObj.init();
 	timing.init();
+	gamecontroller.init(seq, cmd, cam, proj);
 };

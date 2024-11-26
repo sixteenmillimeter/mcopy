@@ -565,6 +565,7 @@ module slide_rail (pos = [0, 0, 0], side = "A") {
     BoltSlotY = 1.5;
     BoltSlotOffsetY = side == "A" ? BoltSlotY : -BoltSlotY;
     BoltsOffsetY = side == "A" ? -1 / 2 : 1 / 2;
+    NutVoidY = side == "A" ? -4.5 : 4.5;
     translate(pos) {
         difference() {
             cube([7, 9, BodyZ - 16], center = true);
@@ -574,6 +575,7 @@ module slide_rail (pos = [0, 0, 0], side = "A") {
                 slide_rail_bolt_slot([0, BoltsOffsetY, SlideRailBoltSpacingZ / 2], [0, 90, 0], BoltSlotY, BoltSlotOffsetY);
                 slide_rail_bolt_slot([0, BoltsOffsetY, -SlideRailBoltSpacingZ / 2], [0, 90, 0], BoltSlotY, BoltSlotOffsetY);
             }
+            translate([0, NutVoidY, ((BodyZ - 16) / 2) - (3 / 2) + 0.01]) cube([7 + 1, 7 , 3], center = true);
         }
     }
 }
@@ -724,12 +726,12 @@ module front_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
         
             //for pegs
             translate([12.25, 0, -1.75]) {
-                translate([3.5, 0, 0]) rounded_cube([33.4, 31.4, 4], d = 3, center = true, $fn = 30);
-                translate([-3, 12, -2]) {
+                translate([3.5, 0, 0]) rounded_cube([33.6, 31.6, 4], d = 3, center = true, $fn = 30);
+                translate([-5, 12, -2]) {
                     cylinder(r = R(2.75), h = 20, center = true, $fn = 40);
                     translate([0, 0, 7]) m2_5_nut(4);
                 }
-                translate([-3, -12, -2]) {
+                translate([-5, -12, -2]) {
                     cylinder(r = R(2.75), h = 20, center = true, $fn = 40);
                     translate([0, 0, 7]) m2_5_nut(4);
                 }
@@ -860,7 +862,7 @@ module debug () {
     }
 }
 
-PART="front_block_16mm";
+PART="front_block_16mmx";
 
 if (PART == "front_plate") {
     //1

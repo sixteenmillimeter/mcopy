@@ -49,6 +49,7 @@ class Sequence {
 		let timeStr;
 		//console.log(JSON.stringify(arg))
 		if (arg.start) {
+			this.running = true;
 			if (typeof arg.loop !== 'undefined' && typeof arg.step !== 'undefined') {
 				this.activeStep(arg.step);
 				log.info(`Step ${arg.step + 1}/${this.arr.length}, Loop ${arg.loop + 1}/${this.loops}`, 'SERIAL', true);
@@ -58,6 +59,7 @@ class Sequence {
 				this.progress(0, 0);
 			}
 		} else if (arg.stop) {
+			this.running = false;
 			if (typeof arg.loop !== 'undefined' && typeof arg.step !== 'undefined') {
 				//console.log(JSON.stringify(arg))
 				this.progress(arg.step + 1, arg.loop);
@@ -257,8 +259,11 @@ class Sequence {
 
 	public cancel () {
 		gui.spinner(true, `Cancelling sequence...`);
-		this.running = false;
 		this.stop();
+	}
+
+	public isRunning () : boolean {
+		return this.running;
 	}
 }
 
