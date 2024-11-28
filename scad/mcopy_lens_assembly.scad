@@ -93,13 +93,20 @@ module m3BoltNut (bolt = 20, nut = 3.5) {
     }
 }
 
-module m4BoltNut (bolt = 10, nut = 3.5) {
+module m4BoltNut (bolt = 10, nut = 3.5, drop = true) {
     m4Bolt(bolt);
 
     translate([0, 0, nut]) color("red") {
-        m4_nut();
-        translate([-10, 0, 0]) cube([20, 6.9, 3.5], center = true);
+        m4_nut(3.5);
+        if (drop) {
+            translate([-10, 0, 0]) cube([20, 6.9, 3.5], center = true);
+        }
     }
+}
+
+module m5Nut () {
+    cylinder(r = R(9), h = 4, center = true, $fn = 6);
+    cylinder(r = R(5), h = 20, center = true, $fn = 30);
 }
 
 module lensAssembyBellowBoardLinearBearingMount (X = 0) {
@@ -385,7 +392,7 @@ module jkLensLinearRodTerminalBlock (pos = [0, 0, 0]) {
     translate(pos) difference() {
         cube([26.5, 20, 15], center = true);
         cylinder(r = 8.1 / 2, h = 15 + 1, center = true, $fn = 50);
-        translate([12, 0, 0]) rotate([0, 90, 180]) m4BoltNut(20);
+        translate([5, 0, 0]) rotate([0, -90, 180]) m4BoltNut(20);
     }
 
 }
@@ -394,6 +401,7 @@ module jkLensMount () {
     BoltSpacingX = 78.5 + 5.3;
     BoltD = 4.25;
     RailsY = -32;
+    
     difference () {
         union() {
             cube([140, 15.5, 3], center = true);
@@ -409,24 +417,62 @@ module jkLensMount () {
                 translate([-130 / 2, -25, 4]) cube([26.5, 40, 5], center = true);
 
                 //linear rod terminal block
-                jkLensLinearRodTerminalBlock([130 / 2, -32, 14]);
+                jkLensLinearRodTerminalBlock([130 / 2, -32, 14 - 20]);
 
                 //threaded rod bearing block
-                translate([-130 / 2, -32, 12]) cylinder(r = 22.5 / 2, h = 20, center = true, $fn = 90); 
+                translate([-130 / 2, -32, 12 - 20]) cylinder(r = 22.5 / 2, h = 22, center = true, $fn = 90); 
             }
+            
         }
+        translate([73.25, -32, 14 - 5]) cylinder(r = 8.1 / 2, h = 20, center = true, $fn = 50);
         translate([BoltSpacingX / 2, 0, 0]) cylinder( r = BoltD / 2, h = 20, center = true, $fn = 30);
         translate([-BoltSpacingX / 2, 0, 0]) cylinder( r = BoltD / 2, h = 20, center = true, $fn = 30);
 
         translate([-BoltSpacingX / 2, 0, 14.5]) cylinder( r = 8/ 2, h = 20, center = true, $fn = 30);
     
-        translate([-(130 / 2) + 8.25, -32, 8]) {
+        translate([-(130 / 2) + 8.25, -32, 8 - 13]) {
             linear_bearing(padD = 0.2);
             cylinder(r = 9 / 2, h = 40, center = true, $fn = 40);
         }
     }
+    difference () {
+        translate([10, -25, 4]) cube([110, 30, 5], center = true);
+        translate([2 + 22, -27, 1.5]) rotate([0, 0, 30]) m4BoltNut(bolt = 30, drop = false);
+        translate([2 - 22, -27, 1.5]) rotate([0, 0, 30]) m4BoltNut(bolt = 30, drop = false);
+    }
+
     //translate([(130 / 2) + 8.25, RailsY, XOffset]) rotate([0, 0, 0])  linearMotionRod(RodLength);
     //translate([(-130 / 2) + 8.25, RailsY, XOffset]) rotate([0, 0, 0])  linearMotionRod(RodLength);
+
+        
+}
+
+module jkLensBrace () {
+        difference () {
+            union () {
+                
+                translate([2, -20, -(75 / 2) + 1.5]) {
+                    difference () {
+                        cube([80, 20, 75], center = true);
+                        difference () {
+                            cube([60, 20 + 1, 55], center = true);
+                            union () {
+                                rotate([0,  45 ,0]) cube([200, 20 + 2, 15], center = true);
+                                rotate([0, -45 ,0]) cube([200, 20 + 2, 15], center = true);
+                            }
+                        }
+                    }
+                }
+                translate([2, -25, -75 + 4])  cube([90, 20, 5], center = true);
+            }
+            translate([2, -30, -(75 / 2) + 1 ]) cube([60, 20, 60], center = true);
+            //m5
+            translate([2 + 23, -25, -75 + 3.4]) rotate([0, 0, 30]) m5Nut();
+            translate([2 - 23, -25, -75 + 3.4]) rotate([0, 0, 30]) m5Nut();
+            
+            translate([2 + 22, -27, 0]) cylinder(r = R(4.25), h = 30, center = true, $fn = 30);
+            translate([2 - 22, -27, 0]) cylinder(r = R(4.25), h = 30, center = true, $fn = 30);
+        }
 }
 
 module debug () {
@@ -504,6 +550,8 @@ if (PART == "lens_assembly_camera_bellows_board") {
     lensAssemblyThreadedCollar(6, 0.2);
 } else if (PART == "lens_assembly_jk_mount") {
     jkLensMount();
+} else if (PART == "lens_assembly_jk_brace") {
+    rotate([-90, 0, 0]) jkLensBrace();
 } else {
     debug();
 }

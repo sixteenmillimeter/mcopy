@@ -1,5 +1,5 @@
-quantity,part_id,part,price
-2,"T8 Nut",N/A,0
-8,"Radial bearing",N/A,0
-2,"Linear bearing",N/A,0
-12,N/A,TOTALS,0
+quantity,part,part_id,price
+2,"T8 Nut",Tr8x2,499
+2,"Linear bearing",N/A,200
+8,"608-RS Ball Bearing",608-RS,143
+12,TOTAL,N/A,842

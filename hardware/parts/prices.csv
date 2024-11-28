@@ -1,5 +1,23 @@
-part,part_id,price,url
-M3 hex nut,N/A,3,https://amzn.to/4hAnwjc
-M3 hex cap bolt 12mm,N/A,9,https://amzn.to/48CGa5Y
-608-RS Ball Bearing,608-RS,8,https://amzn.to/4fKxDA7
-M2.5 hex nut, ISO 4032,9,https://www.metricscrewandtool.com/product-page/m2-5-hex-nuts
+part,part_id,price,quantity,url
+M3 hex nut,N/A,999,300,https://amzn.to/4hAnwjc
+M2.5 hex nut,ISO 4032,629,100,https://amzn.to/4i7qxrr
+M2.5 hex cap bolt 10mm,N/A,699,50,https://amzn.to/49froT4
+M2.5 hex cap bolt 16mm,N/A,699,50,https://amzn.to/49cj6v2
+M2.5 hex cap bolt 25mm,N/A,598,100,https://amzn.to/41faYb0
+M3 hex cap bolt 6mm,N/A,726,100,https://amzn.to/3AwiZxo
+M3 hex cap bolt 8mm,N/A,899,100,https://amzn.to/3YEvWNB
+M3 hex cap bolt 12mm,N/A,836,100,https://amzn.to/48CGa5Y
+M3 sliding t slot nut,N/A,599,105,https://amzn.to/48GRrSU
+M5 hex cap bolt 20mm,N/A,949,50,https://amzn.to/4ePHCmW
+M5 hex cap bolt 25mm,N/A,809,30,https://amzn.to/3VgdQAW
+M5 hex nut,N/A,999,200,https://amzn.to/3ZdMNHs
+2020 Aluminum extrusion mm,N/A,7399,12200,https://amzn.to/418OicC
+100RPM DC geared motor with encoder,N/A,1619,1,https://amzn.to/3UF707G
+250RPM DC geared motor,JSX40-370,1499,1,https://amzn.to/3NWkcRL
+ESP32 Dev board,N/A,1999,3,https://amzn.to/3NXCvGj
+L298N Motor driver module,N/A,1149,4,https://amzn.to/4ellssy
+ESP32 GPIO breakout board,N/A,1199,2,https://amzn.to/3UFjpbO
+M4 hex bolt 40mm,N/A,609,10,https://amzn.to/4ikpYL8
+608-RS Ball Bearing,608-RS,1779,100,https://amzn.to/4fKxDA7
+Linear bearing,LM8UU,1199,12,https://amzn.to/4i5XsMZ
+T8 Nut,Tr8x2,499,2,https://amzn.to/3B4m4VW 

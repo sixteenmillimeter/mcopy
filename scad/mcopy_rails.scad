@@ -226,9 +226,9 @@ module rail_end (pos = [0, 0, 0], rot = [90, 0, 0], Motors = true, Projector = f
 }
 
 
-//BOM: 2,T8 Nut, N/A, For drive screw
+//BOM: 2, T8 Nut, Tr8x2, For drive screw
 //BOM: 2, Linear bearing, N/A, For center rails
-//BOM: 8, Radial bearing, N/A, For something 
+//BOM: 8, 608-RS Ball Bearing, 608-RS, To smooth sled moving along rails
 module sled (pos = [0, 0, 0], rot = [90, 0, 0], Length = 60) {
 
     X = RailEndX;

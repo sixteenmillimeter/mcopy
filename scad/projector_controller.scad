@@ -323,6 +323,40 @@ module usb_protector () {
     }
 }
 
+module power_cable () {
+    OD = 14;
+    difference () {
+        union () {
+            cylinder(r = R(18), h = 2, center = true, $fn = 80);
+            translate([0, 0, 10 / 2]) cylinder(r = R(OD), h = 10, center = true, $fn = 80);
+        }
+        cylinder(r = R(6.75), h = 40, center = true, $fn = 80);
+        translate([0, 0, 7.75]) difference() {
+            cylinder(r = R(OD + 2), h = 5, center = true);
+            cylinder(r = R(8), h = 5 + 1, center = true, $fn = 80);
+            translate([0, 0, -0.1]) cylinder(r2 = R(9), r1 = R(OD + .5), h = 5, center = true, $fn = 80);
+        }
+    }
+}
+
+module power_cable_halves () {
+    NotchSpacing = 10.5;
+    translate([-3, 0, 0]) difference () {
+        power_cable();
+        translate([50 / 2, 0, 0]) cube([50, 50, 50], center = true);
+        translate([0, NotchSpacing / 2, 0]) rotate([0, 0, 45]) cube([1.5, 1.5, 50], center = true);
+        translate([0, -NotchSpacing / 2, 0]) rotate([0, 0, 45]) cube([1.5, 1.5, 50], center = true);
+    }
+    translate([3, 0, 0]) difference () {
+        power_cable();
+        difference () {
+        translate([-50 / 2, 0, 0]) cube([50, 50, 50], center = true);
+        translate([0, NotchSpacing / 2, 0]) rotate([0, 0, 45]) cube([1.5, 1.5, 50], center = true);
+        translate([0, -NotchSpacing / 2, 0]) rotate([0, 0, 45]) cube([1.5, 1.5, 50], center = true);
+        }
+    }
+}
+
 module debug () {
 	case_debug();
 	translate([0, 0, -CaseInnerZ/2+(CaseMountsH)]) electronics_mount();
@@ -332,14 +366,14 @@ module debug () {
 	translate(ArduinoPosition) translate([-27.5, -8, -10]) electronics_attachment();
 }
 
-PART="electronics_attachment";
+PART="power_cable";
 
 if (PART == "electronics_mount") {
 	electronics_mount();
 } else if (PART == "electronics_attachment") {
 	electronics_attachment();
-} else if (PART == "case_mounts") {
-	case_mounts();
+} else if (PART == "power_cable") {
+	power_cable_halves();
 } else if (PART == "usb_protector") {
     usb_protector();
 } else {

@@ -368,7 +368,7 @@ module sprocketed_roller_text (pos = [0, 0, 0], rot = [0, 0, 0], font_size = 3, 
     translate(pos) rotate(rot) {
         for (i = [0 : chars_len - 1]) {
             rotate(-i * step_angle) {
-                translate([0, radius + font_size / 2, 0]) {
+                translate([0, radius + font_size / 2, 0]) rotate([180, 0, 0]) {
                     linear_extrude(height = h) {
                         text(chars[i], font = "Liberation Sans:style=Bold", size = font_size, valign = "center", halign = "center");
                     }
@@ -410,7 +410,7 @@ module sprocketed_roller_16mm (pos = [0, 0, 0], rot = [0, 0, 0], side = "TAKEUP"
             //m2.5 bolt
             translate([0, 0, -15.85]) rotate([0, 90, 0]) cylinder(r = R(2.75), h = 30, center = true, $fn = 30);
             //
-            sprocketed_roller_text([0, 0, 16], chars = side);
+            sprocketed_roller_text([0, 0, -1], chars = side);
         }
         
     }
@@ -447,12 +447,12 @@ module sprocketed_roller_nut_16mm (pos = [0, 0, 0], rot = [0, 0, 0]) {
 
 //BOM: 2, M5 hex cap bolt 20mm, N/A, Attach gate to projector
 //BOM: 2, M5 hex nut, N/A, Attach front_block to gate
-//BOM: 6, M2.5 hex cap bolt 15mm, N/A, Attach idle_roller to gate
+//BOM: 6, M2.5 hex cap bolt 16mm, N/A, Attach idle_roller to gate
 //BOM: 2, M2.5 hex cap bolt 25mm, N/A, Attach filter_holder to gate
 //BOM: 4, M2.5 hex cap bolt 10mm, N/A, Attach slide_rail to gate
 //BOM: 12, M2.5 hex nut, ISO 4032, Attach idle_roller and filter_holder and slide_rail to gate
 //BOM: 2, M3 hex nut, N/A, Attach slide_catch to gate
-//BOM: 2, Bearing, N/A, Center sprocketed_roller in gate voids and allow for smooth rotation
+//BOM: 2, 608-RS Ball Bearing, 608-RS, Center sprocketed_roller in gate voids and allow for smooth rotation
 module body (pos = [0, 0, 0], gauge = "16mm") {
     SlideRailsOffsetZ = -5;
     translate(pos) {
@@ -770,7 +770,7 @@ module front_block_peg (pos = [0, 0, 0], rot = [0, 0, 0], h = 10) {
     }
 }
 
-//BOM: 2, M2.5 hex cap bolts 10mm, N/A, Fasctens front_block_pegs to front_block
+//BOM: 2, M2.5 hex cap bolt 10mm, N/A, Fasctens front_block_pegs to front_block
 module front_block_pegs (pos = [0, 0, 0], rot = [0, 0, 0]) {
     PegSpacingY = 24.2;
     BoltSpacingY = 24;
@@ -822,18 +822,29 @@ module filter_block (pos = [0, 0, 0], rot = [0, 0, 0], side = "A") {
     }
 }
 
+module debug_film (pos = [0, 0, 0]) {
+    color("blue") translate(pos) {
+        difference () {
+            16mm_film(18, true, true);
+            translate([0, -7.49 / 2, 0]) cube([10.26, 7.49, 1], center = true);
+        }
+    }
+}
+
 module debug () {
+    FilmRestingDistanceZ = -3.5;
     FilmRetractionDistanceZ = -7.2;
     difference () {
-        //color("blue") translate([8, 4.6, FilmZ]) 16mm_film(18, true, true);
         union () {
-            FilmZ = - 7.2; //retraction distance
+            FilmZ = FilmRestingDistanceZ; //retraction distance
             translate([(-BodyX / 2) - 1, 0, -BodyZ / 2]) body(gauge = "16mm");
-
+            
+            debug_film([8, 4.6, FilmZ]);
+            
             translate([0, 0, FilmZ + 1.4]) front_plate();
             translate([0, 0, FilmZ - 1.4]) back_plate();
-            //gate_mask_slide_standard16([(PlateX / 2) - (FrontPlateVoidX / 2) - 1.9, 0, FilmZ - .9]);
-            gate_mask_slide_super16([(PlateX / 2) - (FrontPlateVoidX / 2) - 1.9, 0, FilmZ - .9]);
+            gate_mask_slide_standard16([(PlateX / 2) - (FrontPlateVoidX / 2) - 1.9, 0, FilmZ - .9]);
+            //gate_mask_slide_super16([(PlateX / 2) - (FrontPlateVoidX / 2) - 1.9, 0, FilmZ - .9]);
             //front_plate_void([(PlateX / 2) - (FrontPlateVoidX / 2) - 2.41, 0, 0]);
             //film_clearance_void([0, 0, 15]);
             
@@ -874,7 +885,7 @@ module debug () {
     }
 }
 
-PART="front_block_16mmx";
+PART="sprocketed_roller_takeup_16mmx";
 
 if (PART == "front_plate") {
     //1

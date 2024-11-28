@@ -1,13 +1,11 @@
-quantity,part_id,part,price
-2,"M5 hex nut",N/A,0
-2,"M5 hex cap bolt 25mm",N/A,0
-2,"M5 hex cap bolt 20mm",N/A,0
-2,"M3 hex nut",N/A,6
-19,"M2.5 hex nut",N/A,171
-2,"M2.5 hex cap bolts 10mm",N/A,0
-2,"M2.5 hex cap bolt 25mm",N/A,0
-2,"M2.5 hex cap bolt 16mm","ISO 4762",0
-6,"M2.5 hex cap bolt 15mm",N/A,0
-5,"M2.5 hex cap bolt 10mm",N/A,0
-2,Bearing,N/A,0
-46,N/A,TOTALS,177
+quantity,part,part_id,price
+2,"M5 hex nut",N/A,10
+2,"M5 hex cap bolt 25mm",N/A,54
+2,"M5 hex cap bolt 20mm",N/A,38
+2,"M3 hex nut",N/A,7
+19,"M2.5 hex nut",N/A,120
+2,"M2.5 hex cap bolt 25mm",N/A,12
+8,"M2.5 hex cap bolt 16mm",N/A,112
+7,"M2.5 hex cap bolt 10mm",N/A,98
+2,"608-RS Ball Bearing",608-RS,36
+46,TOTAL,N/A,487
