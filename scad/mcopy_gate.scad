@@ -839,7 +839,7 @@ module debug () {
             FilmZ = FilmRestingDistanceZ; //retraction distance
             translate([(-BodyX / 2) - 1, 0, -BodyZ / 2]) body(gauge = "16mm");
             
-            debug_film([8, 4.6, FilmZ]);
+            //debug_film([8, 4.6, FilmZ]);
             
             translate([0, 0, FilmZ + 1.4]) front_plate();
             translate([0, 0, FilmZ - 1.4]) back_plate();
@@ -857,13 +857,19 @@ module debug () {
             color("blue") sprocketed_roller_nut_16mm([-8.5, -KeySpacingY / 2, KeyZ], [0, 90, 0]);
             
         
-            /*idle_roller_16mm([9, IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerAZ - (BodyZ / 2)], [0, 90, 0]);
-            idle_roller_post_16mm([9, IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerAZ - (BodyZ / 2)], [0, 90, 0]);
+            idle_roller_16mm([9, IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerAZ - (BodyZ / 2)], [0, 90, 0]);
             idle_roller_16mm([9, -IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerAZ - (BodyZ / 2)], [0, 90, 0]);
             idle_roller_16mm([9, IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerBZ - (BodyZ / 2)], [0, 90, 0]);
             idle_roller_16mm([9, -IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerBZ - (BodyZ / 2)], [0, 90, 0]);
             idle_roller_16mm([9, IdleRollerSpacingBY / 2, (BodyZ / 2) - IdleRollerBZ - (BodyZ / 2)], [0, 90, 0]);
-            idle_roller_16mm([9, -IdleRollerSpacingBY / 2, (BodyZ / 2) - IdleRollerBZ - (BodyZ / 2)], [0, 90, 0]);*/
+            idle_roller_16mm([9, -IdleRollerSpacingBY / 2, (BodyZ / 2) - IdleRollerBZ - (BodyZ / 2)], [0, 90, 0]);
+            
+            idle_roller_post_16mm([9, IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerAZ - (BodyZ / 2)], [0, 90, 0]);
+            idle_roller_post_16mm([9, -IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerAZ - (BodyZ / 2)], [0, 90, 0]);
+            idle_roller_post_16mm([9, IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerBZ - (BodyZ / 2)], [0, 90, 0]);
+            idle_roller_post_16mm([9, -IdleRollerSpacingAY / 2, (BodyZ / 2) - IdleRollerBZ - (BodyZ / 2)], [0, 90, 0]);
+            idle_roller_post_16mm([9, IdleRollerSpacingBY / 2, (BodyZ / 2) - IdleRollerBZ - (BodyZ / 2)], [0, 90, 0]);
+            idle_roller_post_16mm([9, -IdleRollerSpacingBY / 2, (BodyZ / 2) - IdleRollerBZ - (BodyZ / 2)], [0, 90, 0]);
             
             //slide_rail([-BodyX + (7 / 2) - 0.6, 11.5, (-BodyZ / 2) - 7], "A");
             slide_rail([-BodyX + (7 / 2) - 0.6, -11.5, (-BodyZ / 2) - 7], "B");
@@ -871,9 +877,9 @@ module debug () {
             slide([-BodyX + (7 / 2) - 0.4, 0, FilmZ + (-BodyZ / 2) + 1]);
             
             slide_catch([-13, 36, -51.5]);
-            translate([0, 0, 0]) {
-                //front_block([(-BodyX / 2) - 1, 0, (6.5 / 2)]);
-                color("yellow") front_block_pegs([0, 0, 2]);
+            translate([0, 0, 20]) {
+                front_block([(-BodyX / 2) - 1, 0, (6.5 / 2)]);
+                front_block_pegs([0, 0, 2]);
                 front_block_film_path([(16.75 / 2) - 1, (58.5 / 2) + (13 / 2), -2.25]);
                 front_block_film_path([(16.75 / 2) - 1, (-58.5 / 2) - (13 / 2), -2.25], [0, 0, 180]);
             }
