@@ -102,13 +102,11 @@ cam.end = function (c, id, ms) {
 	timing.update(c, ms);
 	gui.counterUpdate('cam', cam.pos);
 	if (typeof cam.queue[id] !== 'undefined') {
+		cam.lock = false;
 		if (typeof cam.queue[id].callback !== 'undefined') {
 			cam.queue[id].callback(ms);
-		} else {
-			log.info('NO CAM CALLBACK')
 		}
 		delete cam.queue[id];
-		cam.lock = false;
 	}
 };
 

@@ -93,13 +93,11 @@ proj.end = function (c, id, ms) {
 	}
 	gui.counterUpdate('proj', proj.pos)
 	if (typeof proj.queue[id] !== 'undefined') {
+		proj.lock = false;
 		if (typeof proj.queue[id].callback !== 'undefined') {
 			proj.queue[id].callback(ms);
-		} else {
-			log.info('NO PROJ CALLBACK')
 		}
 		delete proj.queue[id];
-		proj.lock = false;
 	}
 };
 proj.listen = function () {
