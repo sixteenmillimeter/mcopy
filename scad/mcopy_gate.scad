@@ -1,5 +1,5 @@
 use <./common/common.scad>;
-use <./sprocketed_roller/sprocketed_roller_var.scad>;
+use <./sprocketed_roller/scad/sprocketed_roller.scad>;
 use <./filmless.scad>;
 use <./bolex.scad>;
 use <./arri_s.scad>;
