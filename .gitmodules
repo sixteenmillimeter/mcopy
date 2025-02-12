@@ -1,9 +1,12 @@
 [submodule "scad/common"]
 	path = scad/common
 	url = https://git.sixteenmillimeter.com/modules/common.git
+	ignore = dirty
 [submodule "scad/sprocketed_roller"]
 	path = scad/sprocketed_roller
 	url = https://git.sixteenmillimeter.com/modules/sprocketed_roller.git
+	ignore = dirty
 [submodule "scad/MCAD"]
 	path = scad/MCAD
 	url = https://github.com/openscad/MCAD.git
+	ignore = dirty
