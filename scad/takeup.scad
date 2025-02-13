@@ -1,5 +1,5 @@
-include <common.scad>;
-include <daylight_spool_mount.scad>;
+include <./common/common.scad>;
+include <./daylight_spool_mount.scad>;
 
 COUPLING_D = 37;
 

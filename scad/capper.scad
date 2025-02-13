@@ -1,4 +1,4 @@
-include <common.scad>;
+include <./common/common.scad>;
 
 // Using a Tower Pro SG-5010 servo
 

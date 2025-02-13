@@ -1,4 +1,4 @@
-include <common.scad>;
+include <./common/common.scad>;
 IN = 25.4;
 /**
  * Parametric measurement bar to attach to rails

@@ -1,6 +1,6 @@
 // Arri-S Animation Motor
 
-include <./common.scad>;
+include <./common/common.scad>;
 include <./takeup.scad>;
 include <./bellows.scad>;
 
