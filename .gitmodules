@@ -10,3 +10,7 @@
 	path = scad/MCAD
 	url = https://github.com/openscad/MCAD.git
 	ignore = dirty
+[submodule "scad/takeup"]
+	path = scad/takeup
+	url = https://git.sixteenmillimeter.com/modules/takeup.git
+	ignore = dirty

@@ -1,4 +1,3 @@
-
 use <./common/common.scad>;
 use <./bolex.scad>;
 
@@ -26,12 +25,18 @@ C2 = 90.6;
 OFFSETX = 0;
 
 CameraSledBolexZ = 33;
-CameraSledBolexX = 100;
-CameraSledBolexY = 105;
+CameraSledBolexX = 120;
+CameraSledBolexY = 110;
+
+CameraSledBolexOffsetX = 13.5;
+CameraSledBolexBoltOffsetY = -33;
+CameraSledBolexBoltSpacingY = 52;
 
 CameraSledBolexPlateX = 60;
 CameraSledBolexPlateY = 90;
 CameraSledBolexPlateZ = 15;
+
+CameraSledBolexPlateOffsetY = 0;
 
 CameraBoltX = (A1 + A2) / 2; //75;
 CameraBoltY = (C1 + C2) / 2;
@@ -128,7 +133,7 @@ module jk_camera_sled_bolex (pos = [0, 0, 0], rot = [0, 0, 0]) {
     translate(pos) rotate(rot) {
         difference () {
 
-            rounded_cube([X, Y, Z], d = 10, center = true, $fn = 40);
+            translate([CameraSledBolexOffsetX, 0, 0])  rounded_cube([X, Y, Z], d = 10, center = true, $fn = 40);
             translate([0, 0, -20]) rounded_cube([CameraBoltX - 10, CameraBoltY - 10, Z], d = 10, center = true, $fn = 40);
             
             enlarged_m5_bolt_void([CameraBoltX / 2, CameraBoltY / 2, -10], BoltH = Z * 2, CapH = Z);
@@ -145,14 +150,33 @@ module jk_camera_sled_bolex (pos = [0, 0, 0], rot = [0, 0, 0]) {
 
             
             //void for plate
-            camera_sled_bolex_plate_blank([0, -(PlateY / 2), (CameraSledBolexZ / 2) - (CameraSledBolexPlateZ / 2)], PadX = 0.4, PadY = PlateY, PadZ = 0.1);
-            
-            translate([-33, -22, 10]) rotate([0, 90, 0]) m5_nut();
-            translate([-33, -22, 20]) cube([5, 7.9, 20], center = true);
-            
-            //m5 bolt
-            translate([-25, -22, 10]) cy(5.1, 25, 40, Y = 90);
-            translate([-25 - 27, -22, 10]) cy(9, 30, 40, Y = 90);
+            camera_sled_bolex_plate_blank([CameraSledBolexOffsetX, -(PlateY / 2), (CameraSledBolexZ / 2) - (CameraSledBolexPlateZ / 2)], PadX = 0.4, PadY = PlateY, PadZ = 0.1);
+
+            //m5 bolt sides
+            translate([-25 + CameraSledBolexOffsetX, CameraSledBolexBoltOffsetY, (CameraSledBolexZ / 2) - (CameraSledBolexPlateZ / 2) + 1]) {
+                cy(5.1, 25, 40, Y = 90);
+                translate([-27 , 0, 0]) cy(9, 30, 40, Y = 90);
+                translate([-9, 0, 0]) rotate([0, 90, 0]) m5_nut();
+                translate([-9, 0, 11]) cube([5, 7.9, 20], center = true);
+            }
+            translate([-25 + CameraSledBolexOffsetX, CameraSledBolexBoltOffsetY + CameraSledBolexBoltSpacingY, (CameraSledBolexZ / 2) - (CameraSledBolexPlateZ / 2) + 1]) {
+                cy(5.1, 25, 40, Y = 90);
+                translate([-27 , 0, 0]) cy(9, 30, 40, Y = 90);
+                translate([-9, 0, 0]) rotate([0, 90, 0]) m5_nut();
+                translate([-9, 0, 11]) cube([5, 7.9, 20], center = true);
+            }
+            translate([25 + CameraSledBolexOffsetX, CameraSledBolexBoltOffsetY, (CameraSledBolexZ / 2) - (CameraSledBolexPlateZ / 2) + 1]) {
+                cy(5.1, 25, 40, Y = 90);
+                translate([27 , 0, 0]) cy(9, 30, 40, Y = 90);
+                translate([9, 0, 0]) rotate([0, 90, 0]) m5_nut();
+                translate([9, 0, 11]) cube([5, 7.9, 20], center = true);
+            }
+            translate([25 + CameraSledBolexOffsetX, CameraSledBolexBoltOffsetY + CameraSledBolexBoltSpacingY, (CameraSledBolexZ / 2) - (CameraSledBolexPlateZ / 2) + 1]) {
+                cy(5.1, 25, 40, Y = 90);
+                translate([27 , 0, 0]) cy(9, 30, 40, Y = 90);
+                translate([9, 0, 0]) rotate([0, 90, 0]) m5_nut();
+                translate([9, 0, 11]) cube([5, 7.9, 20], center = true);
+            }
         }
 
     }
@@ -202,7 +226,7 @@ module debug () {
     translate([-A2 / 2, -C2 / 2, 90]) cylinder(r = R(5), h = 80, center = true, $fn = 30);
 }
 
-PART = "jk_camera_sled_nut";
+PART = "jk_camera_sled_bolex";
 
 if (PART == "jk_camera_sled_bolex") {
     jk_camera_sled_bolex();

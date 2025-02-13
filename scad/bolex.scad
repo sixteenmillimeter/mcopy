@@ -1,8 +1,8 @@
 use <./common/common.scad>;
 
 BolexFilmPlaneZ = 108.7;
-BolexFilmPlaneX = 0;
-BolexFilmPlaneY = 0;
+BolexFilmPlaneX = -13.5;
+BolexFilmPlaneY = (78 / 2) - 4;
 
 module debug_bolex_film_plane (pos = [0, 0, 0], rot = [0, 0, 0]) {
 	translate(pos) rotate(rot) {
