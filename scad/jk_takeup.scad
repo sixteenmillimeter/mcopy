@@ -43,6 +43,23 @@ FILTER_VOID_X = FILTER_X - 9 + ((4.5 - 2.34) * 2);
 
 ROLLER_SPACING = 95;
 
+MCOPY_TAKEUP_X = 130;
+MCOPY_TAKEUP_Y = -85;
+
+BearingOuterDiameter = 21.6;
+BearingInnerDiameter = 8.05;
+
+module bearing_void (pos = [0, 0, 0], rot = [0, 0, 0], width = 8, inner = false, outerPad = 0.3, innerPad = 0) {
+    translate (pos) rotate(rot) {
+        difference () {
+            cylinder(r = R(BearingOuterDiameter) + outerPad, h = width, center = true, $fn = 90);
+            if (inner) {
+                cylinder(r = R(BearingInnerDiameter) + innerPad, h = width + 1, center = true, $fn = 90);
+            }
+        }
+    }
+}
+
 module motor_shaft () {
     difference () {
         cylinder(r = R(MOTOR_SHAFT_D), h = MOTOR_SHAFT_H, center = true, $fn = 60);
@@ -158,11 +175,11 @@ module filter_reinforcement (pos = [0, 0, 0]) {
 module roller_bolts () {
     translate([ROLLER_SPACING/2, 2, 0]) {
         cylinder(r = R(4.25), h = 80, center = true, $fn = 40);
-        translate([0, 0, 7]) rotate([0, 0, 30]) m4_nut();
+        translate([0, 0, 7]) rotate([0, 0, 0]) m4_nut(50);
     }
     translate([-ROLLER_SPACING/2, 2, 0]) {
         cylinder(r = R(4.25), h = 80, center = true, $fn = 40);
-        translate([0, 0, 7]) rotate([0, 0, 30]) m4_nut();
+        translate([0, 0, 7]) rotate([0, 0, 0]) m4_nut(50);
     }
 }
 
@@ -187,6 +204,121 @@ module jk_takeup () {
     }
 }
 
+module mcopy_bearing_mount () {
+    difference () {
+        union () {
+            cylinder(r = R(BearingInnerDiameter - 0.3), h = 10, center = true, $fn = 60);
+            translate([0, 0, 10 / 2]) cylinder(r = R(9.65), h = 2, center = true, $fn = 60);
+        }
+        cylinder(r = R(3.25), h = 20, center = true, $fn = 60);
+    }
+}
+
+module mcopy_takeup_bearings (pos = [0, 0, 0], rot = [0, 0, 0], CouplingD = 46) {
+    translate(pos) rotate(rot) {
+        rotate([0, 0, -40]) translate([0, (CouplingD + BearingOuterDiameter - 0.3) / 2, 0]) children();
+        rotate([0, 0, -140]) translate([0, (CouplingD + BearingOuterDiameter - 0.3) / 2, 0]) children();
+        rotate([0, 0, 95]) translate([0, (CouplingD + BearingOuterDiameter - 0.3) / 2, 0]) children();
+    }
+}
+
+module m3_bolt_void (pos = [0, 0, 0], Bolt = 20, Cap = 10) {
+    translate (pos) {
+        translate([0, 0, -Bolt / 2]) cylinder(r = R(3.25), h = Bolt, center = true, $fn = 40);
+        translate([0, 0, (Cap / 2) - 0.1]) cylinder(r = R(6.5), h = Cap, center = true, $fn = 40);
+    }
+}
+
+module mcopy_takeup_plate () {
+    Z = 2.5;
+    Angle = 142.45;
+    Rounding = 77;
+    CouplingD = 46;
+    BarrelZ = 20;
+
+    difference () {
+        union () {
+            translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) cylinder(r = R(Rounding), h = 11.1, center = true, $fn = 120);
+            translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) cylinder(r = R(Rounding), h = 11.1, center = true, $fn = 120);
+            translate([0, MCOPY_TAKEUP_Y, Z]) cube([MCOPY_TAKEUP_X * 2, Rounding, 11.1], center = true);
+
+            translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) {
+                rotate([0, 0, Angle]) translate([MCOPY_TAKEUP_X / 2, 0, 0]) cube([MCOPY_TAKEUP_X, Rounding, 11.1], center = true);
+            }
+
+            translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) {
+                rotate([0, 0, -Angle]) translate([-MCOPY_TAKEUP_X / 2, 0, 0]) cube([MCOPY_TAKEUP_X, Rounding, 11.1], center = true);
+            }
+
+            translate([0, -50, Z]) cube([AX, 100, 11.1], center = true);
+
+            translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -9]) difference() {
+                cylinder(r = R(60), h = BarrelZ, center = true, $fn = 120);
+                cylinder(r = R(CouplingD), h = BarrelZ + 1, center = true, $fn = 120);
+            }
+            translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -9]) difference() {
+                cylinder(r = R(60), h = BarrelZ, center = true, $fn = 120);
+                cylinder(r = R(CouplingD), h = BarrelZ + 1, center = true, $fn = 120);
+            }
+        }
+        translate([0, 62.4, Z]) cube([AX * 2, 100, 11.1 + 1], center = true);
+
+        translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) {
+            cylinder(r = R(CouplingD), h = 11.1 + 1, center = true, $fn = 120);
+            translate([-9, 0, 5]) cube([40, 30, 5], center = true);
+            translate([-23.75, 8.8, -2]) cylinder(r = R(6.2), h = 40, center = true, $fn = 40);
+            translate([-23.75, -8.8, -2]) cylinder(r = R(6.2), h = 40, center = true, $fn = 40);
+        }
+        translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) {
+            cylinder(r = R(CouplingD), h = 11.1 + 1, center = true, $fn = 120);
+            translate([9, 0, 5]) cube([40, 30, 5], center = true);
+            translate([23.75, 8.8, -2]) cylinder(r = R(6.2), h = 40, center = true, $fn = 40);
+            translate([23.75, -8.8, -2]) cylinder(r = R(6.2), h = 40, center = true, $fn = 40);
+        }
+
+        //bearings voids
+        mcopy_takeup_bearings([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -13.1], [0, 0, 180], CouplingD) bearing_void(width = BarrelZ, outerPad = 0.6, innerPad = -0.3);
+        mcopy_takeup_bearings([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -13.1], [0, 0, 0], CouplingD) bearing_void(width = BarrelZ, outerPad = 0.6, innerPad = -0.3);
+    
+        //m3 bolt bearing voids
+        mcopy_takeup_bearings([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 5], [0, 0, 180], CouplingD) m3_bolt_void();
+        mcopy_takeup_bearings([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 5], [0, 0, 0], CouplingD) m3_bolt_void();
+    }
+
+
+    //motor mount plates
+    translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) intersection () {
+        union () {
+            cylinder(r = R(CouplingD) + 2, h = 11.1, center = true, $fn = 120);
+            translate([-10, 0, 2.1]) cube([41, 31, 7], center = true);
+        }
+        translate([0, 0, 7.315 - Z]) rotate([180, 0, 180]) minimal_mount();
+    }
+    translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) intersection () {
+        union () {
+            cylinder(r = R(CouplingD) + 2, h = 11.1, center = true, $fn = 120);
+            translate([10, 0, 2.1]) cube([41, 31, 7], center = true);
+        }
+        translate([0, 0, 7.315 - Z]) rotate([180, 0, 0]) minimal_mount();
+    }
+
+    //bearings mounts
+    mcopy_takeup_bearings([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -8], [0, 0, 180], CouplingD) mcopy_bearing_mount();
+    mcopy_takeup_bearings([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -8], [0, 0, 0], CouplingD) mcopy_bearing_mount();
+}
+
+module mcopy_takeup () {
+    difference () {
+        union () {
+            block();
+            filter_holder([0, 0, -27.5]);
+            filter_reinforcement([0, -1.1, -16 + (5.75 / 2)]);
+            mcopy_takeup_plate();
+        }
+        roller_bolts();
+    }
+}
+
 module jk_takeup_halves (HALF = "A") {
     difference () {
         jk_takeup();
@@ -200,7 +332,6 @@ module jk_takeup_halves (HALF = "A") {
             translate([0, 0, -10 + 2]) cube([20, BY + 1, 20], center = true);
         }
     }
-
 }
 
 module idle_roller () {
@@ -227,7 +358,6 @@ module idle_roller () {
         cylinder(r = R(4.25), h = 20.2 + 1, center = true, $fn = 30);
         translate([0, 0, (20.2 / 2) - (5 / 2)]) cylinder(r = R(10), h = 5.1, center = true, $fn = FN);
     }
-    
 }
 
 module idle_roller_cap () {
@@ -236,12 +366,36 @@ module idle_roller_cap () {
         cylinder(r = R(4.25), h = 20.2 + 1, center = true, $fn = 30);
         translate([0, 0, 1.01]) m4_nut();
     }
-    
+}
+
+module mcopy_takeup_half (Side = "takeup") {
+    Width = 30;
+    difference () {
+        children();
+        translate ([-Width / 2, 0, 3]) {
+            if (Side == "takeup") {
+                translate([250, 0, 250]) cube([500, 500, 500], center = true);
+                translate([250 + Width, 0, -249.9]) cube([500, 500, 500], center = true);
+            } else if (Side == "feed") {
+                translate([-250 + Width, 0, -250]) cube([500, 500, 500], center = true);
+                translate([-250, 0, 249.9]) cube([500, 500, 500], center = true);
+            }
+        }
+        for (i = [0 : 5]) {
+            OffsetX = i == 0 || i == 5 ? 0 : i % 2 == 0 ? -5 : 5;
+            translate([0, -i * 22, 6]) {
+                translate([OffsetX, 0, i % 2 == 0 ? 0 : -7]) rotate ([i % 2 == 0 ? 0 : 180, 0, 0]) {
+                    m3_bolt_void();
+                    translate([0, 0, -9]) m3_nut(5);
+                }
+            }
+        }
+    }
 }
 
 //translate([0, 0, 40]) color("red") original_takeup();
 
-PART = "jk_takeup";
+PART = "mcopy_takeup_feed";
 
 if (PART == "slip_coupling") {
     slip_coupling();
@@ -266,6 +420,12 @@ if (PART == "slip_coupling") {
     jk_takeup_halves("B");
 } else if (PART == "idle_roller") {
     idle_roller();
+} else if (PART == "mcopy_takeup") {
+    rotate([180, 0, 0]) mcopy_takeup();
+} else if (PART == "mcopy_takeup_takeup") {
+    rotate([180, 0, 0]) mcopy_takeup_half(Side = "takeup") mcopy_takeup();
+} else if (PART == "mcopy_takeup_feed") {
+    rotate([180, 0, 0]) mcopy_takeup_half(Side = "feed") mcopy_takeup();
 } else {
     debug_assembled();
 }
