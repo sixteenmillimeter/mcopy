@@ -1,4 +1,4 @@
-include <./common.scad>;
+include <./common/common.scad>;
 
 /*
     CynKen 1Pcs Optical Glass RGB Dispersion Prism X-CUBE for Physics Teach Decoration Art

@@ -1,4 +1,4 @@
-include <./common.scad>;
+include <./common/common.scad>;
 include <./knurledFinishLib_v2.scad>
 include <./arduino.scad>
 

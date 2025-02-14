@@ -1,7 +1,7 @@
 //
 // JK lens assembly
 //
-include <./common.scad>;
+include <./common/common.scad>;
 include <./bellows.scad>;
 include <./knurledFinishLib_v2.scad>;
 

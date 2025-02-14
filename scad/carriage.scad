@@ -1,4 +1,4 @@
-include <./common.scad>;
+include <./common/common.scad>;
 
 ROD_D = 25.4 * 0.75;
 THREAD_D = 12;

@@ -1,4 +1,4 @@
-include <./common.scad>;
+include <./common/common.scad>;
 
 //PINS
 PIN_A = [-(18 / 2) + (1 / 2) + 4.5, 2 + (3.5 / 2)];
