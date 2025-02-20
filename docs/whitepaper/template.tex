@@ -1,0 +1,68 @@
+\documentclass[10pt]{article}
+\usepackage[left=1.5in,
+            right=1.5in,
+            top=1in,
+            bottom=1.5in,]{geometry}
+\usepackage{authblk}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{lmodern}  % For better font weights
+\usepackage{sectsty}  % For section formatting
+
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newenvironment{cslreferences}%
+  {\setlength{\parindent}{0pt}%
+  \everypar{\setlength{\hangindent}{\cslhangindent}}\ignorespaces}%
+  {\par}
+
+% Handle conditionals
+$if(colorlinks)$
+\PassOptionsToPackage{usenames,dvipsnames}{color}
+$endif$
+
+% Handle fonts
+$if(fontfamily)$
+\usepackage[$for(fontfamilyoptions)$$fontfamilyoptions$$sep$,$endfor$]{$fontfamily$}
+$endif$
+
+% Make sections bolder and adjust spacing
+\sectionfont{\large\bfseries}
+\allsectionsfont{\bfseries}
+
+% Adjust line spacing
+\setstretch{1.1}  % Tighter line spacing
+
+\begin{document}
+
+% Thick line above title
+\noindent\rule{\textwidth}{5pt}
+
+% Title with tighter spacing and bolder font
+\begin{center}
+{\fontsize{17}{19}\selectfont\bfseries $title$\par}
+\end{center}
+
+% Thin line below title
+\noindent\rule{\textwidth}{1pt}
+
+% Authors with tighter spacing
+$for(author)$
+\begin{center}
+{\large\bfseries $author.name$\par}
+{\normalsize $author.affiliation$\par}
+{\normalsize\ttfamily $author.email$}
+\vspace{0.7em}
+\end{center}
+$endfor$
+
+\vspace{0.5em}
+{\begin{center}\large\bfseries Abstract\end{center}}
+
+\begin{quotation}
+{\selectfont $abstract$}
+\end{quotation}
+
+$body$
+
+\end{document}
