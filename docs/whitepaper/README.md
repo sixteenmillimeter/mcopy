@@ -45,15 +45,21 @@ There are exceptions, but without a large commercial production demand, manufact
 This leaves the future of the analog cinema in the hands of its practitioners to steward the continuation and advancement of the art.
 By looking to other disciplines, be they arts or sciences, artists who work with film can benefit from the ways that small-scale desktop manufacturing and rapid prototyping have both preserved and augmented other practices.
 
+The RepRap project [@reprap-philosophy]--the --correctly does not spend any time focusing on producing alternatives for "cheap and ubiquitous parts like screws and electric motors".
+If there is an existing, standard and available part that solves a problem, it saves time and effort inclding it.
+Those resources are better spent focusing on the core requirements of the project which, in this case, is to make a cheap and accessible contact printer for artists.
+
+The RepRap project is not a perfect foundation on which to base the entirety of the design of this contact printer, however.
+The conclusion drawn by Adrian Bower--an engineer, not a philosopher or historian--that Marxism provides a correct diagnosis of Capital but it's solution is the "all-time worst-idea in human history" [@reprap-philosophy] is both ahistorical and works against the entire purpose of the project.
+Contact printing, as a means of film production, benefits more people by shifting from a mode limited to a class of professional film lab operators to a more accessible capability available to artists and artist-run film labs who operate at a sub-industrial scale.
+
 The Arduino project [@arduino-about] created an explosion of capabilities that are now available to hobbyists and educators by making an open and extendable platform of programmable microcontrollers.
 Amateurs are offered the ability to control physical electronic hardware with code in a way that was completely inaccessible due to cost and complexity only years prior.
 The Arduino improved on the Parallax BASIC Stamp, a closed-source physical computing platform that required special software for the build toolchain, replacing it with an open-source board and an integrated development environment (IDE) for easily programming the board that could run cross-platform. [@arduino-os]
 By leveraging the tools themselves--Arduino microcontrollers and software--as well as the projects' own approach to making an open, clear and accessible way to work with electronics the mcopy project can prioritize simplicity and openness over complexity and trade secrets held for profit.
 
-
 What emerges from the synthesis of newly-accessible machine-computer interfaces and open manufacturing technologies is the possibility to create new tools that serve the needs filmmakers have today.
 Every component can be represented by a serial device that connects to a computer and those devices can be sequenced and controlled by a common application.
-
 
 By pursuing modular design, filmmakers can use the mcopy platform to create multi-purpose tools that change their functionality by changing their configuration.
 Making an mcopy-controlled camera module for a film-to-film optical printer saves the time and effort of creating a second mcopy-controlled camera module for a film out digital recording system; they can be the exact same camera with only a different image source.
