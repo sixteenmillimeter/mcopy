@@ -132,7 +132,7 @@ export class Camera {
 		const cmd : string = this.cfg.arduino.cmd[this.id];
 		let ms : number;
 		if (this.filmout.state.enabled) {
-			await this.filmout.start()
+			await this.filmout.start();
 		}
 		if (this.processing) {
 			try {

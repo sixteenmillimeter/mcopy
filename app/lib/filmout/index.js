@@ -130,9 +130,9 @@ class FilmOut {
             this.log.error(err, 'FILMOUT', true, true);
             throw err;
         }
-        if (this.server.displayImage(path)) {
+        if (this.server.useServer()) {
+            this.server.displayImage(path);
             await (0, delay_1.delay)(20);
-            return;
         }
         await this.display.show(path);
         await (0, delay_1.delay)(20);

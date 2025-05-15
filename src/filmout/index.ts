@@ -163,9 +163,9 @@ export class FilmOut {
 			throw err;
 		}
 
-		if (this.server.displayImage(path)) {
-			await delay(20)
-			return
+		if (this.server.useServer()) {
+			this.server.displayImage(path);
+			await delay(20);
 		}
 
 		await this.display.show(path);

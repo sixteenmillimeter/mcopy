@@ -89,7 +89,7 @@ class WebView {
 		try {
 			this.digitalWindow.webContents.send('display', { src : normalSrc });
 		} catch (err) {
-			this.log.error(err);
+			this.log.error('Error displaying ${normalSrc}', err);
 		}
 		this.showing = true;
 

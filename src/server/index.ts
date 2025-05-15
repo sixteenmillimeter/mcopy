@@ -124,7 +124,6 @@ export class Server {
     		await this.cmd(ws, 'mcopy')
     		this.log.info('Client connected')
     		this.notify('Client connected', `Forwarding digital display to client: ${address}`)
-
 		}.bind(this))
 		this.log.info(`Websocket server started!`)
 		this.log.info(`WSS [ ws://localhost:${this.wsPort} ]`)
