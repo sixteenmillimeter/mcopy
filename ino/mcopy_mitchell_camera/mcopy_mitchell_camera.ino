@@ -14,9 +14,13 @@ const uint8_t microsteps = 2;
 volatile char cmdChar = 'z';
 volatile long now;
 
-volatile long exposureAvg = 250;
-volatile String exposureString;
-volatile long exposureTarget = -1;
+
+volatile long exposureAvg = 500;
+
+const long timedExposureCutoff = 500;
+volatile String timedExposureString;
+volatile long timedExposureTarget = -1;
+volatile long timedExposureAvg = -1;
 
 volatile bool direction = true; //true forward, false backward
 
@@ -41,6 +45,10 @@ void setup () {
 		mc.log("Camera is CLOSED");
 	} else {
 		mc.log("Camera is in UNKNOWN state");
+	}
+
+	if (cam.isOpened()) {
+		cam.toClose();
 	}
 }
 
@@ -71,14 +79,19 @@ void cmd (char val) {
 }
 
 void exposure () {
-    exposureString = mc.getString();
+    timedExposureString = mc.getString();
     parseExposureString();
-    exposureAvg = exposureTarget;
+    exposureAvg = timedExposureTarget;
     mc.confirm(mc.CAMERA_EXPOSURE);
 }
 
 void parseExposureString () {
-    exposureTarget = exposureString.toInt();
+    timedExposureTarget = timedExposureString.toInt();
+    timedExposureAvg = timedExposureTarget + 0;
+    if (timedExposureTarget < timedExposureCutoff) {
+    	timedExposureTarget = -1;
+    	timedExposureAvg = -1;
+    }
 }
 
 void camera_direction (boolean state) {
@@ -104,9 +117,9 @@ void camera () {
 		start = millis();
 	}
 
-	if (exposureTarget > -1) {
+	if (timedExposureTarget > -1) {
 		half = exposureAvg / 2; //assume a 180 shutter
-		pause = exposureTarget - half;
+		pause = timedExposureTarget - half;
 		if (pause < exposureAvg) {
 			cam.frame();
 		} else {
@@ -117,10 +130,15 @@ void camera () {
 	} else{
 		cam.frame();
 	}
+
 	ms = millis() - start;
-	if (exposureTarget < 0) {
+	
+	if (timedExposureTarget > -1) {
+		updateTimedAvg(ms, half);
+	} else {
 		updateAvg(ms);
 	}
+
 	mc.log("camera()");
 	mc.log(String(ms) + "ms");
 	mc.confirm(mc.CAMERA);
@@ -149,8 +167,8 @@ void camera_close () {
 void state () {
 	String stateString = String(mc.STATE);
 	stateString += String(mc.CAMERA_EXPOSURE);
-	if (exposureTarget > -1) {
-		stateString += String(exposureTarget);
+	if (timedExposureTarget > -1) {
+		stateString += String(timedExposureAvg);
 	} else {
 		stateString += String(exposureAvg);
 	}
@@ -160,6 +178,10 @@ void state () {
 
 void updateAvg (long value) {
 	exposureAvg = round((exposureAvg + value) / 2);
+}
+
+void updateTimedAvg (long value, long half) {
+	timedExposureAvg = round((timedExposureAvg + value - half) / 2);
 }
 
 /**
