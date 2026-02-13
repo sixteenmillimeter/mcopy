@@ -2,6 +2,11 @@
 #include "McopySerial.h"
 
 const bool DEBUG = false;
+
+//const uint8_t enableButtonPin = 9; //enable feature 
+//const uint8_t directionSwitchPin = 10;
+//const uint8_t cameraButtonPin = 11;
+//const uint8_t openCloseSwitchPin = 12;
 const uint8_t LEDPin = 13;
 
 const uint32_t usPulse = 300;
@@ -9,9 +14,13 @@ const uint8_t microsteps = 2;
 volatile char cmdChar = 'z';
 volatile long now;
 
-volatile long exposureAvg = 250; //pre-fill
+volatile long exposureAvg = 500;
 volatile String exposureString;
-volatile long exposureTarget = -1;
+
+const long timedExposureCutoff = 500;
+volatile String timedExposureString;
+volatile long timedExposureTarget = -1;
+volatile long timedExposureAvg = -1;
 
 volatile bool direction = true;
 
@@ -19,21 +28,24 @@ EndstopCameraShield cam(usPulse, microsteps);
 McopySerial mc;
 
 void setup () {
+	//pinMode(directionSwitchPin, INPUT_PULLUP);
+	//pinMode(openCloseSwitchPin, INPUT_PULLUP);
+	//pinMode(cameraButtonPin, INPUT_PULLUP);
+
 	mc.begin(mc.CAMERA_IDENTIFIER);
 	mc.debug(DEBUG);
 	cam.setup();
+
 	if (cam.isOpened()) {
-		mc.log("Camera is OPENED, closing...");
-		cam.toClose();
-		mc.log("Camera is CLOSED");
+		mc.log("Camera is OPENED");
 	} else if (cam.isClosed()) {
 		mc.log("Camera is CLOSED");
 	} else {
-		mc.log("Camera is in UNKNOWN state, closing...");
-		cam.toClose();
-		mc.log("Camera is CLOSED");
+		mc.log("Camera is in UNKNOWN state");
 	}
-	//cam.test();
+	if (cam.isOpened()) {
+		cam.toClose();
+	}
 }
 
 void loop () {
@@ -41,6 +53,7 @@ void loop () {
 	cmdChar = mc.loop();
 	cmd(cmdChar);
 	cam.loop();
+	//buttons();
 }
 
 void cmd (char val) {
@@ -62,14 +75,19 @@ void cmd (char val) {
 }
 
 void exposure () {
-    exposureString = mc.getString();
+    timedExposureString = mc.getString();
     parseExposureString();
-    exposureAvg = exposureTarget;
+    exposureAvg = timedExposureTarget;
     mc.confirm(mc.CAMERA_EXPOSURE);
 }
 
 void parseExposureString () {
-    exposureTarget = exposureString.toInt();
+  timedExposureTarget = timedExposureString.toInt();
+  timedExposureAvg = timedExposureTarget + 0;
+  if (timedExposureTarget < timedExposureCutoff) {
+    timedExposureTarget = -1;
+    timedExposureAvg = -1;
+  }
 }
 
 void camera_direction (boolean state) {
@@ -90,9 +108,14 @@ void camera () {
 	long pause;
 	long ms;
 
-	if (exposureTarget > -1) {
+	if (cam.isOpened()) {
+		cam.toClose();
+		start = millis();
+	}
+
+	if (timedExposureTarget > -1) {
 		half = exposureAvg / 2; //assume a 180 shutter
-		pause = exposureTarget - half;
+		pause = timedExposureTarget - half;
 		if (pause < exposureAvg) {
 			cam.frame();
 		} else {
@@ -103,10 +126,15 @@ void camera () {
 	} else{
 		cam.frame();
 	}
+
 	ms = millis() - start;
-	if (exposureTarget < 0) {
+	
+	if (timedExposureTarget > -1) {
+		updateTimedAvg(ms, half);
+	} else {
 		updateAvg(ms);
 	}
+
 	mc.log("camera()");
 	mc.log(String(ms) + "ms");
 	mc.confirm(mc.CAMERA);
@@ -135,8 +163,8 @@ void camera_close () {
 void state () {
 	String stateString = String(mc.STATE);
 	stateString += String(mc.CAMERA_EXPOSURE);
-	if (exposureTarget > -1) {
-		stateString += String(exposureTarget);
+	if (timedExposureTarget > -1) {
+		stateString += String(timedExposureAvg);
 	} else {
 		stateString += String(exposureAvg);
 	}
@@ -147,3 +175,74 @@ void state () {
 void updateAvg (long value) {
 	exposureAvg = round((exposureAvg + value) / 2);
 }
+
+void updateTimedAvg (long value, long half) {
+	timedExposureAvg = round((timedExposureAvg + value - half) / 2);
+}
+
+/**
+ * Button/Switch logic
+ **/
+/*
+void buttons () {
+ 	int cameraButtonState = digitalRead(cameraButtonPin);
+ 	int directionSwitchState = digitalRead(directionSwitchPin);
+ 	int openCloseSwitchState = digitalRead(openCloseSwitchPin);
+ 	
+ 	if (directionSwitchState == LOW && directionSwitch == false) {
+ 		directionSwitch = true;
+ 	} else if (directionSwitchState == HIGH && directionSwitch == true) {
+ 		directionSwitch = false;
+ 	}
+
+ 	if (openCloseSwitchState == LOW && openCloseSwitch == false) {
+ 		openCloseSwitch = true;
+ 		switch_open_close();
+ 	} else if (openCloseSwitchState == HIGH && openCloseSwitch == true) {
+ 		openCloseSwitch = false;
+ 		switch_open_close();
+ 	}
+
+ 	if (cameraButtonState == LOW) {
+ 		button_camera();
+ 	}
+}
+
+void button_camera () {
+ 	long start = millis();
+	long ms;
+
+	if (direction != directionSwitch) {
+		cam.setDirection(directionSwitch);
+	}
+
+	if (cam.isOpened()) {
+		cam.toClose();
+		start = millis();
+	}
+
+	cam.frame();
+	ms = millis() - start;
+	updateAvg(ms);
+
+	mc.log("button_camera()");
+
+	if (direction != directionSwitch) {
+		cam.setDirection(direction);
+	}
+}
+
+void switch_open_close () {
+	if (direction != directionSwitch) {
+		cam.setDirection(directionSwitch);
+	}
+	if (openCloseSwitch && !cam.isClosed()) {
+		cam.toClose();
+	} else if (!openCloseSwitch && !cam.isOpened()) {
+		cam.toOpen();
+	}
+	if (direction != directionSwitch) {
+		cam.setDirection(direction);
+	}
+}
+*/

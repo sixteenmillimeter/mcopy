@@ -1,7 +1,7 @@
 #include "EndstopCameraShield.h"
 #include "McopySerial.h"
 
-const bool DEBUG = false;
+const bool DEBUG = true;
 
 //const uint8_t enableButtonPin = 9; //enable feature 
 const uint8_t directionSwitchPin = 10;
@@ -38,6 +38,8 @@ void setup () {
 	mc.begin(mc.CAMERA_IDENTIFIER);
 	mc.debug(DEBUG);
 	cam.setup();
+
+	delay(5000);
 	
 	if (cam.isOpened()) {
 		mc.log("Camera is OPENED");
@@ -47,8 +49,10 @@ void setup () {
 		mc.log("Camera is in UNKNOWN state");
 	}
 
+	delay(5000);
+
 	if (cam.isOpened()) {
-		cam.toClose();
+		//cam.toClose();
 	}
 }
 
@@ -121,14 +125,19 @@ void camera () {
 		half = exposureAvg / 2; //assume a 180 shutter
 		pause = timedExposureTarget - half;
 		if (pause < exposureAvg) {
-			cam.frame();
+			//cam.frame();
+			cam.toOpen();
+			delay(1);
+			cam.toClose();
 		} else {
 			cam.toOpen();
 			delay(pause);
 			cam.toClose();
 		}
 	} else{
-		cam.frame();
+			cam.toOpen();
+			delay(1);
+			cam.toClose();
 	}
 
 	ms = millis() - start;
