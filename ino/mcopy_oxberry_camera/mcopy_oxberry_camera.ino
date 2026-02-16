@@ -14,7 +14,7 @@ const uint8_t microsteps = 2;
 volatile char cmdChar = 'z';
 volatile long now;
 
-volatile long exposureAvg = 500;
+volatile long exposureAvg = 250;
 volatile String exposureString;
 
 const long timedExposureCutoff = 250; //180 deg
