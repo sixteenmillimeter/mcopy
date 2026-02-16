@@ -1,7 +1,7 @@
 #include "EndstopCameraShield.h"
 #include "McopySerial.h"
 
-const bool DEBUG = true;
+const bool DEBUG = false;
 
 //const uint8_t enableButtonPin = 9; //enable feature 
 const uint8_t directionSwitchPin = 10;
@@ -14,10 +14,9 @@ const uint8_t microsteps = 2;
 volatile char cmdChar = 'z';
 volatile long now;
 
-
 volatile long exposureAvg = 500;
 
-const long timedExposureCutoff = 500;
+const long timedExposureCutoff = 250; //180 deg
 volatile String timedExposureString;
 volatile long timedExposureTarget = -1;
 volatile long timedExposureAvg = -1;
@@ -38,8 +37,6 @@ void setup () {
 	mc.begin(mc.CAMERA_IDENTIFIER);
 	mc.debug(DEBUG);
 	cam.setup();
-
-	delay(5000);
 	
 	if (cam.isOpened()) {
 		mc.log("Camera is OPENED");
@@ -49,35 +46,36 @@ void setup () {
 		mc.log("Camera is in UNKNOWN state");
 	}
 
-	delay(5000);
-
 	if (cam.isOpened()) {
-		//cam.toClose();
+		mc.log("Closing camera...");
+		cam.toClose();
 	}
-}
+
+} 
 
 void loop () {
 	now = millis();
 	cmdChar = mc.loop();
 	cmd(cmdChar);
 	cam.loop();
-	buttons();
+	//buttons(); //causing problems on startup with no pins wired
 }
 
 void cmd (char val) {
-  if (val == mc.CAMERA_FORWARD) {
+	//
+  if (val == mc.CAMERA_FORWARD) { //e
     camera_direction(true);
-  } else if (val == mc.CAMERA_BACKWARD) {
+  } else if (val == mc.CAMERA_BACKWARD) { //f
     camera_direction(false);
-  } else if (val == mc.CAMERA) {
+  } else if (val == mc.CAMERA) { //c
     camera();
-  } else if (val == mc.CAMERA_OPEN) {
+  } else if (val == mc.CAMERA_OPEN) { //J
   	camera_open();
-  } else if (val == mc.CAMERA_CLOSE) {
+  } else if (val == mc.CAMERA_CLOSE) { //K
   	camera_close();
-  } else if (val == mc.CAMERA_EXPOSURE) {
+  } else if (val == mc.CAMERA_EXPOSURE) { //G
     exposure();
-  } else if (val == mc.STATE) {
+  } else if (val == mc.STATE) { //H
     state();
   }
 }
@@ -85,7 +83,7 @@ void cmd (char val) {
 void exposure () {
     timedExposureString = mc.getString();
     parseExposureString();
-    exposureAvg = timedExposureTarget;
+    timedExposureAvg = timedExposureTarget;
     mc.confirm(mc.CAMERA_EXPOSURE);
 }
 
@@ -95,6 +93,9 @@ void parseExposureString () {
     if (timedExposureTarget < timedExposureCutoff) {
     	timedExposureTarget = -1;
     	timedExposureAvg = -1;
+    	mc.log("Exposure not set");
+    } else {
+    	mc.log("Exposure set " + String(timedExposureTarget));
     }
 }
 
@@ -115,8 +116,10 @@ void camera () {
 	long half;
 	long pause;
 	long ms;
+	uint32_t i;
 
 	if (cam.isOpened()) {
+		mc.log("Opened, closing...");
 		cam.toClose();
 		start = millis();
 	}
@@ -124,20 +127,23 @@ void camera () {
 	if (timedExposureTarget > -1) {
 		half = exposureAvg / 2; //assume a 180 shutter
 		pause = timedExposureTarget - half;
-		if (pause < exposureAvg) {
-			//cam.frame();
-			cam.toOpen();
-			delay(1);
-			cam.toClose();
+		mc.log(String(pause) + "ms vs. " + String(exposureAvg) + "ms");
+		if (pause < half) {
+			mc.log("Running normal frame, timed too short");
+			i = cam.frame();
+			mc.log("Steps: " + String(i));
 		} else {
-			cam.toOpen();
+			mc.log("Running timed frame");
+			i = cam.toOpen();
+			mc.log("Steps: " + String(i));
 			delay(pause);
-			cam.toClose();
+			i = cam.toClose();
+			mc.log("Steps: " + String(i));
 		}
 	} else{
-			cam.toOpen();
-			delay(1);
-			cam.toClose();
+		mc.log("Running normal frame");
+		i = cam.frame();
+		mc.log("Steps: " + String(i));
 	}
 
 	ms = millis() - start;
@@ -156,20 +162,24 @@ void camera () {
 void camera_open () {
 	long start = millis();
 	long ms;
-	cam.toOpen();
+	uint32_t i;
+	i = cam.toOpen();
 	ms = millis() - start;
 	mc.log("camera_open()");
 	mc.log(String(ms) + "ms");
+	mc.log("Steps: " + String(i));
 	mc.confirm(mc.CAMERA_OPEN);
 }
 
 void camera_close () {
 	long start = millis();
 	long ms;
-	cam.toClose();
+	uint32_t i;
+	i = cam.toClose();
 	ms = millis() - start;
 	mc.log("camera_close()");
 	mc.log(String(ms) + "ms");
+	mc.log("Steps: " + String(i));
 	mc.confirm(mc.CAMERA_CLOSE);
 }
 

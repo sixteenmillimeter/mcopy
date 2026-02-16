@@ -17,12 +17,15 @@ volatile long now;
 volatile long exposureAvg = 500;
 volatile String exposureString;
 
-const long timedExposureCutoff = 500;
+const long timedExposureCutoff = 250; //180 deg
 volatile String timedExposureString;
 volatile long timedExposureTarget = -1;
 volatile long timedExposureAvg = -1;
 
 volatile bool direction = true;
+
+volatile bool directionSwitch = true; //true forward, false backward
+volatile bool openCloseSwitch = true; //true closed, false opened
 
 EndstopCameraShield cam(usPulse, microsteps);
 McopySerial mc;
@@ -77,7 +80,7 @@ void cmd (char val) {
 void exposure () {
     timedExposureString = mc.getString();
     parseExposureString();
-    exposureAvg = timedExposureTarget;
+    timedExposureAvg = timedExposureTarget;
     mc.confirm(mc.CAMERA_EXPOSURE);
 }
 
@@ -107,8 +110,10 @@ void camera () {
 	long half;
 	long pause;
 	long ms;
+	uint32_t i;
 
 	if (cam.isOpened()) {
+		mc.log("Opened, closing...");
 		cam.toClose();
 		start = millis();
 	}
@@ -116,15 +121,23 @@ void camera () {
 	if (timedExposureTarget > -1) {
 		half = exposureAvg / 2; //assume a 180 shutter
 		pause = timedExposureTarget - half;
-		if (pause < exposureAvg) {
-			cam.frame();
+		mc.log(String(pause) + "ms vs. " + String(exposureAvg) + "ms");
+		if (pause < half) {
+			mc.log("Running normal frame, timed too short");
+			i = cam.frame();
+			mc.log("Steps: " + String(i));
 		} else {
-			cam.toOpen();
+			mc.log("Running timed frame");
+			i = cam.toOpen();
+			mc.log("Steps: " + String(i));
 			delay(pause);
-			cam.toClose();
+			i = cam.toClose();
+			mc.log("Steps: " + String(i));
 		}
 	} else{
-		cam.frame();
+		mc.log("Running normal frame");
+		i = cam.frame();
+		mc.log("Steps: " + String(i));
 	}
 
 	ms = millis() - start;
@@ -143,20 +156,24 @@ void camera () {
 void camera_open () {
 	long start = millis();
 	long ms;
-	cam.toOpen();
+	uint32_t i;
+	i = cam.toOpen();
 	ms = millis() - start;
 	mc.log("camera_open()");
 	mc.log(String(ms) + "ms");
+	mc.log("Steps: " + String(i));
 	mc.confirm(mc.CAMERA_OPEN);
 }
 
 void camera_close () {
 	long start = millis();
 	long ms;
-	cam.toClose();
+	uint32_t i;
+	i = cam.toClose();
 	ms = millis() - start;
 	mc.log("camera_close()");
 	mc.log(String(ms) + "ms");
+	mc.log("Steps: " + String(i));
 	mc.confirm(mc.CAMERA_CLOSE);
 }
 
