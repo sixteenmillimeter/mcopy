@@ -77,6 +77,8 @@ void EndstopCameraShield::_checkState() {
 	_enableCloseEmitter();
 	_enableOpenEmitter();
 	delay(3);
+	_isClosed = false;
+	_isOpened = false;
 	if (digitalRead(_receiverClosePin) == LOW) {
 		_isClosed = true;
 	} else if (digitalRead(_receiverOpenPin) == LOW) {
@@ -105,25 +107,34 @@ void EndstopCameraShield::_checkOpen() {
 uint32_t EndstopCameraShield::frame() {
 	bool primed = false;
 	bool running = true;
+	bool localClosed = false;
 	uint32_t i = 0;
+
 	_isClosed = false;
 	_enableMotor();
-
 	while (running) {
 		if (!primed && i > _minSteps) {
 			_enableCloseEmitter();
 			//_enableCloseInterrupt();
+			//Serial.println("primed: " + String(i));
 			primed = true;
 		}
-		_checkClose();
-		if (primed && _isClosed) {
+		if (primed) {
+			_checkClose();
+			if (_isClosed) {
+				localClosed = true;
+			}
+		}
+		if (primed && localClosed) {
 			running = false;
 			break;
 		}
 		_motor.step();
+		//delayMicroseconds(600);
 		i++;
 	}
-	_disableCloseEmitter();
+	_checkState();
+	//_disableCloseEmitter();
 	//_disableCloseInterrupt();
 	return i;
 }
@@ -131,6 +142,7 @@ uint32_t EndstopCameraShield::frame() {
 uint32_t EndstopCameraShield::toOpen() {
 	bool primed = false;
 	bool running = true;
+	bool localOpened = false;
 	uint32_t i = 0;
 	_isOpened = false;
 	_enableMotor();
@@ -140,15 +152,22 @@ uint32_t EndstopCameraShield::toOpen() {
 			//_enableOpenInterrupt();
 			primed = true;
 		}
-		_checkOpen();
-		if (primed && _isOpened) {
+		if (primed) {
+			_checkOpen();
+			if (_isOpened) {
+				localOpened = true;
+			}
+		}
+		if (primed && localOpened) {
 			running = false;
 			break;
 		}
 		_motor.step();
+		//delayMicroseconds(600);
 		i++;
 	}
-	_disableOpenEmitter();
+	_checkState();
+	//_disableOpenEmitter();
 	//_disableOpenInterrupt();
 	return i;
 }
@@ -156,24 +175,33 @@ uint32_t EndstopCameraShield::toOpen() {
 uint32_t EndstopCameraShield::toClose() {
 	bool primed = false;
 	bool running = true;
+	bool localClosed = false;
 	uint32_t i = 0;
 	_isClosed = false;
 	_enableMotor();
+	delay(3);
 	while (running) {
 		if (!primed && i > _minSteps) {
 			_enableCloseEmitter();
 			//_enableCloseInterrupt();
 			primed = true;
 		}
-		_checkClose();
-		if (primed && _isClosed) {
+		if (primed) {
+			_checkClose();
+			if (_isClosed) {
+				localClosed = true;
+			}
+		}
+		if (primed && localClosed) {
 			running = false;
 			break;
 		}
 		_motor.step();
+		//delayMicroseconds(600);
 		i++;
 	}
-	_disableCloseEmitter();
+	_checkState();
+	//_disableCloseEmitter();
 	//_disableCloseInterrupt();
 	return i;
 }
