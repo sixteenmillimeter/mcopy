@@ -24,8 +24,8 @@ volatile long timedExposureAvg = -1;
 
 volatile bool direction = true;
 
-volatile bool directionSwitch = true; //true forward, false backward
-volatile bool openCloseSwitch = true; //true closed, false opened
+//volatile bool directionSwitch = true; //true forward, false backward
+//volatile bool openCloseSwitch = true; //true closed, false opened
 
 EndstopCameraShield cam(usPulse, microsteps);
 McopySerial mc;
@@ -121,13 +121,13 @@ void camera () {
 	if (timedExposureTarget > -1) {
 		half = exposureAvg / 2; //assume a 180 shutter
 		pause = timedExposureTarget - half;
-		mc.log(String(pause) + "ms vs. " + String(exposureAvg) + "ms");
+		//mc.log(String(pause) + "ms vs. " + String(exposureAvg) + "ms");
 		if (pause < half) {
-			mc.log("Running normal frame, timed too short");
+			//mc.log("Running normal frame, timed too short");
 			i = cam.frame();
 			mc.log("Steps: " + String(i));
 		} else {
-			mc.log("Running timed frame");
+			//mc.log("Running timed frame");
 			i = cam.toOpen();
 			mc.log("Steps: " + String(i));
 			delay(pause);
@@ -135,7 +135,7 @@ void camera () {
 			mc.log("Steps: " + String(i));
 		}
 	} else{
-		mc.log("Running normal frame");
+		//mc.log("Running normal frame");
 		i = cam.frame();
 		mc.log("Steps: " + String(i));
 	}

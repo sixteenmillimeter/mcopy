@@ -4,9 +4,9 @@
 const bool DEBUG = false;
 
 //const uint8_t enableButtonPin = 9; //enable feature 
-const uint8_t directionSwitchPin = 10;
-const uint8_t cameraButtonPin = 11;
-const uint8_t openCloseSwitchPin = 12;
+//const uint8_t directionSwitchPin = 10;
+//const uint8_t cameraButtonPin = 11;
+//const uint8_t openCloseSwitchPin = 12;
 const uint8_t LEDPin = 13;
 
 const uint32_t usPulse = 300;
@@ -15,29 +15,30 @@ volatile char cmdChar = 'z';
 volatile long now;
 
 volatile long exposureAvg = 250;
+volatile String exposureString;
 
 const long timedExposureCutoff = 250; //180 deg
 volatile String timedExposureString;
 volatile long timedExposureTarget = -1;
 volatile long timedExposureAvg = -1;
 
-volatile bool direction = true; //true forward, false backward
+volatile bool direction = true;
 
-volatile bool directionSwitch = true; //true forward, false backward
-volatile bool openCloseSwitch = true; //true closed, false opened
+//volatile bool directionSwitch = true; //true forward, false backward
+//volatile bool openCloseSwitch = true; //true closed, false opened
 
 EndstopCameraShield cam(usPulse, microsteps);
 McopySerial mc;
 
 void setup () {
-	pinMode(directionSwitchPin, INPUT_PULLUP);
-	pinMode(openCloseSwitchPin, INPUT_PULLUP);
-	pinMode(cameraButtonPin, INPUT_PULLUP);
+	//pinMode(directionSwitchPin, INPUT_PULLUP);
+	//pinMode(openCloseSwitchPin, INPUT_PULLUP);
+	//pinMode(cameraButtonPin, INPUT_PULLUP);
 
 	mc.begin(mc.CAMERA_IDENTIFIER);
 	mc.debug(DEBUG);
 	cam.setup();
-	
+
 	if (cam.isOpened()) {
 		mc.log("Camera is OPENED");
 	} else if (cam.isClosed()) {
@@ -45,37 +46,33 @@ void setup () {
 	} else {
 		mc.log("Camera is in UNKNOWN state");
 	}
-
 	if (cam.isOpened()) {
-		mc.log("Closing camera...");
 		cam.toClose();
 	}
-
-} 
+}
 
 void loop () {
 	now = millis();
 	cmdChar = mc.loop();
 	cmd(cmdChar);
 	cam.loop();
-	//buttons(); //causing problems on startup with no pins wired
+	//buttons();
 }
 
 void cmd (char val) {
-	//
-  if (val == mc.CAMERA_FORWARD) { //e
+  if (val == mc.CAMERA_FORWARD) {
     camera_direction(true);
-  } else if (val == mc.CAMERA_BACKWARD) { //f
+  } else if (val == mc.CAMERA_BACKWARD) {
     camera_direction(false);
-  } else if (val == mc.CAMERA) { //c
+  } else if (val == mc.CAMERA) {
     camera();
-  } else if (val == mc.CAMERA_OPEN) { //J
+  } else if (val == mc.CAMERA_OPEN) {
   	camera_open();
-  } else if (val == mc.CAMERA_CLOSE) { //K
+  } else if (val == mc.CAMERA_CLOSE) {
   	camera_close();
-  } else if (val == mc.CAMERA_EXPOSURE) { //G
+  } else if (val == mc.CAMERA_EXPOSURE) {
     exposure();
-  } else if (val == mc.STATE) { //H
+  } else if (val == mc.STATE) {
     state();
   }
 }
@@ -88,15 +85,12 @@ void exposure () {
 }
 
 void parseExposureString () {
-    timedExposureTarget = timedExposureString.toInt();
-    timedExposureAvg = timedExposureTarget + 0;
-    if (timedExposureTarget < timedExposureCutoff) {
-    	timedExposureTarget = -1;
-    	timedExposureAvg = -1;
-    	mc.log("Exposure not set");
-    } else {
-    	mc.log("Exposure set " + String(timedExposureTarget));
-    }
+  timedExposureTarget = timedExposureString.toInt();
+  timedExposureAvg = timedExposureTarget + 0;
+  if (timedExposureTarget < timedExposureCutoff) {
+    timedExposureTarget = -1;
+    timedExposureAvg = -1;
+  }
 }
 
 void camera_direction (boolean state) {
@@ -129,11 +123,11 @@ void camera () {
 		pause = timedExposureTarget - half;
 		mc.log(String(pause) + "ms vs. " + String(exposureAvg) + "ms");
 		if (pause < half) {
-			mc.log("Running normal frame, timed too short");
+			//mc.log("Running normal frame, timed too short");
 			i = cam.frame();
 			mc.log("Steps: " + String(i));
 		} else {
-			mc.log("Running timed frame");
+			//mc.log("Running timed frame");
 			i = cam.toOpen();
 			mc.log("Steps: " + String(i));
 			delay(pause);
@@ -141,7 +135,7 @@ void camera () {
 			mc.log("Steps: " + String(i));
 		}
 	} else{
-		mc.log("Running normal frame");
+		//mc.log("Running normal frame");
 		i = cam.frame();
 		mc.log("Steps: " + String(i));
 	}
@@ -206,7 +200,7 @@ void updateTimedAvg (long value, long half) {
 /**
  * Button/Switch logic
  **/
-
+/*
 void buttons () {
  	int cameraButtonState = digitalRead(cameraButtonPin);
  	int directionSwitchState = digitalRead(directionSwitchPin);
@@ -268,3 +262,4 @@ void switch_open_close () {
 		cam.setDirection(direction);
 	}
 }
+*/
