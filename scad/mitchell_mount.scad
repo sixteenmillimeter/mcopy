@@ -12,7 +12,7 @@ CarriageZ = 20;
 BoltsX = 70.8;
 BoltsY = 92.25;
 BoltD = 5.25;
-BoltsOffsetX = 41.3;
+BoltsOffsetX = 41.3 + 3;
 
 MitchellY = (8 + (13/16)) * IN;
 
@@ -89,8 +89,12 @@ module long_cylinder (r, h, l, $fn = 60) {
 module carriage_bolt (pos = [0, 0, 0]) {
 	translate(pos) {
         cylinder(r = R(BoltD), h = 100, center = true, $fn = 40);
-        translate([0, 0, 45]) hex(11, 100);
+        translate([0, 0, 45]) m5_nut(100);
    }
+}
+
+module m5_nut (h = 4) {
+    hex(9.15, h);
 }
 
 module m5_bolt (pos = [0, 0, 0]) {
@@ -105,12 +109,13 @@ module mitchell_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
         difference () {
             union () {
                 cube([200, 200, 33], center = true);
+                translate([20, 0, 0]) cube([200, 200, 33], center = true);
                 translate([0, 0, -19]) cube([105, 74, 33], center = true);
             }
             //trim side 
             translate([-170, 0, 0]) cube([200, 200 + 1, 33 + 1], center = true);
             //center camera bolt
-            translate([58, 2, 0]) { 
+            translate([58 - 11, 2, 0]) { 
                 long_cylinder(r = R(10), h = 33 + 1, l = 5, $fn = 40);
                 translate([0, 0, -10]) long_cylinder(r = R(22), l = 5, h = 33, $fn = 80);
                 translate([0, 0, -20]) long_cylinder(r = R(22), h = 33, l = 5, $fn = 80);
@@ -123,7 +128,7 @@ module mitchell_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
             translate([-105 / 2, 0, -33 - 4]) rotate([90, 0, 0]) cylinder(r = R(20), h = 100, center = true, $fn = 40);
             
             //carriage bolts
-            translate([6, 0, 0]) {
+            translate([6 + 3, 0, 0]) {
                 carriage_bolt([BoltsX / 2, BoltsY / 2, 0]);
                 carriage_bolt([BoltsX / 2, -BoltsY / 2, 0]);
                 carriage_bolt([-BoltsX / 2, BoltsY / 2, 0]);
@@ -131,15 +136,15 @@ module mitchell_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
             }
             
             //bottom lock bolts
-            carriage_bolt([40 / 2, 40 / 2, -21]);
-            carriage_bolt([40 / 2, -40/ 2, -21]);
-            carriage_bolt([-40 / 2, 40 / 2, -21]);
-            carriage_bolt([-40 / 2, -40 / 2, -21]);
+            carriage_bolt([40 / 2, 40 / 2, -15]);
+            carriage_bolt([40 / 2, -40/ 2, -15]);
+            carriage_bolt([-40 / 2, 40 / 2, -15]);
+            carriage_bolt([-40 / 2, -40 / 2, -15]);
             
             
             //material saver voids
             translate([0, 0, -20]) rotate([0, 0, 45]) cube([30, 30, 60], center = true);
-            translate([15, 75, -10]) intersection () {
+            translate([25, 75, -10]) intersection () {
                 difference () {
                     cube([150, 35, 33], center = true);
                     cube([150 + 1, 5, 33 + 1], center = true);
@@ -153,7 +158,7 @@ module mitchell_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
                 }
             }
 
-            translate([15, -75, -10]) intersection () {
+            translate([25, -75, -10]) intersection () {
                 difference () {
                     cube([150, 35, 33], center = true);
                     cube([150 + 1, 5, 33 + 1], center = true);
@@ -165,6 +170,33 @@ module mitchell_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
                         translate([(i * 40) + 20, -20, 0]) rotate([0, 0, 45]) cube([25, 25, 33], center = true); 
                     }
                 }
+            }
+            
+            translate([95, 0, -10]) intersection () {
+                difference () {
+                    cube([35, 100, 33], center = true);
+                    cube([5, 150 + 1, 33 + 1], center = true);
+                }
+                union () {
+                    translate([0, -80, 0]) for (i = [0 : 8]) {
+                        translate([0, i * 40, 0]) rotate([0, 0, 45]) cube([25, 25, 33], center = true);
+                        translate([20, (i * 40) + 20, 0]) rotate([0, 0, 45]) cube([25, 25, 33], center = true);  
+                        translate([-20, (i * 40) + 20, 0]) rotate([0, 0, 45]) cube([25, 25, 33], center = true); 
+                    }
+                }
+            }
+            translate([(-140 / 2) + 10, 130 / 2, 0]) rotate([180, 0, 0]) carriage_bolt();
+            translate([(-140 / 2) + 10, -130 / 2, 0]) rotate([180, 0, 0]) carriage_bolt();
+            
+            translate([(-140 / 2) + 10, 180 / 2, 10]) rotate([0, 90, 0]){
+                m5_nut();
+                cylinder(r = R(BoltD), h = 25, center = true, $fn = 30);
+                translate([-20, 0, 0]) cube([40, 8, 4], center = true);
+            }
+            translate([(-140 / 2) + 10, 180 / 2, -10]) rotate([0, 90, 0]){
+                m5_nut();
+                cylinder(r = R(BoltD), h = 25, center = true, $fn = 30);
+                translate([20, 0, 0]) cube([40, 8, 4], center = true);
             }
         }
     }
@@ -200,7 +232,7 @@ module debug () {
     translate([0, 0, -30]) {
         color("green") debug_rails();
         color("blue")  debug_jk_carriage([0, 0, (RailsD / 2) + (CarriageZ / 2)]);
-        color("red")   debug_mitchell([57.25 - 30 + 30, (-MitchellY / 2) + (CarriageY / 2) + 45, (RailsD / 2) + CarriageZ + (10 / 2) + 32]);
+        //color("red")   debug_mitchell([57.25 - 30 + 30, (-MitchellY / 2) + (CarriageY / 2) + 45, (RailsD / 2) + CarriageZ + (10 / 2) + 32]);
         //debug_bolex_base([0, 0, 50]);
         color("red") debug_bolex_frame([0, 100, 50 + (BolexBaseZ / 2) + (BolexFrameZ / 2)]);
         mitchell_mount([0, 0, 47]);
@@ -208,10 +240,12 @@ module debug () {
     }
 }
 
-PART = "mountx";
+PART = "mount";
 
 if (PART == "mount") {
     rotate([180, 0, 0]) mitchell_mount([0, 0, 33 / 2]);
+} else if (PART == "lock") {
+    rotate([180, 0, 0]) bottom_lock();
 } else {
     debug();
 }
