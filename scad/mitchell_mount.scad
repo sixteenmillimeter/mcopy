@@ -199,10 +199,10 @@ module mitchell_mount (pos = [0, 0, 0], rot = [0, 0, 0]) {
                 translate([20, 0, 0]) cube([40, 8, 4], center = true);
             }
             //voids in back for rails set screws
-            ScrewVoidX1 = 20; //TODO
-            ScrewVoidX2 = 80; //TODO
-            ScrewVoidX = 20;
-            ScrewVoidY = 50;
+            ScrewVoidX1 = 15.5; //TODO
+            ScrewVoidX2 = 124; //TODO
+            ScrewVoidX = 18;
+            ScrewVoidY = 47;
             ScrewVoidZ = 10;
             translate([(-145 /2) + ScrewVoidX1, (-200 / 2) + (ScrewVoidY / 2) - 0.1 , (-33 / 2) + (ScrewVoidZ / 2) - 0.1]) cube([ScrewVoidX, ScrewVoidY, ScrewVoidZ], center = true);
             translate([(-145 /2) + ScrewVoidX2, (-200 / 2) + (ScrewVoidY / 2) - 0.1 , (-33 / 2) + (ScrewVoidZ / 2) - 0.1]) cube([ScrewVoidX, ScrewVoidY, ScrewVoidZ], center = true);
