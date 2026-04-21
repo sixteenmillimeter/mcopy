@@ -1,5 +1,6 @@
 #include "EndstopCameraShield.h"
 #include "McopySerial.h"
+#include "Takeup.h"
 
 const bool DEBUG = false;
 
@@ -29,6 +30,7 @@ volatile bool direction = true;
 
 EndstopCameraShield cam(usPulse, microsteps);
 McopySerial mc;
+Takeup tu;
 
 void setup () {
 	//pinMode(directionSwitchPin, INPUT_PULLUP);
@@ -38,6 +40,7 @@ void setup () {
 	mc.begin(mc.CAMERA_IDENTIFIER);
 	mc.debug(DEBUG);
 	cam.setup();
+	tu.setup();
 
 	if (cam.isOpened()) {
 		mc.log("Camera is OPENED");
@@ -56,6 +59,7 @@ void loop () {
 	cmdChar = mc.loop();
 	cmd(cmdChar);
 	cam.loop();
+	tu.loop();
 	//buttons();
 }
 
@@ -151,6 +155,12 @@ void camera () {
 	mc.log("camera()");
 	mc.log(String(ms) + "ms");
 	mc.confirm(mc.CAMERA);
+
+	if (direction) {
+		tu.forward();
+	} else {
+		tu.backward();
+	}
 }
 
 void camera_open () {
@@ -175,6 +185,11 @@ void camera_close () {
 	mc.log(String(ms) + "ms");
 	mc.log("Steps: " + String(i));
 	mc.confirm(mc.CAMERA_CLOSE);
+	if (direction) {
+		tu.forward();
+	} else {
+		tu.backward();
+	}
 }
 
 void state () {
