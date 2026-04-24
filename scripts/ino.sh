@@ -35,12 +35,20 @@ ENDSTOPCAMERASHIELD=(
 	mcopy_mitchell_camera
 )
 
+TAKEUP=(
+	mcopy_mitchell_camera
+)
+
 for sketch in "${MCOPYSERIAL[@]}"; do
 	cp ino/lib/McopySerial/McopySerial.* ino/${sketch}/
 done
 
 for sketch in "${ENDSTOPCAMERASHIELD[@]}"; do
 	cp ino/lib/EndstopCameraShield/EndstopCameraShield.* ino/${sketch}/
+done
+
+for sketch in "${TAKEUP[@]}"; do
+	cp ino/lib/Takeup/Takeup.* ino/${sketch}/
 done
 
 if [ -d ../McopySerial ]; then
