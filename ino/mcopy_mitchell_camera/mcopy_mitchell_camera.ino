@@ -18,10 +18,17 @@ volatile long now;
 volatile long exposureAvg = 250;
 volatile String exposureString;
 
+volatile long frameStart = 0;
+volatile long frameHalf = 0;
+volatile long framePause = 0;
+volatile long frameMs = 0;
+
 const long timedExposureCutoff = 250; //180 deg
 volatile String timedExposureString;
 volatile long timedExposureTarget = -1;
 volatile long timedExposureAvg = -1;
+
+volatile long timedExposureDelayEnd = -1;
 
 volatile bool direction = true;
 
@@ -57,7 +64,11 @@ void setup () {
 void loop () {
 	now = millis();
 	cmdChar = mc.loop();
-	cmd(cmdChar);
+	if (timedExposureDelayEnd > 0) {
+		camera_timed_watch();
+	} else {
+		cmd(cmdChar);
+	}
 	cam.loop();
 	tu.loop();
 	//buttons();
@@ -110,33 +121,28 @@ void camera_direction (boolean state) {
 }
 
 void camera () {
-	long start = millis();
-	long half;
-	long pause;
-	long ms;
 	uint32_t i;
-
+	frameStart = millis();
 	if (cam.isOpened()) {
 		mc.log("Opened, closing...");
 		cam.toClose();
-		start = millis();
+		frameStart = millis();
 	}
 
 	if (timedExposureTarget > -1) {
-		half = exposureAvg / 2; //assume a 180 shutter
-		pause = timedExposureTarget - half;
-		mc.log(String(pause) + "ms vs. " + String(exposureAvg) + "ms");
-		if (pause < half) {
+		frameHalf = exposureAvg / 2; //assume a 180 shutter
+		framePause = timedExposureTarget - frameHalf;
+		mc.log(String(framePause) + "ms vs. " + String(exposureAvg) + "ms");
+		if (framePause < frameHalf) {
 			//mc.log("Running normal frame, timed too short");
 			i = cam.frame();
 			mc.log("Steps: " + String(i));
 		} else {
-			//mc.log("Running timed frame");
+			mc.log("Running timed frame");
 			i = cam.toOpen();
 			mc.log("Steps: " + String(i));
-			delay(pause);
-			i = cam.toClose();
-			mc.log("Steps: " + String(i));
+			timedExposureDelayEnd = millis() + framePause;
+			return;
 		}
 	} else{
 		//mc.log("Running normal frame");
@@ -144,16 +150,48 @@ void camera () {
 		mc.log("Steps: " + String(i));
 	}
 
-	ms = millis() - start;
+	frameMs = millis() - frameStart;
 	
 	if (timedExposureTarget > -1) {
-		updateTimedAvg(ms, half);
+		updateTimedAvg(frameMs, frameHalf);
 	} else {
-		updateAvg(ms);
+		updateAvg(frameMs);
 	}
 
 	mc.log("camera()");
-	mc.log(String(ms) + "ms");
+	mc.log(String(frameMs) + "ms");
+	mc.confirm(mc.CAMERA);
+
+	if (direction) {
+		tu.forward();
+	} else {
+		tu.backward();
+	}
+}
+
+void camera_timed_watch () {
+	if (millis() >= timedExposureDelayEnd) {
+		camera_timed_end();
+	}
+}
+
+void camera_timed_end () {
+	uint32_t i;
+
+	timedExposureDelayEnd = -1;
+
+	cam.toClose();
+	mc.log("Steps: " + String(i));
+	frameMs = millis() - frameStart;
+	
+	if (timedExposureTarget > -1) {
+		updateTimedAvg(frameMs, frameHalf);
+	} else {
+		updateAvg(frameMs);
+	}
+
+	mc.log("camera()");
+	mc.log(String(frameMs) + "ms");
 	mc.confirm(mc.CAMERA);
 
 	if (direction) {
