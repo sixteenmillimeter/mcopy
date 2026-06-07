@@ -1,10 +1,6 @@
 use <./common/common.scad>;
 use <./takeup/takeup.scad>;
 
-/**
- * DEPRECATED, SEE mcopy_takeup
- **/
-
 COUPLING_D = 37;
 
 WASHER_D = 35.7; //1 + 1/3 diameter?
