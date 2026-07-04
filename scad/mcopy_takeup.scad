@@ -1,5 +1,5 @@
 use <./common/common.scad>;
-use <./takeup/takeup.scad>;
+include <./takeup/takeup.scad>;
 
 COUPLING_D = 37;
 
@@ -251,42 +251,20 @@ module mcopy_takeup_plate () {
             }
 
             translate([0, -50, Z]) cube([AX, 100, 11.1], center = true);
-
-            translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -9]) difference() {
-                cylinder(r = R(60), h = BarrelZ, center = true, $fn = 120);
-                cylinder(r = R(CouplingD), h = BarrelZ + 1, center = true, $fn = 120);
-            }
-            translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -9]) difference() {
-                cylinder(r = R(60), h = BarrelZ, center = true, $fn = 120);
-                cylinder(r = R(CouplingD), h = BarrelZ + 1, center = true, $fn = 120);
-            }
         }
         translate([0, 62.4, Z]) cube([AX * 2, 100, 11.1 + 1], center = true);
 
-        translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) {
-            cylinder(r = R(CouplingD), h = 11.1 + 1, center = true, $fn = 120);
-            translate([-9, 0, 5]) cube([40, 30, 5], center = true);
-            translate([-23.75, 8.8, -2]) cylinder(r = R(6.2), h = 40, center = true, $fn = 40);
-            translate([-23.75, -8.8, -2]) cylinder(r = R(6.2), h = 40, center = true, $fn = 40);
+        translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 0]) {
+            cylinder(r = R(22), h = 10, center = true, $fn = 60); 
         }
         translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) {
-            cylinder(r = R(CouplingD), h = 11.1 + 1, center = true, $fn = 120);
-            translate([9, 0, 5]) cube([40, 30, 5], center = true);
-            translate([23.75, 8.8, -2]) cylinder(r = R(6.2), h = 40, center = true, $fn = 40);
-            translate([23.75, -8.8, -2]) cylinder(r = R(6.2), h = 40, center = true, $fn = 40);
+            
         }
-
-        //bearings voids
-        mcopy_takeup_bearings([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -13.1], [0, 0, 180], CouplingD) bearing_void(width = BarrelZ, outerPad = 0.6, innerPad = -0.3);
-        mcopy_takeup_bearings([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -13.1], [0, 0, 0], CouplingD) bearing_void(width = BarrelZ, outerPad = 0.6, innerPad = -0.3);
-    
-        //m3 bolt bearing voids
-        mcopy_takeup_bearings([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 5], [0, 0, 180], CouplingD) m3_bolt_void();
-        mcopy_takeup_bearings([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 5], [0, 0, 0], CouplingD) m3_bolt_void();
     }
 
 
     //motor mount plates
+    /*
     translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) intersection () {
         union () {
             cylinder(r = R(CouplingD) + 2, h = 11.1, center = true, $fn = 120);
@@ -301,10 +279,7 @@ module mcopy_takeup_plate () {
         }
         translate([0, 0, 7.315 - Z]) rotate([180, 0, 0]) minimal_mount();
     }
-
-    //bearings mounts
-    mcopy_takeup_bearings([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -8], [0, 0, 180], CouplingD) mcopy_bearing_mount();
-    mcopy_takeup_bearings([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -8], [0, 0, 0], CouplingD) mcopy_bearing_mount();
+    */
 }
 
 module mcopy_takeup () {
@@ -395,7 +370,7 @@ module mcopy_takeup_half (Side = "takeup") {
 
 //translate([0, 0, 40]) color("red") original_takeup();
 
-PART = "mcopy_takeup_feed";
+PART = "mcopy_takeup";
 
 if (PART == "slip_coupling") {
     slip_coupling();

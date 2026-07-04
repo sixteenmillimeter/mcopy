@@ -19,12 +19,14 @@ CaseSplitZ = 41;
 
 RelayMountsX = 33.12;
 RelayMountsY = 44;
+RelayMountsY2 = 52;
 
 CapacitorSize = [30.5, 37.2, 20];
 ResistorSize = [16.25, 49.8, 15.5];
 
 ArduinoPosition = [36, 78, 2];
 RelayPosition = [25, -25, 1];
+RelayPosition2 = [-25, -25, 1];
 ResistorPosition = [-37, 18, 0];
 CapacitorPosition = [-35, -40, 0];
 
@@ -160,6 +162,14 @@ module case_mount (pos = [0, 0, 0]) {
 	}
 }
 
+module case_mount_bottom (pos = [0, 0, 0]) {
+	$fn = 30;
+	translate(pos) difference () {
+		cylinder(r = R(CaseMountR), h = CaseMountsH, center = true);
+		cylinder(r = R(3), h = CaseMountsH + 1, center = true);
+	}
+}
+
 module case_mounts (pos = [0, 0, 0]) {
 	X = CaseMountsX/2;
 	Y = CaseMountsY/2;
@@ -184,6 +194,18 @@ module case_mounts (pos = [0, 0, 0]) {
 	rotate([0, 0, -DiagAngle]) cube([DiagBrace, 6, 5], center = true);
 }
 
+module case_mounts_bottom (pos = [0, 0, 0]) {
+	X = CaseMountsX/2;
+	Y = CaseMountsY/2;
+	Z = 0;
+	translate(pos) {
+		case_mount_bottom([X,   Y, Z]);
+		case_mount_bottom([X,  -Y, Z]);
+		case_mount_bottom([-X,  Y, Z]);
+		case_mount_bottom([-X, -Y, Z]);
+	}
+}
+
 module relay_module_post (pos = [0, 0, 0]) {
 	$fn = 30;
 	translate(pos) {
@@ -201,6 +223,23 @@ module relay_mount (pos = [0, 0, 0]) {
 		translate([0, 0, -1]) difference () {
 			rounded_cube([RelayMountsX + 5, RelayMountsY + 5, 5], d = 5, center = true);
 			rounded_cube([RelayMountsX - 5, RelayMountsY - 5, 5 + 1], d = 4, center = true);
+		}
+		relay_module_post([X,   Y, PostZ]);
+		relay_module_post([X,  -Y, PostZ]);
+		relay_module_post([-X,  Y, PostZ]);
+		relay_module_post([-X, -Y, PostZ]);
+	}
+}
+
+module relay_mount2 (pos = [0, 0, 0]) {
+	$fn = 30;
+	X = RelayMountsX/2;
+	Y = RelayMountsY2/2;
+	PostZ = 3;
+	translate([0, -4, 0]) translate(pos) {
+		translate([0, 0, -1]) difference () {
+			rounded_cube([RelayMountsX + 5, RelayMountsY2 + 5, 5], d = 5, center = true);
+			rounded_cube([RelayMountsX - 5, RelayMountsY2 - 5, 5 + 1], d = 4, center = true);
 		}
 		relay_module_post([X,   Y, PostZ]);
 		relay_module_post([X,  -Y, PostZ]);
@@ -292,6 +331,28 @@ module electronics_mount () {
 	//translate([35.1, 76.8, 4.5]) rotate([0, 0, 180]) arduino();
 }
 
+//BOM: 4, M3 hex cap bolt 8mm,N/A,Attach Arduino Uno
+//BOM: 2, M3 hex nut, N/A, Attach electronics attachment
+module electronics_mount_camera () {
+	difference () {
+		union() {
+			case_mounts([0, 0, 0]);
+			translate(ArduinoPosition) {
+				rotate([0, 0, 180]) scale([1, 1.01, 1]) bumper();
+				arduino_mount_reinforcement();
+			}
+			relay_mount2(RelayPosition);
+            relay_mount2(RelayPosition2);
+			//resistor_mount(ResistorPosition);
+			//capacitor_mount(CapacitorPosition);
+			electronics_attachment_bolt_reinforcement(ArduinoPosition);
+		}
+		arduino_bolts_voids(ArduinoPosition);
+		electronics_attachment_bolt_voids(ArduinoPosition);
+	}
+	//translate([35.1, 76.8, 4.5]) rotate([0, 0, 180]) arduino();
+}
+
 //BOM: 2, M3 hex cap bolt 12mm, N/A, Attach to electronics mount
 module electronics_attachment () {
 	difference () {
@@ -357,6 +418,49 @@ module power_cable_halves () {
     }
 }
 
+module case_bottom () {
+    difference () {
+        union () {
+            difference () {
+                rounded_cube([107 + 6, 170 + 6, 45], d = 10, center = true, $fn = 60);
+                translate([0, 0, 3]) rounded_cube([107, 170, 45], d = 10, center = true, $fn = 60);
+            }
+            translate([102 / 2, 164 / 2, 0]) cylinder(r = R(7), h = 45, center = true, $fn = 40); 
+            translate([-102 / 2, 164 / 2, 0]) cylinder(r = R(7), h = 45, center = true, $fn = 40);
+            translate([102 / 2, -164 / 2, 0]) cylinder(r = R(7), h = 45, center = true, $fn = 40);
+            translate([-102 / 2, -164 / 2, 0]) cylinder(r = R(7), h = 45, center = true, $fn = 40);
+            
+            translate([25, -161 / 2, -16]) difference () {
+                cube([15, 10, 8], center = true, $fn = 50);
+                translate([0, 0, -2]) cube([20, 3, 3], center = true); 
+            } 
+            translate([-25, -161 / 2, -16]) difference () {
+                cube([15, 10, 8], center = true, $fn = 50);
+                translate([0, 0, -2]) cube([20, 3, 3], center = true); 
+            } 
+        }
+        //translate([0, 250, 0]) cube([500, 500, 500], center = true);
+       
+        //power in
+        translate([25, -170 / 2, -10]) rotate([90, 0, 0]) cylinder(r = R(9.5), h = 20, center = true, $fn = 50);  
+        //power out
+        translate([-25, -170 / 2, -10]) rotate([90, 0, 0]) cylinder(r = R(6), h = 20, center = true, $fn = 50); 
+        
+        //arduino USB
+        translate([20, 170 / 2, -2]) cube([17, 17, 17], center = true);
+        //arduino power
+        translate([-9, 170 / 2, -2]) cube([12, 15, 17], center = true);
+        
+        //bolts
+        translate([102 / 2, 164 / 2, 25]) cylinder(r = R(3.5), h = 45, center = true); 
+        translate([-102 / 2, 164 / 2, 25]) cylinder(r = R(3.5), h = 45, center = true);
+        translate([102 / 2, -164 / 2, 25]) cylinder(r = R(3.5), h = 45, center = true);
+        translate([-102 / 2, -164 / 2, 25]) cylinder(r = R(3.5), h = 45, center = true);
+    }
+    
+    color("blue") case_mounts_bottom([0, 5, -18]);
+}
+
 module debug () {
 	case_debug();
 	translate([0, 0, -CaseInnerZ/2+(CaseMountsH)]) electronics_mount();
@@ -366,10 +470,13 @@ module debug () {
 	translate(ArduinoPosition) translate([-27.5, -8, -10]) electronics_attachment();
 }
 
-PART="power_cable";
+PART="electronics_mount_camera";
 
 if (PART == "electronics_mount") {
 	electronics_mount();
+} else if (PART == "electronics_mount_camera") {
+	electronics_mount_camera();
+    translate([0, -5, 13]) case_bottom();
 } else if (PART == "electronics_attachment") {
 	electronics_attachment();
 } else if (PART == "power_cable") {

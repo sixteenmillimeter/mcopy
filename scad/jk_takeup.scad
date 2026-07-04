@@ -1,5 +1,5 @@
 use <./common/common.scad>;
-use <./takeup/takeup.scad>;
+include <./takeup/takeup.scad>;
 
 /**
  * DEPRECATED, SEE mcopy_takeup
