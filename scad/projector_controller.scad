@@ -419,16 +419,17 @@ module power_cable_halves () {
 }
 
 module case_bottom () {
+    H = 45;
     difference () {
         union () {
             difference () {
-                rounded_cube([107 + 6, 170 + 6, 45], d = 10, center = true, $fn = 60);
-                translate([0, 0, 3]) rounded_cube([107, 170, 45], d = 10, center = true, $fn = 60);
+                rounded_cube([107 + 6, 170 + 6, H], d = 10, center = true, $fn = 60);
+                translate([0, 0, 3]) rounded_cube([107, 170, H], d = 10, center = true, $fn = 60);
             }
-            translate([102 / 2, 164 / 2, 0]) cylinder(r = R(7), h = 45, center = true, $fn = 40); 
-            translate([-102 / 2, 164 / 2, 0]) cylinder(r = R(7), h = 45, center = true, $fn = 40);
-            translate([102 / 2, -164 / 2, 0]) cylinder(r = R(7), h = 45, center = true, $fn = 40);
-            translate([-102 / 2, -164 / 2, 0]) cylinder(r = R(7), h = 45, center = true, $fn = 40);
+            translate([102 / 2, 164 / 2, 0]) cylinder(r = R(7), h = H, center = true, $fn = 40); 
+            translate([-102 / 2, 164 / 2, 0]) cylinder(r = R(7), h = H, center = true, $fn = 40);
+            translate([102 / 2, -164 / 2, 0]) cylinder(r = R(7), h = H, center = true, $fn = 40);
+            translate([-102 / 2, -164 / 2, 0]) cylinder(r = R(7), h = H, center = true, $fn = 40);
             
             translate([25, -161 / 2, -16]) difference () {
                 cube([15, 10, 8], center = true, $fn = 50);
@@ -461,6 +462,52 @@ module case_bottom () {
     color("blue") case_mounts_bottom([0, 5, -18]);
 }
 
+module case_top () {
+    H = 15;
+    difference () {
+        union () {
+            difference () {
+                rounded_cube([107 + 6, 170 + 6, H], d = 10, center = true, $fn = 60);
+                translate([0, 0, 3]) rounded_cube([107, 170, H], d = 10, center = true, $fn = 60);
+            }
+            translate([102 / 2, 164 / 2, 0]) cylinder(r = R(7), h = H, center = true, $fn = 40); 
+            translate([-102 / 2, 164 / 2, 0]) cylinder(r = R(7), h = H, center = true, $fn = 40);
+            translate([102 / 2, -164 / 2, 0]) cylinder(r = R(7), h = H, center = true, $fn = 40);
+            translate([-102 / 2, -164 / 2, 0]) cylinder(r = R(7), h = H, center = true, $fn = 40);
+        }
+        //translate([0, 250, 0]) cube([500, 500, 500], center = true);
+        
+        //bolts
+        translate([102 / 2, 164 / 2, 0]) {
+            cylinder(r = R(4), h = H + 1, center = true, $fn = 40); 
+            translate([0, 0, (-H / 2) + (2.4 / 2) ]) cylinder(r1 = R(7.5), r2 = R(4), h = 2.5, center = true, $fn = 40);
+        }
+        translate([-102 / 2, 164 / 2, 0]) {
+            cylinder(r = R(4), h = H + 1, center = true, $fn = 40);
+            translate([0, 0, (-H / 2) + (2.4 / 2) ]) cylinder(r1 = R(7.5), r2 = R(4), h = 2.5, center = true, $fn = 40);
+        }
+        translate([102 / 2, -164 / 2, 0]) {
+            cylinder(r = R(4), h = H + 1, center = true, $fn = 40);
+            translate([0, 0, (-H / 2) + (2.4 / 2) ]) cylinder(r1 = R(7.5), r2 = R(4), h = 2.5, center = true, $fn = 40);
+        }
+        translate([-102 / 2, -164 / 2, 0]) {
+            cylinder(r = R(4), h = H + 1, center = true, $fn = 40);
+            translate([0, 0, (-H / 2) + (2.4 / 2) ]) cylinder(r1 = R(7.5), r2 = R(4), h = 2.5, center = true, $fn = 40);
+        }
+        
+        translate([0, 0, -H / 2]) {
+            //Audio jack
+            //translate([40, -20, 0]) cylinder(r = R(5.85), h = H, center = true, $fn = 40);
+            
+            //Direction toggle
+            //translate([40, -40, 0]) cylinder(r = R(5.85), h = H, center = true, $fn = 40);
+          
+            //Frame button
+            //translate([40, -60, 0]) cylinder(r = R(7.9), h = H, center = true, $fn = 40);
+        } 
+    }
+}
+
 module debug () {
 	case_debug();
 	translate([0, 0, -CaseInnerZ/2+(CaseMountsH)]) electronics_mount();
@@ -470,13 +517,13 @@ module debug () {
 	translate(ArduinoPosition) translate([-27.5, -8, -10]) electronics_attachment();
 }
 
-PART="electronics_mount_camera";
+PART="electronics_mount_camerax";
 
 if (PART == "electronics_mount") {
 	electronics_mount();
 } else if (PART == "electronics_mount_camera") {
 	electronics_mount_camera();
-    translate([0, -5, 13]) case_bottom();
+    //translate([0, -5, 13]) case_bottom();
 } else if (PART == "electronics_attachment") {
 	electronics_attachment();
 } else if (PART == "power_cable") {
@@ -484,5 +531,9 @@ if (PART == "electronics_mount") {
 } else if (PART == "usb_protector") {
     usb_protector();
 } else {
-	debug();
+//	debug();
+    //case_bottom();
+    
+    //translate([0, 0, 50]) rotate([0, 180, 0]) 
+    case_top();
 }
