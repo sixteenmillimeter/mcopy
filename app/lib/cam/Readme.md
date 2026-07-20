@@ -7,6 +7,8 @@
         * [.init()](#module_lib/cam..Camera+init)
         * [.listen()](#module_lib/cam..Camera+listen)
         * [.set()](#module_lib/cam..Camera+set)
+        * [.open()](#module_lib/cam..Camera+open)
+        * [.close()](#module_lib/cam..Camera+close)
         * [.cap()](#module_lib/cam..Camera+cap)
         * [.move()](#module_lib/cam..Camera+move)
         * [.exposure()](#module_lib/cam..Camera+exposure)
@@ -26,6 +28,8 @@ Class representing camera functions.
     * [.init()](#module_lib/cam..Camera+init)
     * [.listen()](#module_lib/cam..Camera+listen)
     * [.set()](#module_lib/cam..Camera+set)
+    * [.open()](#module_lib/cam..Camera+open)
+    * [.close()](#module_lib/cam..Camera+close)
     * [.cap()](#module_lib/cam..Camera+cap)
     * [.move()](#module_lib/cam..Camera+move)
     * [.exposure()](#module_lib/cam..Camera+exposure)
@@ -45,6 +49,14 @@ Class representing camera functions.
 <a name="module_lib/cam..Camera+set"></a>
 
 #### camera.set()
+**Kind**: instance method of [<code>Camera</code>](#module_lib/cam..Camera)  
+<a name="module_lib/cam..Camera+open"></a>
+
+#### camera.open()
+**Kind**: instance method of [<code>Camera</code>](#module_lib/cam..Camera)  
+<a name="module_lib/cam..Camera+close"></a>
+
+#### camera.close()
 **Kind**: instance method of [<code>Camera</code>](#module_lib/cam..Camera)  
 <a name="module_lib/cam..Camera+cap"></a>
 

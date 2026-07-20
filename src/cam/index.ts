@@ -38,6 +38,7 @@ export class Camera {
 	private ui : WebContents;
 	private ipc : typeof ipcMain = ipcMain;
 	private id : string = 'camera';
+	private opened : boolean = false;
 	/**
 	 *
 	 **/
@@ -100,6 +101,50 @@ export class Camera {
 				this.log.error(err);
 			}
 		}
+		return await this.end(cmd, id, ms);
+	}
+
+	/**
+	 * 
+	 **/
+	public async open (id : string) {
+		const cmd : string = 'J';
+		let ms : number;
+
+		if (this.opened) {
+			return 0;
+		}
+
+		try {
+			ms = await this.arduino.send(this.id, cmd);
+		} catch (err) {
+			this.log.error(err);
+		}
+
+		this.opened = true;
+
+		return await this.end(cmd, id, ms);
+	}
+
+	/**
+	 * 
+	 **/
+	public async close (id : string) {
+		const cmd : string = 'K';
+		let ms : number;
+
+		if (!this.opened) {
+			return 0;ms = await this.arduino.send(this.id, cmd);
+		}
+
+		try {
+			ms = await this.arduino.send(this.id, cmd);
+		} catch (err) {
+			this.log.error(err);
+		}
+
+		this.opened = false;
+
 		return await this.end(cmd, id, ms);
 	}
 
@@ -297,6 +342,18 @@ export class Camera {
 			} catch (err) {
 				this.log.error(err);
 			}
+		} else if (typeof arg.open !== 'undefined') {
+			try {
+				await this.open(arg.id);
+			} catch (err) {
+				this.log.error(err);
+			}
+		} else if (typeof arg.close !== 'undefined') {
+			try {
+				await this.close(arg.id);
+			} catch (err) {
+				this.log.error(err);
+			}
 		}
 		event.returnValue = true
 	}
@@ -334,6 +391,10 @@ export class Camera {
 			message += 'Cameras both MOVED 1 frame each';
 		} else if (cmd === this.cfg.arduino.camera_exposure) {
 			message += 'Camera set exposure';
+		} else if (cmd === this.cfg.arduino.camera_open) {
+			message += 'Camera OPENED';
+		} else if (cmd === this.cfg.arduino.camera_close) {
+			message += 'Camera CLOSED';
 		}
 		message += ` ${ms}ms`
 		this.log.info(message);

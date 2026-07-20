@@ -22,6 +22,7 @@ export declare class Camera {
     private ui;
     private ipc;
     private id;
+    private opened;
     /**
      *
      **/
@@ -38,6 +39,14 @@ export declare class Camera {
      *
      **/
     set(dir: boolean, id: string): Promise<number>;
+    /**
+     *
+     **/
+    open(id: string): Promise<number>;
+    /**
+     *
+     **/
+    close(id: string): Promise<number>;
     /**
      *
      **/

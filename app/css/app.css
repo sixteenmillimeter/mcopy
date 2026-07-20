@@ -771,6 +771,14 @@ button:focus {
   line-height: 14px;
   color: #999;
 }
+#settings #submitted_cam_time {
+  font-style: italic;
+  text-align: center;
+}
+#settings #cam_open_close button {
+  float: left;
+  margin-right: 10px;
+}
 .cm-s-monokai.CodeMirror {
   background: #272b30 !important;
 }

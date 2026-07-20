@@ -467,7 +467,12 @@
           <div class="cam_time">
             <h4>Camera Time (ms)</h4>
             <input type="number" readonly id="cam_time" value="0" />
-            <button id="submit_cam_time" class="hide" onclick="cam.exposure($('#cam_time').val());">✓</button>
+            <button id="submit_cam_time" class="hide" onclick="cam.exposure($('#cam_time').val());$('#submitted_cam_time').text($('#cam_time').val());">✓</button>
+            <div id="submitted_cam_time" class="hide">0</div>
+          </div>
+          <div id="cam_open_close" class="hide">
+            <button id="cam_open" onclick="cam.open();">OPEN</button>
+            <button id="cam_close" onclick="cam.click();">CLOSE</button>
           </div>
         </div>
       </div>

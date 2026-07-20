@@ -31,7 +31,9 @@ class Devices {
 
 		if (typeof arg.camera !== 'undefined' && typeof arg.camera.exposure !== undefined) {
 			$('#submit_cam_time').removeClass('hide');
+			$('#submitted_cam_time').removeClass('hide');
 			$('#cam_time').removeAttr('readonly');
+			$('#cam_open_close').removeClass('hide');
 		}
 
 		for (let i in arg) {

@@ -129,6 +129,45 @@ cam.exposure = async function (exposure) {
 	}
 }
 
+cam.open = async function () {
+	var obj = {
+		id : uuid(),
+		open : true
+	};
+	var change = false;
+	try {
+		change = await gui.confirm('Are you sure you want to open the camera?');
+	} catch (err) {
+		log.error(err);
+	}
+	if (change) {
+		log.info(`Opening the camera`);
+		ipcRenderer.sendSync(cam.id, obj);
+	} else {
+		log.info(`Cancelling open camera`);
+	}
+}
+
+cam.close = async function () {
+	var obj = {
+		id : uuid(),
+		close : true
+	};
+	var change = false;
+
+	try {
+		change = await gui.confirm('Are you sure you want to close the camera?');
+	} catch (err) {
+		log.error(err);
+	}
+	if (change) {
+		log.info(`Closing the camera`);
+		ipcRenderer.sendSync(cam.id, obj);
+	} else {
+		log.info(`Cancelling close camera`);
+	}
+}
+
 cam.listen = function () {
 	'use strict';
 	ipcRenderer.on(cam.id, function (event, arg) {

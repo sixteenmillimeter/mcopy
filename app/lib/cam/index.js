@@ -25,6 +25,7 @@ class Camera {
         this.processing = null;
         this.ipc = electron_1.ipcMain;
         this.id = 'camera';
+        this.opened = false;
         this.arduino = arduino;
         this.cfg = cfg;
         this.ui = ui;
@@ -85,6 +86,43 @@ class Camera {
                 this.log.error(err);
             }
         }
+        return await this.end(cmd, id, ms);
+    }
+    /**
+     *
+     **/
+    async open(id) {
+        const cmd = 'J';
+        let ms;
+        if (this.opened) {
+            return 0;
+        }
+        try {
+            ms = await this.arduino.send(this.id, cmd);
+        }
+        catch (err) {
+            this.log.error(err);
+        }
+        this.opened = true;
+        return await this.end(cmd, id, ms);
+    }
+    /**
+     *
+     **/
+    async close(id) {
+        const cmd = 'K';
+        let ms;
+        if (!this.opened) {
+            return 0;
+            ms = await this.arduino.send(this.id, cmd);
+        }
+        try {
+            ms = await this.arduino.send(this.id, cmd);
+        }
+        catch (err) {
+            this.log.error(err);
+        }
+        this.opened = false;
         return await this.end(cmd, id, ms);
     }
     /**
@@ -290,6 +328,22 @@ class Camera {
                 this.log.error(err);
             }
         }
+        else if (typeof arg.open !== 'undefined') {
+            try {
+                await this.open(arg.id);
+            }
+            catch (err) {
+                this.log.error(err);
+            }
+        }
+        else if (typeof arg.close !== 'undefined') {
+            try {
+                await this.close(arg.id);
+            }
+            catch (err) {
+                this.log.error(err);
+            }
+        }
         event.returnValue = true;
     }
     /**
@@ -334,6 +388,12 @@ class Camera {
         }
         else if (cmd === this.cfg.arduino.camera_exposure) {
             message += 'Camera set exposure';
+        }
+        else if (cmd === this.cfg.arduino.camera_open) {
+            message += 'Camera OPENED';
+        }
+        else if (cmd === this.cfg.arduino.camera_close) {
+            message += 'Camera CLOSED';
         }
         message += ` ${ms}ms`;
         this.log.info(message);
