@@ -531,7 +531,9 @@ export class Arduino {
 					c : this.cfg.arduino.cam.time + this.cfg.arduino.cam.delay,
 					p : this.cfg.arduino.proj.time + this.cfg.arduino.proj.delay,
 					A : 180,
-					B : 180
+					B : 180,
+					J : 200,
+					K : 400
 				}
 				let timeout : number = t[cmd]
 				if (typeof timeout === 'undefined') timeout = 10

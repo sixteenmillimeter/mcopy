@@ -779,6 +779,16 @@ button:focus {
   float: left;
   margin-right: 10px;
 }
+#settings #cam_open_close button.opening,
+#settings #cam_open_close button.closing {
+  background: #DAE035;
+  border-color: #DAE035;
+  color: #272b30;
+}
+#settings #cam_open_close button.open {
+  border-color: #DAE035;
+  color: #DAE035;
+}
 .cm-s-monokai.CodeMirror {
   background: #272b30 !important;
 }

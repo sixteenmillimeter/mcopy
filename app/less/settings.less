@@ -83,6 +83,16 @@
 		button{
 			float: left;
 			margin-right: 10px;
+			&.opening,
+			&.closing{
+				background: @SELECTED;
+				border-color: @SELECTED;
+				color: @BG;
+			}
+			&.open{
+				border-color: @SELECTED;
+				color: @SELECTED;
+			}
 		}
 	}
 }
