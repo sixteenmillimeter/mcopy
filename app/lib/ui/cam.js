@@ -52,6 +52,7 @@ cam.move = function (callback) {
 	if (cam.lock) {
 		return false;
 	}
+	$('#cam_open').removeClass('open');
 	obj = {
 		move : true,
 		id : uuid()
@@ -141,11 +142,13 @@ cam.open = async function () {
 		log.error(err);
 	}
 	if (change) {
+		cam.lock = true;
 		$('#cam_open').addClass('opening');
 		log.info(`Opening the camera`);
 		ipcRenderer.sendSync(cam.id, obj);
 		$('#cam_open').removeClass('opening');
 		$('#cam_open').addClass('open');
+		cam.lock = false;
 	} else {
 		log.info(`Cancelling open camera`);
 	}
@@ -156,7 +159,7 @@ cam.close = async function () {
 		id : uuid(),
 		close : true
 	};
-
+	cam.lock = true;
 	$('#cam_open').removeClass('open');
 	$('#cam_close').addClass('closing');
 
@@ -164,6 +167,7 @@ cam.close = async function () {
 	ipcRenderer.sendSync(cam.id, obj);
 
 	$('#cam_close').removeClass('closing');
+	cam.lock = false;
 }
 
 cam.listen = function () {

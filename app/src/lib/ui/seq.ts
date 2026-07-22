@@ -125,6 +125,7 @@ class Sequence {
 		this.time = +new Date();
 		this.arr = JSON.parse(JSON.stringify(this.grid));
 		this.loops = this.gridLoops + 0;
+		$('#cam_open').removeClass('open');
 		ipcRenderer.send(this.id, { start : true });
 	}
 	//start a pre-set sequence, not using the gui
