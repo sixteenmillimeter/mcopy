@@ -51,7 +51,10 @@ module cover () {
             translate([COVER_BOLTS_X / 2, -COVER_BOLTS_Y / 2, 0]) cylinder(r = R(COVER_BOLTS_D), h = H + 1, center = true, $fn = 30);
             translate([-COVER_BOLTS_X / 2, -COVER_BOLTS_Y / 2, 0]) cylinder(r = R(COVER_BOLTS_D), h = H + 1, center = true, $fn = 30);
         }
+        translate([20, -35, 0]) cylinder(r = R(5), h = H + 1, center = true, $fn = 60);
+        translate([20, -25, 0]) cylinder(r = R(5), h = H + 1, center = true, $fn = 60);
     }
+
 }
 
 module debug_capacitor (pos = [0, 0, 0], rot = [0, 0, 0]) {
