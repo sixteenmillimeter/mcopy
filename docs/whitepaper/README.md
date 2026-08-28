@@ -23,17 +23,19 @@ Optical printers allow filmmakers to control time, image and color frame-by-fram
 The mcopy platform was started in 2009 as a one-off retrofit of a broken Bell & Howell projector.
 Its initial goal was to create an optical printer with what was available at the time.
 Using an Arduino, a toy DC motor, some tin foil and LEDs the first approach was made towards designing this system from otherwise discarded hardware.
-Assembling this with a small copy stand and a crudely-controlled Bolex 16mm camera, 
+Assembling this with a small copy stand and a crudely-controlled Bolex 16mm camera, it performed the function of copying film from the projector to the camera.
 
 # Motivations
 
 A common scenario in the analog filmmaking world is a person or organization in possession of partial or non-working optical printer.
 One solution for this, potentially, would be to meticulously replace or repair any missing or non-functional parts.
 This proves to be a challenge when the companies that created those parts no longer exist and the documentation for repairing these machines was either never produced or never made public.
-A remaining solution that presents itself is to "hack" these machines and retrofit them with available techniques.
+It proves even more challenging when the individual elemental components, chips and capacitors, are no longer made in the form factors they were originally produced in and entire boards must be replaced or redesigned to support the specifications they were designed with.
 
 Another complication to any approach to modernizing these machines is that they were produced in small batches with many changes in design between these revisions.
 This makes for a very non-standard pool of components to be assembling into a single system.
+
+A remaining solution that presents itself is to "hack" these machines and retrofit them with available techniques.
 The counter to that is estabishing a common interface for this platform.
 Anything that can be conformed to this new standard can be assimilated and new configurations can be built that were not possible with legacy hardware sequencers.
 
@@ -45,7 +47,7 @@ There are exceptions, but without a large commercial production demand, manufact
 This leaves the future of the analog cinema in the hands of its practitioners to steward the continuation and advancement of the art.
 By looking to other disciplines, be they arts or sciences, artists who work with film can benefit from the ways that small-scale desktop manufacturing and rapid prototyping have both preserved and augmented other practices.
 
-The RepRap project [@reprap-philosophy]--the --correctly does not spend any time focusing on producing alternatives for "cheap and ubiquitous parts like screws and electric motors".
+The RepRap project [@reprap-philosophy]--the "reproducible rapid-prototyper" project that kicked off a wave of open-source 3D printers--correctly does not spend any time focusing on producing alternatives for "cheap and ubiquitous parts like screws and electric motors".
 If there is an existing, standard and available part that solves a problem, it saves time and effort inclding it.
 Those resources are better spent focusing on the core requirements of the project which, in this case, is to make a cheap and accessible contact printer for artists.
 

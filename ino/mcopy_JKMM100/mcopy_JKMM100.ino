@@ -41,8 +41,8 @@ volatile unsigned long now;
 
 //PROJECTOR CONSTANTS
 const int PROJECTOR_MICROSWITCH = 11;
-const int LED_FWD = 12;
-const int LED_BWD = 13;
+const int LED_FWD = 8;
+const int LED_BWD = 9;
 
 const int PROJECTOR_FWD = 3;
 const int PROJECTOR_BWD = 4; 
@@ -129,11 +129,13 @@ void proj_start () {
 void proj_stop () {
   int ms;
   //stop both directions
-  delay(2);
+  mc.log("Stopping...");
+  //delay(2);
   digitalWrite(PROJECTOR_FWD, LOW);
   digitalWrite(PROJECTOR_BWD, LOW);
   digitalWrite(LED_FWD, LOW);
   digitalWrite(LED_BWD, LOW);
+  /*
   if (digitalRead(PROJECTOR_MICROSWITCH) == PROJECTOR_MICROSWITCH_CLOSED) {
     if (proj_dir) {
       while (digitalRead(PROJECTOR_MICROSWITCH) == PROJECTOR_MICROSWITCH_CLOSED) {
@@ -148,8 +150,8 @@ void proj_stop () {
       }
       digitalWrite(PROJECTOR_FWD, LOW);
     }
-  }
-
+  }*/
+  
   delay(100);
 
   ms = millis() - proj_time;
