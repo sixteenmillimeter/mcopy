@@ -5,6 +5,10 @@ COVER_X = 90;
 COVER_Y = 113.4;
 COVER_Z = 3;
 
+COVER_BOLTS_X = 80.25;
+COVER_BOLTS_Y = 93.6;
+COVER_BOLTS_D = 4;
+
 CASE_X = 86;
 CASE_Y = 109;
 CASE_Z1 = 38;
@@ -22,11 +26,8 @@ RelayMountsX = 33.12;
 RelayMountsY = 44;
 RelayMountsY2 = 52;
 
-COVER_X = 90;
-COVER_Y = 113.4;
-COVER_BOLTS_X = 80.25;
-COVER_BOLTS_Y = 93.6;
-COVER_BOLTS_D = 4;
+
+
 
  module m3_bolt (pos = [0, 0, 0], h = 10, pad = 0) {
     translate(pos) cylinder(r = R(3.25 + pad), h = h, center = true, $fn = 30);
@@ -42,7 +43,7 @@ module arduino_bolts_voids (pos = [0, 0, 0], rot = [0, 0, 0], h = 10, pad = 0) {
 }
 
 module cover () {
-    H = 3;
+    H = COVER_Z;
     difference () {
         rounded_cube([COVER_X, COVER_Y, H], d = 4, center = true, $fn = 30);
         translate([0, (9.15-3.65) / 2, 0]) {
@@ -53,8 +54,13 @@ module cover () {
         }
         translate([20, -35, 0]) cylinder(r = R(5), h = H + 1, center = true, $fn = 60);
         translate([20, -25, 0]) cylinder(r = R(5), h = H + 1, center = true, $fn = 60);
+        color("red") translate([-14, -27, (H / 2) - 0.3]) linear_extrude(height = 1) {
+            text("FORWARD", size = 4);
+        }
+        color("red") translate([-13, -27 -10, (H / 2) - 0.3]) linear_extrude(height = 1) {
+            text("REVERSE", size = 4);
+        }
     }
-
 }
 
 module debug_capacitor (pos = [0, 0, 0], rot = [0, 0, 0]) {
@@ -204,6 +210,12 @@ PART = "cover";
 
 if (PART == "cover") {
     cover();
+} else if (PART == "relay_shelf") {
+    relay_shelf();
+} else if (PART == "capacitor_resistor_mount") {
+    capacitor_resistor_mount();
+} else if (PART == "arduino_mount") {
+    arduino_mount();
 } else {
     debug();
 }

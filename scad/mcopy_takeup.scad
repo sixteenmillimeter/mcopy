@@ -67,19 +67,6 @@ module motor_shaft () {
     }
 }
 
-module debug_assembled () {
-    translate([(46 / 2) - 14.5, 0, 0]) rotate([180, 0, 0]) geared_motor();
-    color("green") translate([0, 0, 11]) mount_plate();
-    color("blue") translate([0, 0, 23]) rotate([0, 0, -90]) //magnetic_coupling();
-    difference () {
-        translate([0, 0, 26.5]) slip_coupling();
-        translate([-50, 0, 0]) cube([100, 100, 150], center = true);
-    }
-    color("red") translate([0, 0, 34]) daylight_spool_insert();
-}
-
-
-
 module m5_nut (pos = [0, 0, 0]) {
     translate(pos) hex(9.4, 4);
 }
@@ -235,27 +222,28 @@ module mcopy_takeup_plate () {
     Rounding = 77;
     CouplingD = 46;
     BarrelZ = 20;
+    H = 11.1;
 
     difference () {
         union () {
-            translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) cylinder(r = R(Rounding), h = 11.1, center = true, $fn = 120);
-            translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) cylinder(r = R(Rounding), h = 11.1, center = true, $fn = 120);
+            translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) cylinder(r = R(Rounding), h = H, center = true, $fn = 120);
+            translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) cylinder(r = R(Rounding), h = H, center = true, $fn = 120);
             translate([0, MCOPY_TAKEUP_Y, Z]) cube([MCOPY_TAKEUP_X * 2, Rounding, 11.1], center = true);
 
             translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) {
-                rotate([0, 0, Angle]) translate([MCOPY_TAKEUP_X / 2, 0, 0]) cube([MCOPY_TAKEUP_X, Rounding, 11.1], center = true);
+                rotate([0, 0, Angle]) translate([MCOPY_TAKEUP_X / 2, 0, 0]) cube([MCOPY_TAKEUP_X, Rounding, H], center = true);
             }
 
             translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) {
-                rotate([0, 0, -Angle]) translate([-MCOPY_TAKEUP_X / 2, 0, 0]) cube([MCOPY_TAKEUP_X, Rounding, 11.1], center = true);
+                rotate([0, 0, -Angle]) translate([-MCOPY_TAKEUP_X / 2, 0, 0]) cube([MCOPY_TAKEUP_X, Rounding, H], center = true);
             }
 
-            translate([0, -50, Z]) cube([AX, 100, 11.1], center = true);
+            translate([0, -50, Z]) cube([AX, 100, H], center = true);
         }
-        translate([0, 62.4, Z]) cube([AX * 2, 100, 11.1 + 1], center = true);
+        translate([0, 62.4, Z]) cube([AX * 2, 100, H + 1], center = true);
 
         translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 0]) {
-            cylinder(r = R(22), h = 10, center = true, $fn = 60); 
+            cylinder(r = R(22), h = H + 1, center = true, $fn = 60); 
         }
         translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) {
             
@@ -280,18 +268,6 @@ module mcopy_takeup_plate () {
         translate([0, 0, 7.315 - Z]) rotate([180, 0, 0]) minimal_mount();
     }
     */
-}
-
-module mcopy_takeup () {
-    difference () {
-        union () {
-            block();
-            filter_holder([0, 0, -27.5]);
-            filter_reinforcement([0, -1.1, -16 + (5.75 / 2)]);
-            mcopy_takeup_plate();
-        }
-        roller_bolts();
-    }
 }
 
 module jk_takeup_halves (HALF = "A") {
@@ -368,9 +344,40 @@ module mcopy_takeup_half (Side = "takeup") {
     }
 }
 
+module mcopy_takeup () {
+    difference () {
+        union () {
+            block();
+            //filter_holder([0, 0, -27.5]);
+            //filter_reinforcement([0, -1.1, -16 + (5.75 / 2)]);
+            mcopy_takeup_plate();
+        }
+        roller_bolts();
+    }
+}
+
+module debug_assembled () {
+    mcopy_takeup();
+    translate([0, 0, 0]) rotate([180, 0, 0]) {
+        translate([(46 / 2) - 14.5, 0, 0]) rotate([180, 0, 0]) geared_motor();
+        color("green") translate([0, 0, 11]) mount_plate();
+    }
+    /*
+    translate([(46 / 2) - 14.5, 0, 0]) rotate([180, 0, 0]) geared_motor();
+    color("green") translate([0, 0, 11]) mount_plate();
+    color("blue") translate([0, 0, 23]) rotate([0, 0, -90]) //magnetic_coupling();
+    difference () {
+        translate([0, 0, 26.5]) slip_coupling();
+        translate([-50, 0, 0]) cube([100, 100, 150], center = true);
+    }
+    color("red") translate([0, 0, 34]) daylight_spool_insert();
+    */
+}
+
+
 //translate([0, 0, 40]) color("red") original_takeup();
 
-PART = "mcopy_takeup";
+PART = "mcopy_takeupx";
 
 if (PART == "slip_coupling") {
     slip_coupling();
