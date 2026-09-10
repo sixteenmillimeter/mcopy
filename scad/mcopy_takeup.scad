@@ -242,11 +242,13 @@ module mcopy_takeup_plate () {
         }
         translate([0, 62.4, Z]) cube([AX * 2, 100, H + 1], center = true);
 
-        translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 0]) {
-            cylinder(r = R(22), h = H + 1, center = true, $fn = 60); 
+        translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y,  Z + 1]) {
+            cylinder(r = R(22), h = H, center = true, $fn = 60);
+            cylinder(r = R(14), h = H + 10, center = true, $fn = 40); 
         }
-        translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) {
-            
+        translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z + 1]) {
+            cylinder(r = R(22), h = H, center = true, $fn = 60);
+            cylinder(r = R(14), h = H + 10, center = true, $fn = 40); 
         }
     }
 
@@ -358,7 +360,11 @@ module mcopy_takeup () {
 
 module debug_assembled () {
     mcopy_takeup();
-    translate([0, 0, 0]) rotate([180, 0, 0]) {
+    translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 50]) rotate([180, 0, 180-37.5]) {
+        translate([(46 / 2) - 14.5, 0, 0]) rotate([180, 0, 0]) geared_motor();
+        color("green") translate([0, 0, 11]) mount_plate();
+    }
+        translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 50]) rotate([180, 0, 37.5]) {
         translate([(46 / 2) - 14.5, 0, 0]) rotate([180, 0, 0]) geared_motor();
         color("green") translate([0, 0, 11]) mount_plate();
     }
