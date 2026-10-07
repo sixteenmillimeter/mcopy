@@ -1,0 +1,236 @@
+/*
+ * Sketch containing firmware for the JKMM100
+ * A collaboration between MONO NO AWARE and mcopy.
+ * Compatible with JK105 hardware.
+ * 
+ * Uses an Arduino Uno compatible board and a
+ * custom PCB. 
+ * Relay module for proj : 
+ * Sainsmart 2 solid state relay board
+
+  Wiring
+
+  PROJECTOR + PROJECTOR_DIR
+
+  Wire to corresponding pins
+  Arduino  3    4   5V   GND
+  Relay    1    2   VCC  GND
+
+  For controling JK Projectors 106 models
+  Solid state relays connect to:
+  2uf run capacitor
+  400 Ohm resistor (50W)
+
+  PINS FOR PROJ WIRE
+
+  #
+  1 - Red (top left from back of socket) => Wire from resistor
+  2 - White (top center) => Wire from power cable (bridged by a fuse) 
+  3 - Black (top right) => Wire from capacitor
+  8 - Orange (bottom center) => Pin 11 (microswitch digital read)
+  9 - Brown (bottom right) => GND
+
+  Relay 1 corresponds to FWD
+  Relay 2 corresponse to BWD
+  
+*/
+
+#include "McopySerial.h"
+
+volatile unsigned long now;
+
+//PROJECTOR CONSTANTS
+const int PROJECTOR_MICROSWITCH = 11;
+const int LED_FWD = 8;
+const int LED_BWD = 9;
+
+const int PROJECTOR_FWD = 3;
+const int PROJECTOR_BWD = 4; 
+
+const int TAKEUP_FWD = 5;
+const int TAKEUP_BWD = 6;
+const int TAKEUP_PWM = 100;
+const long TAKEUP_TIME = 750;
+
+const int PROJECTOR_MOMENT = 240;
+const int PROJECTOR_FRAME = 600;
+const int PROJECTOR_MICROSWITCH_CLOSED = 0;
+const int PROJECTOR_MICROSWITCH_OPENED = 1;
+const int PROJECTOR_HALF_TIME = 450;
+const int PROJECTOR_STOP_DELAY = 3;
+
+//PROJECTOR VARIABLES
+boolean proj_dir = true; 
+boolean proj_running = false;
+boolean proj_primed = false;
+volatile int proj_micro_state = 0;
+volatile long proj_time = 0;
+volatile long proj_avg = -1;
+volatile long takeup_start = 0;
+
+volatile char cmdChar = 'z';
+
+McopySerial mc;
+
+void setup () {
+  pins();
+  digitalWrite(LED_FWD, HIGH);
+  digitalWrite(LED_BWD, HIGH);
+  mc.begin(mc.PROJECTOR_IDENTIFIER);
+  delay(42);
+  digitalWrite(LED_FWD, LOW);
+  digitalWrite(LED_BWD, LOW);
+}
+
+void loop () {
+  now = millis();
+  if (proj_running) {
+    proj_microswitch();
+  } else {
+    cmdChar = mc.loop();
+    cmd(cmdChar);
+  }
+}
+
+void pins () {
+  pinMode(PROJECTOR_MICROSWITCH, INPUT_PULLUP);
+  pinMode(PROJECTOR_FWD, OUTPUT);
+  pinMode(PROJECTOR_BWD, OUTPUT);
+  pimMode(TAKEUP_FWD, OUTPUT);
+  pinMode(TAKEUP_BWD, OUTPUT);
+  pinMode(LED_FWD, OUTPUT);
+  pinMode(LED_BWD, OUTPUT);
+
+  digitalWrite(PROJECTOR_FWD, LOW);
+  digitalWrite(PROJECTOR_BWD, LOW);
+  digitalWrite(TAKEUP_FWD, LOW);
+  digitalWrite(TAKEUP_BWD, LOW);
+
+  digitalWrite(LED_FWD, LOW);
+  digitalWrite(LED_BWD, LOW);
+}
+
+void cmd (char val) {
+  if (val == mc.PROJECTOR_FORWARD) {
+    proj_direction(true);
+  } else if (val == mc.PROJECTOR_BACKWARD) {
+    proj_direction(false);
+  } else if (val == mc.PROJECTOR) {
+    proj_start();
+  } else if (val == mc.STATE) {
+    state();
+  }
+}
+
+void proj_start () {
+  proj_time = millis();
+  takeup_start = millis();
+
+  if (proj_dir) {
+    digitalWrite(PROJECTOR_FWD, HIGH);
+    digitalWrite(LED_FWD, HIGH);
+    analogWrite(TAKEUP_FWD, TAKEUP_PWM);
+  } else {
+    digitalWrite(PROJECTOR_BWD, HIGH);
+    digitalWrite(LED_BWD, HIGH);
+    analogWrite(TAKEUP_BWD, TAKEUP_PWM);
+  }
+
+  
+  proj_running = true;
+}
+
+void proj_stop () {
+  int ms;
+  //stop both directions
+  mc.log("Stopping...");
+  //delay(2);
+  digitalWrite(PROJECTOR_FWD, LOW);
+  digitalWrite(PROJECTOR_BWD, LOW);
+  digitalWrite(TAKEUP_FWD, LOW);
+  digitalWrite(TAKEUP_PWD, LOW);
+  digitalWrite(LED_FWD, LOW);
+  digitalWrite(LED_BWD, LOW);
+  /*
+  if (digitalRead(PROJECTOR_MICROSWITCH) == PROJECTOR_MICROSWITCH_CLOSED) {
+    if (proj_dir) {
+      while (digitalRead(PROJECTOR_MICROSWITCH) == PROJECTOR_MICROSWITCH_CLOSED) {
+        digitalWrite(PROJECTOR_BWD, HIGH);
+        delay(PROJECTOR_STOP_DELAY);
+      }
+      digitalWrite(PROJECTOR_BWD, LOW);
+    } else {
+      while (digitalRead(PROJECTOR_MICROSWITCH) == PROJECTOR_MICROSWITCH_CLOSED) {
+        digitalWrite(PROJECTOR_FWD, HIGH);
+        delay(PROJECTOR_STOP_DELAY);
+      }
+      digitalWrite(PROJECTOR_FWD, LOW);
+    }
+  }*/
+  
+  delay(100);
+
+  ms = millis() - proj_time;
+  mc.confirm(mc.PROJECTOR);
+  mc.log(String(ms) + "ms");
+  mc.log("projector()");
+  proj_running = false;
+
+  update_timing(ms);
+  
+}
+
+void proj_direction (boolean state) {
+  proj_dir = state;
+  if (state) {
+    mc.confirm(mc.PROJECTOR_FORWARD);
+    mc.log("proj_direction -> true");
+  } else {
+    mc.confirm(mc.PROJECTOR_BACKWARD);
+    mc.log("proj_direction -> false");
+  }
+}
+
+//LOW=0=CLOSED
+//HIGH=1=OPEN
+void proj_microswitch () {
+  int val = digitalRead(PROJECTOR_MICROSWITCH);
+  if (takeup_start + TAKEUP_TIME < millis()) {
+    digitalWrite(TAKEUP_FWD, LOW);
+    digitalWrite(TAKEUP_PWD, LOW);
+  }
+  if (!proj_primed                                  // if not primed
+    && val != proj_micro_state                      // AND if state changes
+    && val == PROJECTOR_MICROSWITCH_OPENED          // AND state changes to open
+    && now - proj_time > PROJECTOR_HALF_TIME) { 
+    //prime
+    mc.log("proj_primed => true");
+    proj_micro_state = val;
+    proj_primed = true;
+  } else if (proj_primed                              //if primed
+        && val != proj_micro_state                    //AND if state changes
+        && val == PROJECTOR_MICROSWITCH_CLOSED        //AND state changes to open
+        && now - proj_time > PROJECTOR_HALF_TIME) {   //AND total elapsed time is greater than half frame time
+    //stop
+    proj_primed = false;
+    proj_micro_state = val; //unneeded?
+    proj_stop();
+  } else {
+    delay(2); //some smothing value
+  }
+}
+
+void update_timing (int timing) {
+  if (proj_avg == -1) {
+    proj_avg = timing;
+  } else {
+    proj_avg = (int) round((proj_avg + timing) / 2);
+  }
+}
+
+void state () {
+  String stateString = String(mc.CAMERA_EXPOSURE);
+  stateString += String(proj_avg);
+  stateString += String(mc.STATE);
+  mc.print(stateString);
+}
