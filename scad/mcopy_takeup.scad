@@ -52,6 +52,8 @@ MOTOR_ANGLE = 37.5;
 BearingOuterDiameter = 21.6;
 BearingInnerDiameter = 8.05;
 
+COVER_DISTANCE = 58;
+
 module bearing_void (pos = [0, 0, 0], rot = [0, 0, 0], width = 8, inner = false, outerPad = 0.3, innerPad = 0) {
     translate (pos) rotate(rot) {
         difference () {
@@ -165,11 +167,11 @@ module filter_reinforcement (pos = [0, 0, 0]) {
 module roller_bolts () {
     translate([ROLLER_SPACING/2, 2, 0]) {
         cylinder(r = R(4.25), h = 80, center = true, $fn = 40);
-        translate([0, 0, 7]) rotate([0, 0, 0]) m4_nut(50);
+        translate([0, 0, 7]) rotate([0, 0, 0]) m4_nut(5);
     }
     translate([-ROLLER_SPACING/2, 2, 0]) {
         cylinder(r = R(4.25), h = 80, center = true, $fn = 40);
-        translate([0, 0, 7]) rotate([0, 0, 0]) m4_nut(50);
+        translate([0, 0, 7]) rotate([0, 0, 0]) m4_nut(5);
     }
 }
 
@@ -229,7 +231,7 @@ module motor_plate_bolts_voids (pos = [0, 0, 0], rot = [0, 0, 0], H = 40, Bolts 
                 translate([0, 0, -H / 2]) m5_nut(H = BOLT_H);
             }
             if (Bolts) {
-                translate([0, 0, -H / 2]) cylinder(r = R(8.3), h = BOLT_H, center = true, $fn = 40);
+                translate([0, 0, -H / 2]) cylinder(r = R(8.5), h = BOLT_H, center = true, $fn = 40);
             }
         }
         translate([BOLTS, -BOLTS, 0]) {
@@ -238,7 +240,7 @@ module motor_plate_bolts_voids (pos = [0, 0, 0], rot = [0, 0, 0], H = 40, Bolts 
                 translate([0, 0, -H / 2]) m5_nut(H = BOLT_H);
             }
             if (Bolts) {
-                translate([0, 0, -H / 2]) cylinder(r = R(8.3), h = BOLT_H, center = true, $fn = 40);
+                translate([0, 0, -H / 2]) cylinder(r = R(8.5), h = BOLT_H, center = true, $fn = 40);
             }
         }
         translate([-BOLTS, BOLTS, 0]) {
@@ -247,7 +249,7 @@ module motor_plate_bolts_voids (pos = [0, 0, 0], rot = [0, 0, 0], H = 40, Bolts 
                 translate([0, 0, -H / 2]) m5_nut(H = BOLT_H);
             }
             if (Bolts) {
-                translate([0, 0, -H / 2]) cylinder(r = R(8.3), h = BOLT_H, center = true, $fn = 40);
+                translate([0, 0, -H / 2]) cylinder(r = R(8.5), h = BOLT_H, center = true, $fn = 40);
             }
         }
         translate([-BOLTS, -BOLTS, 0]) {
@@ -256,7 +258,7 @@ module motor_plate_bolts_voids (pos = [0, 0, 0], rot = [0, 0, 0], H = 40, Bolts 
                 translate([0, 0, -H / 2]) m5_nut(H = BOLT_H);
             }
             if (Bolts) {
-                translate([0, 0, -H / 2]) cylinder(r = R(8.3), h = BOLT_H, center = true, $fn = 40);
+                translate([0, 0, -H / 2]) cylinder(r = R(8.5), h = BOLT_H, center = true, $fn = 40);
             }
         }
     } 
@@ -265,7 +267,7 @@ module motor_plate_bolts_voids (pos = [0, 0, 0], rot = [0, 0, 0], H = 40, Bolts 
 module mcopy_takeup_plate () {
     Z = 2.5;
     Angle = 142.45;
-    Rounding = 77;
+    Rounding = 70;
     CouplingD = 46;
     BarrelZ = 20;
     H = 11.1;
@@ -276,7 +278,6 @@ module mcopy_takeup_plate () {
         union () {
             translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) cylinder(r = R(Rounding), h = H, center = true, $fn = 120);
             translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) cylinder(r = R(Rounding), h = H, center = true, $fn = 120);
-            //translate([0, MCOPY_TAKEUP_Y, Z]) cube([MCOPY_TAKEUP_X * 2, Rounding, 11.1], center = true);
 
             translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) {
                 rotate([0, 0, Angle]) translate([MCOPY_TAKEUP_X / 2, 0, 0]) cube([MCOPY_TAKEUP_X, Rounding, H], center = true);
@@ -286,29 +287,31 @@ module mcopy_takeup_plate () {
                 rotate([0, 0, -Angle]) translate([-MCOPY_TAKEUP_X / 2, 0, 0]) cube([MCOPY_TAKEUP_X, Rounding, H], center = true);
             }
 
-            translate([0, -35, Z]) cube([AX, 75, H], center = true);
-        }
-        translate([0, 62.4, Z]) cube([AX * 2, 100, H + 1], center = true);
-
-        translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y,  Z + 1]) {
-            cylinder(r = R(22), h = H, center = true, $fn = 60);
-            cylinder(r = R(14), h = H + 10, center = true, $fn = 40);
-            motor_plate_bolts_voids([0, 0, 16], [0, 0, -MOTOR_ANGLE], 40, Bolts = true);
+            translate([0, -35, Z]) cube([AX, 70, H], center = true);
+            
+            mcopy_takeup_motor_standoff_block([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 12], [0, 0, -MOTOR_ANGLE]);
+            mcopy_takeup_motor_standoff_block([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 12], [0, 0, MOTOR_ANGLE]);
         }
         
-        translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z + 1]) {
-            cylinder(r = R(22), h = H, center = true, $fn = 60);
-            cylinder(r = R(14), h = H + 10, center = true, $fn = 40); 
-            motor_plate_bolts_voids([0, 0, 16], [0, 0, MOTOR_ANGLE], 40, Bolts = true);
+        translate([0, 62.4, Z]) cube([AX * 2, 100, H + 1], center = true);
+
+        translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y,  Z]) {
+            cylinder(r = R(44), h = H + 1, center = true, $fn = 120);
+            motor_plate_bolts_voids([0, 0, 17], [0, 0, -MOTOR_ANGLE], 50, Bolts = false, Nuts = false);
+        }
+        
+        translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, Z]) {
+            cylinder(r = R(44), h = H + 1, center = true, $fn = 120); 
+            motor_plate_bolts_voids([0, 0, 17], [0, 0, MOTOR_ANGLE], 50, Bolts = false, Nuts = false);
         }
         
         //tslot attachment
-        translate([70, -30, 6]) { 
+        /*translate([70, -30, 6]) { 
             m3_bolt_void([20 / 2, 40 / 2, 0]);
             m3_bolt_void([20 / 2, -40 / 2, 0]);
             m3_bolt_void([-20 / 2, 40 / 2, 0]);
             m3_bolt_void([-20 / 2, -40 / 2, 0]);
-        }
+        }*/
     }
 
     //motor mount plates
@@ -385,12 +388,15 @@ module spindle_passthrough (pos = [0, 0, 0], rot = [0, 0, 0]) {
         difference () {
             union () {
                 cylinder(r = R(7.75), h = H, center = true, $fn = 40);
-                translate([0, 0, 6.7]) cylinder(r = R(12), h = 2, center = true, $fn = 80);
-                translate([(7.75 / 2) + (3.75 / 2), 0, -3.3]) cube([4.75, 3.75, 18], center = true);
+                translate([0, 0, 7.5]) cylinder(r = R(12), h = 3, center = true, $fn = 80);
+                translate([(7.75 / 2) + (2 / 2), 0, -3.5]) cube([3, 3, 19], center = true);
             }
             cylinder(r = R(4.25), h = H + 1, center = true, $fn = 40);
             translate([0, 7.75 - 3 - 0.2,  H - 2]) cube([7.75, 7.75, H], center = true);
+            //trim top
+            translate([0, 0, (-H / 2) - (5 / 2) + 2]) cube([10, 10, 5], center = true);
         }
+        
     }
 }
 
@@ -399,8 +405,8 @@ module spindle_coupling (pos = [0, 0, 0], rot = [0, 0, 0]) {
     translate(pos) rotate(rot) {
         difference () {
             union () {
-                cylinder(r = R(40), h = 8, center = true, $fn = 120);
-                translate([0, 0, -2]) cylinder(r = R(12), h = 8, center = true, $fn = 60);
+                cylinder(r = R(38), h = 8, center = true, $fn = 120);
+                translate([0, 0, -3]) cylinder(r = R(12), h = 8, center = true, $fn = 60);
             }
             cylinder(r = R(4.25), h = 8 + 1, center = true, $fn = 40);
             translate([0, 0, 6.5 - 3]) color("red") m4_nut(5);
@@ -422,19 +428,34 @@ module mcopy_takeup_motor_plate () {
     }
 }
 
-module mcopy_takeup_motor_standoff (pos = [0, 0, 0], rot = [0, 0, 0]) {
-    H = 28;
+module mcopy_takeup_motor_standoff_block (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    H = 15;
     BOLTS = 42 / 2;
     translate(pos) rotate(rot) {
         difference () {
-            cylinder(r = R(77), h = H, center = true, $fn = 120);
-            cylinder(r = R(50), h = H + 1, center = true, $fn = 120);
+            cylinder(r = R(70), h = H, center = true, $fn = 120);
+            cylinder(r = R(44), h = H + 1, center = true, $fn = 120);
             translate([0, 0, (H / 2) - (8 / 2) + 0.1]) intersection () {
                 cylinder(r = R(70.3), h = 10, center = true, $fn = 120);
                 cube([60.3, 60.3, 8], center = true);
             }
             //bolts
             motor_plate_bolts_voids([0, 0, 0], [0, 0, 0], H + 1);
+        }
+    }
+}
+
+module mcopy_takeup_motor_standoff (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    H = 19;
+    BOLTS = 42 / 2;
+    translate(pos) rotate(rot) {
+        difference () {
+            cylinder(r = R(70), h = H, center = true, $fn = 120);
+            translate([0, 0, 9.5]) cylinder(r = R(44), h = H, center = true, $fn = 120);
+            translate([0, 0, 1.5]) cylinder(r = R(22.2), h = H, center = true, $fn = 60);
+            cylinder(r = R(14), h = H + 1, center = true, $fn = 60);
+            //bolts
+            motor_plate_bolts_voids([0, 0, 3], [0, 0, 0], H + 1, Bolts = true);
         }
     }
 }
@@ -484,9 +505,57 @@ module L298N_bolts_voids (pos = [0, 0, 0], rot = [0, 0, 0]) {
     }
 }
 
-module L298N_cover (pos = [0, 0, 0], rot = [0, 0, 0]) {
-    DISTANCE = 50 / 2;
+module L298N_cover_bolts_voids (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    H = 3;
+    DISTANCE = COVER_DISTANCE / 2;
     translate(pos) rotate(rot) {
+        m3_bolt_void([DISTANCE, DISTANCE, 0], H = 15);
+        m3_bolt_void([DISTANCE, -DISTANCE, 0], H = 15);
+        m3_bolt_void([-DISTANCE, DISTANCE, 0], H = 15);
+        m3_bolt_void([-DISTANCE, -DISTANCE, 0], H = 15);
+    }
+}
+
+module L298N_cover (pos = [0, 0, 0], rot = [0, 0, 0]) {
+    X = 54;
+    Y = 54; 
+    Z = 30;
+    DISTANCE = COVER_DISTANCE / 2;
+    T = 2;
+    
+    translate(pos) rotate(rot) {
+        difference () {
+            union () {
+                rounded_cube([X, Y, Z], d = 10, center = true, $fn = 40);
+                translate([0, 0, (-Z / 2) + (5 / 2)]) rounded_cube([X + 15, Y + 15, 5], d = 10, center = true, $fn = 30);
+            }
+            translate([0, 0, -T]) rounded_cube([X - (T * 2), Y - (T * 2), Z], d = 8, center = true, $fn = 40);
+
+            //bolts
+            translate([0, 0, -10]) {
+                translate([DISTANCE, DISTANCE, 0]) {
+                    cylinder(r = R(3.25), h = Z + 1, center = true, $fn = 30);
+                    m3_nut();
+                }
+                translate([DISTANCE, -DISTANCE, 0]) {
+                    cylinder(r = R(3.25), h = Z + 1, center = true, $fn = 30);
+                    m3_nut();
+                }
+                translate([-DISTANCE, DISTANCE, 0]) {
+                    cylinder(r = R(3.25), h = Z + 1, center = true, $fn = 30);
+                    m3_nut();
+                }
+                translate([-DISTANCE, -DISTANCE, 0]) {
+                    cylinder(r = R(3.25), h = Z + 1, center = true, $fn = 30);
+                    m3_nut();
+                }
+            }
+            translate([0, 6, -Z / 2]) cube([X + 20, 10, Z], center = true);
+            translate([0, 6, 0]) rotate([0, 90, 0]) cylinder(r = R(10), h = X + 1, center = true, $fn = 30);
+            
+            translate([7, Y / 2, -Z / 2]) cube([14, Y, Z], center = true);
+            translate([7, Y / 2, 0]) rotate([90, 0, 0]) cylinder(r = R(14), h = X + 1, center = true, $fn = 30);
+        }
     }   
 }
 
@@ -558,6 +627,66 @@ module tslot_attachment (pos = [0, 0, 0], rot = [0, 0, 0]) {
 
     }
 }
+
+module reel_attach_16mm () {
+    NOTCHES = 80;
+    H = 12;
+    difference () {
+        union () {
+            cylinder(r = R(35), h = H, center = true, $fn = 120);
+            for (i = [0 : NOTCHES - 1]) {
+                rotate([0, 0, i * (360 / NOTCHES)]) translate([35 / 2, 0, 0]) cylinder(r = R(1.3), h = H, center = true, $fn = 20);
+            }
+        }
+        
+        cylinder(r = R(4.25), h = H + 1, center = true, $fn = 40);
+        translate([0, 0, -H + 4]) m4_nut(H);
+        translate([0, 0, H - 6]) cylinder(r = R(14), h = H, center = true, $fn = 60);
+        
+        translate([0, 0, (H / 2) - (1 / 2)]) difference() {
+            cylinder(r = R(37.1), h = 1.99, center = true, $fn = 120);
+            cylinder(r1 = R(37), r2 = R(33.5), h = 2, center = true, $fn = 120);
+        }
+        translate([0, 0, (-H / 2) + (1 / 2)]) difference() {
+            cylinder(r = R(37.1), h = 1.99, center = true, $fn = 120);
+            cylinder(r2 = R(37), r1 = R(33.5), h = 2, center = true, $fn = 120);
+        }
+        
+        translate([-10, -6, (-H / 2) + 0.3]) rotate([180, 0, 0]) linear_extrude(height = 2) {
+            text("16mm", size = 5);
+        }
+    }
+}
+
+module reel_attach_8mm () {
+    NOTCHES = 80;
+    H = 18;
+    difference () {
+        union () {
+            cylinder(r = R(35), h = H, center = true, $fn = 120);
+            for (i = [0 : NOTCHES - 1]) {
+                rotate([0, 0, i * (360 / NOTCHES)]) translate([35 / 2, 0, 0]) cylinder(r = R(1.3), h = H, center = true, $fn = 20);
+            }
+        }
+        
+        cylinder(r = R(4.25), h = H + 1, center = true, $fn = 40);
+        translate([0, 0, -H + 4]) m4_nut(H);
+        translate([0, 0, H - 12]) cylinder(r = R(14), h = H, center = true, $fn = 60);
+        
+        translate([0, 0, (H / 2) - (1 / 2)]) difference() {
+            cylinder(r = R(37.1), h = 1.99, center = true, $fn = 120);
+            cylinder(r1 = R(37), r2 = R(33.5), h = 2, center = true, $fn = 120);
+        }
+        translate([0, 0, (-H / 2) + (1 / 2)]) difference() {
+            cylinder(r = R(37.1), h = 1.99, center = true, $fn = 120);
+            cylinder(r2 = R(37), r1 = R(33.5), h = 2, center = true, $fn = 120);
+        }
+        
+        translate([-8, -6, (-H / 2) + 0.3]) rotate([180, 0, 0]) linear_extrude(height = 2) {
+            text("8mm", size = 5);
+        }
+    }
+}
     
 module mcopy_takeup_half (Side = "takeup") {
     Width = 30;
@@ -595,21 +724,33 @@ module mcopy_takeup () {
         }
         roller_bolts();
         L298N_bolts_voids([0, -30, 6.5]);
+        L298N_cover_bolts_voids([0, -30, 6.5]);
+        //cutout for projector case
+        translate([62.5, 21, 0]) color("red") cube([20, 20, 20], center = true);
     }
+    
 }
 
 module debug_assembled () {
-    mcopy_takeup();
+    ADJUST_Z = 19;
+    //intersection () {
+        mcopy_takeup();
+        //translate([MCOPY_TAKEUP_X + 40, MCOPY_TAKEUP_Y, 0]) cube([80, 80, 20], center = true); 
+    //}
     translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 47]) rotate([180, 0, 180 - MOTOR_ANGLE]) {
         //translate([(46 / 2) - 14.5, 0, 0]) rotate([180, 0, 0]) geared_motor();
-        
-        //translate([0, 0, 26]) rotate([0, 0, 180]) magnetic_coupling();
+        translate([0, 0, 44.5 + ADJUST_Z]) color([1, 0, 0, 0.3]) cylinder(r = R(22), h = 7, $fn = 80, center = true);
+        //translate([0, 0, 26 + ADJUST_Z]) rotate([0, 0, 180]) magnetic_coupling();
         //translate([0, 0, 65]) cylinder(r = R(2*25.4), h = 20, center = true);
     }
-    //color("green") translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 47 - 11]) rotate([180, 0, 180 - MOTOR_ANGLE]) mcopy_takeup_motor_plate ();
-    color("red") spindle_passthrough([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -10]);
-    spindle_coupling([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 13]);
-    mcopy_takeup_motor_standoff([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 22.1], [0, 0, 180 - MOTOR_ANGLE]);
+    //color("green") translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 47 - 11 - ADJUST_Z]) rotate([180, 0, 180 - MOTOR_ANGLE]) mcopy_takeup_motor_plate ();
+    color("red") spindle_passthrough([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -10 - ADJUST_Z]);
+    //spindle_coupling([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 13 - ADJUST_Z]);
+    color([1, 1, 0, 0.4]) mcopy_takeup_motor_standoff([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -12.5], [0, 0, 180 - MOTOR_ANGLE]);
+    
+    translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -47 - 20]) color("gray") reel_attach_16mm();
+    
+    translate([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -13 - 19]) color([0, 1, 0, 0.4]) cylinder(r = R(91), h = 19, center = true, $fn = 120);
     
     translate([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 50]) rotate([180, 0, MOTOR_ANGLE]) {
         translate([(46 / 2) - 14.5, 0, 0]) rotate([180, 0, 0]) geared_motor();
@@ -617,11 +758,11 @@ module debug_assembled () {
         
         translate([0, 0, 26]) rotate([0, 0, 180]) magnetic_coupling();
     }
+
+    color("red") spindle_passthrough([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -10]);
+    spindle_coupling([-MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 13]);
     
-    color("red") spindle_passthrough([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, -10]);
-    spindle_coupling([MCOPY_TAKEUP_X, MCOPY_TAKEUP_Y, 13]);
-    /*
-    translate([(46 / 2) - 14.5, 0, 0]) rotate([180, 0, 0]) geared_motor();
+    /*translate([(46 / 2) - 14.5, 0, 0]) rotate([180, 0, 0]) geared_motor();
     color("green") translate([0, 0, 11]) mount_plate();
     color("blue") translate([0, 0, 23]) rotate([0, 0, -90]) 
     difference () {
@@ -630,20 +771,22 @@ module debug_assembled () {
     }
     color("red") translate([0, 0, 34]) daylight_spool_insert();
     */
-    translate([140, -30, 18]) rotate([0, 90, 0]) color("blue") tslot(200);
-    color("red") tslot_attachment([70, -30, 20.5]);
-    color("green") tslot_foot([240, -30, 18.5], [0, -90, 0]); 
+    //translate([140, -30, 18]) rotate([0, 90, 0]) color("blue") tslot(200);
+    //color("red") tslot_attachment([70, -30, 20.5]);
+    //color("green") tslot_foot([240, -30, 18.5], [0, -90, 0]); 
+    color([0, 0, 1, 0.4]) L298N_cover([0, -30, 24]);
 }
 
 
 //translate([0, 0, 40]) color("red") original_takeup();
 
-PART = "motor_standoff";
+PART = "reel_attach_8mm";
 
 if (PART == "spindle_coupling") {
     rotate([180, 0, 0]) spindle_coupling();
 } else if (PART == "spindle_passthrough") {
-    rotate([180, 0, 0]) spindle_passthrough();
+    rotate([180, 0, 90]) spindle_passthrough();
+    //import("../../models/film_adapter/stl/adapter_16mm_to_super8_reel.stl");
 } else if (PART == "magnetic_coupling") {
     magnetic_coupling();
 } else if (PART == "motor_plate") {
@@ -651,6 +794,12 @@ if (PART == "spindle_coupling") {
     mcopy_takeup_motor_plate(); 
 } else if (PART == "motor_standoff") {
     mcopy_takeup_motor_standoff();
+} else if (PART == "L298N_cover") {
+    L298N_cover();
+} else if (PART == "reel_attach_16mm") {
+    reel_attach_16mm();
+} else if (PART == "reel_attach_8mm") {
+    reel_attach_8mm();
 } else if (PART == "jk_takeup") {
     jk_takeup();
 } else if (PART == "jk_takeup_half_a") {
@@ -660,10 +809,7 @@ if (PART == "spindle_coupling") {
 } else if (PART == "idle_roller") {
     idle_roller();
 } else if (PART == "mcopy_takeup") {
-    //intersection () {
-        mcopy_takeup();
-        //translate([-130, -80, 0]) rotate([0, 0, 37.5]) cube([90, 90, 20], center = true);
-    //}
+    mcopy_takeup();
 } else if (PART == "mcopy_takeup_takeup") {
     rotate([180, 0, 0]) mcopy_takeup_half(Side = "takeup") mcopy_takeup();
 } else if (PART == "mcopy_takeup_feed") {
