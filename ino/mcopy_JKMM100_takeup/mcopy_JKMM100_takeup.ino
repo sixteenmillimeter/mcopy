@@ -96,7 +96,7 @@ void pins () {
   pinMode(PROJECTOR_MICROSWITCH, INPUT_PULLUP);
   pinMode(PROJECTOR_FWD, OUTPUT);
   pinMode(PROJECTOR_BWD, OUTPUT);
-  pimMode(TAKEUP_FWD, OUTPUT);
+  pinMode(TAKEUP_FWD, OUTPUT);
   pinMode(TAKEUP_BWD, OUTPUT);
   pinMode(LED_FWD, OUTPUT);
   pinMode(LED_BWD, OUTPUT);
@@ -148,10 +148,10 @@ void proj_stop () {
   digitalWrite(PROJECTOR_FWD, LOW);
   digitalWrite(PROJECTOR_BWD, LOW);
   digitalWrite(TAKEUP_FWD, LOW);
-  digitalWrite(TAKEUP_PWD, LOW);
+  digitalWrite(TAKEUP_BWD, LOW);
   digitalWrite(LED_FWD, LOW);
   digitalWrite(LED_BWD, LOW);
-  /*
+  
   if (digitalRead(PROJECTOR_MICROSWITCH) == PROJECTOR_MICROSWITCH_CLOSED) {
     if (proj_dir) {
       while (digitalRead(PROJECTOR_MICROSWITCH) == PROJECTOR_MICROSWITCH_CLOSED) {
@@ -166,7 +166,7 @@ void proj_stop () {
       }
       digitalWrite(PROJECTOR_FWD, LOW);
     }
-  }*/
+  }
   
   delay(100);
 
@@ -197,7 +197,7 @@ void proj_microswitch () {
   int val = digitalRead(PROJECTOR_MICROSWITCH);
   if (takeup_start + TAKEUP_TIME < millis()) {
     digitalWrite(TAKEUP_FWD, LOW);
-    digitalWrite(TAKEUP_PWD, LOW);
+    digitalWrite(TAKEUP_BWD, LOW);
   }
   if (!proj_primed                                  // if not primed
     && val != proj_micro_state                      // AND if state changes
